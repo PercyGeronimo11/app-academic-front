@@ -7,14 +7,14 @@
             <CCard class="p-4">
               <CCardBody>
                 <CForm>
-                  <h1>Login</h1>
-                  <p class="text-body-secondary">Sign In to your account</p>
+                  <h1>I.E. RICARDO PALMA 80010</h1>
+                  <p class="text-body-secondary">Acceder a su cuenta</p>
                   <CInputGroup class="mb-3">
                     <CInputGroupText>
                       <CIcon icon="cil-user" />
                     </CInputGroupText>
                     <CFormInput
-                      placeholder="Username"
+                      placeholder="Email"
                       autocomplete="username"
                     />
                   </CInputGroup>
@@ -30,29 +30,30 @@
                   </CInputGroup>
                   <CRow>
                     <CCol :xs="6">
-                      <CButton color="primary" class="px-4"> Login </CButton>
+                      <CButton color="primary" class="px-4"> Iniciar sesión </CButton>
                     </CCol>
                     <CCol :xs="6" class="text-right">
                       <CButton color="link" class="px-0">
-                        Forgot password?
+                        ¿Olvido su contraseña?
                       </CButton>
                     </CCol>
                   </CRow>
                 </CForm>
               </CCardBody>
             </CCard>
-            <CCard class="text-white bg-primary py-5" style="width: 44%">
+            <CCard class="text-white  py-5" style="width: 44%">
               <CCardBody class="text-center">
                 <div>
-                  <h2>Sign up</h2>
+                  <img src="../../../public/img/logo_rp.png" alt="">
+                  <!-- <h2>Sign up</h2>
                   <p>
                     Lorem ipsum dolor sit amet, consectetur adipisicing elit,
                     sed do eiusmod tempor incididunt ut labore et dolore magna
                     aliqua.
                   </p>
                   <CButton color="light" variant="outline" class="mt-3">
-                    Register Now!
-                  </CButton>
+                    Nuevo Registro!
+                  </CButton> -->
                 </div>
               </CCardBody>
             </CCard>
