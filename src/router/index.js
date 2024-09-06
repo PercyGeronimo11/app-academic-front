@@ -36,21 +36,21 @@ const routes = [
       //   name: 'Typography',
       //   component: () => import('@/components/matriculate/Typography.vue'),
       // },
-      // {
-      //   path: '/theme',
-      //   name: 'Theme',
-      //   redirect: '/theme/typography',
-      // },
-      // {
-      //   path: '/theme/colors',
-      //   name: 'Colors',
-      //   component: () => import('@/components/theme/Colors.vue'),
-      // },
-      // {
-      //   path: '/theme/typography',
-      //   name: 'Typography',
-      //   component: () => import('@/components/theme/Typography.vue'),
-      // },
+      {
+        path: '/theme',
+        name: 'Theme',
+        redirect: '/theme/typography',
+      },
+      {
+        path: '/theme/colors',
+        name: 'Colors',
+        component: () => import('@/components/theme/Colors.vue'),
+      },
+      {
+        path: '/theme/typography',
+        name: 'Typography',
+        component: () => import('@/components/theme/Typography.vue'),
+      },
       {
         path: '/base',
         name: 'Base',
