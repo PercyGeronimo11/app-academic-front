@@ -6,7 +6,7 @@ import autoprefixer from 'autoprefixer'
 export default defineConfig(() => {
   return {
     plugins: [vue()],
-    base: './',
+    base: '/',
     css: {
       postcss: {
         plugins: [
@@ -37,6 +37,7 @@ export default defineConfig(() => {
       proxy: {
         // https://vitejs.dev/config/server-options.html
       },
+      historyApiFallback: true, // Esta línea asegura que las rutas se manejen correctamente sin "#"
     },
   }
 })

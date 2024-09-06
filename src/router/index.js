@@ -1,5 +1,5 @@
 import { h, resolveComponent } from 'vue'
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
 
@@ -289,6 +289,11 @@ const routes = [
     ],
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/components/pages/Login'),
+  },
+  {
     path: '/pages',
     redirect: '/pages/404',
     name: 'Pages',
@@ -309,11 +314,6 @@ const routes = [
         component: () => import('@/components/pages/Page500'),
       },
       {
-        path: 'login',
-        name: 'Login',
-        component: () => import('@/components/pages/Login'),
-      },
-      {
         path: 'register',
         name: 'Register',
         component: () => import('@/components/pages/Register'),
@@ -323,7 +323,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHistory('/'),
   routes,
   scrollBehavior() {
     // always scroll to top
