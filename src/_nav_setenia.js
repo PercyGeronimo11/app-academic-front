@@ -7,11 +7,11 @@ export default [
   },
   {
     component: 'CNavTitle',
-    name: 'USUARIOS',
+    name: 'Theme',
   },
   {
     component: 'CNavItem',
-    name: 'Usuarios',
+    name: 'Colors',
     to: '/theme/colors',
     icon: 'cil-drop',
   },
@@ -21,8 +21,7 @@ export default [
     to: '/theme/typography',
     icon: 'cil-pencil',
   },
-
-{
+  {
     component: 'CNavTitle',
     name: 'Components',
   },
@@ -109,111 +108,6 @@ export default [
       },
     ],
   },
-
-
-  // {
-  //   component: 'CNavTitle',
-  //   name: 'THEMES',
-  // },
-  // {
-  //   component: 'CNavItem',
-  //   name: '',
-  //   to: '/theme/colors',
-  //   icon: 'cil-drop',
-  // },
-  // {
-  //   component: 'CNavItem',
-  //   name: 'Typography',
-  //   to: '/theme/typography',
-  //   icon: 'cil-pencil',
-  // },
-  // {
-  //   component: 'CNavTitle',
-  //   name: 'Components',
-  // },
-  // {
-  //   component: 'CNavGroup',
-  //   name: 'Base',
-  //   to: '/base',
-  //   icon: 'cil-puzzle',
-  //   items: [
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Accordion',
-  //       to: '/base/accordion',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Breadcrumbs',
-  //       to: '/base/breadcrumbs',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Cards',
-  //       to: '/base/cards',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Carousels',
-  //       to: '/base/carousels',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Collapses',
-  //       to: '/base/collapses',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'List Groups',
-  //       to: '/base/list-groups',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Navs & Tabs',
-  //       to: '/base/navs',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Paginations',
-  //       to: '/base/paginations',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Placeholders',
-  //       to: '/base/placeholders',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Popovers',
-  //       to: '/base/popovers',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Progress',
-  //       to: '/base/progress',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Spinners',
-  //       to: '/base/spinners',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Tables',
-  //       to: '/base/tables',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Tabs',
-  //       to: '/base/tabs',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Tooltips',
-  //       to: '/base/tooltips',
-  //     },
-  //   ],
-  // },
   {
     component: 'CNavGroup',
     name: 'Buttons',
@@ -357,7 +251,6 @@ export default [
       shape: 'pill',
     },
   },
-
   {
     component: 'CNavTitle',
     name: 'Extras',
@@ -371,7 +264,7 @@ export default [
       {
         component: 'CNavItem',
         name: 'Login',
-        to: '/login',
+        to: '/pages/login',
       },
       {
         component: 'CNavItem',
