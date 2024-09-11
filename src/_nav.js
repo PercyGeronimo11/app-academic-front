@@ -7,6 +7,16 @@ export default [
   },
   {
     component: 'CNavTitle',
+    name: 'ENTIDADES',
+  },
+  {
+    component: 'CNavItem',
+    name: 'Docentes',
+    to: '/teachers',
+    icon: 'cil-notes',
+  },
+  {
+    component: 'CNavTitle',
     name: 'USUARIOS',
   },
   {

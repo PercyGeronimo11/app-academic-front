@@ -37,6 +37,11 @@ const routes = [
       //   component: () => import('@/components/matriculate/Typography.vue'),
       // },
       {
+        path: '/teachers',
+        name: 'Teacher',
+        component: () => import('@/views/teachers/Teacher.vue'),
+      },
+      {
         path: '/theme',
         name: 'Theme',
         redirect: '/theme/typography',
