@@ -1,35 +1,59 @@
-# Usa una imagen base de Node.js 
-FROM node:18 AS build
+# Base image (la imagen base sobre la que construiremos)
+FROM node:18-alpine
 
-# Establece el directorio de trabajo
+# Establecemos el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia los archivos del proyecto al contenedor
+# Copiamos el package.json y lock.json para instalar las dependencias
 COPY package*.json ./
 
-# Copia los archivos del proyecto
-COPY . .
-
-#instalar dependencias
+# Instalamos las dependencias
 RUN npm install
 
-# Copia el archivo .env.dev al contenedor y renómbralo a .env
-COPY .env.dev .env
+# Copiamos el resto de los archivos del proyecto
+COPY . .
 
-# Construye la aplicación Vue.js (esto tomará las variables del archivo .env)
+# Construimos la aplicación Vue
 RUN npm run build
 
-# Usa una imagen base de Nginx para servir la aplicación
-FROM nginx:alpine
+# Exponemos el puerto donde se servirá la aplicación (ajusta según tu configuración)
+EXPOSE 8080
 
-# Copia los archivos generados en la fase de construcción a la carpeta de Nginx
-COPY --from=build /app/dist /usr/share/nginx/html
+# Comando para iniciar la aplicación (ajusta según tu configuración)
+CMD ["npm", "start"]
 
-# Copia el archivo de configuración de Nginx<
-COPY nginx.conf /etc/nginx/nginx.conf
+# # Usa una imagen base de Node.js 
+# FROM node:18 AS build
 
-# Expone el puerto 80
-EXPOSE 80
+# # Establece el directorio de trabajo
+# WORKDIR /app
 
-# Comando por defecto para ejecutar Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# # Copia los archivos del proyecto al contenedor
+# COPY package*.json ./
+
+# # Copia los archivos del proyecto
+# COPY . .
+
+# #instalar dependencias
+# RUN npm install
+
+# # Copia el archivo .env.dev al contenedor y renómbralo a .env
+# COPY .env.dev .env
+
+# # Construye la aplicación Vue.js (esto tomará las variables del archivo .env)
+# RUN npm run build
+
+# # Usa una imagen base de Nginx para servir la aplicación
+# FROM nginx:alpine
+
+# # Copia los archivos generados en la fase de construcción a la carpeta de Nginx
+# COPY --from=build /app/dist /usr/share/nginx/html
+
+# # Copia el archivo de configuración de Nginx<
+# COPY nginx.conf /etc/nginx/nginx.conf
+
+# # Expone el puerto 80
+# EXPOSE 80
+
+# # Comando por defecto para ejecutar Nginx
+# CMD ["nginx", "-g", "daemon off;"]
