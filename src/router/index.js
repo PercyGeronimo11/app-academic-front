@@ -242,12 +242,12 @@ const routes = [
             name: 'CoreUI Icons',
             component: () => import('@/components/icons/CoreUIIcons.vue'),
           },
-          // {
-          //   path: '/icons/brands',
-          //   name: 'Brands',
-          //   component: () => import('@/components/icons/Brands.vue'),
-          // },
-          // ESTO CAUSABA ADVERTENCIAS EN BUILD
+          {
+            path: '/icons/brands',
+            name: 'Brands',
+            component: () => import('@/components/icons/Brands.vue'),
+          },
+          // Bastante grande su importacion, en la construccion sale advertencia
           // {
           //   path: '/icons/flags',
           //   name: 'Flags',

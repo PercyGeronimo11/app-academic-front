@@ -42,7 +42,7 @@ export default defineConfig(() => {
 
     //Agregue para aumentar capacidad (por defecto es 500)
     build: {
-      chunkSizeWarningLimit: 1000, // Ajusta el límite
+      chunkSizeWarningLimit: 2000, // Ajusta el límite
     },
   }
 })
