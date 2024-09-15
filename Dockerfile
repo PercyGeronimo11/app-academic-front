@@ -6,13 +6,15 @@ WORKDIR /app
 
 # Copia los archivos del proyecto al contenedor
 COPY package*.json ./
-RUN npm install
 
-# Copia los archivos del proyecto, incluyendo el archivo de entorno de producción
+# Copia los archivos del proyecto
 COPY . .
 
-# Asegúrate de que Vite use el archivo de entorno correcto
-COPY .env.production .env
+#instalar dependencias
+RUN npm install
+
+# Copia el archivo .env.dev al contenedor y renómbralo a .env
+COPY .env.dev .env
 
 # Construye la aplicación Vue.js (esto tomará las variables del archivo .env)
 RUN npm run build

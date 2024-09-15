@@ -1,12 +1,13 @@
 version: '3.8'
 
 services:
-  web:
+  vue-app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "88:80"
+      - "88:80"  #para puerto 88
+    image: app-tesis-front:vue3
     environment:
       - VITE_API_URL=http://161.132.40.114:89/api
     networks:
