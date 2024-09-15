@@ -39,5 +39,10 @@ export default defineConfig(() => {
       },
       historyApiFallback: true, // Esta línea asegura que las rutas se manejen correctamente sin "#"
     },
+
+    //Agregue para aumentar capacidad (por defecto es 500)
+    build: {
+      chunkSizeWarningLimit: 1000, // Ajusta el límite
+    },
   }
 })

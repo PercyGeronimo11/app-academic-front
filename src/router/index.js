@@ -242,16 +242,17 @@ const routes = [
             name: 'CoreUI Icons',
             component: () => import('@/components/icons/CoreUIIcons.vue'),
           },
-          {
-            path: '/icons/brands',
-            name: 'Brands',
-            component: () => import('@/components/icons/Brands.vue'),
-          },
-          {
-            path: '/icons/flags',
-            name: 'Flags',
-            component: () => import('@/components/icons/Flags.vue'),
-          },
+          // {
+          //   path: '/icons/brands',
+          //   name: 'Brands',
+          //   component: () => import('@/components/icons/Brands.vue'),
+          // },
+          // ESTO CAUSABA ADVERTENCIAS EN BUILD
+          // {
+          //   path: '/icons/flags',
+          //   name: 'Flags',
+          //   component: () => import('@/components/icons/Flags.vue'),
+          // },
         ],
       },
       {
