@@ -1,12 +1,16 @@
-FROM nginx:alpine
+FROM nginx:14
 
-WORKDIR /usr/share/nginx/html
+WORKDIR /app
 
-COPY dist/. .
+COPY package*.json ./
 
-EXPOSE 80
+RUN npm install
 
-CMD ["nginx", "-g", "daemon off;"]
+COPY . .
+
+EXPOSE 8080
+
+CMD ["npm", "run", "serve"]
 
 # # Usa una imagen base de Nginx para servir la aplicación
 # FROM nginx:alpine
