@@ -1,25 +1,12 @@
-FROM node:9.11.1-alpine
+FROM nginx:alpine
 
-# instalar un simple servidor http para servir nuestro contenido estático
-RUN npm install -g http-server
+WORKDIR /usr/share/nginx/html
 
-# hacer la carpeta 'app' el directorio de trabajo actual
-WORKDIR /app
+COPY dist/. .
 
-# copiar 'package.json' y 'package-lock.json' (si están disponibles)
-COPY package*.json ./
+EXPOSE 80
 
-# instalar dependencias del proyecto
-RUN npm install
-
-# copiar los archivos y carpetas del proyecto al directorio de trabajo actual (es decir, la carpeta 'app')
-COPY . .
-
-# construir aplicación para producción minificada
-RUN npm run build
-
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+CMD ["nginx", "-g", "daemon off;"]
 
 # # Usa una imagen base de Nginx para servir la aplicación
 # FROM nginx:alpine
