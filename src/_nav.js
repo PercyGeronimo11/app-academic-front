@@ -1,7 +1,7 @@
 export default [
   {
     component: 'CNavItem',
-    name: 'Dashboard',
+    name: 'Inicio',
     to: '/dashboard',
     icon: 'cil-speedometer',
   },
@@ -11,28 +11,103 @@ export default [
   },
   {
     component: 'CNavItem',
+    name: 'Administrativos',
+    to: '/teachers',
+    icon: 'cil-user',
+  },
+  {
+    component: 'CNavItem',
     name: 'Docentes',
+    to: '/teachers',
+    icon: 'cil-user',
+  },
+  {
+    component: 'CNavItem',
+    name: 'Estudiantes',
+    to: '/teachers',
+    icon: 'cil-people',
+  },
+
+
+  {
+    component: 'CNavTitle',
+    name: 'MATERIAS',
+  },
+  {
+    component: 'CNavItem',
+    name: 'Competencias',
+    to: '/teachers',
+    icon: 'cil-pencil',
+  },
+  {
+    component: 'CNavItem',
+    name: 'Cursos',
+    to: '/teachers',
+    icon: 'cil-options',
+  },
+
+  {
+    component: 'CNavTitle',
+    name: 'ADMINISTRACIÓN',
+  },
+  {
+    component: 'CNavItem',
+    name: 'Notas',
     to: '/teachers',
     icon: 'cil-notes',
   },
   {
+    component: 'CNavItem',
+    name: 'Matriculas',
+    to: '/teachers',
+    icon: 'cil-notes',
+  },
+
+  {
+    component: 'CNavGroup',
+    name: 'Icons',
+    to: '/icons',
+    icon: 'cil-star',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'CoreUI Icons',
+        to: '/icons/coreui-icons',
+        badge: {
+          color: 'info',
+          text: 'NEW',
+        },
+      },
+      {
+        component: 'CNavItem',
+        name: 'Brands',
+        to: '/icons/brands',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Flags',
+        to: '/icons/flags',
+      },
+    ],
+  },
+
+  {
     component: 'CNavTitle',
     name: 'USUARIOS',
   },
-  {
-    component: 'CNavItem',
-    name: 'Usuarios',
-    to: '/theme/colors',
-    icon: 'cil-drop',
-  },
-  {
+  
+
+
+
+
+/*   {
     component: 'CNavItem',
     name: 'Typography',
     to: '/theme/typography',
     icon: 'cil-pencil',
   },
 
-{
+  {
     component: 'CNavTitle',
     name: 'Components',
   },
@@ -118,7 +193,9 @@ export default [
         to: '/base/tooltips',
       },
     ],
-  },
+  }, */
+
+
 
 
   // {
@@ -224,7 +301,11 @@ export default [
   //     },
   //   ],
   // },
-  {
+
+
+
+
+/*   {
     component: 'CNavGroup',
     name: 'Buttons',
     to: '/buttons',
@@ -371,14 +452,27 @@ export default [
   {
     component: 'CNavTitle',
     name: 'Extras',
-  },
+  }, */
+
+
+
   {
     component: 'CNavGroup',
-    name: 'Pages',
+    name: 'Configuracion',
     to: '/pages',
-    icon: 'cil-star',
+    icon: 'cil-settings',
     items: [
       {
+        component: 'CNavItem',
+        name: 'Roles',
+        to: '/teachers'
+      },
+      {
+        component: 'CNavItem',
+        name: 'Usuarios',
+        to: '/theme/colors'
+      },
+      /* {
         component: 'CNavItem',
         name: 'Login',
         to: '/login',
@@ -387,8 +481,9 @@ export default [
         component: 'CNavItem',
         name: 'Register',
         to: '/pages/register',
-      },
-      {
+      }, */
+      
+      /* {
         component: 'CNavItem',
         name: 'Error 404',
         to: '/pages/404',
@@ -397,7 +492,7 @@ export default [
         component: 'CNavItem',
         name: 'Error 500',
         to: '/pages/500',
-      },
+      }, */
     ],
   },
 ]

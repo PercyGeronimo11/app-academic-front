@@ -29,7 +29,7 @@ const handleLogout = async () => {
       <CAvatar :src="avatar" size="md" />
     </CDropdownToggle>
     <CDropdownMenu class="pt-0">
-      <CDropdownHeader
+<!--       <CDropdownHeader
         component="h6"
         class="bg-body-secondary text-body-secondary fw-semibold mb-2 rounded-top"
       >
@@ -67,8 +67,8 @@ const handleLogout = async () => {
         <CIcon icon="cil-file" /> Projects
         <CBadge color="primary" class="ms-auto">{{ itemsCount }}</CBadge>
       </CDropdownItem>
-      <CDropdownDivider />
-      <CDropdownItem @click="handleLogout"> <CIcon icon="cil-lock-locked" /> Logout </CDropdownItem>
+      <CDropdownDivider /> -->
+      <CDropdownItem @click="handleLogout"> <CIcon icon="cil-lock-locked" /> Cerrar Sesión </CDropdownItem>
     </CDropdownMenu>
   </CDropdown>
 </template>
