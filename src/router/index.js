@@ -13,13 +13,8 @@ const routes = [
       {
         path: '/dashboard',
         name: 'Dashboard',
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: () =>
-          import(
-            /* webpackChunkName: "dashboard" */ '@/components/dashboard/Dashboard.vue'
-          ),
+          import('@/components/dashboard/Dashboard.vue'),
       },
       // {
       //   path: '/matriculate',
@@ -326,15 +321,34 @@ const routes = [
       },
     ],
   },
+  // Redirigir a login si la ruta no existe
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/login',
+  },
 ]
 
 const router = createRouter({
   history: createWebHistory('/'),
   routes,
   scrollBehavior() {
-    // always scroll to top
     return { top: 0 }
   },
 })
+
+// Guard de navegación global
+router.beforeEach((to, from, next) => {
+  const isAuthenticated = !!localStorage.getItem('access_token'); 
+  console.log("¿Esta Autenticado?:", isAuthenticated);
+
+  // Si la ruta requiere autenticación y no hay token
+  if (!isAuthenticated && to.path !== '/login') {
+    next('/login'); 
+  } else if (to.path === '/login' && isAuthenticated) {
+    next('/dashboard'); // Si ya está autenticado y está en login, redirigir al dashboard
+  } else {
+    next(); 
+  }
+});
 
 export default router

@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import axios from 'axios'
 
 import App from './App.vue'
 import router from './router'
@@ -16,5 +17,6 @@ app.use(CoreuiVue)
 app.provide('icons', icons)
 app.component('CIcon', CIcon)
 app.component('DocsExample', DocsExample)
+
 
 app.mount('#app')
