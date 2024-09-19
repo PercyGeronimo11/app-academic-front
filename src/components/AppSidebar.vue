@@ -21,7 +21,7 @@ const sidebar = useSidebarStore()
     <CSidebarHeader class="border-bottom">
       <RouterLink custom to="/" v-slot="{ href, navigate }">
         <CSidebarBrand v-bind="$attrs" as="a" :href="href" @click="navigate">
-          <CIcon custom-class-name="sidebar-brand-full" :icon="logo" :height="32" />
+          <img custom-class-name="sidebar-brand-full" src="/src/assets/images/logo-main.png" :height="85" />
           <CIcon custom-class-name="sidebar-brand-narrow" :icon="sygnet" :height="32" />
         </CSidebarBrand>
       </RouterLink>
