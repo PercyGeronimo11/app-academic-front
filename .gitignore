@@ -31,6 +31,9 @@ nbproject
 Thumbs.db
 /.vscode/
 
+Dockerfile
+docker-compose.yml
+
 # Numerous always-ignore extensions
 *.diff
 *.err
@@ -42,3 +45,5 @@ Thumbs.db
 *.vi
 *.zip
 *~
+
+

@@ -1,18 +1,17 @@
-version: '3.8'
+version: '3.7'
 
 services:
   vue-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
-      - "88:80"  # Mapea el puerto 88 del VPS al puerto 80 del contenedor Nginx
-    image: app-tesis-front:vue3
+      - 88:3000
+    container_name: vue-app
+    image: app-tesis-front:latest
     environment:
       - VITE_API_URL=http://161.132.40.114:89/api
     networks:
-      - webnet
+      - red-tesis
 
 networks:
-  webnet:
+  red-tesis:
     driver: bridge
+
