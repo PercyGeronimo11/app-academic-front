@@ -58,12 +58,12 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Matriculas',
+    name: 'Asistencias',
     to: '/teachers',
     icon: 'cil-notes',
   },
 
-  {
+  /* {
     component: 'CNavGroup',
     name: 'Icons',
     to: '/icons',
@@ -89,7 +89,7 @@ export default [
         to: '/icons/flags',
       },
     ],
-  },
+  }, */
 
   {
     component: 'CNavTitle',
