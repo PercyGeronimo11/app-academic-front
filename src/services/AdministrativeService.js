@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export default {
   async getItems(search) {
-    return await axios.get(`${API_URL}/teacher/list`,{
+    return await axios.get(`${API_URL}/administrative/list`,{
       params: {
         status: 1,
         search: search
@@ -13,7 +13,7 @@ export default {
   },
   
   async getItem(id) {
-    return await axios.get(`${API_URL}/teacher/get`,{
+    return await axios.get(`${API_URL}/administrative/get`,{
       params: {
         id: id
       },
@@ -21,15 +21,15 @@ export default {
   },
 
   async createItem(data) {
-    return await axios.post(`${API_URL}/teacher/create`, data);
+    return await axios.post(`${API_URL}/administrative/create`, data);
   },
 
   async updateItem(data) {
-    return await axios.put(`${API_URL}/teacher/update`, data);
+    return await axios.put(`${API_URL}/administrative/update`, data);
   },
 
   async deleteItem(id) {
-    return await axios.delete(`${API_URL}/teacher/delete`,{
+    return await axios.delete(`${API_URL}/administrative/delete`,{
       data: {
         id: id
       }

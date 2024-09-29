@@ -6,7 +6,7 @@ import DefaultLayout from '@/layouts/DefaultLayout'
 const routes = [
   {
     path: '/',
-    name: 'Home',
+    name: 'Inicio',
     component: DefaultLayout,
     redirect: '/dashboard',
     children: [
@@ -16,27 +16,17 @@ const routes = [
         component: () =>
           import('@/components/dashboard/Dashboard.vue'),
       },
-      // {
-      //   path: '/matriculate',
-      //   name: 'Matriculas',
-      //   redirect: '/matriculate/typography',
-      // },
-      // {
-      //   path: '/matriculate/colors',
-      //   name: 'Colors',
-      //   component: () => import('@/components/matriculate/Colors.vue'),
-      // },
-      // {
-      //   path: '/matriculate/typography',
-      //   name: 'Typography',
-      //   component: () => import('@/components/matriculate/Typography.vue'),
-      // },
       {
         path: '/teachers',
-        name: 'Teacher',
+        name: 'Docente',
         component: () => import('@/views/teachers/Teacher.vue'),
       },
       {
+        path: '/administratives',
+        name: 'Administrativo',
+        component: () => import('@/views/administratives/Administrative.vue'),
+      },
+      /* {
         path: '/theme',
         name: 'Theme',
         redirect: '/theme/typography',
@@ -286,7 +276,7 @@ const routes = [
         path: '/widgets',
         name: 'Widgets',
         component: () => import('@/components/widgets/Widgets.vue'),
-      },
+      }, */
     ],
   },
   {

@@ -12,7 +12,7 @@ export default [
   {
     component: 'CNavItem',
     name: 'Administrativos',
-    to: '/teachers',
+    to: '/administratives',
     icon: 'cil-user',
   },
   {
