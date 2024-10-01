@@ -144,12 +144,12 @@
               <CRow class="mt-3 justify-content-end">
                 <CCol>
                   <router-link to="/students" class="CButton text-white" color="info">
-                    <CButton color="secondary">Cancelar</CButton>
+                    <CButton color="secondary">Regresar</CButton>
                   </router-link>
                 </CCol>
                 <CCol>
                   <CButton class="mx-5" color="primary" @click="submitToEdit()">
-                    Registrar
+                    Actualizar
                   </CButton>
                 </CCol>
               </CRow>

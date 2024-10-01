@@ -1,27 +1,3 @@
-<script setup>
-import avatar from '@/assets/images/avatars/8.jpg'
-import { useRouter } from 'vue-router'
-import authService from '@/services/AuthService'
-
-const itemsCount = 42
-const router = useRouter()
-
-const handleLogout = async () => {
-  try {
-    const response = await authService.logoutService()
-    if (response.success) {
-      console.log('Logout exitoso:', response)
-      router.push('/login')
-    } else {
-      console.error('Error en el logout:', response.message)
-      alert('Error en el logout. Por favor intente nuevamente.')
-    }
-  } catch (error) {
-    console.error('Error en la solicitud de logout:', error)
-    alert('Error en la solicitud. Por favor intente nuevamente.')
-  }
-}
-</script>
 
 <template>
   <CDropdown placement="bottom-end" variant="nav-item">
@@ -68,7 +44,34 @@ const handleLogout = async () => {
         <CBadge color="primary" class="ms-auto">{{ itemsCount }}</CBadge>
       </CDropdownItem>
       <CDropdownDivider /> -->
-      <CDropdownItem @click="handleLogout"> <CIcon icon="cil-lock-locked" /> Cerrar Sesión </CDropdownItem>
+      <CButton @click="handleLogout"> <CIcon icon="cil-lock-locked" /> Cerrar Sesión </CButton>
     </CDropdownMenu>
   </CDropdown>
 </template>
+
+<script setup>
+import avatar from '@/assets/images/avatars/8.jpg'
+import { useRouter } from 'vue-router'
+import authService from '@/services/AuthService'
+
+const itemsCount = 42
+const router = useRouter()
+
+const handleLogout = async () => {
+  try {
+    const response = await authService.logoutService()
+    if (response.data.success=200) {
+      localStorage.removeItem('acces_token');
+      localStorage.removeItem('user_name');
+      console.log('Logout exitoso:', response)
+      router.push('/login')
+    } else {
+      console.error('Error en el logout:', response.message)
+      alert('Error en el logout. Por favor intente nuevamente.')
+    }
+  } catch (error) {
+    console.error('Error en la solicitud de logout:', error)
+    alert('Error en la solicitud. Por favor intente nuevamente.')
+  }
+}
+</script>

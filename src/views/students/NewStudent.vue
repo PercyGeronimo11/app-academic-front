@@ -163,8 +163,11 @@
 
 <script setup>
 import StudentService from "@/services/StudentService";
+import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import Swal from "sweetalert2";
+
+const router=useRouter();
 const alumnos = ref([]);
 var searchData = ref("");
 const alumnoData = ref({
@@ -224,17 +227,13 @@ const calculateAge = () => {
 const submitToCreate = async () => {
   try {
     calculateAge();
-    $response= await StudentService.createItem(alumnoData.value);
-    if($response.data.status==200){
-        this.$router.push("/students"); 
-    }else{
-        Swal.fire({
-        icon: "error",
-        title: "Error al Guardar",
-        text: "Error en el servidor",
+    await StudentService.createItem(alumnoData.value);
+    router.push("/students"); 
+    Swal.fire({
+        icon: 'success',
+      title: 'Registro exitoso',
+      text: 'Alumno registrado con éxito.',
       });
-    }
-
   } catch (error) {
     if (error.response && error.response.data && error.response.data.message) {
       Swal.fire({
@@ -246,10 +245,6 @@ const submitToCreate = async () => {
       console.log("error:" + error);
     }
   }
-};
-
-const backToIndex = () => {
-  this.$router.push("/students");
 };
 
 watch(searchData, (newVal) => {
