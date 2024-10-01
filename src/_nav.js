@@ -24,11 +24,9 @@ export default [
   {
     component: 'CNavItem',
     name: 'Estudiantes',
-    to: '/teachers',
+    to: '/students',
     icon: 'cil-people',
   },
-
-
   {
     component: 'CNavTitle',
     name: 'MATERIAS',

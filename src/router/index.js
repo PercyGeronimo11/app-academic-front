@@ -26,6 +26,21 @@ const routes = [
         name: 'Administrativo',
         component: () => import('@/views/administratives/Administrative.vue'),
       },
+      {
+        path: '/students',
+        name: 'Estudiante',
+        component: () => import('@/views/students/Student.vue'),
+      },
+      {
+        path: '/new-student',
+        name: 'NuevoEstudiante',
+        component: () => import('@/views/students/NewStudent.vue'),
+      },
+      {
+        path: '/edit-student/:id',
+        name: 'editStudent',
+        component: () => import('@/views/students/EditStudent.vue'),
+      },
       /* {
         path: '/theme',
         name: 'Theme',
