@@ -33,5 +33,9 @@ export default {
         id: id
       }
     });
-  }
+  },
+
+  async assingStudent(data) {
+    return await axios.post(`${API_URL}/student/assing`, data);
+  },
 };

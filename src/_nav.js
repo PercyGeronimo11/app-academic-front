@@ -33,6 +33,12 @@ export default [
   },
   {
     component: 'CNavItem',
+    name: 'Asignar Alumnos',
+    to: '/assignStudents',
+    icon: 'cil-pencil',
+  },
+  {
+    component: 'CNavItem',
     name: 'Competencias',
     to: '/teachers',
     icon: 'cil-pencil',

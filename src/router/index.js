@@ -41,6 +41,11 @@ const routes = [
         name: 'editStudent',
         component: () => import('@/views/students/EditStudent.vue'),
       },
+      {
+        path: '/assignStudents',
+        name: 'Asignar estudiantes',
+        component: () => import('@/views/assign_students/AssignStudent.vue'),
+      },
       /* {
         path: '/theme',
         name: 'Theme',
