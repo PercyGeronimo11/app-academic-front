@@ -14,6 +14,7 @@ export default [
     name: 'Administrativos',
     to: '/administratives',
     icon: 'cil-user',
+    roles: ['Administrador','user'],
   },
   {
     component: 'CNavItem',

@@ -61,6 +61,7 @@
 
 <script>
 import AuthService from '@/services/AuthService'; 
+import CryptoJS from 'crypto-js';
 
 export default {
   data() {
@@ -79,6 +80,13 @@ export default {
 
         const response = await AuthService.loginService(credentials);
         
+        const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
+
+        const role = response.data.user.role;
+        const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
+        console.log(encryptedRol);
+        localStorage.setItem('r_key', encryptedRol);//role_key
+
         if (response.success) {
           // Maneja la respuesta de éxito, como almacenar el token y redirigir
           console.log('Inicio de sesión exitoso:', response);

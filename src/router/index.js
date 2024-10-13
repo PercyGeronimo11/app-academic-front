@@ -8,7 +8,7 @@ const routes = [
     path: '/',
     name: 'Inicio',
     component: DefaultLayout,
-    redirect: '/dashboard',
+    redirect: '/login',
     children: [
       {
         path: '/dashboard',
@@ -24,7 +24,7 @@ const routes = [
       {
         path: '/administratives',
         name: 'Administrativo',
-        component: () => import('@/views/administratives/Administrative.vue'),
+        component: () => import('@/views/administratives/Administrative.vue')
       },
       {
         path: '/students',
