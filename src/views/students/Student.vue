@@ -71,6 +71,7 @@ import StudentService from '@/services/StudentService'
 import { useRouter } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
+
 const alumnos = ref([]);
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
@@ -152,55 +153,6 @@ const calculateAge = () => {
   alumnoData.value.age = age;
 };
 
-
-const submitToCreate = async () => {
-  try {
-    calculateAge();
-    await StudentService.createItem(alumnoData.value);
-    listStudentService();
-    closeModal();
-    Swal.fire({
-      icon: 'success',
-      title: 'Registro exitoso',
-      text: 'Alumno registrado con éxito.',
-    });
-  } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al Guardar',
-        text: error.response.data.message[0],
-      });
-    } else {
-      console.log("error:" + error);
-    }
-  }
-};
-
-const submitToEdit = async () => {
-  alumnoData.value.id = idItemSelected.value;
-  try {
-    calculateAge();
-    await StudentService.updateItem(alumnoData.value);
-    listStudentService();
-    closeModal();
-    Swal.fire({
-      icon: 'success',
-      title: 'Actualización exitosa',
-      text: 'Alumno actualizado con éxito.',
-    });
-  } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al Guardar',
-        text: error.response.data.message[0],
-      });
-    } else {
-      console.log("error:" + error);
-    }
-  }
-};
 
 const deleteItem = async (id) => {
   try {

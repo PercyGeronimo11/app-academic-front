@@ -42,6 +42,11 @@ const routes = [
         component: () => import('@/views/students/EditStudent.vue'),
       },
       {
+        path: '/courses',
+        name: 'courses',
+        component: () => import('@/views/course/Course.vue'),
+      },
+      {
         path: '/assignStudents',
         name: 'Asignar estudiantes',
         component: () => import('@/views/assign_students/AssignStudent.vue'),

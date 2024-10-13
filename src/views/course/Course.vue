@@ -1,11 +1,11 @@
 <template>
   <div>
     <div class="mb-2">
-      <h1>Lista de Docentes</h1>
+      <h1>Lista de Cursos</h1>
       <CRow class="mb-3">  
         <CCol>
           <CInputGroup>
-            <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI" aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2"/>
+            <CFormInput v-model="searchData" placeholder="Buscar por nombre" aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2"/>
             <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">Buscar</CButton>
           </CInputGroup>
         </CCol>
@@ -22,13 +22,10 @@
             #
           </CTableHeaderCell>
           <CTableHeaderCell class="bg-body-secondary text-center">
-            Nombres y apellidos
+            Nombres
           </CTableHeaderCell>
           <CTableHeaderCell class="bg-body-secondary text-center">
-            DNI
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            N° celular
+            Descripcion
           </CTableHeaderCell>
           <CTableHeaderCell class="bg-body-secondary text-center">
             Acciones
@@ -44,10 +41,7 @@
             <div class="text-center">{{ item.name }}</div>
           </CTableDataCell>
           <CTableDataCell>
-            <div class="text-center">{{ item.dni }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.phone }}</div>
+            <div class="text-center">{{ item.description }}</div>
           </CTableDataCell>
           <CTableDataCell>
             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
@@ -59,7 +53,7 @@
       </CTableBody>
     </CTable>
     
-    <!-- Modal para Crear/Editar Usuario -->
+    <!-- Modal para Crear/Editar curso -->
     <CModal 
       :visible="isModalOpen"
       scrollable
@@ -70,7 +64,7 @@
     >
       <CModalHeader>
         <CModalTitle id="LiveDemoExampleLabel">
-          {{ isEditMode ? 'Editar Usuario' : 'Crear Usuario' }}
+          {{ isEditMode ? 'Editar curso' : 'Crear curso' }}
         </CModalTitle>
       </CModalHeader>
       <CModalBody>
@@ -78,35 +72,10 @@
           <CContainer>
             <CRow class="mb-3">
               <CCol>
-                <CFormInput v-model="itemData.dni" label="DNI" placeholder="Documento de identidad" required />
+                <CFormInput v-model="itemData.name" label="Nombre" placeholder="nombre..." required />
               </CCol>
               <CCol>
-                <CFormInput v-model="itemData.name" label="Nombres" placeholder="Nombre" required />
-              </CCol>
-              
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="itemData.surname_father" label="Apellido paterno" placeholder="Nombre" required />
-              </CCol>
-              <CCol>
-                <CFormInput v-model="itemData.surname_mother" label="Apellido materno" placeholder="Apellido materno" required />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="itemData.birth_date" label="Fecha de nacimiento" type="date" required />
-              </CCol>
-              <CCol>
-                <CFormLabel for="exampleFormControlInput1">Sexo</CFormLabel>
-                <CFormSelect aria-label="Default select example" v-model="itemData.sex">
-                  <option disabled value=0>Seleccionar una opción</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Femenino</option>
-                </CFormSelect>
-              </CCol>
-              <CCol>
-                <CFormInput v-model="itemData.phone" label="N° de teléfono" placeholder="N° de teléfono" required />
+                <CFormInput v-model="itemData.description" label="Descripcion" placeholder="descripcion..." required />
               </CCol>
             </CRow>
           </CContainer>
@@ -135,12 +104,7 @@
   var searchData = ref('');
   const itemData = ref({
     name:'',
-    surname_father:'',
-    surname_mother:'',
-    birth_date:'',
-    dni:'',
-    sex:'M',
-    phone:''
+    description:'',
   });
 
   onMounted(async () => {
@@ -173,12 +137,7 @@
   const clearDataModal = () => {
     itemData.value = {
       name:'',
-      surname_father:'',
-      surname_mother:'',
-      birth_date:'',
-      dni:'',
-      sex:'',
-      phone:''
+      description:'',
     };
   };
 
@@ -187,33 +146,15 @@
     clearDataModal();
   };
 
-  const calculateAge = () => {
-    if (!itemData.value.birth_date) return;
-
-    const birthDate = new Date(itemData.value.birth_date);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDifference = today.getMonth() - birthDate.getMonth();
-
-    // Si el mes actual es menor que el mes de nacimiento, o es el mismo mes pero el día es anterior, resta un año
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-
-    // Guardamos la edad calculada en itemData
-    itemData.value.age = age;
-  };
-
   const submitToCreate = async () => {
     try {
-      calculateAge();
       await CourseService.createItem(itemData.value);
       ListItem();
       closeModal();
       Swal.fire({
         icon: 'success',
         title: 'Registro exitoso',
-        text: 'Docente registrado con éxito.',
+        text: 'Curso registrado con éxito.',
       });
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
@@ -231,14 +172,13 @@
   const submitToEdit = async ()  => {
     itemData.value.id = idItemSelected.value;
     try {
-      calculateAge();
       await CourseService.updateItem(itemData.value);
       ListItem();
       closeModal();
       Swal.fire({
         icon: 'success',
         title: 'Actualización exitosa',
-        text: 'Docente actualizado con éxito.',
+        text: 'Curso actualizado con éxito.',
       });
     } catch (error) {
       if (error.response && error.response.data && error.response.data.message) {
@@ -258,8 +198,8 @@
       const confirmResult = await Swal.fire({
         icon: 'question',
         iconColor: '#E55353',
-        title: 'Eliminar Docente',
-        text: '¿Estás seguro que desea eliminar este docente?',
+        title: 'Eliminar Curso',
+        text: '¿Estás seguro que desea eliminar este curso?',
         confirmButtonText: 'Eliminar',
         confirmButtonColor: '#E55353',
         showCancelButton: true,
@@ -272,8 +212,8 @@
         ListItem();
         Swal.fire({
           icon: 'success',
-          title: 'Docente eliminado',
-          text: 'El docente ha sido eliminado exitosamente.',
+          title: 'Curso eliminado',
+          text: 'El curso ha sido eliminado exitosamente.',
         });
       }
     } catch (error) {
@@ -281,7 +221,7 @@
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'Ocurrió un error al eliminar el Docente. Por favor, inténtalo de nuevo.',
+        text: 'Ocurrió un error al eliminar el Curso. Por favor, inténtalo de nuevo.',
       });
     }
   };

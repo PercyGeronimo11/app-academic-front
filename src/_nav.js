@@ -46,7 +46,7 @@ export default [
   {
     component: 'CNavItem',
     name: 'Cursos',
-    to: '/teachers',
+    to: '/courses',
     icon: 'cil-options',
   },
 
