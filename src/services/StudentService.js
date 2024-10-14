@@ -38,4 +38,10 @@ export default {
   async assingStudent(data) {
     return await axios.post(`${API_URL}/student/assing`, data);
   },
+
+  async getCourse(data) {
+    return await axios.get(`${API_URL}/student/listCourses`, {
+      params: data
+    });
+  }
 };

@@ -51,6 +51,11 @@ const routes = [
         name: 'Asignar estudiantes',
         component: () => import('@/views/assign_students/AssignStudent.vue'),
       },
+      {
+        path: '/mainArea',
+        name: 'Area Principal',
+        component: () => import('@/views/main_area/MainArea.vue'),
+      },
       /* {
         path: '/theme',
         name: 'Theme',

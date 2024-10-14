@@ -4,70 +4,87 @@ export default [
     name: 'Inicio',
     to: '/dashboard',
     icon: 'cil-speedometer',
+    roles: ['Administrador','Administrativo'],
   },
   {
     component: 'CNavTitle',
     name: 'ENTIDADES',
+    roles: ['Administrador'],
   },
   {
     component: 'CNavItem',
     name: 'Administrativos',
     to: '/administratives',
     icon: 'cil-user',
-    roles: ['Administrador','user'],
+    roles: ['Administrador'],
   },
   {
     component: 'CNavItem',
     name: 'Docentes',
     to: '/teachers',
     icon: 'cil-user',
+    roles: ['Administrador','Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Estudiantes',
     to: '/students',
     icon: 'cil-people',
+    roles: ['Administrador','Administrativo'],
   },
   {
     component: 'CNavTitle',
     name: 'MATERIAS',
+    roles: ['Administrador','Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Asignar Alumnos',
     to: '/assignStudents',
     icon: 'cil-pencil',
+    roles: ['Administrador','Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Competencias',
     to: '/teachers',
     icon: 'cil-pencil',
+    roles: ['Administrador','Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Cursos',
     to: '/courses',
     icon: 'cil-options',
+    roles: ['Administrador','Administrativo'],
   },
 
   {
     component: 'CNavTitle',
     name: 'ADMINISTRACIÓN',
+    roles: ['Profesor'],
   },
   {
     component: 'CNavItem',
     name: 'Notas',
     to: '/teachers',
     icon: 'cil-notes',
+    roles: ['Profesor'],
   },
   {
     component: 'CNavItem',
     name: 'Asistencias',
     to: '/teachers',
     icon: 'cil-notes',
+    roles: ['Profesor'],
   },
-
+  {
+    component: 'CNavItem',
+    name: 'Área Principal',
+    to: '/mainArea',
+    icon: 'cil-options',
+    roles: ['Profesor','Estudiante'],
+  },
   /* {
     component: 'CNavGroup',
     name: 'Icons',
@@ -99,6 +116,7 @@ export default [
   {
     component: 'CNavTitle',
     name: 'USUARIOS',
+    roles: ['Administrador'],
   },
   
 
@@ -499,5 +517,6 @@ export default [
         to: '/pages/500',
       }, */
     ],
+    roles: ['Administrador'],
   },
 ]

@@ -1,6 +1,5 @@
 <template>
   <div>
-
     <div class="select-row">
       <div class="select-container">
         <label for="grades">Selecciona el grado:</label>
