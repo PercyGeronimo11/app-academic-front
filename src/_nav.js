@@ -4,98 +4,54 @@ export default [
     name: 'Inicio',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    roles: ['Administrador','Administrativo'],
-  },
-  {
-    component: 'CNavTitle',
-    name: 'ENTIDADES',
-    roles: ['Administrador'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Administrativos',
-    to: '/administratives',
-    icon: 'cil-user',
-    roles: ['Administrador'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Docentes',
-    to: '/teachers',
-    icon: 'cil-user',
-    roles: ['Administrador','Administrativo'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Estudiantes',
-    to: '/students',
-    icon: 'cil-people',
-    roles: ['Administrador','Administrativo'],
-  },
-  {
-    component: 'CNavGroup',
-    name: 'Aula de clases',
-    to: '/classroom',
-    icon: 'cil-star',
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Información academica',
-        to: '/classroom/grade/section/course/information',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Participantes',
-        to: '/classroom/grade/section/course/participations',
-      },
-    ],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavTitle',
     name: 'MATERIAS',
-    roles: ['Administrador','Administrativo'],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Asignar Alumnos',
     to: '/assignStudents',
     icon: 'cil-pencil',
-    roles: ['Administrador','Administrativo'],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Asignar Cursos',
     to: '/assignmentCourses',
     icon: 'cil-pencil',
-    roles: ['Administrador','Administrativo'],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Competencias',
     to: '/teachers',
     icon: 'cil-pencil',
-    roles: ['Administrador','Administrativo'],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Cursos',
     to: '/courses',
     icon: 'cil-options',
-    roles: ['Administrador','Administrativo'],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Show Grade Section',
     to: '/grade-section/:id',
     icon: 'cil-options',
-    roles: ['Administrador','Administrativo'],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavItem',
     name: 'Aulas',
     to: '/classroom/list',
     icon: 'cil-options',
-    roles: ['Administrador','Administrativo'],
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavTitle',
@@ -121,18 +77,82 @@ export default [
     name: 'Área Principal',
     to: '/mainArea',
     icon: 'cil-options',
-    roles: ['Profesor','Estudiante'],
+    roles: ['Profesor', 'Estudiante'],
   },
   {
     component: 'CNavTitle',
     name: 'USUARIOS',
     roles: ['Administrador'],
   },
-  
+  {
+    component: 'CNavItem',
+    name: 'Administrativos',
+    to: '/administratives',
+    icon: 'cil-user',
+    roles: ['Administrador'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Docentes',
+    to: '/teachers',
+    icon: 'cil-user',
+    roles: ['Administrador', 'Administrativo'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Estudiantes',
+    to: '/students',
+    icon: 'cil-people',
+    roles: ['Administrador', 'Administrativo'],
+  },
+  {
+    component: 'CNavGroup',
+    name: 'Aula de clases',
+    to: '/classroom',
+    icon: 'cil-star',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Información academica',
+        to: '/classroom/grade/section/course/information',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Participantes',
+        to: '/classroom/grade/section/course/participations',
+      },
+    ],
+  },
+  {
+    component: 'CNavTitle',
+    name: 'Configuraciones',
+    roles: ['Administrador'],
+  },
+  {
+    component: 'CNavGroup',
+    name: 'Configuracion',
+    to: '/pages',
+    icon: 'cil-settings',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Roles',
+        to: '/teachers'
+      },
+      {
+        component: 'CNavItem',
+        name: 'Usuarios',
+        to: '/theme/colors'
+      },
+    ],
+    roles: ['Administrador'],
+  },
 
-
-// ---------------------------------- PLANTILLA -------------------------
-
+  // ---------------------------------- PLANTILLA -------------------------
+  {
+    component: 'CNavTitle',
+    name: 'COMPONENTES DE LA PLANTILLA ',
+  },
 
   {
     component: 'CNavGroup',
@@ -161,19 +181,11 @@ export default [
       },
     ],
   },
-
-
-
-{
+  {
     component: 'CNavItem',
     name: 'Typography',
     to: '/theme/typography',
     icon: 'cil-pencil',
-  },
-
-  {
-    component: 'CNavTitle',
-    name: 'Components',
   },
   {
     component: 'CNavGroup',
@@ -258,14 +270,6 @@ export default [
       },
     ],
   },
-
-
-
-
-  {
-    component: 'CNavTitle',
-    name: 'THEMES',
-  },
   {
     component: 'CNavItem',
     name: '',
@@ -278,10 +282,7 @@ export default [
     to: '/theme/typography',
     icon: 'cil-pencil',
   },
-  {
-    component: 'CNavTitle',
-    name: 'Components',
-  },
+
   {
     component: 'CNavGroup',
     name: 'Base',
@@ -514,13 +515,6 @@ export default [
   },
 
   {
-    component: 'CNavTitle',
-    name: 'Extras',
-  },
-
-
-
-  {
     component: 'CNavGroup',
     name: 'Configuracion',
     to: '/pages',
@@ -528,26 +522,16 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Roles',
-        to: '/teachers'
-      },
-      {
-        component: 'CNavItem',
-        name: 'Usuarios',
-        to: '/theme/colors'
-      },
-      /* {
-        component: 'CNavItem',
         name: 'Login',
-        to: '/login',
+        to: '/pages/login',
       },
       {
         component: 'CNavItem',
         name: 'Register',
         to: '/pages/register',
-      }, */
-      
-      /* {
+      }, 
+
+      {
         component: 'CNavItem',
         name: 'Error 404',
         to: '/pages/404',
@@ -556,8 +540,7 @@ export default [
         component: 'CNavItem',
         name: 'Error 500',
         to: '/pages/500',
-      }, */
+      },
     ],
-    roles: ['Administrador'],
   },
 ]
