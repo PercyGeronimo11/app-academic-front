@@ -5,6 +5,11 @@ import DefaultLayout from '@/layouts/DefaultLayout'
 
 const routes = [
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/login/Login'),
+  },
+  {
     path: '/',
     name: 'Inicio',
     component: DefaultLayout,
@@ -52,11 +57,48 @@ const routes = [
         component: () => import('@/views/assign_students/AssignStudent.vue'),
       },
       {
+        path: '/assignmentCourses',
+        name: 'Asignar Cursos',
+        component: () => import('@/views/administratives/AssignmentCourses.vue'),
+      },
+      {
         path: '/mainArea',
         name: 'Area Principal',
         component: () => import('@/views/main_area/MainArea.vue'),
       },
-      /* {
+      {
+        path: '/class/grade/:id',
+        name: 'Detalle del curso',
+        component: () => import('@/views/course/CourseDetail.vue'),
+      },
+      {
+        path: '/grade-section',
+        name: 'Aulas',
+        component: () => import('@/views/administratives/MainGradeSection.vue'),
+      },
+      {
+        path: '/grade-section/:id',
+        name: 'AulasShow',
+        component: () => import('@/views/administratives/ShowGradeSection.vue'),
+      },
+      {
+        path: '/detail',
+        name: 'AulasShow',
+        component: () => import('@/views/course/CourseDetail.vue'),
+      },
+      {
+        path: '/classroom/list',
+        name: 'Lista de Aulas',
+        component: () => import('@/views/classroom/ListClassroom.vue'),
+      },
+      {
+        path: '/classroom/:grade/:section',
+        name: 'Detalle del aula',
+        component: () => import('@/views/classroom/DetailClassroom.vue'),
+      },
+
+      // ------------------------RUTAS DE LA PLANTILLA---------------------
+       {
         path: '/theme',
         name: 'Theme',
         redirect: '/theme/typography',
@@ -306,14 +348,10 @@ const routes = [
         path: '/widgets',
         name: 'Widgets',
         component: () => import('@/components/widgets/Widgets.vue'),
-      }, */
+      },
     ],
   },
-  {
-    path: '/login',
-    name: 'Login',
-    component: () => import('@/components/pages/Login'),
-  },
+  
   {
     path: '/pages',
     redirect: '/pages/404',

@@ -16,6 +16,7 @@
       </select>
     </div>
 
+
     <div v-if="filteredCourses.length" class="courses-container">
       <CourseCard
         v-for="(course, index) in filteredCourses"
@@ -31,18 +32,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed } from "vue";
 import CourseCard from "@/components/CourseCard.vue";
-import StudentService from '@/services/StudentService';
+import StudentService from "@/services/StudentService";
 
 // Definición de reactivas
 const searchQuery = ref("");
 const selectedCategory = ref("");
-const courses = ref([]); // Inicializa como referencia reactiva
+const courses = ref([]);
 
 // Computed para filtrar cursos
 const filteredCourses = computed(() =>
-  courses.value.filter(course => {
+  courses.value.filter((course) => {
     const matchesCategory =
       !selectedCategory.value || course.category === selectedCategory.value;
     const matchesSearch = course.title
@@ -60,16 +61,16 @@ const listItems = async () => {
     const courseData = response.data.data;
 
     // Mapea los cursos al formato necesario para las tarjetas
-    courses.value = courseData.map(course => ({
-      title: course.name, // Cambia 'name' si es diferente en el API
-      image: null, // Deja la imagen como null
-      url: `/cursos/${course.name.replace(/\s+/g, '-').toLowerCase()}`, // Genera la URL
-      category: 'Ciencias' // Ajusta la categoría si es necesario
+    courses.value = courseData.map((course) => ({
+      title: course.name,
+      image: null,
+      url: `/class/grade/${course.name.replace(/\s+/g, "-").toLowerCase()}`, 
+      category: "Ciencias",
     }));
 
-    console.log(courses.value); // Verifica los datos en consola
+    console.log(courses.value); 
   } catch (error) {
-    console.error('Error al obtener los cursos:', error);
+    console.error("Error al obtener los cursos:", error);
   }
 };
 

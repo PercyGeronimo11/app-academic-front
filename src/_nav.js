@@ -33,6 +33,24 @@ export default [
     roles: ['Administrador','Administrativo'],
   },
   {
+    component: 'CNavGroup',
+    name: 'Aula de clases',
+    to: '/classroom',
+    icon: 'cil-star',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Información academica',
+        to: '/classroom/grade/section/course/information',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Participantes',
+        to: '/classroom/grade/section/course/participations',
+      },
+    ],
+  },
+  {
     component: 'CNavTitle',
     name: 'MATERIAS',
     roles: ['Administrador','Administrativo'],
@@ -41,6 +59,13 @@ export default [
     component: 'CNavItem',
     name: 'Asignar Alumnos',
     to: '/assignStudents',
+    icon: 'cil-pencil',
+    roles: ['Administrador','Administrativo'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Asignar Cursos',
+    to: '/assignmentCourses',
     icon: 'cil-pencil',
     roles: ['Administrador','Administrativo'],
   },
@@ -58,7 +83,20 @@ export default [
     icon: 'cil-options',
     roles: ['Administrador','Administrativo'],
   },
-
+  {
+    component: 'CNavItem',
+    name: 'Show Grade Section',
+    to: '/grade-section/:id',
+    icon: 'cil-options',
+    roles: ['Administrador','Administrativo'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Aulas',
+    to: '/classroom/list',
+    icon: 'cil-options',
+    roles: ['Administrador','Administrativo'],
+  },
   {
     component: 'CNavTitle',
     name: 'ADMINISTRACIÓN',
@@ -85,7 +123,18 @@ export default [
     icon: 'cil-options',
     roles: ['Profesor','Estudiante'],
   },
-  /* {
+  {
+    component: 'CNavTitle',
+    name: 'USUARIOS',
+    roles: ['Administrador'],
+  },
+  
+
+
+// ---------------------------------- PLANTILLA -------------------------
+
+
+  {
     component: 'CNavGroup',
     name: 'Icons',
     to: '/icons',
@@ -111,19 +160,11 @@ export default [
         to: '/icons/flags',
       },
     ],
-  }, */
-
-  {
-    component: 'CNavTitle',
-    name: 'USUARIOS',
-    roles: ['Administrador'],
   },
-  
 
 
 
-
-/*   {
+{
     component: 'CNavItem',
     name: 'Typography',
     to: '/theme/typography',
@@ -216,119 +257,119 @@ export default [
         to: '/base/tooltips',
       },
     ],
-  }, */
+  },
 
 
 
 
-  // {
-  //   component: 'CNavTitle',
-  //   name: 'THEMES',
-  // },
-  // {
-  //   component: 'CNavItem',
-  //   name: '',
-  //   to: '/theme/colors',
-  //   icon: 'cil-drop',
-  // },
-  // {
-  //   component: 'CNavItem',
-  //   name: 'Typography',
-  //   to: '/theme/typography',
-  //   icon: 'cil-pencil',
-  // },
-  // {
-  //   component: 'CNavTitle',
-  //   name: 'Components',
-  // },
-  // {
-  //   component: 'CNavGroup',
-  //   name: 'Base',
-  //   to: '/base',
-  //   icon: 'cil-puzzle',
-  //   items: [
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Accordion',
-  //       to: '/base/accordion',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Breadcrumbs',
-  //       to: '/base/breadcrumbs',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Cards',
-  //       to: '/base/cards',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Carousels',
-  //       to: '/base/carousels',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Collapses',
-  //       to: '/base/collapses',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'List Groups',
-  //       to: '/base/list-groups',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Navs & Tabs',
-  //       to: '/base/navs',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Paginations',
-  //       to: '/base/paginations',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Placeholders',
-  //       to: '/base/placeholders',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Popovers',
-  //       to: '/base/popovers',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Progress',
-  //       to: '/base/progress',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Spinners',
-  //       to: '/base/spinners',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Tables',
-  //       to: '/base/tables',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Tabs',
-  //       to: '/base/tabs',
-  //     },
-  //     {
-  //       component: 'CNavItem',
-  //       name: 'Tooltips',
-  //       to: '/base/tooltips',
-  //     },
-  //   ],
-  // },
+  {
+    component: 'CNavTitle',
+    name: 'THEMES',
+  },
+  {
+    component: 'CNavItem',
+    name: '',
+    to: '/theme/colors',
+    icon: 'cil-drop',
+  },
+  {
+    component: 'CNavItem',
+    name: 'Typography',
+    to: '/theme/typography',
+    icon: 'cil-pencil',
+  },
+  {
+    component: 'CNavTitle',
+    name: 'Components',
+  },
+  {
+    component: 'CNavGroup',
+    name: 'Base',
+    to: '/base',
+    icon: 'cil-puzzle',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Accordion',
+        to: '/base/accordion',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Breadcrumbs',
+        to: '/base/breadcrumbs',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Cards',
+        to: '/base/cards',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Carousels',
+        to: '/base/carousels',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Collapses',
+        to: '/base/collapses',
+      },
+      {
+        component: 'CNavItem',
+        name: 'List Groups',
+        to: '/base/list-groups',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Navs & Tabs',
+        to: '/base/navs',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Paginations',
+        to: '/base/paginations',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Placeholders',
+        to: '/base/placeholders',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Popovers',
+        to: '/base/popovers',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Progress',
+        to: '/base/progress',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Spinners',
+        to: '/base/spinners',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Tables',
+        to: '/base/tables',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Tabs',
+        to: '/base/tabs',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Tooltips',
+        to: '/base/tooltips',
+      },
+    ],
+  },
 
 
 
 
-/*   {
+  {
     component: 'CNavGroup',
     name: 'Buttons',
     to: '/buttons',
@@ -475,7 +516,7 @@ export default [
   {
     component: 'CNavTitle',
     name: 'Extras',
-  }, */
+  },
 
 
 

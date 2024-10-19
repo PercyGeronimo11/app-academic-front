@@ -28,6 +28,8 @@ export default {
     return await axios.put(`${API_URL}/course/update`, data);
   },
 
+  
+  
   async deleteItem(id) {
     return await axios.delete(`${API_URL}/course/delete`,{
       data: {
@@ -35,4 +37,6 @@ export default {
       }
     });
   }
+
+
 };
