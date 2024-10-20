@@ -122,7 +122,7 @@ const viewCourses = () => {
 };
 
 const viewStudents = () => {
-  router.push(`/classroom/${props.grade}/${props.section}/students`);
+  router.push(`/classroom/${props.grade}/${props.section}/${props.id}/students`);
 };
 </script>
 

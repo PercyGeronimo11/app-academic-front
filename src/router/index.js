@@ -67,7 +67,7 @@ const routes = [
         component: () => import('@/views/classroom/AssignmentTeachers.vue'),
       },
       {
-        path: '/classroom/:grade/:section/students',
+        path: '/classroom/:grade/:section/:id/students',
         name: 'Lista de estudiantes',
         component: () => import('@/views/classroom/DetailClassroom.vue'),
       },
