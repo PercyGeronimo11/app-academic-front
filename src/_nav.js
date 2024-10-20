@@ -39,13 +39,7 @@ export default [
     icon: 'cil-options',
     roles: ['Administrador', 'Administrativo'],
   },
-  {
-    component: 'CNavItem',
-    name: 'Aulas',
-    to: '/classroom/list',
-    icon: 'cil-options',
-    roles: ['Administrador', 'Administrativo'],
-  },
+
   {
     component: 'CNavTitle',
     name: 'ADMINISTRACIÓN',
@@ -71,6 +65,41 @@ export default [
     to: '/mainArea',
     icon: 'cil-options',
     roles: ['Profesor', 'Estudiante'],
+  },
+  {
+    component: 'CNavGroup',
+    name: 'Aula de clases',
+    to: '/classroom',
+    icon: 'cil-star',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Lista',
+        to: '/classroom/list',
+        roles: ['Administrador', 'Administrativo'],
+      },
+      {
+        component: 'CNavItem',
+        name: 'Asignacion de cursos',
+        to: '/classroom/assignment-courses',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Asignacion de profesores',
+        to: '/classroom/assignment-teachers',
+      },
+      // {
+      //   component: 'CNavItem',
+      //   name: 'Información academica',
+      //   to: '/classroom/grade/section/course/information',
+      // },
+      // {
+      //   component: 'CNavItem',
+      //   name: 'Participantes',
+      //   to: '/classroom/grade/section/course/participations',
+      // },
+
+    ],
   },
   {
     component: 'CNavTitle',
@@ -100,22 +129,23 @@ export default [
   },
   {
     component: 'CNavGroup',
-    name: 'Aula de clases',
-    to: '/classroom',
+    name: 'Cursos',
+    to: '/cursos',
     icon: 'cil-star',
     items: [
       {
         component: 'CNavItem',
-        name: 'Información academica',
+        name: 'Listado',
         to: '/classroom/grade/section/course/information',
       },
       {
         component: 'CNavItem',
-        name: 'Participantes',
+        name: 'Asignacion',
         to: '/classroom/grade/section/course/participations',
       },
     ],
   },
+  
   {
     component: 'CNavTitle',
     name: 'Configuraciones',
