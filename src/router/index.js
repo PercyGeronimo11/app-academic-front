@@ -57,9 +57,19 @@ const routes = [
         component: () => import('@/views/assign_students/AssignStudent.vue'),
       },
       {
-        path: '/assignmentCourses',
+        path: '/classroom/assignment-courses',
         name: 'Asignar Cursos',
-        component: () => import('@/views/administratives/AssignmentCourses.vue'),
+        component: () => import('@/views/classroom/AssignmentCourses.vue'),
+      },
+      {
+        path: '/classroom/:grade/:section/assignment-teachers',
+        name: 'Asignar Profesores',
+        component: () => import('@/views/classroom/AssignmentTeachers.vue'),
+      },
+      {
+        path: '/classroom/:grade/:section/students',
+        name: 'Lista de estudiantes',
+        component: () => import('@/views/classroom/DetailClassroom.vue'),
       },
       {
         path: '/mainArea',
