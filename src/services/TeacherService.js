@@ -34,5 +34,13 @@ export default {
         id: id
       }
     });
-  }
+  },
+
+  async getCourses(data) {
+    return await axios.get(`${API_URL}/teacher/getcourses`,{
+      params: {
+        period_id: data.idPeriod
+      },
+    });
+  },
 };

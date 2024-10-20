@@ -1,6 +1,15 @@
 <template>
   <div class="course-section">
     <h1 class="course-title">CURSO DE MATEMÁTICA</h1>
+    <CDropdown class="mb-3" v-if="ConfirmRole()">
+      <CDropdownToggle color="primary">CREAR NUEVO(A)</CDropdownToggle>
+      <CDropdownMenu>
+        <CDropdownItem href="#">Tarea</CDropdownItem>
+        <CDropdownItem href="#">Material</CDropdownItem>
+        <CDropdownItem href="#">Aviso</CDropdownItem>
+      </CDropdownMenu>
+    </CDropdown>
+    
     <CRow class="mb-3">
         <SectionDetail
           title="Descripción general del curso"
@@ -28,6 +37,11 @@
 import { ref } from "vue";
 import SectionDetail from "./SectionDetail.vue";
 import { items } from './sectionData.js';
+import CryptoJS from 'crypto-js';
+
+const role_key = localStorage.getItem('r_key') || 'guest'
+const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
+const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(CryptoJS.enc.Utf8)
 
 const units = ref([
   { isVisible: true, 
@@ -45,6 +59,11 @@ const units = ref([
 function toggleUnitVisibility(index) {
   units.value[index].isVisible = !units.value[index].isVisible;
 }
+
+const ConfirmRole = () => {
+  
+  return (decryptedRole=="Profesor");
+};
 </script>
 
 <style scoped>

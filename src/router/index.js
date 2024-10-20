@@ -87,6 +87,11 @@ const routes = [
         component: () => import('@/views/main_area/MainArea.vue'),
       },
       {
+        path: '/mainAreaTeacher',
+        name: 'Area Principal',
+        component: () => import('@/views/main_area/AreaTeacher.vue'),
+      },
+      {
         path: '/class/grade/:id',
         name: 'Detalle del curso',
         component: () => import('@/views/course/CourseDetail.vue'),

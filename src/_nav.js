@@ -64,7 +64,14 @@ export default [
     name: 'Área Principal',
     to: '/mainArea',
     icon: 'cil-options',
-    roles: ['Profesor', 'Estudiante'],
+    roles: ['Estudiante'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Área Principal',
+    to: '/mainAreaTeacher',
+    icon: 'cil-options',
+    roles: ['Profesor'],
   },
   {
     component: 'CNavGroup',
