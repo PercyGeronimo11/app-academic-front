@@ -5,7 +5,7 @@
         <label for="grades">Selecciona el grado:</label>
         <div class="select-wrapper" id="grades">
           <VueSelect
-            v-model="selectedGrade"
+            v-model="id_grade_selected"
             :options="optionsGrades"
             placeholder="Selecciona una opción"
           />
@@ -15,8 +15,8 @@
         <label for="course-select">Elige curso:</label>
         <div class="select-wrapper">
           <VueSelect
-            v-model="selectedCourse"
-            :options="options"
+            v-model="id_course_selected"
+            :options="optionsCourses"
             placeholder="Selecciona una opción"
           />
           <button @click="addCourse" class="add-button">Agregar</button>
@@ -24,9 +24,9 @@
       </div>
     </div>
 
-    <!-- Tabla de alumnos seleccionados -->
+    <!-- Tabla de cursos seleccionados -->
     <div class="selected-box">
-      <div v-if="selectedCourses.length > 0">
+      <div v-if="coursesSelecteds.length > 0">
         <table class="courses-table">
           <thead>
             <tr>
@@ -35,8 +35,8 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(course, index) in selectedCourses" :key="index">
-              <td data-label="Nombre">{{ course.name }}</td>
+            <tr v-for="(course, index) in coursesSelecteds" :key="index">
+              <td data-label="Nombre">{{ course.label }}</td>
               <td data-label="Acciones">
                 <span class="close-icon" @click="removeCourse(index)">
                   <svg
@@ -60,112 +60,178 @@
       <p v-else class="empty-message">No hay elementos seleccionados.</p>
     </div>
 
-    <div class="select-container">
-      <button @click="submitToCreate" class="submit" @change="submitToCreate">Guardar</button>
+    <div class="select-container-footer">
+      <div class="button-group">
+        <button @click="submitToCreate" class="submit-button">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+        <button @click="backToAulas" class="back-button">
+          <i class="fas fa-arrow-left"></i> Volver
+        </button>
+      </div>
     </div>
   </div>
+  <CToast
+    v-if="toast.visible"
+    :autohide="true"
+    :color="toast.color"
+    class="text-white toast-bottom-right"
+    visible
+  >
+    <div class="d-flex">
+      <CToastBody>{{ toast.message }}</CToastBody>
+      <CToastClose class="me-2 m-auto" @click="toast.visible = false" white />
+    </div>
+  </CToast>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watch } from "vue";
 import CourseService from "@/services/CourseService";
 import CourseClassService from "@/services/CourseClassService";
 import GradeSectionService from "@/services/GradeSectionService";
 import VueSelect from "vue3-select-component";
 import Swal from "sweetalert2";
+import { useRouter } from "vue-router";
 
-const selectedCourse = ref(null);
-const selectedCourses = ref([]);
-const selectedCoursesIds = ref([]);
-const options = ref([]);
-const courses = ref([]); 
-const grades = ref([]);
+const router=useRouter();
+const coursesSelecteds = ref([]);
+const optionsCourses = ref([]);
 const optionsGrades = ref([]);
-const selectedGrade = ref(null);
+const id_course_selected = ref(null);
+const id_grade_selected = ref(null);
+const toast = ref({
+  visible: false,
+  message: "",
+  color: "primary",
+});
 
 onMounted(async () => {
   try {
-    await listGrades();
-    await loadCourses();
+    await listGradesAndCourses();
   } catch (error) {
     console.error(error);
   }
 });
 
-// Agregar estudiante seleccionado a la lista
+// Agregar curso seleccionado a la lista
 const addCourse = () => {
-  if (selectedCourse.value) {
-    const courseToAdd = courses.value.find(
-      (course) => course.id === selectedCourse.value
+  if (id_course_selected.value) {
+    const courseToAdd = optionsCourses.value.find(
+      (course) => course.value === id_course_selected.value
     );
 
-    // Solo agregar si el curso no está ya en la lista
-    if ( courseToAdd && !selectedCourses.value.some((course) => course.id === courseToAdd.id)
+    // Verificar si el curso ya está en la lista
+    if (
+      courseToAdd &&
+      !coursesSelecteds.value.some((course) => course.value === courseToAdd.value)
     ) {
-      selectedCourses.value.push(courseToAdd); 
-      selectedCoursesIds.value.push(courseToAdd.id );
+      coursesSelecteds.value.push(courseToAdd);
+    } else {
+      showToast("Curso ya a sido agregado", "warning");
     }
   }
-  selectedCourse.value = null; // Limpiar la selección después de agregar
+  id_course_selected.value = null; // Limpiar la selección después de agregar
 };
 
-
+// Eliminar curso de la lista
 const removeCourse = (index) => {
-  selectedCourses.value.splice(index, 1);
+  coursesSelecteds.value.splice(index, 1);
 };
 
-const listGrades = async () => {
-  const response = await GradeSectionService.getGrades();
-  grades.value = response.data.data;
+// Cargar grados y cursos disponibles
+const listGradesAndCourses = async () => {
+  const response1 = await GradeSectionService.getGrades();
+  const listGrades = ref(response1.data.data);
 
-  optionsGrades.value = grades.value.map((grade) => ({
-    label: grade.name, 
-    value: grade.id, 
+  optionsGrades.value = listGrades.value.map((grade) => ({
+    label: grade.name,
+    value: grade.id,
+  }));
+
+  const response2 = await CourseService.getItems();
+  const listCourses = ref(response2.data.data);
+
+  optionsCourses.value = listCourses.value.map((course) => ({
+    label: `${course.name}`,
+    value: course.id,
   }));
 };
 
+// Cargar cursos asignados al cambiar el grado seleccionado
+watch(id_grade_selected, async (newId) => {
+  if (newId) {
+    try {
+      const response3 = await CourseClassService.listCoursesByIdGrade(newId);
+      const listCoursesAssignments = ref(response3.data.data);
+      coursesSelecteds.value = listCoursesAssignments.value.map((course) => ({
+        label: `${course.course_name}`,
+        value: course.course_id,
+      }));
+    } catch (error) {
+      showToast("Error al obtener los cursos", "danger");
+    }
+  }
+});
 
-const loadCourses = async () => {
-  const response = await CourseService.getItems();
-  courses.value = response.data.data;
-
-  options.value = courses.value.map((course) => ({
-    label: `${course.name}`, 
-    value: course.id, 
-  }));
+const showToast = (message, color) => {
+  toast.value = { 
+    message: message,
+    color: color,
+    visible: true 
+  };
+  
+  setTimeout(() => {
+    toast.value.visible = false;
+  }, 3000);
 };
 
-const clearData = () => {
-  selectedGrade.value = 0;
-  selectedCoursesIds.value = null;
+const backToAulas = () => {
+  router.push(`/classroom/list`);
 };
 
 const submitToCreate = async () => {
-  var data = {
-    grade_id: selectedGrade.value, 
-    period_id: 1, 
-    coursesIds: selectedCoursesIds.value,
-  };
+  if (!id_grade_selected.value) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Por favor, selecciona un grado antes de guardar.",
+      confirmButtonText: "Entendido",
+    });
+    return;
+  }
+
+  if (coursesSelecteds.value.length === 0) {
+    Swal.fire({
+      icon: "warning",
+      title: "Sin cursos",
+      text: "Debes agregar al menos un curso.",
+      confirmButtonText: "Entendido",
+    });
+    return;
+  }
 
   try {
-    console.log("entro al")
-    await CourseClassService.assignmentCourse(data);
-    clearData();
-    Swal.fire({
-      icon: "success",
-      title: "Registro exitoso",
-      text: "Administrativo registrado con éxito.",
-    });
+    // Obtener los IDs de los cursos seleccionados
+    const selectedCourseIds = coursesSelecteds.value.map((course) => course.value);
+
+    // Crear objeto para enviar al servidor
+    const payload = {
+      grade_id: id_grade_selected.value,
+      course_ids: selectedCourseIds,
+    };
+
+    const response = await CourseClassService.assignmentCourse(payload);
+
+    showToast("Cursos guardados con éxito", "success");
   } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      Swal.fire({
-        icon: "error",
-        title: "Error al Guardar",
-        text: error.response.data.message,
-      });
-    } else {
-      console.log("error:" + error);
-    }
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: "Ocurrió un error al guardar los cursos. Inténtalo nuevamente.",
+      confirmButtonText: "Aceptar",
+    });
+    console.error("Error al guardar los cursos:", error);
   }
 };
 </script>
@@ -182,6 +248,14 @@ const submitToCreate = async () => {
   flex: 1;
   display: flex;
   flex-direction: column;
+  
+}
+
+.select-container-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 }
 
 .select-wrapper {
@@ -296,5 +370,47 @@ const submitToCreate = async () => {
 
 .close-icon:hover {
   transform: scale(1.1);
+}
+.toast-bottom-right {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
+}
+
+.button-group {
+  display: flex;
+  gap: 15px;
+}
+
+.submit-button,
+.back-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Estilos específicos para cada botón */
+.submit-button {
+  background-color: #4CAF50; /* Verde */
+  color: white;
+}
+
+.submit-button:hover {
+  background-color: #45A049;
+}
+
+.back-button {
+  background-color: #f44336; /* Rojo */
+  color: white;
+}
+
+.back-button:hover {
+  background-color: #da190b;
 }
 </style>

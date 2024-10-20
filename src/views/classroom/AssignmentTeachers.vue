@@ -1,27 +1,47 @@
 <template>
-<div class="listCourses-wrapper">
+  <div class="listCourses-wrapper">
     <h1>Asignación de profesores</h1>
     <div v-if="listCoursesClass.length" class="listCourses-container">
-      <div v-for="(course, index) in listCoursesClass" :key="course.course_class_id" class="course-item">
+      <div
+        v-for="(course, index) in listCoursesClass"
+        :key="course.course_class_id"
+        class="course-item"
+      >
         <div class="course-info">
           <h3>{{ course.course_name }}</h3>
         </div>
         <div class="professor-select">
-          <select v-model="selectedTeachers[index]" class="select-professor">
-            <option v-if="!course.teacher_name" value="">Seleccionar profesor</option>
-            <option v-if="course.teacher_name" :value="course.teacher_id">
-              {{ course.teacher_name }}
-            </option>
-            <option v-for="professor in listTeachers" :key="professor.id" :value="professor.id" >
-              {{ professor.name }} {{ professor.surname_mother }} {{ professor.surname_father }}
+          <select v-model="selectedTeachers[index]" class="styled-select">
+            <option value="">Seleccionar profesor</option>
+            <option
+              v-for="professor in listTeachers"
+              :key="professor.id"
+              :value="professor.id"
+            >
+              {{ professor.name }} {{ professor.surname_mother }}
+              {{ professor.surname_father }}
             </option>
           </select>
         </div>
       </div>
-      <button @click="saveAssignments" class="save-button">Guardar Asignaciones</button>
-      <button @click="backToAulas" class="back-button">Regresar a Aulas</button>
     </div>
-    <p v-else class="no-results">No se encontraron cursos.</p>
+    <div class="button-container">
+      <button @click="saveAssignments" class="styled-button"> Guardar
+      </button>
+      <button @click="backToAulas" class="styled-button">Regresar</button>
+    </div>
+    <CToast
+      v-if="toast.visible"
+      :autohide="true"
+      :color="toast.color"
+      class="text-white toast-bottom-right"
+      visible
+    >
+      <div class="d-flex">
+        <CToastBody>{{ toast.message }}</CToastBody>
+        <CToastClose class="me-2 m-auto" @click="toast.visible = false" white />
+      </div>
+    </CToast>
   </div>
 </template>
 
@@ -30,16 +50,22 @@ import { ref, onMounted } from "vue";
 import CourseClassService from "@/services/CourseClassService";
 import TeacherService from "@/services/TeacherService";
 import { useRoute, useRouter } from "vue-router";
+import Swal from "sweetalert2"; 
 
 const route = useRoute();
 const router = useRouter();
-const listCoursesClass = ref([]); 
-const listTeachers = ref([]); 
-const selectedTeachers = ref([]); 
+const listCoursesClass = ref([]);
+const listTeachers = ref([]);
+const selectedTeachers = ref([]);
+const toast = ref({
+  visible: false,
+  message: "",
+  color: "primary",
+});
 
 // Función para listar cursos y profesores
 const listItems = async () => {
-  const id = route.params.id; 
+  const id = route.params.id;
   try {
     const coursesResponse = await CourseClassService.listCoursesByIdGradeSection(id);
     listCoursesClass.value = coursesResponse.data.data;
@@ -47,7 +73,9 @@ const listItems = async () => {
     const listTeachersResponse = await TeacherService.getItems();
     listTeachers.value = listTeachersResponse.data.data;
 
-    selectedTeachers.value = new Array(listCoursesClass.value.length).fill("");
+    selectedTeachers.value = listCoursesClass.value.map(
+      (course) => course.teacher_id || ""
+    );
   } catch (error) {
     console.error("Error al obtener los datos:", error);
   }
@@ -58,6 +86,35 @@ const backToAulas = () => {
   router.push(`/classroom/list`);
 };
 
+const confirmSaveAssignments = () => {
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "¿Quieres guardar las asignaciones?",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Sí, guardar",
+    cancelButtonText: "Cancelar",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      saveAssignments();
+    }
+  });
+};
+
+// Función para mostrar el toast
+const showToast = (message, color) => {
+  toast.value = { 
+    message: message,
+    color: color,
+    visible: true 
+  };
+  
+  setTimeout(() => {
+    toast.value.visible = false;
+  }, 3000);
+};
 // Función para guardar asignaciones
 const saveAssignments = async () => {
   const assignments = listCoursesClass.value.map((course, index) => ({
@@ -67,83 +124,107 @@ const saveAssignments = async () => {
   }));
 
   // Filtrar solo las asignaciones donde se seleccionó un profesor
-  const validAssignments = assignments.filter(assignment => assignment.professorId !== "");
+  const validAssignments = assignments.filter(
+    (assignment) => assignment.professorId !== ""
+  );
 
   if (validAssignments.length > 0) {
     try {
-      // Llama a tu servicio para guardar las asignaciones
       await CourseClassService.saveAssignmentTeachers(validAssignments);
-
-      alert("Asignaciones guardadas con éxito.");
+      showToast("Asignaciones guardadas con éxito.", "success");
     } catch (error) {
-      console.error("Error al guardar las asignaciones:", error);
-      alert("Hubo un error al guardar las asignaciones.");
+      showToast("Error al guardar las asignaciones.", "danger");
     }
   } else {
-    alert("Por favor, selecciona un profesor para al menos un curso.");
+    showToast("No se han seleccionado asignaciones válidas.", "warning");
   }
 };
 
 onMounted(listItems);
 </script>
 
-
 <style scoped>
 .listCourses-wrapper {
-  padding: 20px;
+  text-align: center;
+  margin: 0 auto;
+  max-width: 800px;
 }
 
 .listCourses-container {
+  margin-top: 20px;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+  justify-content: center;
 }
 
 .course-item {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 10px;
-  border: 1px solid #ddd;
+  background-color: #f0f4f8;
+  padding: 15px;
   border-radius: 8px;
-}
-
-.course-info {
-  flex: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .professor-select {
-  flex: 1;
-}
-
-.select-professor {
+  margin-top: 10px;
   width: 100%;
-  padding: 5px;
 }
 
-.save-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
+.styled-select {
+  width: 100%;
+  padding: 8px;
+  font-size: 16px;
+  border: 2px solid #1e3a5f;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  color: #1e3a5f;
+  outline: none;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.styled-select:focus {
+  border-color: #27496d;
+  box-shadow: 0 0 8px rgba(39, 73, 109, 0.5);
+}
+
+.button-container {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.styled-button {
+  background-color: #1e3a5f;
   color: white;
+  padding: 12px 25px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.3s, transform 0.3s;
 }
 
-.back-button {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #18232f5d;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+.styled-button:hover {
+  background-color: #27496d;
+  transform: scale(1.05);
 }
 
-.no-results {
-  text-align: center;
-  font-size: 1.25rem;
-  color: #555;
+.styled-button:active {
+  background-color: #16293b;
+}
+
+.styled-button:focus {
+  outline: none;
+}
+
+.toast-bottom-right {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1050;
 }
 </style>

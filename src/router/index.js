@@ -19,7 +19,7 @@ const routes = [
         path: '/dashboard',
         name: 'Dashboard',
         component: () =>
-          import('@/components/dashboard/Dashboard.vue'),
+          import('@/views/Dashboard.vue'),
       },
       {
         path: '/teachers',

@@ -13,4 +13,11 @@ export default {
   async saveAssignmentTeachers(data) {
     return await axios.post(`${API_URL}/course-class/assignment-teachers`, data);
   },
+  async listCoursesByIdGrade(id) {
+    return await axios.get(`${API_URL}/course-class/get-by-grade`,{
+      params:{
+        grade_id:id
+      }
+    });
+  },
 };

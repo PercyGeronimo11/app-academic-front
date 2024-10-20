@@ -75,7 +75,7 @@ export default [
   },
   {
     component: 'CNavGroup',
-    name: 'Aula de clases',
+    name: 'Aulas de clases',
     to: '/classroom',
     icon: 'cil-star',
     items: [
@@ -90,22 +90,6 @@ export default [
         name: 'Asignacion de cursos',
         to: '/classroom/assignment-courses',
       },
-      {
-        component: 'CNavItem',
-        name: 'Asignacion de profesores',
-        to: '/classroom/assignment-teachers',
-      },
-      // {
-      //   component: 'CNavItem',
-      //   name: 'Información academica',
-      //   to: '/classroom/grade/section/course/information',
-      // },
-      // {
-      //   component: 'CNavItem',
-      //   name: 'Participantes',
-      //   to: '/classroom/grade/section/course/participations',
-      // },
-
     ],
   },
   {
@@ -152,7 +136,7 @@ export default [
       },
     ],
   },
-  
+
   {
     component: 'CNavTitle',
     name: 'Configuraciones',
@@ -211,107 +195,6 @@ export default [
       },
     ],
   },
-  {
-    component: 'CNavItem',
-    name: 'Typography',
-    to: '/theme/typography',
-    icon: 'cil-pencil',
-  },
-  {
-    component: 'CNavGroup',
-    name: 'Base',
-    to: '/base',
-    icon: 'cil-puzzle',
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Accordion',
-        to: '/base/accordion',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Breadcrumbs',
-        to: '/base/breadcrumbs',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Cards',
-        to: '/base/cards',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Carousels',
-        to: '/base/carousels',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Collapses',
-        to: '/base/collapses',
-      },
-      {
-        component: 'CNavItem',
-        name: 'List Groups',
-        to: '/base/list-groups',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Navs & Tabs',
-        to: '/base/navs',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Paginations',
-        to: '/base/paginations',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Placeholders',
-        to: '/base/placeholders',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Popovers',
-        to: '/base/popovers',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Progress',
-        to: '/base/progress',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Spinners',
-        to: '/base/spinners',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Tables',
-        to: '/base/tables',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Tabs',
-        to: '/base/tabs',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Tooltips',
-        to: '/base/tooltips',
-      },
-    ],
-  },
-  {
-    component: 'CNavItem',
-    name: '',
-    to: '/theme/colors',
-    icon: 'cil-drop',
-  },
-  {
-    component: 'CNavItem',
-    name: 'Typography',
-    to: '/theme/typography',
-    icon: 'cil-pencil',
-  },
 
   {
     component: 'CNavGroup',
@@ -396,10 +279,89 @@ export default [
       },
     ],
   },
-
-
-
-
+  {
+    component: 'CNavGroup',
+    name: 'Base',
+    to: '/base',
+    icon: 'cil-puzzle',
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Accordion',
+        to: '/base/accordion',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Breadcrumbs',
+        to: '/base/breadcrumbs',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Cards',
+        to: '/base/cards',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Carousels',
+        to: '/base/carousels',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Collapses',
+        to: '/base/collapses',
+      },
+      {
+        component: 'CNavItem',
+        name: 'List Groups',
+        to: '/base/list-groups',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Navs & Tabs',
+        to: '/base/navs',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Paginations',
+        to: '/base/paginations',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Placeholders',
+        to: '/base/placeholders',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Popovers',
+        to: '/base/popovers',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Progress',
+        to: '/base/progress',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Spinners',
+        to: '/base/spinners',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Tables',
+        to: '/base/tables',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Tabs',
+        to: '/base/tabs',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Tooltips',
+        to: '/base/tooltips',
+      },
+    ],
+  },
   {
     component: 'CNavGroup',
     name: 'Buttons',
@@ -471,12 +433,7 @@ export default [
       },
     ],
   },
-  {
-    component: 'CNavItem',
-    name: 'Charts',
-    to: '/charts',
-    icon: 'cil-chart-pie',
-  },
+
   {
     component: 'CNavGroup',
     name: 'Icons',
@@ -532,17 +489,6 @@ export default [
       },
     ],
   },
-  {
-    component: 'CNavItem',
-    name: 'Widgets',
-    to: '/widgets',
-    icon: 'cil-calculator',
-    badge: {
-      color: 'primary',
-      text: 'NEW',
-      shape: 'pill',
-    },
-  },
 
   {
     component: 'CNavGroup',
@@ -559,7 +505,7 @@ export default [
         component: 'CNavItem',
         name: 'Register',
         to: '/pages/register',
-      }, 
+      },
 
       {
         component: 'CNavItem',
@@ -573,4 +519,42 @@ export default [
       },
     ],
   },
+
+  {
+    component: 'CNavGroup',
+    name: 'themes',
+    icon: 'cil-settings',
+    items: [
+
+      {
+        component: 'CNavItem',
+        name: 'Widgets',
+        to: '/widgets',
+        icon: 'cil-calculator',
+        badge: {
+          color: 'primary',
+          text: 'NEW',
+          shape: 'pill',
+        },
+      },
+      {
+        component: 'CNavItem',
+        name: 'Charts',
+        to: '/charts',
+        icon: 'cil-chart-pie',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Typography',
+        to: '/theme/typography',
+        icon: 'cil-pencil',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Colors',
+        to: '/theme/colors',
+        icon: 'cil-drop',
+      },
+    ]
+  }
 ]
