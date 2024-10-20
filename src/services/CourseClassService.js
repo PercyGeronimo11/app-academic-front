@@ -10,4 +10,7 @@ export default {
   async listCoursesByIdGradeSection(id) {
     return await axios.get(`${API_URL}/course-class/list-courses/${id}`);
   },
+  async saveAssignmentTeachers(data) {
+    return await axios.post(`${API_URL}/course-class/assignment-teachers`, data);
+  },
 };

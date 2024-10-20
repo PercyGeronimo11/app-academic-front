@@ -62,13 +62,23 @@ const routes = [
         component: () => import('@/views/classroom/AssignmentCourses.vue'),
       },
       {
-        path: '/classroom/:grade/:section/assignment-teachers',
+        path: '/classroom/:grade/:section/:id/teachers',
         name: 'Asignar Profesores',
         component: () => import('@/views/classroom/AssignmentTeachers.vue'),
       },
       {
         path: '/classroom/:grade/:section/students',
         name: 'Lista de estudiantes',
+        component: () => import('@/views/classroom/DetailClassroom.vue'),
+      },
+      {
+        path: '/classroom/list',
+        name: 'Lista de Aulas',
+        component: () => import('@/views/classroom/ListClassroom.vue'),
+      },
+      {
+        path: '/classroom/:grade/:section',
+        name: 'Detalle del aula',
         component: () => import('@/views/classroom/DetailClassroom.vue'),
       },
       {
@@ -96,16 +106,7 @@ const routes = [
         name: 'AulasShow',
         component: () => import('@/views/course/CourseDetail.vue'),
       },
-      {
-        path: '/classroom/list',
-        name: 'Lista de Aulas',
-        component: () => import('@/views/classroom/ListClassroom.vue'),
-      },
-      {
-        path: '/classroom/:grade/:section',
-        name: 'Detalle del aula',
-        component: () => import('@/views/classroom/DetailClassroom.vue'),
-      },
+
 
       // ------------------------RUTAS DE LA PLANTILLA---------------------
        {

@@ -30,8 +30,8 @@
         </CRow>
         <CRow class="justify-content-center">
           <CCol md="6" class="d-grid gap-2">
-            <CButton color="primary" size="lg" @click="viewCourses">
-              Ver Cursos
+            <CButton color="primary" size="lg" @click="viewTeachers">
+              Ver Profesores
             </CButton>
           </CCol>
           <CCol md="6" class="d-grid gap-2">
@@ -108,17 +108,13 @@ const solidColor = computed(() => {
   return colorMap[props.grade.charAt(0).toUpperCase()] || "#A0AEC0";
 });
 
-const handleCardClick = () => {
-  window.location.href = `/classroom/${props.grade}/${props.section}`;
-};
 
-// Abrir el modal al hacer clic en la tarjeta
 const openModal = (isOpen) => {
   isModalOpen.value = isOpen;
 };
 
-const viewCourses = () => {
-  router.push(`/classroom/${props.grade}/${props.section}/courses`);
+const viewTeachers = () => {
+  router.push(`/classroom/${props.grade}/${props.section}/${props.id}/teachers`);
 };
 
 const viewStudents = () => {
