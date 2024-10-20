@@ -92,7 +92,7 @@ const routes = [
         component: () => import('@/views/classroom/ListClassroom.vue'),
       },
       {
-        path: '/classroom/:grade/:section',
+        path: '/classroom/:grade/:section/:id',
         name: 'Detalle del aula',
         component: () => import('@/views/classroom/DetailClassroom.vue'),
       },

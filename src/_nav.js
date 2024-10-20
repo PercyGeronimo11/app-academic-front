@@ -13,13 +13,6 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Asignar Alumnos',
-    to: '/assignStudents',
-    icon: 'cil-pencil',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
     name: 'Asignar Cursos',
     to: '/assignmentCourses',
     icon: 'cil-pencil',

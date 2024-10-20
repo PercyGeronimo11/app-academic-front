@@ -43,5 +43,13 @@ export default {
     return await axios.get(`${API_URL}/student/listCourses`, {
       params: data
     });
-  }
+  },
+  
+  async getItemsByGradeAndSection(idGradeSection) {
+    return await axios.get(`${API_URL}/student/listbyGradeAndSection`,{
+      params: {
+        grade_section_id: idGradeSection
+      },
+    });
+  },
 };

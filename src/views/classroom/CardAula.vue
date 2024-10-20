@@ -51,7 +51,7 @@ const solidColor = computed(() => {
 });
 
 const handleCardClick = () => {
-  window.location.href = `/classroom/${props.grade}/${props.section}`;
+  window.location.href = `/classroom/${props.grade}/${props.section}/${props.id}`;
 };
 
 </script>
