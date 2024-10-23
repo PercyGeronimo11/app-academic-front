@@ -8,16 +8,27 @@
         <div class="section-content">
           <p>{{ description }}</p>
         </div>
+        <div v-if="ConfirmRole()">
+          <CButton color="danger" @click="$emit('eliminar', id)" class="delete-button text-white">Eliminar</CButton>
+        </div>
       </CCard>
     </CCol>
   </CRow>
 </template>
 
 <script setup>
+import CryptoJS from 'crypto-js';
+const role_key = localStorage.getItem('r_key') || 'guest'
+const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
+const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(CryptoJS.enc.Utf8)
 defineProps({
   title: String,
   description: String,
+  id: Number,
 });
+const ConfirmRole = () => {
+  return (decryptedRole=="Profesor");
+};
 </script>
 
 <style scoped>
@@ -40,5 +51,10 @@ defineProps({
   line-height: 1.5;
   color: #666;
   margin: 0;
+}
+
+.delete-button {
+  float: right; /* Posiciona el botón a la derecha */
+  margin-left: 10px; /* Agrega un espacio entre el botón y el contenido */
 }
 </style>

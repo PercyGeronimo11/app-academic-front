@@ -47,20 +47,6 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Notas',
-    to: '/teachers',
-    icon: 'cil-notes',
-    roles: ['Profesor'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Asistencias',
-    to: '/teachers',
-    icon: 'cil-notes',
-    roles: ['Profesor'],
-  },
-  {
-    component: 'CNavItem',
     name: 'Área Principal',
     to: '/mainArea',
     icon: 'cil-options',
@@ -74,10 +60,25 @@ export default [
     roles: ['Profesor'],
   },
   {
+    component: 'CNavItem',
+    name: 'Notas',
+    to: '/teachers',
+    icon: 'cil-notes',
+    roles: ['Profesor'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Asistencias',
+    to: '/teachers',
+    icon: 'cil-notes',
+    roles: ['Profesor'],
+  },
+  {
     component: 'CNavGroup',
     name: 'Aulas de clases',
     to: '/classroom',
     icon: 'cil-star',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -123,6 +124,7 @@ export default [
     name: 'Cursos',
     to: '/cursos',
     icon: 'cil-star',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',

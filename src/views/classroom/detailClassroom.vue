@@ -121,7 +121,6 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import CourseClassService from "@/services/CourseClassService";
 import StudentService from "@/services/StudentService";
 import GradeSectionService from "@/services/GradeSectionService";
 import {useRoute} from "vue-router";
@@ -212,8 +211,9 @@ const submit = async () => {
     Swal.fire({
       icon: 'success',
       title: 'Registro exitoso',
-      text: 'Administrativo registrado con éxito.',
+      text: 'Estudiantes registrados con éxito.',
     });
+    listStudentService();
   } catch (error){
     if (error.response && error.response.data && error.response.data.message) {
       Swal.fire({
