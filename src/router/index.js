@@ -83,7 +83,7 @@ const routes = [
       },
       {
         path: '/mainArea',
-        name: 'Area Principal',
+        name: 'Área Principal',
         component: () => import('@/views/main_area/MainArea.vue'),
       },
       {

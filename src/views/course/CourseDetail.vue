@@ -127,7 +127,7 @@ var formData = ref({
   description: "",
   due_date: "",
   unit_id: "",
-  course_id: "",
+  course_class_id: "",
   period_id: 1,
 });
 
@@ -164,7 +164,6 @@ const closeModal = () => {
 const listTasks = async () => {
   const data = {
     course_id: course_id,
-    period_id: 1
   }
   const response = await TaskService.getItems(data);
   taskData.value = response.data.data;
@@ -177,7 +176,7 @@ const listTasks = async () => {
 }
 
 const submitToCreate = async () => {
-  formData.value.course_id = course_id;
+  formData.value.course_class_id = course_id;
   if(validateForm()){
     try {
         await TaskService.createItem(formData.value);
