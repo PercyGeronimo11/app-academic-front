@@ -111,6 +111,11 @@ const routes = [
         name: 'AulasShow',
         component: () => import('@/views/course/CourseDetail.vue'),
       },
+      {
+        path: '/assingNotes/:course_id/:id',
+        name: 'AssingNotes',
+        component: () => import('@/views/assign_notes/AssignNotes.vue'),
+      },
       // ------------------------RUTAS DE LA PLANTILLA---------------------
        {
         path: '/theme',

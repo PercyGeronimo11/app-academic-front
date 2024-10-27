@@ -27,7 +27,8 @@
             :title="item.type == 'TAREA' ? 'TAREA: '+item.title : item.title"
             :description="item.description"
             :id="item.id"
-            @eliminar="item.type == 'TAREA' ? deleteTask(item.id) : null"
+            @delete="item.type == 'TAREA' ? deleteTask(item.id) : null"
+            @score="item.type == 'TAREA' ? scoreTask(item.id) : null"
           />
         </div>
       </CRow>
@@ -95,11 +96,12 @@ import { ref, onMounted } from "vue";
 import SectionDetail from "./SectionDetail.vue";
 import { items } from './sectionData.js';
 import CryptoJS from 'crypto-js';
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import Swal from 'sweetalert2'
 import TaskService from "@/services/TaskService";
 
 const route=useRoute();
+const router=useRouter();
 
 const role_key = localStorage.getItem('r_key') || 'guest'
 const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
@@ -111,13 +113,13 @@ const taskData = ref([]);
 
 var units = ref([
   { isVisible: true, 
-    items: items.slice(0, 2)
+    items: []
   },
   { isVisible: true, 
-    items: items.slice(2, 4) 
+    items: []
   }, 
   { isVisible: true, 
-    items: items.slice(4, 5) 
+    items: []
   },
 ]);
 
@@ -234,6 +236,11 @@ const deleteTask = async (id) => {
       console.log("error:" + error);
     }
   }
+}
+
+const scoreTask = async (id) => {
+  console.log("prueba");
+  router.push(`/assingNotes/${course_id}/${id}`);
 }
 
 const validateForm = () => {
