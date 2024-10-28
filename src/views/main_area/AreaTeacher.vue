@@ -16,7 +16,6 @@
       </select>
     </div>
 
-
     <div v-if="filteredCourses.length" class="courses-container">
       <CourseCard
         v-for="(course, index) in filteredCourses"

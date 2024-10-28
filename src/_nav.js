@@ -47,7 +47,7 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Área Principal',
+    name: 'Área Personal',
     to: '/mainArea',
     icon: 'cil-options',
     roles: ['Estudiante'],
@@ -55,21 +55,21 @@ export default [
   {
     component: 'CNavItem',
     name: 'Área Principal',
+    to: '/main/school',
+    icon: 'cil-options',
+    roles: ['Profesor','Estudiante'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Área Personal',
     to: '/mainAreaTeacher',
     icon: 'cil-options',
     roles: ['Profesor'],
   },
   {
     component: 'CNavItem',
-    name: 'Notas',
-    to: '/teachers',
-    icon: 'cil-notes',
-    roles: ['Profesor'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Asistencias',
-    to: '/teachers',
+    name: 'Mis Cursos',
+    to: '/mainAreaTeacher',
     icon: 'cil-notes',
     roles: ['Profesor'],
   },
@@ -138,6 +138,13 @@ export default [
       },
     ],
   },
+  {
+    component: 'CNavItem',
+    name: 'Chatbot',
+    to: '/chatbot',
+    icon: 'cil-people',
+    roles: ['Administrador', 'Administrativo'],
+  },
 
   {
     component: 'CNavTitle',
@@ -168,6 +175,7 @@ export default [
   {
     component: 'CNavTitle',
     name: 'COMPONENTES DE LA PLANTILLA ',
+    roles: ['Administrador', 'Administrativo'],
   },
 
   {
@@ -175,6 +183,7 @@ export default [
     name: 'Icons',
     to: '/icons',
     icon: 'cil-star',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -203,89 +212,7 @@ export default [
     name: 'Base',
     to: '/base',
     icon: 'cil-puzzle',
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Accordion',
-        to: '/base/accordion',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Breadcrumbs',
-        to: '/base/breadcrumbs',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Cards',
-        to: '/base/cards',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Carousels',
-        to: '/base/carousels',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Collapses',
-        to: '/base/collapses',
-      },
-      {
-        component: 'CNavItem',
-        name: 'List Groups',
-        to: '/base/list-groups',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Navs & Tabs',
-        to: '/base/navs',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Paginations',
-        to: '/base/paginations',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Placeholders',
-        to: '/base/placeholders',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Popovers',
-        to: '/base/popovers',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Progress',
-        to: '/base/progress',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Spinners',
-        to: '/base/spinners',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Tables',
-        to: '/base/tables',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Tabs',
-        to: '/base/tabs',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Tooltips',
-        to: '/base/tooltips',
-      },
-    ],
-  },
-  {
-    component: 'CNavGroup',
-    name: 'Base',
-    to: '/base',
-    icon: 'cil-puzzle',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -369,6 +296,7 @@ export default [
     name: 'Buttons',
     to: '/buttons',
     icon: 'cil-cursor',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -392,6 +320,7 @@ export default [
     name: 'Forms',
     to: '/forms',
     icon: 'cil-notes',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -441,6 +370,7 @@ export default [
     name: 'Icons',
     to: '/icons',
     icon: 'cil-star',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -468,6 +398,7 @@ export default [
     name: 'Notifications',
     to: '/notifications',
     icon: 'cil-bell',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -497,6 +428,7 @@ export default [
     name: 'Configuracion',
     to: '/pages',
     icon: 'cil-settings',
+    roles: ['Administrador', 'Administrativo'],
     items: [
       {
         component: 'CNavItem',
@@ -526,8 +458,8 @@ export default [
     component: 'CNavGroup',
     name: 'themes',
     icon: 'cil-settings',
+    roles: ['Administrador', 'Administrativo'],
     items: [
-
       {
         component: 'CNavItem',
         name: 'Widgets',

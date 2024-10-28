@@ -111,6 +111,18 @@ const routes = [
         name: 'AulasShow',
         component: () => import('@/views/course/CourseDetail.vue'),
       },
+      {
+        path: '/chatbot',
+        name: 'Chatbot',
+        component: () => import('@/views/chatbot/ChatBot.vue'),
+      },
+
+
+
+
+
+
+
       // ------------------------RUTAS DE LA PLANTILLA---------------------
        {
         path: '/theme',
