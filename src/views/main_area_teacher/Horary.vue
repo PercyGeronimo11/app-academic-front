@@ -23,29 +23,31 @@
             </CCol>
           </CRow>
 
-          <CRow class="mb-3">
+          <CRow v-for="(dia, index) in dataHorary.days_week" :key="dia.nombre" class="mb-3">
             <CCol>
-              <label class="block text-gray-600 mb-2">Días de la Semana:</label>
               <div class="grid grid-cols-2 gap-2">
-                <div v-for="dia in diasSemana" :key="dia" class="flex items-center">
-                  <CFormCheck :value="dia" v-model="dataHorary.days_week" class="mr-2" />
-                  <span>{{ dia }}</span>
-                </div>
+                <CFormCheck
+                  v-model="dia.seleccionado"
+                  class="mr-2"
+                  :label="dia.nombre"
+                />
               </div>
             </CCol>
             <CCol>
               <CFormInput
-                v-model="dataHorary.hour_start"
+                v-model="dia.horaInicio"
                 type="time"
                 label="Hora de Inicio"
+                :disabled="!dia.seleccionado"
                 required
               />
             </CCol>
             <CCol>
               <CFormInput
-                v-model="dataHorary.hour_end"
+                v-model="dia.horaFin"
                 type="time"
                 label="Hora de Fin"
+                :disabled="!dia.seleccionado"
                 required
               />
             </CCol>
@@ -53,17 +55,8 @@
 
           <CRow class="mb-3">
             <CCol class="d-grid gap-5 d-md-flex justify-content-md-center">
-              <CButton
-                color="secondary"
-                @click="
-                  () => {
-                    resetForm();
-                  }
-                "
-              >
-                Cancelar
-              </CButton>
-              <CButton color="primary" @click="createHorario()"> Crear </CButton>
+              <CButton color="secondary" @click="resetForm">Cancelar</CButton>
+              <CButton color="primary" @click="createHorario">Crear</CButton>
             </CCol>
           </CRow>
         </CContainer>
@@ -74,11 +67,10 @@
 
 <script setup>
 import { ref } from "vue";
-import axios from "axios";
-import { useRoute} from "vue-router";
+import { useRoute } from "vue-router";
 import CourseClassService from "../../services/CourseClassService";
 
-const route=useRoute();
+const route = useRoute();
 const toast = ref({
   visible: false,
   message: "",
@@ -86,41 +78,43 @@ const toast = ref({
 });
 
 const dataHorary = ref({
-  course_class_id:"",
+  course_class_id: "",
   date_start: "",
   date_end: "",
-  days_week: [],
-  hour_start: "",
-  hour_end: "",
+  days_week: [
+    { nombre: "Lunes", horaInicio: "", horaFin: "", seleccionado: false },
+    { nombre: "Martes", horaInicio: "", horaFin: "", seleccionado: false },
+    { nombre: "Miércoles", horaInicio: "", horaFin: "", seleccionado: false },
+    { nombre: "Jueves", horaInicio: "", horaFin: "", seleccionado: false },
+    { nombre: "Viernes", horaInicio: "", horaFin: "", seleccionado: false },
+  ],
 });
-
-const diasSemana = ref([
-  "Lunes",
-  "Martes",
-  "Miércoles",
-  "Jueves",
-  "Viernes",
-  "Sábado",
-  "Domingo",
-]);
-
 
 const createHorario = async () => {
   try {
-    const idcourseclass=route.params.courseClass;
-    dataHorary.value.course_class_id=idcourseclass;
-    const response = await CourseClassService.createHorary(dataHorary.value);
-    console.log('Response from API:', response.data);
-    showToast("Se a creado el horario exitosamente", "success");
+    const idcourseclass = route.params.courseClass;
+    dataHorary.value.course_class_id = idcourseclass;
+
+    const selectedDays = dataHorary.value.days_week
+      .filter((day) => day.seleccionado)
+      .map((day) => ({
+        day: day.nombre,
+        hour_start: day.horaInicio,
+        hour_end: day.horaFin,
+      }));
+
+    const response = await CourseClassService.createHorary({
+      ...dataHorary.value,
+      days_week: selectedDays,
+    });
+
+    console.log("Response from API:", response.data);
+    showToast("Se ha creado el horario exitosamente", "success");
     resetForm();
   } catch (error) {
     if (error.response) {
-      console.error("Error Status:", error.response.status);
-      console.error("Error Data:", error.response.data);
-      showToast(`Error: ${error.response.data.message || 'Error desconocido'}`, "error");
-    } else if (error.request) {
-      console.error("Error Request:", error.request);
-      showToast("No se recibió respuesta del servidor", "error");
+      console.error("Error:", error.response.data);
+      showToast(`Error: ${error.response.data.message || "Error desconocido"}`, "error");
     } else {
       console.error("Error Message:", error.message);
       showToast("Error en la solicitud", "error");
@@ -129,27 +123,29 @@ const createHorario = async () => {
 };
 
 const showToast = (message, color) => {
-  toast.value = { 
+  toast.value = {
     message: message,
     color: color,
-    visible: true 
+    visible: true,
   };
-  
+
   setTimeout(() => {
     toast.value.visible = false;
   }, 3000);
 };
+
 const resetForm = () => {
   dataHorary.value = {
+    course_class_id: "",
     date_start: "",
     date_end: "",
-    days_week: [],
-    hour_start: "",
-    hour_end: "",
+    days_week: [
+      { nombre: "Lunes", horaInicio: "", horaFin: "", seleccionado: false },
+      { nombre: "Martes", horaInicio: "", horaFin: "", seleccionado: false },
+      { nombre: "Miércoles", horaInicio: "", horaFin: "", seleccionado: false },
+      { nombre: "Jueves", horaInicio: "", horaFin: "", seleccionado: false },
+      { nombre: "Viernes", horaInicio: "", horaFin: "", seleccionado: false },
+    ],
   };
 };
-
-
 </script>
-
-<style></style>
