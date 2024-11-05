@@ -26,32 +26,24 @@
 
     <!-- Tabla de cursos seleccionados -->
     <div class="selected-box">
-      <div v-if="coursesSelecteds.length > 0">
+      <h3>Cursos asignados:</h3>
+      <div v-if="coursesSelecteds.length > 0" class="container-table">
         <table class="courses-table">
           <thead>
             <tr>
-              <th>Nombre</th>
-              <th>Acciones</th>
+              <th class="text-center">N°</th>
+              <th class="text-center">Nombre</th>
+              <th class="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="(course, index) in coursesSelecteds" :key="index">
-              <td data-label="Nombre">{{ course.label }}</td>
-              <td data-label="Acciones">
-                <span class="close-icon" @click="removeCourse(index)">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M11.59 8L14 10.41L10.41 14L8 11.59L5.59 14L2 10.41L4.41 8L2 5.59L5.59 2L8 4.41L10.41 2L14 5.59L11.59 8Z"
-                      fill="red"
-                    />
-                  </svg>
-                </span>
+              <td data-label="Nombre" class="text-center">{{index+1 }}</td>
+              <td data-label="Nombre" class="text-center">{{ course.label }}</td>
+              <td data-label="Acciones" class="text-center">
+                <div class="d-flex justify-content-center text-center">
+                  <CButton color="danger" @click="removeCourse(index)" class="text-white">Eliminar</CButton>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -296,9 +288,10 @@ const submitToCreate = async () => {
 
 /* Caja de elementos seleccionados */
 .selected-box {
-  background-color: #fff;
+  max-width: 70%;
+  margin: 0 auto;
   border: 1px solid #ccc;
-  padding: 15px;
+  padding: 25px;
   border-radius: 10px;
   margin-top: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -314,6 +307,13 @@ const submitToCreate = async () => {
 .courses-table {
   width: 100%;
   border-collapse: collapse;
+  width: 100%;
+  border-collapse: collapse;
+}
+.container-table{
+  border-radius: 10px; /* Ajusta el valor para el redondeo deseado */
+  overflow: hidden; 
+  border: solid #ddd 2px;
   margin-top: 20px;
 }
 
@@ -322,10 +322,6 @@ const submitToCreate = async () => {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-}
-
-.courses-table thead {
-  background-color: #f2f2f2;
 }
 
 @media (max-width: 768px) {
@@ -412,5 +408,9 @@ const submitToCreate = async () => {
 
 .back-button:hover {
   background-color: #da190b;
+}
+
+.deleteButton{
+  margin: 0 auto;
 }
 </style>

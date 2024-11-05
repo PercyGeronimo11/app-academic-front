@@ -43,6 +43,11 @@ export default [
     items: [
       {
         component: 'CNavItem',
+        name: 'Asignacion de cursos',
+        to: '/classroom/assignment-courses',
+      },
+      {
+        component: 'CNavItem',
         name: 'Lista',
         to: '/classroom/list',
         roles: ['Administrador', 'Administrativo'],

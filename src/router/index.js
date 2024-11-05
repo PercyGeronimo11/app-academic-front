@@ -93,7 +93,7 @@ const routes = [
       },
       {
         path: '/grade-section/:id',
-        name: 'AulasShow dd',
+        name: 'Grado y seccion',
         component: () => import('@/views/administratives/ShowGradeSection.vue'),
       },
       {
