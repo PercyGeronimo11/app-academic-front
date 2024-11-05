@@ -48,7 +48,7 @@
             <CCard class="text-white py-5" style="width: 44%">
               <CCardBody class="text-center">
                 <div>
-                  <img src="../../../public/img/logo_rp.png" alt="">
+                  <img src="/img/logo_rp.png" alt="Logo" />
                 </div>
               </CCardBody>
             </CCard>

@@ -8,8 +8,13 @@
         <div class="section-content">
           <p>{{ description }}</p>
         </div>
-        <div v-if="ConfirmRole()">
-          <CButton color="danger" @click="$emit('eliminar', id)" class="delete-button text-white">Eliminar</CButton>
+        <div class="delete-button text-white">
+          <div v-if="ConfirmRole('Profesor')">
+            <CButton color="danger" @click="$emit('delete', id)" class="delete-button text-white">Eliminar</CButton>
+          </div>
+          <div v-if="ConfirmRole('Profesor')">
+            <CButton color="success" @click="$emit('score', id)" class="delete-button text-white">Calificar</CButton>
+          </div>
         </div>
       </CCard>
     </CCol>
@@ -26,8 +31,8 @@ defineProps({
   description: String,
   id: Number,
 });
-const ConfirmRole = () => {
-  return (decryptedRole=="Profesor");
+const ConfirmRole = (role) => {
+  return (decryptedRole==role);
 };
 </script>
 

@@ -1,28 +1,14 @@
 export default [
   {
     component: 'CNavItem',
-    name: 'Inicio',
+    name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
     roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavTitle',
-    name: 'MATERIAS',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Asignar Cursos',
-    to: '/assignmentCourses',
-    icon: 'cil-pencil',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Competencias',
-    to: '/teachers',
-    icon: 'cil-pencil',
+    name: 'FUNCIONALIDADES',
     roles: ['Administrador', 'Administrativo'],
   },
   {
@@ -39,40 +25,15 @@ export default [
     icon: 'cil-options',
     roles: ['Administrador', 'Administrativo'],
   },
-
-  {
-    component: 'CNavTitle',
-    name: 'ADMINISTRACIÓN',
-    roles: ['Profesor'],
-  },
   {
     component: 'CNavItem',
-    name: 'Área Personal',
-    to: '/mainArea',
-    icon: 'cil-options',
-    roles: ['Estudiante'],
+    name: 'Chatbot',
+    to: '/chatbot',
+    icon: 'cil-people',
+    roles: ['Administrador', 'Administrativo'],
   },
-  {
-    component: 'CNavItem',
-    name: 'Área Principal',
-    to: '/main/school',
-    icon: 'cil-options',
-    roles: ['Profesor','Estudiante'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Área Personal',
-    to: '/mainAreaTeacher',
-    icon: 'cil-options',
-    roles: ['Profesor'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Mis Cursos',
-    to: '/mainAreaTeacher',
-    icon: 'cil-notes',
-    roles: ['Profesor'],
-  },
+  
+  //Para administrativo
   {
     component: 'CNavGroup',
     name: 'Aulas de clases',
@@ -84,6 +45,12 @@ export default [
         component: 'CNavItem',
         name: 'Lista',
         to: '/classroom/list',
+        roles: ['Administrador', 'Administrativo'],
+      },
+      {
+        component: 'CNavItem',
+        name: 'Asignar Cursos',
+        to: '/classroom/assignment-courses',
         roles: ['Administrador', 'Administrativo'],
       },
       {
@@ -138,13 +105,7 @@ export default [
       },
     ],
   },
-  {
-    component: 'CNavItem',
-    name: 'Chatbot',
-    to: '/chatbot',
-    icon: 'cil-people',
-    roles: ['Administrador', 'Administrativo'],
-  },
+
 
   {
     component: 'CNavTitle',
@@ -170,6 +131,47 @@ export default [
     ],
     roles: ['Administrador'],
   },
+
+  //   Para Profesor  
+  {
+    component: 'CNavTitle',
+    name: 'ADMINISTRACIÓN',
+    roles: ['Profesor'],
+  },
+  
+  {
+    component: 'CNavItem',
+    name: 'Área Personal',
+    to: '/mainAreaTeacher',
+    icon: 'cil-options',
+    roles: ['Profesor'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Mis Cursos',
+    to: '/mainAreaTeacher',
+    icon: 'cil-notes',
+    roles: ['Profesor'],
+  },
+
+
+  //   Para Estudiante
+  {
+    component: 'CNavItem',
+    name: 'Área Personal',
+    to: '/mainArea',
+    icon: 'cil-options',
+    roles: ['Estudiante'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Área Principal',
+    to: '/main/school',
+    icon: 'cil-options',
+    roles: ['Profesor','Estudiante'],
+  },
+  
+
 
   // ---------------------------------- PLANTILLA -------------------------
   {

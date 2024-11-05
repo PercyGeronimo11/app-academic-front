@@ -32,9 +32,12 @@ const navigateByRole = () => {
 
   if (role === 'Administrador' || role === 'Administrativo') {
     router.push('/')
-  } else if (role === 'Profesor' || role === 'Estudiante') {
+  } else if (role === 'Profesor') {
+    router.push('/mainAreaTeacher')
+  } else if (role === 'Estudiante') {
     router.push('/mainArea')
-  } else {
+  }
+   else {
     router.push('/') // Ruta por defecto para roles desconocidos
   }
 }

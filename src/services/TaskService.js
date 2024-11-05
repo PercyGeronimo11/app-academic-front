@@ -34,4 +34,8 @@ export default {
       }
     });
   },
+
+  async scoreTaskStudent(data) {
+    return await axios.post(`${API_URL}/task/score`, data);
+  },
 };

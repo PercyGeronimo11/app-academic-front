@@ -26,7 +26,6 @@
 <script setup>
 import { ref, onMounted, computed } from "vue";
 import CourseCard from "@/components/CourseCard.vue";
-import TeacherService from "@/services/TeacherService";
 import CourseClassService from "../../services/CourseClassService";
 
 // Definición de reactivas
@@ -58,7 +57,7 @@ const listItems = async () => {
     courses.value = courseData.map((course) => ({
       title: course.course_name,
       image: null,
-      url: `/class/${course.course_class_id}/${course.course_id}`, 
+      url: `/teacher/${course.course_class_id}/detalle`, 
       category: "Ciencias",
     }));
 

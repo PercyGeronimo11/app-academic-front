@@ -52,4 +52,10 @@ export default {
       },
     });
   },
+
+  async getitemsByCourse(data) {
+    return await axios.get(`${API_URL}/student/byCourse`, {
+      params: data
+    });
+  },
 };

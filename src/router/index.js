@@ -57,44 +57,34 @@ const routes = [
         component: () => import('@/views/assign_students/AssignStudent.vue'),
       },
       {
-        path: '/classroom/assignment-courses',
-        name: 'Asignar Cursos',
-        component: () => import('@/views/classroom/AssignmentCourses.vue'),
-      },
-      {
-        path: '/classroom/:grade/:section/:id/teachers',
-        name: 'Asignar Profesores',
-        component: () => import('@/views/classroom/AssignmentTeachers.vue'),
-      },
-      {
-        path: '/classroom/:grade/:section/:id/students',
-        name: 'Lista de estudiantes',
-        component: () => import('@/views/classroom/DetailClassroom.vue'),
-      },
-      {
-        path: '/classroom/list',
-        name: 'Lista de Aulas',
-        component: () => import('@/views/classroom/ListClassroom.vue'),
-      },
-      {
-        path: '/classroom/:grade/:section',
-        name: 'Detalle del aula',
-        component: () => import('@/views/classroom/DetailClassroom.vue'),
-      },
-      {
-        path: '/mainArea',
-        name: 'Area Principal',
-        component: () => import('@/views/main_area/MainArea.vue'),
-      },
-      {
-        path: '/mainAreaTeacher',
-        name: 'Area Principal',
-        component: () => import('@/views/main_area/AreaTeacher.vue'),
-      },
-      {
-        path: '/class/grade/:id',
-        name: 'Detalle del curso',
-        component: () => import('@/views/course/CourseDetail.vue'),
+        path: '/classroom/',
+        children: [
+          {
+            path: 'assignment-courses',
+            name: 'Asignar Cursos',
+            component: () => import('@/views/classroom/AssignmentCourses.vue'),
+          },
+          {
+            path: ':grade/:section/:id/teachers',
+            name: 'Asignar Profesores',
+            component: () => import('@/views/classroom/AssignmentTeachers.vue'),
+          },
+          {
+            path: ':grade/:section/:id/students',
+            name: 'Lista de estudiantes',
+            component: () => import('@/views/classroom/DetailClassroom.vue'),
+          },
+          {
+            path: 'list',
+            name: 'Lista de Aulas',
+            component: () => import('@/views/classroom/ListClassroom.vue'),
+          },
+          {
+            path: ':grade/:section',
+            name: 'Detalle del aula',
+            component: () => import('@/views/classroom/DetailClassroom.vue'),
+          },
+        ],
       },
       {
         path: '/grade-section',
@@ -103,13 +93,13 @@ const routes = [
       },
       {
         path: '/grade-section/:id',
-        name: 'AulasShow',
+        name: 'AulasShow dd',
         component: () => import('@/views/administratives/ShowGradeSection.vue'),
       },
       {
-        path: '/detail',
-        name: 'AulasShow',
-        component: () => import('@/views/course/CourseDetail.vue'),
+        path: '/assingNotes/:course_id/:id',
+        name: 'AssingNotes',
+        component: () => import('@/views/assign_notes/AssignNotes.vue'),
       },
       {
         path: '/chatbot',
@@ -117,14 +107,63 @@ const routes = [
         component: () => import('@/views/chatbot/ChatBot.vue'),
       },
 
+      //Para profesor
+      {
+        path: '/mainAreaTeacher',
+        name: 'Mis Cursos',
+        component: () => import('@/views/main_area_teacher/AreaTeacher.vue'),
+      },
+      {
+        path: '/teacher/:courseClass/detalle',
+        name: 'Detalle del curso',
+        component: () => import('@/views/main_area_teacher/CourseDetail.vue'),
+      },
+      {
+        path: '/teacher/:courseClass/horary',
+        name: 'Area Principal',
+        component: () => import('@/views/main_area_teacher/Horary.vue'),
+      },
+
+      // Para estudiantes
+      {
+        path: '/mainArea',
+        name: 'Área Principal',
+        component: () => import('@/views/main_area/MainArea.vue'),
+      },
 
 
 
+
+      // {
+      //   path: '/classroom/assignment-courses',
+      //   name: 'Asignar Cursos',
+      //   component: () => import('@/views/classroom/AssignmentCourses.vue'),
+      // },
+      // {
+      //   path: '/classroom/:grade/:section/:id/teachers',
+      //   name: 'Asignar Profesores',
+      //   component: () => import('@/views/classroom/AssignmentTeachers.vue'),
+      // },
+      // {
+      //   path: '/classroom/:grade/:section/:id/students',
+      //   name: 'Lista de estudiantes',
+      //   component: () => import('@/views/classroom/DetailClassroom.vue'),
+      // },
+      // {
+      //   path: '/classroom/list',
+      //   name: 'Lista de Aulas',
+      //   component: () => import('@/views/classroom/ListClassroom.vue'),
+      // },
+      // {
+      //   path: '/classroom/:grade/:section',
+      //   name: 'Detalle del aula',
+      //   component: () => import('@/views/classroom/DetailClassroom.vue'),
+      // },
 
 
 
       // ------------------------RUTAS DE LA PLANTILLA---------------------
-       {
+      {
         path: '/theme',
         name: 'Theme',
         redirect: '/theme/typography',
@@ -377,7 +416,7 @@ const routes = [
       },
     ],
   },
-  
+
   {
     path: '/pages',
     redirect: '/pages/404',
@@ -422,16 +461,16 @@ const router = createRouter({
 
 // Guard de navegación global
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('access_token'); 
+  const isAuthenticated = !!localStorage.getItem('access_token');
   console.log("¿Esta Autenticado?:", isAuthenticated);
 
   // Si la ruta requiere autenticación y no hay token
   if (!isAuthenticated && to.path !== '/login') {
-    next('/login'); 
+    next('/login');
   } else if (to.path === '/login' && isAuthenticated) {
     next('/dashboard'); // Si ya está autenticado y está en login, redirigir al dashboard
   } else {
-    next(); 
+    next();
   }
 });
 
