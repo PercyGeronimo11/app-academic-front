@@ -13,20 +13,6 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Asignar Cursos',
-    to: '/assignmentCourses',
-    icon: 'cil-pencil',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Competencias',
-    to: '/teachers',
-    icon: 'cil-pencil',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
     name: 'Cursos',
     to: '/courses',
     icon: 'cil-options',
@@ -82,14 +68,14 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Lista',
-        to: '/classroom/list',
-        roles: ['Administrador', 'Administrativo'],
+        name: 'Asignacion de cursos',
+        to: '/classroom/assignment-courses',
       },
       {
         component: 'CNavItem',
-        name: 'Asignacion de cursos',
-        to: '/classroom/assignment-courses',
+        name: 'Lista',
+        to: '/classroom/list',
+        roles: ['Administrador', 'Administrativo'],
       },
     ],
   },

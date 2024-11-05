@@ -34,7 +34,8 @@ axios.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response.status === 401 && error.response.data.message === 'Token is Expired') {
+        if (error.response.status == 401 && error.response.data.message == 'Token is Expired') {
+            localStorage.clear('access_token');
             router.push('/');
         } else {
             console.error('Error de API:', error);

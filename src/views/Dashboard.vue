@@ -88,7 +88,23 @@
   </CRow>
 </template>
 <script setup>
+import DashboardService from '@/services/DashboardService'
+import { onMounted, ref } from 'vue';
 
+var dashboard = ref();
+
+onMounted(async () => {
+  try {
+    await listDashboard();
+  } catch (error) {
+    console.error(error);
+  }
+});
+
+const listDashboard = async () => {
+  const response = await DashboardService.getItems();
+  dashboard.value = response.data.data;
+}
 </script>
 
 

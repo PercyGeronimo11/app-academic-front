@@ -62,6 +62,7 @@
 <script>
 import AuthService from '@/services/AuthService'; 
 import CryptoJS from 'crypto-js';
+import Swal from 'sweetalert2';
 
 export default {
   data() {
@@ -86,21 +87,45 @@ export default {
         const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
         console.log(encryptedRol);
         localStorage.setItem('r_key', encryptedRol);//role_key
-
         if (response.success) {
-          // Maneja la respuesta de éxito, como almacenar el token y redirigir
           console.log('Inicio de sesión exitoso:', response);
-          // Redirige al dashboard o almacena el token en el almacenamiento local
           this.$router.push('/dashboard');
+          const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+          Toast.fire({
+            icon: "success",
+            title: "Sesión iniciada correctamente"
+          });
         } else {
-          // Maneja los errores de inicio de sesión
           console.error('Error en el inicio de sesión:', response.message);
           alert('Error en el inicio de sesión. Verifique sus credenciales.');
         }
       } catch (error) {
-        // Maneja los errores de la solicitud
         console.error('Error en la solicitud:', error);
-        alert('Error en la solicitud. Por favor intente nuevamente.');
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
+          });
+        Toast.fire({
+            icon: "warning",
+            title: "Credenciales incorrectas"
+          });
       }
     },
   },
