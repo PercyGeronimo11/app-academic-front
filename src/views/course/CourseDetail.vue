@@ -115,7 +115,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import SectionDetail from "./SectionDetail.vue";
+import SectionDetail from "../main_area_teacher/SectionDetail.vue";
 import CryptoJS from "crypto-js";
 import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";

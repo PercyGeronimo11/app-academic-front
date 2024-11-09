@@ -92,11 +92,6 @@ const routes = [
         component: () => import('@/views/administratives/MainGradeSection.vue'),
       },
       {
-        path: '/grade-section/:id',
-        name: 'Grado y seccion',
-        component: () => import('@/views/administratives/ShowGradeSection.vue'),
-      },
-      {
         path: '/assingNotes/:course_id/:id',
         name: 'AssingNotes',
         component: () => import('@/views/assign_notes/AssignNotes.vue'),
@@ -113,14 +108,10 @@ const routes = [
         name: 'Mis Cursos',
         component: () => import('@/views/main_area_teacher/AreaTeacher.vue'),
       },
-      {
-        path: '/teacher/:courseClass/detalle',
-        name: 'Detalle del curso',
-        component: () => import('@/views/main_area_teacher/CourseDetail.vue'),
-      },
+      
       {
         path: '/teacher/:courseClass/horary',
-        name: 'Area Principal',
+        name: 'Horario',
         component: () => import('@/views/main_area_teacher/Horary.vue'),
       },
 
@@ -131,6 +122,12 @@ const routes = [
         component: () => import('@/views/main_area/MainArea.vue'),
       },
 
+      // Para estudiantes y docentes
+      {
+        path: '/courseClass/:courseClass/detalle',
+        name: 'Detalle del curso',
+        component: () => import('@/views/course/CourseDetail.vue'),
+      },
 
 
 
