@@ -52,7 +52,7 @@ const solidColor = computed(() => {
 const emit = defineEmits(['cardClick']);
 
 const handleClick = () => {
-  emit('cardClick', props.id); // Emitimos el evento con el id del grade section
+  emit('cardClick', props.id); 
 };
 
 </script>

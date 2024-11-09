@@ -80,7 +80,6 @@
               <CCol>
                 <CFormInput v-model="teacherData.name" label="Nombres" placeholder="Nombre" required />
               </CCol>
-
             </CRow>
             <CRow class="mb-3">
               <CCol>

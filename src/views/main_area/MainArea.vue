@@ -64,7 +64,7 @@ const listItems = async () => {
     courses.value = courseData.map((course) => ({
       title: course.name,
       image: null,
-      url: `/class/grade/${course.id}`, 
+      url: `/class/grade/${course.name.replace(/\s+/g, "-").toLowerCase()}`, 
       category: "Ciencias",
     }));
 

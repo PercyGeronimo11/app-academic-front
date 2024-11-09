@@ -190,22 +190,6 @@ const alumnoData = ref({
 
 onMounted(async () => {});
 
-const clearData = () => {
-  alumnoData.value = {
-    name: "",
-    surname_father: "",
-    surname_mother: "",
-    birth_date: "",
-    dni: "",
-    sex: "",
-    phone: "",
-    email: "",
-    password: "",
-    address: "",
-    academic_degree: "",
-  };
-};
-
 const calculateAge = () => {
   if (!alumnoData.value.birth_date) return;
 

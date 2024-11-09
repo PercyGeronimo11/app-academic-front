@@ -6,8 +6,8 @@
     <h2>Calificaciones de Estudiantes</h2>
 
     <!-- Mostrar los valores de `course_class_id` y `unit_id` solo si están definidos -->
-    <p v-if="course_class_id && unit_id">Course Class ID: {{ course_class_id }}</p>
-    <p v-if="course_class_id && unit_id">Unit ID: {{ unit_id }}</p>
+    <p v-if="course_class_id && unit_id">Curso N°: {{ course_class_id }}</p>
+    <p v-if="course_class_id && unit_id">Unidad {{ unit_id }}</p>
 
     <table v-if="students.length > 0">
       <thead>
