@@ -116,6 +116,12 @@ const routes = [
         name: 'AssingNotes',
         component: () => import('@/views/assign_notes/AssignNotes.vue'),
       },
+
+      {
+        path: '/class/grade/:course_class_id/:unit_id',
+        name: 'StudentScores',
+        component: () => import('@/views/reports/reportScore.vue'),
+      },
       // ------------------------RUTAS DE LA PLANTILLA---------------------
        {
         path: '/theme',

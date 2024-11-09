@@ -1,7 +1,7 @@
 <template>
   <div class="course-section">
     <h1 class="course-title">CURSO DE MATEMÁTICA</h1>
-    <CDropdown class="mb-3" v-if="ConfirmRole()">
+    <CDropdown class="mb-3 me-2" v-if="ConfirmRole()">
       <CDropdownToggle color="primary">CREAR NUEVO(A)</CDropdownToggle>
       <CDropdownMenu>
         <CDropdownItem href="#" @click="openModal">Tarea</CDropdownItem>
@@ -9,7 +9,7 @@
         <CDropdownItem href="#">Aviso</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
-    
+    <CButton class="mb-3" color="warning" v-if="ConfirmRole()"><b>Reporte general de notas</b></CButton>
     <CRow class="mb-3">
         <SectionDetail
           title="Descripción general del curso"
@@ -21,6 +21,7 @@
         Unidad {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
+      <CButton class="mb-3 text-white btn-report" color="info" @click="generateReportScore(course_id,index+1)" v-if="ConfirmRole()"><b>Reporte de notas</b></CButton>
       <CRow v-if="unit.isVisible" class="mb-3">
         <div v-for="item in unit.items" :key="item.id">
           <SectionDetail
@@ -107,7 +108,8 @@ const role_key = localStorage.getItem('r_key') || 'guest'
 const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
 const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(CryptoJS.enc.Utf8)
 
-const course_id = route.params.id; 
+const course_id = Number(route.params.id)
+const unit_id = ref(0)
 
 const taskData = ref([]);
 
@@ -167,9 +169,20 @@ const listTasks = async () => {
   const data = {
     course_id: course_id,
   }
+  units.value = [
+    { isVisible: true, 
+      items: []
+    },
+    { isVisible: true, 
+      items: []
+    }, 
+    { isVisible: true, 
+      items: []
+    },
+  ];
   const response = await TaskService.getItems(data);
   taskData.value = response.data.data;
-
+  
   response.data.data.forEach(task => {
     const unitIndex = task.unit_id - 1;
     task.type = "TAREA";
@@ -239,7 +252,6 @@ const deleteTask = async (id) => {
 }
 
 const scoreTask = async (id) => {
-  console.log("prueba");
   router.push(`/assingNotes/${course_id}/${id}`);
 }
 
@@ -249,6 +261,16 @@ const validateForm = () => {
   }else{
     return true;
   }
+}
+
+const generateReportScore = (course_id, idUnit) => {
+  router.push({ 
+    name: 'StudentScores', // Asegúrate de que esta sea la ruta nombrada de `StudentScores`
+    params: { 
+      course_class_id: course_id, 
+      unit_id: idUnit 
+    }
+  })
 }
 </script>
 
@@ -279,5 +301,8 @@ const validateForm = () => {
 
 i {
   margin-left: 10px;
+}
+.btn-report{
+  background-color: #0d71dc;
 }
 </style>
