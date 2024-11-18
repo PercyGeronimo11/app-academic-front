@@ -127,7 +127,7 @@ export default [
 
 
   // ---------------------------------- PLANTILLA -------------------------
-  {
+  /* {
     component: 'CNavTitle',
     name: 'COMPONENTES DE LA PLANTILLA ',
     roles: ['Administrador', 'Administrativo'],
@@ -445,5 +445,5 @@ export default [
         icon: 'cil-drop',
       },
     ]
-  }
+  } */
 ]

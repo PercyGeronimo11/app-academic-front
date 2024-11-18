@@ -116,7 +116,7 @@
             </CRow>
             <CRow class="mb-3">
               <CCol>
-                <CFormLabel for="description">Descripción</CFormLabel>
+                <CFormLabel for="description">Descripción *</CFormLabel>
                 <CFormTextarea
                   id="description"
                   rows="3"
@@ -311,6 +311,12 @@ const fetchListTasks = async () => {
   };
   const response = await TaskService.getItems(data);
   taskData.value = response.data.data;
+  units.value=[
+    { isVisible: false, items: [] },
+    { isVisible: false, items: [] },
+    { isVisible: false, items: [] },
+    { isVisible: false, items: [] },
+  ];
   response.data.data.forEach((task) => {
     const unitIndex = task.unit_id - 1;
     task.type = "TAREA";
