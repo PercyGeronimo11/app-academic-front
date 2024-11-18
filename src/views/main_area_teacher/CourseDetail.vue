@@ -41,6 +41,14 @@
                   <strong>Horario</strong>
                 </router-link>
               </div>
+              <div class="section-header" @click="navigateToAssistanceDates">
+                <router-link
+                  :to="`/teacher/${idcourseclass}/assistance`"
+                  class="no-underline"
+                >
+                  <strong>Marcar asistencia</strong>
+                </router-link>
+              </div>
             </CCard>
           </CCol>
         </CRow>
@@ -208,6 +216,11 @@ const navigateToHorary = () => {
   const idcourseclass = route.params.courseClass;
   router.push(`/teacher/${idcourseclass}/horary`);
 };
+const navigateToAssistanceDates= () => {
+  const idcourseclass = route.params.courseClass;
+  router.push(`/teacher/${idcourseclass}/assistance-dates`);
+};
+
 const ConfirmRole = () => {
   return decryptedRole == "Profesor";
 };

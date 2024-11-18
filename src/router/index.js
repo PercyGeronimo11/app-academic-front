@@ -123,6 +123,16 @@ const routes = [
         name: 'Area Principal',
         component: () => import('@/views/main_area_teacher/Horary.vue'),
       },
+      {
+        path: '/teacher/:courseClass/assistance-students/:date',
+        name: 'Asistencias del cursoaaa',
+        component: () => import('@/views/main_area_teacher/Assistance.vue'),
+      },
+      {
+        path: '/teacher/:courseClass/assistance-dates',
+        name: 'Asistencias del curso',
+        component: () => import('@/views/main_area_teacher/AssistanceDates.vue'),
+      },
 
       // Para estudiantes
       {

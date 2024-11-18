@@ -27,3 +27,4 @@ export default {
     return await axios.post(`${API_URL}/course-class/horary`, data);
   },
 };
+
