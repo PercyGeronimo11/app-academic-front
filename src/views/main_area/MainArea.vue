@@ -59,12 +59,14 @@ const listItems = async () => {
     const data = { idPeriod: 1 };
     const response = await StudentService.getCourse(data);
     const courseData = response.data.data;
+    console.log(response.data.data);
+    
 
     // Mapea los cursos al formato necesario para las tarjetas
     courses.value = courseData.map((course) => ({
       title: course.name,
       image: null,
-      url: `/class/grade/${course.name.replace(/\s+/g, "-").toLowerCase()}`, 
+      url: `/courseClass/${course.id}/detalle`, 
       category: "Ciencias",
     }));
 

@@ -38,4 +38,10 @@ export default {
   async scoreTaskStudent(data) {
     return await axios.post(`${API_URL}/task/score`, data);
   },
+
+  async scoresGetByUnit(data) {
+    return await axios.get(`${API_URL}/task/getbyUnit`, {
+      params: data,
+    });
+  },
 };

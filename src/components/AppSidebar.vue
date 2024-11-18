@@ -55,15 +55,15 @@ const navigateByRole = () => {
     <CSidebarHeader class="border-bottom">
       <RouterLink custom v-slot="{ href }" @click="navigateByRole">
         <CSidebarBrand as="a" :href="href">
-          <img
+          <img v-if="sidebar.unfoldable"
+            custom-class-name="sidebar-brand-full"
+            src="/src/assets/images/logo.png"
+            :height="65"
+          />
+          <img v-if="!sidebar.unfoldable"
             custom-class-name="sidebar-brand-full"
             src="/src/assets/images/logo-main.png"
             :height="85"
-          />
-          <CIcon
-            custom-class-name="sidebar-brand-narrow"
-            :icon="sygnet"
-            :height="32"
           />
         </CSidebarBrand>
       </RouterLink>

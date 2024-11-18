@@ -18,20 +18,13 @@ export default [
     icon: 'cil-options',
     roles: ['Administrador', 'Administrativo'],
   },
-  {
-    component: 'CNavItem',
-    name: 'Show Grade Section',
-    to: '/grade-section/:id',
-    icon: 'cil-options',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
+  /* {
     component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
-  },
+  }, */
   
   //Para administrativo
   {
@@ -45,23 +38,13 @@ export default [
         component: 'CNavItem',
         name: 'Asignacion de cursos',
         to: '/classroom/assignment-courses',
+        roles: ['Administrador', 'Administrativo'],
       },
       {
         component: 'CNavItem',
         name: 'Lista',
         to: '/classroom/list',
         roles: ['Administrador', 'Administrativo'],
-      },
-      {
-        component: 'CNavItem',
-        name: 'Asignar Cursos',
-        to: '/classroom/assignment-courses',
-        roles: ['Administrador', 'Administrativo'],
-      },
-      {
-        component: 'CNavItem',
-        name: 'Asignacion de cursos',
-        to: '/classroom/assignment-courses',
       },
     ],
   },
@@ -91,27 +74,6 @@ export default [
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
   },
-  {
-    component: 'CNavGroup',
-    name: 'Cursos',
-    to: '/cursos',
-    icon: 'cil-star',
-    roles: ['Administrador', 'Administrativo'],
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Listado',
-        to: '/classroom/grade/section/course/information',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Asignacion',
-        to: '/classroom/grade/section/course/participations',
-      },
-    ],
-  },
-
-
   {
     component: 'CNavTitle',
     name: 'Configuraciones',
@@ -146,13 +108,6 @@ export default [
   
   {
     component: 'CNavItem',
-    name: 'Área Personal',
-    to: '/mainAreaTeacher',
-    icon: 'cil-options',
-    roles: ['Profesor'],
-  },
-  {
-    component: 'CNavItem',
     name: 'Mis Cursos',
     to: '/mainAreaTeacher',
     icon: 'cil-notes',
@@ -167,13 +122,6 @@ export default [
     to: '/mainArea',
     icon: 'cil-options',
     roles: ['Estudiante'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Área Principal',
-    to: '/main/school',
-    icon: 'cil-options',
-    roles: ['Profesor','Estudiante'],
   },
   
 

@@ -1,7 +1,7 @@
 <template>
   <div class="course-section">
     <h1 class="course-title">CURSO DE MATEMÁTICA</h1>
-    <CDropdown class="mb-3" v-if="ConfirmRole()">
+    <CDropdown class="mb-3 me-2" v-if="ConfirmRole()">
       <CDropdownToggle color="primary">CREAR NUEVO(A)</CDropdownToggle>
       <CDropdownMenu>
         <CDropdownItem href="#" @click="openModal">Tarea</CDropdownItem>
@@ -9,7 +9,8 @@
         <CDropdownItem href="#">Aviso</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
-
+    <CButton class="mb-3" color="warning" v-if="ConfirmRole()"><b>Reporte general de notas</b></CButton>
+    
     <div>
       <h2 @click="toggleGeneralVisibility" class="general-title">
         General
@@ -24,7 +25,7 @@
                 <a href=""><strong>Descripción general</strong></a>
               </div>
               <div class="section-content">
-                <p>En el curso aprenderas de la mejor manera</p>
+                <p>En el curso aprenderás de la mejor manera</p>
               </div>
             </CCard>
           </CCol>
@@ -34,19 +35,8 @@
           <CCol :xs="12">
             <CCard class="mb-4 p-3 card-custom">
               <div class="section-header" @click="navigateToHorary">
-                <router-link
-                  :to="`/teacher/${idcourseclass}/horary`"
-                  class="no-underline"
-                >
+                <router-link :to="`/teacher/${course_id}/horary`" class="no-underline">
                   <strong>Horario</strong>
-                </router-link>
-              </div>
-              <div class="section-header" @click="navigateToAssistanceDates">
-                <router-link
-                  :to="`/teacher/${idcourseclass}/assistance`"
-                  class="no-underline"
-                >
-                  <strong>Marcar asistencia</strong>
                 </router-link>
               </div>
             </CCard>
@@ -60,6 +50,9 @@
         Unidad {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
+      <CButton class="mb-3 text-white btn-report" color="info" @click="generateReportScore(course_id, index + 1)" v-if="ConfirmRole()">
+        <b>Reporte de notas</b>
+      </CButton>
       <CRow v-if="unit.isVisible" class="mb-3">
         <div v-for="item in unit.items" :key="item.id">
           <SectionDetail
@@ -72,89 +65,57 @@
         </div>
       </CRow>
     </div>
+    
+    <!-- Modal para crear nueva tarea -->
+    <CModal :visible="isModalOpen" scrollable size="lg" @close="() => { isModalOpen = false }" aria-labelledby="LiveDemoExampleLabel" alignment="center">
+      <CModalHeader>
+        <CModalTitle id="LiveDemoExampleLabel">Nueva tarea</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <CForm>
+          <CContainer>
+            <CRow class="mb-3">
+              <CCol>
+                <CFormLabel for="title">Título *</CFormLabel>
+                <CFormInput type="text" id="title" v-model="formData.title" placeholder="Escriba el título" />
+              </CCol>
+            </CRow>
+            <CRow class="mb-3">
+              <CCol>
+                <CFormLabel for="description">Descripción</CFormLabel>
+                <CFormTextarea id="description" rows="3" v-model="formData.description"></CFormTextarea>
+              </CCol>
+            </CRow>
+            <CRow class="mb-3">
+              <CCol>
+                <CFormLabel for="due_date">Fecha de entrega</CFormLabel>
+                <CFormInput type="date" id="due_date" v-model="formData.due_date" />
+              </CCol>
+              <CCol>
+                <CFormLabel for="unit_id">Unidad</CFormLabel>
+                <CFormSelect id="unit_id" aria-label="Floating label select example" v-model="formData.unit_id">
+                  <option value="0">Seleccione una unidad</option>
+                  <option value="1">Unidad 1</option>
+                  <option value="2">Unidad 2</option>
+                  <option value="3">Unidad 3</option>
+                  <option value="4">Unidad 4</option>
+                </CFormSelect>
+              </CCol>
+            </CRow>
+          </CContainer>
+        </CForm>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="closeModal">Cancelar</CButton>
+        <CButton color="primary" @click="submitToCreate()">Registrar</CButton>
+      </CModalFooter>
+    </CModal>
   </div>
-
-  <CModal
-    :visible="isModalOpen"
-    scrollable
-    size="lg"
-    @close="
-      () => {
-        isModalOpen = false;
-      }
-    "
-    aria-labelledby="LiveDemoExampleLabel"
-    alignment="center"
-  >
-    <CModalHeader>
-      <CModalTitle id="LiveDemoExampleLabel"> Nueva tarea </CModalTitle>
-    </CModalHeader>
-    <CModalBody>
-      <CForm>
-        <CContainer>
-          <CRow class="mb-3">
-            <CCol>
-              <CFormLabel for="title">Título *</CFormLabel>
-              <CFormInput
-                type="text"
-                id="title"
-                v-model="formData.title"
-                placeholder="Escriba el título"
-              />
-            </CCol>
-          </CRow>
-          <CRow class="mb-3">
-            <CCol>
-              <CFormLabel for="description">Descripción</CFormLabel>
-              <CFormTextarea
-                id="description"
-                rows="3"
-                v-model="formData.description"
-              ></CFormTextarea>
-            </CCol>
-          </CRow>
-          <CRow class="mb-3">
-            <CCol>
-              <CFormLabel for="due_date">Fecha de entrega</CFormLabel>
-              <CFormInput type="date" id="due_date" v-model="formData.due_date" />
-            </CCol>
-            <CCol>
-              <CFormLabel for="unit_id">Unidad</CFormLabel>
-              <CFormSelect
-                id="unit_id"
-                aria-label="Floating label select example"
-                v-model="formData.unit_id"
-              >
-                <option value="0">Seleccione una unidad</option>
-                <option value="1">Unidad 1</option>
-                <option value="2">Unidad 2</option>
-                <option value="3">Unidad 3</option>
-                <option value="4">Unidad 4</option>
-              </CFormSelect>
-            </CCol>
-          </CRow>
-        </CContainer>
-      </CForm>
-    </CModalBody>
-    <CModalFooter>
-      <CButton
-        color="secondary"
-        @click="
-          () => {
-            closeModal();
-          }
-        "
-      >
-        Cancelar
-      </CButton>
-      <CButton color="primary" @click="submitToCreate()"> Registrar </CButton>
-    </CModalFooter>
-  </CModal>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import SectionDetail from "./SectionDetail.vue";
+import SectionDetail from "../main_area_teacher/SectionDetail.vue";
 import CryptoJS from "crypto-js";
 import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";
@@ -165,23 +126,20 @@ const router = useRouter();
 
 const role_key = localStorage.getItem("r_key") || "guest";
 const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
-const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(
-  CryptoJS.enc.Utf8
-);
+const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(CryptoJS.enc.Utf8);
 
-const course_id = route.params.id;
+const course_id = Number(route.params.courseClass);
 const isvisibleGeneral = ref(false);
 const taskData = ref([]);
-
-var units = ref([
+const isModalOpen = ref(false);
+const units = ref([
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
 ]);
 
-var isModalOpen = ref(false);
-var formData = ref({
+const formData = ref({
   title: "",
   description: "",
   due_date: "",
@@ -199,7 +157,6 @@ const getPeruvianDate = () => {
   const date = new Date();
   const offset = date.getTimezoneOffset() / 60;
   const peruOffset = -5;
-
   date.setHours(date.getHours() - offset + peruOffset);
   return date.toISOString().split("T")[0];
 };
@@ -213,12 +170,7 @@ function toggleGeneralVisibility() {
 }
 
 const navigateToHorary = () => {
-  const idcourseclass = route.params.courseClass;
-  router.push(`/teacher/${idcourseclass}/horary`);
-};
-const navigateToAssistanceDates= () => {
-  const idcourseclass = route.params.courseClass;
-  router.push(`/teacher/${idcourseclass}/assistance-dates`);
+  router.push(`/teacher/${course_id}/horary`);
 };
 
 const ConfirmRole = () => {
@@ -236,10 +188,9 @@ const closeModal = () => {
 const listTasks = async () => {
   const data = {
     course_id: course_id,
-  };
+  }
   const response = await TaskService.getItems(data);
   taskData.value = response.data.data;
-
   response.data.data.forEach((task) => {
     const unitIndex = task.unit_id - 1;
     task.type = "TAREA";
@@ -260,15 +211,11 @@ const submitToCreate = async () => {
         text: "Tarea registrada con éxito.",
       });
     } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        Swal.fire({
-          icon: "error",
-          title: "Error al Guardar",
-          text: error.response.data.message,
-        });
-      } else {
-        console.log("error:" + error);
-      }
+      Swal.fire({
+        icon: "error",
+        title: "Error al Guardar",
+        text: error.response?.data?.message || "Error desconocido",
+      });
     }
   } else {
     Swal.fire({
@@ -289,41 +236,37 @@ const deleteTask = async (id) => {
         break;
       }
     }
-    closeModal();
     Swal.fire({
       icon: "success",
       title: "Eliminación exitosa",
       text: "Tarea eliminada con éxito.",
     });
   } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      Swal.fire({
-        icon: "error",
-        title: "Error al Eliminar",
-        text: error.response.data.message,
-      });
-    } else {
-      console.log("error:" + error);
-    }
+    Swal.fire({
+      icon: "error",
+      title: "Error al Eliminar",
+      text: error.response?.data?.message || "Error desconocido",
+    });
   }
 };
 
-const scoreTask = async (id) => {
-  console.log("prueba");
+const scoreTask = (id) => {
   router.push(`/assingNotes/${course_id}/${id}`);
 };
 
+const generateReportScore = (course_id, idUnit) => {
+  router.push({
+    name: "StudentScores",
+    params: {
+      course_class_id: course_id,
+      unit_id: idUnit,
+    },
+  });
+};
+
 const validateForm = () => {
-  if (
-    formData.value.title == "" ||
-    formData.value.due_date == "" ||
-    formData.value.unit_id == "" ||
-    formData.value.course_id == ""
-  ) {
-    return false;
-  } else {
-    return true;
-  }
+  const { title, due_date, unit_id } = formData.value;
+  return title && due_date && unit_id;
 };
 </script>
 
@@ -335,19 +278,7 @@ const validateForm = () => {
   transition: color 0.3s;
 }
 
-.unit-title {
-  cursor: pointer;
-  color: #0056b3;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 1.2em;
-  margin-top: 1em;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
-  transition: color 0.3s;
-}
-.general-title {
+.unit-title, .general-title {
   cursor: pointer;
   color: #0056b3;
   display: flex;
@@ -360,19 +291,16 @@ const validateForm = () => {
   transition: color 0.3s;
 }
 
-.general-title:hover {
-  color: #004094;
-}
-
-.unit-title:hover {
+.unit-title:hover, .general-title:hover {
   color: #004094;
 }
 
 i {
   margin-left: 10px;
 }
+
 .no-underline {
   text-decoration: none;
-  color: inherit; /* Mantener el color del texto */
+  color: inherit;
 }
 </style>
