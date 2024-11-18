@@ -34,9 +34,14 @@
         <CRow>
           <CCol :xs="12">
             <CCard class="mb-4 p-3 card-custom">
-              <div class="section-header" @click="navigateToHorary">
-                <router-link :to="`/teacher/${course_id}/horary`" class="no-underline">
-                  <strong>Horario</strong>
+              <div class="section-header">
+                <router-link :to="`/teacher/${course_class_id }/horary`" class="no-underline">
+                  <strong>Crear un horario</strong>
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link :to="`/teacher/${course_class_id }/assistance-dates`" class="no-underline">
+                  <strong>Tomar asistencia</strong>
                 </router-link>
               </div>
             </CCard>
@@ -50,7 +55,7 @@
         Unidad {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
-      <CButton class="mb-3 text-white btn-report" color="info" @click="generateReportScore(course_id, index + 1)" v-if="ConfirmRole()">
+      <CButton class="mb-3 text-white btn-report" color="info" @click="generateReportScore(course_class_id , index + 1)" v-if="ConfirmRole()">
         <b>Reporte de notas</b>
       </CButton>
       <CRow v-if="unit.isVisible" class="mb-3">
@@ -128,7 +133,7 @@ const role_key = localStorage.getItem("r_key") || "guest";
 const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
 const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(CryptoJS.enc.Utf8);
 
-const course_id = Number(route.params.courseClass);
+const course_class_id = Number(route.params.courseClass);
 const isvisibleGeneral = ref(false);
 const taskData = ref([]);
 const isModalOpen = ref(false);
@@ -169,10 +174,6 @@ function toggleGeneralVisibility() {
   isvisibleGeneral.value = !isvisibleGeneral.value;
 }
 
-const navigateToHorary = () => {
-  router.push(`/teacher/${course_id}/horary`);
-};
-
 const ConfirmRole = () => {
   return decryptedRole == "Profesor";
 };
@@ -187,7 +188,7 @@ const closeModal = () => {
 
 const listTasks = async () => {
   const data = {
-    course_id: course_id,
+    course_id: course_class_id ,
   }
   const response = await TaskService.getItems(data);
   taskData.value = response.data.data;
@@ -199,7 +200,7 @@ const listTasks = async () => {
 };
 
 const submitToCreate = async () => {
-  formData.value.course_class_id = course_id;
+  formData.value.course_class_id = course_class_id ;
   if (validateForm()) {
     try {
       await TaskService.createItem(formData.value);
@@ -251,14 +252,14 @@ const deleteTask = async (id) => {
 };
 
 const scoreTask = (id) => {
-  router.push(`/assingNotes/${course_id}/${id}`);
+  router.push(`/assingNotes/${course_class_id }/${id}`);
 };
 
-const generateReportScore = (course_id, idUnit) => {
+const generateReportScore = (course_class_id , idUnit) => {
   router.push({
     name: "StudentScores",
     params: {
-      course_class_id: course_id,
+      course_class_id: course_class_id ,
       unit_id: idUnit,
     },
   });

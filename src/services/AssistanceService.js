@@ -12,11 +12,13 @@ export default {
   },
 
   listAssistancesByDate(data) {
-    // Pasamos `data` como `params` para que axios pueda enviarlo en la URL
     return axios.get(`${API_URL}/assistances/by-date`, {
       params: data,
     });
   },
 
+  updateAssistances(data){
+    return axios.post(`${API_URL}/assistances/update`, data);
+  },
 };
 
