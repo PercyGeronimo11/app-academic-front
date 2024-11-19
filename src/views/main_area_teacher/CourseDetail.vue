@@ -4,8 +4,8 @@
     <CDropdown class="mb-3 me-2" v-if="ConfirmRole()">
       <CDropdownToggle color="primary">CREAR NUEVO(A)</CDropdownToggle>
       <CDropdownMenu>
-        <CDropdownItem href="#" @click="openModal">Tarea</CDropdownItem>
-        <CDropdownItem href="#">Material</CDropdownItem>
+        <CDropdownItem href="#" @click="openModal(true)">Tarea</CDropdownItem>
+        <CDropdownItem href="#" @click="openModalMaterial(true)">Material</CDropdownItem>
         <CDropdownItem href="#">Aviso</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
@@ -35,12 +35,18 @@
           <CCol :xs="12">
             <CCard class="mb-4 p-3 card-custom">
               <div class="section-header">
-                <router-link :to="`/teacher/${course_class_id }/horary`" class="no-underline">
+                <router-link
+                  :to="`/teacher/${course_class_id}/horary`"
+                  class="no-underline"
+                >
                   <strong>Crear un horario</strong>
                 </router-link>
               </div>
               <div class="section-header">
-                <router-link :to="`/teacher/${course_class_id }/assistance-dates`" class="no-underline">
+                <router-link
+                  :to="`/teacher/${course_class_id}/assistance-dates`"
+                  class="no-underline"
+                >
                   <strong>Tomar asistencia</strong>
                 </router-link>
               </div>
@@ -55,24 +61,46 @@
         Unidad {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
-      <CButton class="mb-3 text-white btn-report" color="info" @click="generateReportScore(course_class_id , index + 1)" v-if="ConfirmRole()">
+
+      <CButton
+        class="mb-3 text-white btn-report"
+        color="info"
+        @click="generateReportScore(course_class_id, index + 1)"
+        v-if="ConfirmRole()"
+      >
         <b>Reporte de notas</b>
       </CButton>
-      <CRow v-if="unit.isVisible" class="mb-3">
+
+      <CRow v-if="unit && unit.isVisible" class="mb-3">
         <div v-for="item in unit.items" :key="item.id">
-          <SectionDetail
-            :title="item.type == 'TAREA' ? 'TAREA: ' + item.title : item.title"
+          <!-- Mostrar solo si el tipo es 'TAREA' -->
+          <TaskDetail
+            v-if="item.type === 'TAREA'"
+            :title="'TAREA: ' + item.title"
             :description="item.description"
             :id="item.id"
-            @delete="item.type == 'TAREA' ? deleteTask(item.id) : null"
-            @score="item.type == 'TAREA' ? scoreTask(item.id) : null"
+            @delete="deleteTask(item.id)"
+            @score="scoreTask(item.id)"
+          />
+          <!-- Mostrar solo si el tipo es 'MATERIAL' -->
+          <MaterialDetail
+            v-if="item.type === 'MATERIAL' && item.path_file"
+            :title="item.title"
+            :path-file="item.path_file"
           />
         </div>
       </CRow>
     </div>
-    
+
     <!-- Modal para crear nueva tarea -->
-    <CModal :visible="isModalOpen" scrollable size="lg" @close="() => { isModalOpen = false }" aria-labelledby="LiveDemoExampleLabel" alignment="center">
+    <CModal
+      :visible="isModalOpen"
+      scrollable
+      size="lg"
+      @close="openModal(false)"
+      aria-labelledby="LiveDemoExampleLabel"
+      alignment="center"
+    >
       <CModalHeader>
         <CModalTitle id="LiveDemoExampleLabel">Nueva tarea</CModalTitle>
       </CModalHeader>
@@ -82,13 +110,22 @@
             <CRow class="mb-3">
               <CCol>
                 <CFormLabel for="title">Título *</CFormLabel>
-                <CFormInput type="text" id="title" v-model="formData.title" placeholder="Escriba el título" />
+                <CFormInput
+                  type="text"
+                  id="title"
+                  v-model="formData.title"
+                  placeholder="Escriba el título"
+                />
               </CCol>
             </CRow>
             <CRow class="mb-3">
               <CCol>
                 <CFormLabel for="description">Descripción *</CFormLabel>
-                <CFormTextarea id="description" rows="3" v-model="formData.description"></CFormTextarea>
+                <CFormTextarea
+                  id="description"
+                  rows="3"
+                  v-model="formData.description"
+                ></CFormTextarea>
               </CCol>
             </CRow>
             <CRow class="mb-3">
@@ -98,7 +135,11 @@
               </CCol>
               <CCol>
                 <CFormLabel for="unit_id">Unidad</CFormLabel>
-                <CFormSelect id="unit_id" aria-label="Floating label select example" v-model="formData.unit_id">
+                <CFormSelect
+                  id="unit_id"
+                  aria-label="Floating label select example"
+                  v-model="formData.unit_id"
+                >
                   <option value="0">Seleccione una unidad</option>
                   <option value="1">Unidad 1</option>
                   <option value="2">Unidad 2</option>
@@ -111,8 +152,70 @@
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="closeModal">Cancelar</CButton>
+        <CButton color="secondary" @click="openModal(false)">Cancelar</CButton>
         <CButton color="primary" @click="submitToCreate()">Registrar</CButton>
+      </CModalFooter>
+    </CModal>
+
+    <!-- Modal para subir un material -->
+    <CModal
+      :visible="isModalOpenMaterial"
+      scrollable
+      size="lg"
+      @close="openModal(false)"
+      aria-labelledby="LiveDemoExampleLabel"
+      alignment="center"
+    >
+      <CModalHeader>
+        <CModalTitle id="LiveDemoExampleLabel">Nuevo material educativo</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <CForm>
+          <CContainer>
+            <CRow class="mb-3">
+              <CCol>
+                <CFormLabel for="title">Título</CFormLabel>
+                <CFormInput
+                  type="text"
+                  id="title"
+                  v-model="materialData.title"
+                  placeholder="Escriba el título"
+                />
+              </CCol>
+            </CRow>
+            <CRow class="mb-3">
+              <CCol>
+                <CFormLabel for="unit_id">Unidad</CFormLabel>
+                <CFormSelect
+                  id="unit_id"
+                  aria-label="Floating label select example"
+                  v-model="materialData.unit_id"
+                >
+                  <option value="">Seleccione una unidad</option>
+                  <option value="1">Unidad 1</option>
+                  <option value="2">Unidad 2</option>
+                  <option value="3">Unidad 3</option>
+                  <option value="4">Unidad 4</option>
+                </CFormSelect>
+              </CCol>
+            </CRow>
+            <CRow class="mb-3">
+              <CCol>
+                <CFormLabel for="file">Archivo PDF</CFormLabel>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  id="file"
+                  @change="handleFileChange"
+                />
+              </CCol>
+            </CRow>
+          </CContainer>
+        </CForm>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" @click="openModalMaterial(false)">Cancelar</CButton>
+        <CButton color="primary" @click="submitToCreateMaterial">Guardar</CButton>
       </CModalFooter>
     </CModal>
   </div>
@@ -120,24 +223,39 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import SectionDetail from "../main_area_teacher/SectionDetail.vue";
+import MaterialDetail from "./MaterialDetail.vue";
+import TaskDetail from "./TaskDetail.vue";
 import CryptoJS from "crypto-js";
 import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import TaskService from "@/services/TaskService";
 import AssistanceService from "@/services/AssistanceService";
+import MaterialService from "@/services/MaterialService";
 
 const route = useRoute();
 const router = useRouter();
 
 const role_key = localStorage.getItem("r_key") || "guest";
 const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
-const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(CryptoJS.enc.Utf8);
+const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(
+  CryptoJS.enc.Utf8
+);
 
 const course_class_id = Number(route.params.courseClass);
 const isvisibleGeneral = ref(false);
 const taskData = ref([]);
 const isModalOpen = ref(false);
+const isModalOpenMaterial = ref(false);
+
+const materialData = ref({
+  title: "",
+  unit_id: "",
+  course_class_id: course_class_id,
+  period_id: 1,
+});
+const listMaterials = ref([]);
+const pdfFile = ref(null);
+
 const units = ref([
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
@@ -156,9 +274,13 @@ const formData = ref({
 
 var assistenceData = ref([]);
 
+var assistenceData = ref([]);
+
+// --------------------------------METODOS--------------------------
 onMounted(() => {
   formData.value.due_date = getPeruvianDate();
-  listTasks();
+  fetchListTasks();
+  fetchListMaterials();
 });
 
 const getPeruvianDate = () => {
@@ -181,21 +303,25 @@ const ConfirmRole = () => {
   return decryptedRole == "Profesor";
 };
 
-const openModal = () => {
-  isModalOpen.value = true;
+const openModal = (decision) => {
+  isModalOpen.value = decision;
 };
 
-const closeModal = () => {
-  isModalOpen.value = false;
+const openModalMaterial = (decision) => {
+  isModalOpenMaterial.value = decision;
 };
 
-const listTasks = async () => {
+const handleFileChange = (event) => {
+  pdfFile.value = event.target.files[0];
+};
+
+const fetchListTasks = async () => {
   const data = {
-    course_id: course_class_id ,
-  }
+    course_id: course_class_id,
+  };
   const response = await TaskService.getItems(data);
   taskData.value = response.data.data;
-  units.value=[
+  units.value = [
     { isVisible: false, items: [] },
     { isVisible: false, items: [] },
     { isVisible: false, items: [] },
@@ -207,14 +333,31 @@ const listTasks = async () => {
     units.value[unitIndex].items.push(task);
   });
 };
+const fetchListMaterials = async () => {
+  try {
+    const response = await MaterialService.getItems(course_class_id);
+    listMaterials.value = response.data.data;
+
+    listMaterials.value.forEach((material) => {
+      const unitIndex = material.unit_id - 1; // Ajusta el índice (si unit_id empieza en 1)
+      if (units.value[unitIndex]) {
+        material.type = "MATERIAL";
+        units.value[unitIndex].items.push(material);
+      }
+    });
+    console.log("listaaa: ", units.value);
+  } catch (error) {
+    console.error("Error al obtener los materiales:", error);
+  }
+};
 
 const submitToCreate = async () => {
-  formData.value.course_class_id = course_class_id ;
+  formData.value.course_class_id = course_class_id;
   if (validateForm()) {
     try {
       await TaskService.createItem(formData.value);
-      closeModal();
-      listTasks();
+      openModal(false);
+      fetchListTasks();
       Swal.fire({
         icon: "success",
         title: "Registro exitoso",
@@ -233,6 +376,34 @@ const submitToCreate = async () => {
       title: "Error",
       text: "Complete todos los campos obligatorios.",
     });
+  }
+};
+
+const submitToCreateMaterial = async () => {
+  if (!materialData.value.title || !materialData.value.unit_id) {
+    alert("Por favor, completa todos los campos obligatorios.");
+    return;
+  }
+
+  if (!pdfFile.value) {
+    alert("Selecciona un archivo PDF antes de guardar.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("title", materialData.value.title);
+  formData.append("unit_id", materialData.value.unit_id);
+  formData.append("course_class_id", materialData.value.course_class_id);
+  formData.append("period_id", materialData.value.period_id);
+  formData.append("pdf", pdfFile.value);
+
+  try {
+    const response = await MaterialService.createItem(formData);
+    alert("Material educativo creado con éxito.");
+    closeModal();
+  } catch (error) {
+    console.error("Error al guardar el material:", error);
+    alert("Hubo un error al guardar el material.");
   }
 };
 
@@ -261,14 +432,14 @@ const deleteTask = async (id) => {
 };
 
 const scoreTask = (id) => {
-  router.push(`/assingNotes/${course_class_id }/${id}`);
+  router.push(`/assingNotes/${course_class_id}/${id}`);
 };
 
-const generateReportScore = (course_class_id , idUnit) => {
+const generateReportScore = (course_class_id, idUnit) => {
   router.push({
     name: "StudentScores",
     params: {
-      course_class_id: course_class_id ,
+      course_class_id: course_class_id,
       unit_id: idUnit,
     },
   });
@@ -297,7 +468,8 @@ const ReportAssistence = async () => {
   transition: color 0.3s;
 }
 
-.unit-title, .general-title {
+.unit-title,
+.general-title {
   cursor: pointer;
   color: #0056b3;
   display: flex;
@@ -310,7 +482,8 @@ const ReportAssistence = async () => {
   transition: color 0.3s;
 }
 
-.unit-title:hover, .general-title:hover {
+.unit-title:hover,
+.general-title:hover {
   color: #004094;
 }
 
