@@ -175,6 +175,11 @@ const routes = [
         name: 'StudentScores',
         component: () => import('@/views/reports/reportScore.vue'),
       },
+      {
+        path: '/class/grade/:course_class_id',
+        name: 'StudentAssistence',
+        component: () => import('@/views/reports/reportAssistence.vue'),
+      },
       // ------------------------RUTAS DE LA PLANTILLA---------------------
       {
         path: '/theme',

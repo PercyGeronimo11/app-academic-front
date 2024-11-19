@@ -1,119 +1,279 @@
 <template>
-  <div>
-    <CButton color="secondary" @click="goBack" class="mb-3">
+  <div class="grades-container">
+    <CButton color="secondary" @click="goBack" class="back-button">
       ← Regresar
     </CButton>
     <h2>Calificaciones de Estudiantes</h2>
 
-    <!-- Mostrar los valores de `course_class_id` y `unit_id` solo si están definidos -->
-    <p v-if="course_class_id && unit_id">Curso N°: {{ course_class_id }}</p>
-    <p v-if="course_class_id && unit_id">Unidad {{ unit_id }}</p>
+    <!-- Mostrar la información del curso -->
+    <div v-if="dataCourse" class="info-wrapper">
+      <div class="info-container">
+        <div class="info-box">
+          <p>Curso: <b>{{ dataCourse.course_name }}</b></p>
+          <span></span>
+        </div>
+        <div class="info-box">
+          <p>Grado: <b>{{ dataCourse.grade }}</b></p>
+          <span></span>
+        </div>
+        <div class="info-box">
+          <p>Sección: <b>{{ dataCourse.section }}</b></p>
+          <span></span>
+        </div>
+      </div>
+    </div>
 
-    <table v-if="students.length > 0">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Apellido</th>
-          <th v-for="index in maxTasks" :key="index">
-            T{{ index }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="student in students" :key="student.student_id">
-          <td>{{ student.student_name }}</td>
-          <td>{{ student.student_surname }}</td>
-          <td v-for="index in maxTasks" :key="index">
-            {{ student.scores[index - 1]?.score || "---" }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <p v-else>No hay datos de estudiantes disponibles.</p>
+    <div class="table-container">
+      <table v-if="students.length > 0" class="grades-table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th v-for="index in maxTasks" :key="index">
+              T{{ index }}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="student in students" :key="student.student_id">
+            <td>{{ student.student_name }}</td>
+            <td>{{ student.student_surname }}</td>
+            <td v-for="index in maxTasks" :key="index">
+              {{ student.scores[index - 1]?.score || "---" }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p v-else class="no-data-text">No hay datos de estudiantes disponibles.</p>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import TaskService from "@/services/TaskService"
+import { ref, onMounted, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import TaskService from "@/services/TaskService";
+import CourseClassService from "@/services/CourseClassService";
 
 // Obtener acceso al enrutador y a los parámetros de la ruta
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
-// Obtener `course_class_id` y `unit_id` de los parámetros de la ruta, con un valor predeterminado en caso de que falten
-const course_class_id = ref(Number(route.params.course_class_id) || 0)
-const unit_id = ref(Number(route.params.unit_id) || 0)
+// Obtener `course_class_id` y `unit_id` de los parámetros de la ruta
+const course_class_id = ref(Number(route.params.course_class_id) || 0);
+const unit_id = ref(Number(route.params.unit_id) || 0);
 
-// Verificar que los valores sean correctos en la consola
-console.log('Course Class ID:', course_class_id.value)
-console.log('Unit ID:', unit_id.value)
-
-const students = ref([])
+const students = ref([]);
+const dataCourse = ref(null);
 
 // Calcular el número máximo de tareas
 const maxTasks = computed(() => {
   return students.value.length > 0
-    ? Math.max(...students.value.map(student => student.scores.length))
-    : 0
-})
+    ? Math.max(...students.value.map((student) => student.scores.length))
+    : 0;
+});
+
+// Obtener información del curso
+const getDataCourse = async () => {
+  try {
+    const response = await CourseClassService.getDataCourse(course_class_id.value);
+    dataCourse.value = response.data.data; // Guardar los datos del curso en la variable reactiva
+  } catch (error) {
+    console.error("Error al cargar los datos del curso:", error);
+  }
+};
 
 // Función para obtener datos de la API
 const fetchData = async () => {
-  if (course_class_id.value && unit_id.value) { // Asegúrate de que los valores estén definidos antes de hacer la solicitud
+  if (course_class_id.value && unit_id.value) {
     try {
       const dataInput = {
         course_class_id: course_class_id.value,
         unit_id: unit_id.value,
-      }
-      const response = await TaskService.scoresGetByUnit(dataInput)
+      };
+      const response = await TaskService.scoresGetByUnit(dataInput);
 
       if (response.data.success) {
-        students.value = response.data.data
+        students.value = response.data.data;
       }
     } catch (error) {
-      console.error("Error al cargar los datos:", error)
+      console.error("Error al cargar los datos:", error);
     }
   } else {
-    console.warn("Parámetros course_class_id o unit_id no están definidos.")
+    console.warn("Parámetros course_class_id o unit_id no están definidos.");
   }
-}
+};
 
 // Función para regresar a la página anterior
 const goBack = () => {
-  router.back()
-}
+  router.back();
+};
 
-// Llamar a `fetchData` cuando el componente se monte
-onMounted(fetchData)
+// Ejecutar funciones al montar el componente
+onMounted(() => {
+  fetchData();
+  getDataCourse();
+});
 </script>
 
 <style scoped>
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 1rem;
+/* Contenedor Principal */
+.grades-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-th, td {
-  padding: 8px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background-color: #f2f2f2;
-  font-weight: bold;
-}
-
-tr:hover {
-  background-color: #f5f5f5;
-}
-
+/* Título */
 h2 {
   color: #333;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+/* Botón de Regreso */
+.back-button {
+  background-color: #007BFF;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.info-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0px;
+}
+
+.info-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 800px;
+  width: 100%;
+}
+
+/* Estilo de cada caja dentro de la información */
+.info-box {
+  flex: 1;
+  min-width: 150px;
+  padding: 15px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.info-box p {
+  margin: 0;
+  font-size: 1rem;
+  color: #555;
+}
+
+.info-box span {
+  display: block;
+  margin-top: 5px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+/* Tabla de Calificaciones */
+.table-container {
+  overflow-x: auto;
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 1rem;
+  text-align: left;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.grades-table th, .grades-table td {
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #ddd; /* Separación entre columnas */
+}
+
+.grades-table th:last-child,
+.grades-table td:last-child {
+  border-right: none;
+}
+
+.grades-table th {
+  background-color: #007BFF;
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.grades-table td {
+  background-color: #f9f9f9;
+}
+
+.grades-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.grades-table tr:hover {
+  background-color: #eaf4ff;
+}
+
+/* Mensaje sin datos */
+.no-data-text {
+  text-align: center;
+  color: #999;
+  font-size: 1.2rem;
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+  h2 {
+    font-size: 1.5rem;
+  }
+
+  .grades-table th, .grades-table td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
+
+  .back-button {
+    font-size: 0.9rem;
+    padding: 8px 15px;
+  }
+
+  .info-container {
+    padding: 15px;
+  }
+
+  .info-box {
+    min-width: 100%;
+  }
 }
 </style>

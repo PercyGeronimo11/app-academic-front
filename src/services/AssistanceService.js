@@ -20,5 +20,13 @@ export default {
   updateAssistances(data){
     return axios.post(`${API_URL}/assistances/update`, data);
   },
+
+  getReport(id){
+    return axios.get(`${API_URL}/assistances/report`, {
+      params: {
+        course_class_id: id 
+      },
+    });
+  }
 };
 

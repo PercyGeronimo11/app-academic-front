@@ -9,7 +9,7 @@
         <CDropdownItem href="#">Aviso</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
-    <CButton class="mb-3" color="warning" v-if="ConfirmRole()"><b>Reporte general de notas</b></CButton>
+    <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence"><b>Reporte general de asistencia</b></CButton>
     
     <div>
       <h2 @click="toggleGeneralVisibility" class="general-title">
@@ -125,6 +125,7 @@ import CryptoJS from "crypto-js";
 import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import TaskService from "@/services/TaskService";
+import AssistanceService from "@/services/AssistanceService";
 
 const route = useRoute();
 const router = useRouter();
@@ -152,6 +153,8 @@ const formData = ref({
   course_class_id: "",
   period_id: 1,
 });
+
+var assistenceData = ref([]);
 
 onMounted(() => {
   formData.value.due_date = getPeruvianDate();
@@ -275,6 +278,15 @@ const validateForm = () => {
   const { title, due_date, unit_id } = formData.value;
   return title && due_date && unit_id;
 };
+
+const ReportAssistence = async () => {
+  router.push({
+    name: "StudentAssistence",
+    params: {
+      course_class_id: course_class_id
+    },
+  });
+}
 </script>
 
 <style scoped>

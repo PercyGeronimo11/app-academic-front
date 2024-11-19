@@ -26,5 +26,13 @@ export default {
   async createHorary(data) {
     return await axios.post(`${API_URL}/course-class/horary`, data);
   },
+
+  async getDataCourse(id) {
+    return await axios.get(`${API_URL}/course-class/data`, {
+      params:{
+        course_class_id : id
+      }
+    });
+  },
 };
 
