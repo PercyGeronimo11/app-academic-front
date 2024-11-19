@@ -73,16 +73,22 @@
         <b>Reporte de notas</b>
       </CButton>
 
-      <CRow v-if="unit.isVisible" class="mb-3">
+      <CRow v-if="unit && unit.isVisible" class="mb-3">
         <div v-for="item in unit.items" :key="item.id">
-          <SectionDetail
-            :title="
-              item.type === 'TAREA' ? 'TAREA: ' + item.title : 'MATERIAL: ' + item.title
-            "
+          <!-- Mostrar solo si el tipo es 'TAREA' -->
+          <TaskDetail
+            v-if="item.type === 'TAREA'"
+            :title="'TAREA: ' + item.title"
             :description="item.description"
             :id="item.id"
-            @delete="item.type === 'TAREA' ? deleteTask(item.id) : null"
-            @score="item.type === 'TAREA' ? scoreTask(item.id) : null"
+            @delete="deleteTask(item.id)"
+            @score="scoreTask(item.id)"
+          />
+          <!-- Mostrar solo si el tipo es 'MATERIAL' -->
+          <MaterialDetail
+            v-if="item.type === 'MATERIAL' && item.path_file"
+            :title="item.title"
+            :path-file="item.path_file"
           />
         </div>
       </CRow>
@@ -219,7 +225,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import SectionDetail from "../main_area_teacher/SectionDetail.vue";
+import MaterialDetail from "./MaterialDetail.vue";
+import TaskDetail from "./TaskDetail.vue";
 import CryptoJS from "crypto-js";
 import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";
@@ -311,7 +318,7 @@ const fetchListTasks = async () => {
   };
   const response = await TaskService.getItems(data);
   taskData.value = response.data.data;
-  units.value=[
+  units.value = [
     { isVisible: false, items: [] },
     { isVisible: false, items: [] },
     { isVisible: false, items: [] },
@@ -322,6 +329,23 @@ const fetchListTasks = async () => {
     task.type = "TAREA";
     units.value[unitIndex].items.push(task);
   });
+};
+const fetchListMaterials = async () => {
+  try {
+    const response = await MaterialService.getItems(course_class_id);
+    listMaterials.value = response.data.data;
+
+    listMaterials.value.forEach((material) => {
+      const unitIndex = material.unit_id - 1; // Ajusta el índice (si unit_id empieza en 1)
+      if (units.value[unitIndex]) {
+        material.type = "MATERIAL";
+        units.value[unitIndex].items.push(material);
+      }
+    });
+    console.log("listaaa: ", units.value);
+  } catch (error) {
+    console.error("Error al obtener los materiales:", error);
+  }
 };
 
 const submitToCreate = async () => {
@@ -377,26 +401,6 @@ const submitToCreateMaterial = async () => {
   } catch (error) {
     console.error("Error al guardar el material:", error);
     alert("Hubo un error al guardar el material.");
-  }
-};
-
-const fetchListMaterials = async () => {
-  try {
-    const response = await MaterialService.getItems(course_class_id);
-    listMaterials.value = response.data.data;
-
-    // Limpia las unidades antes de añadir elementos nuevos
-    units.value.forEach((unit) => (unit.items = []));
-
-    listMaterials.value.forEach((material) => {
-      const unitIndex = material.unit_id - 1; // Ajusta el índice (si unit_id empieza en 1)
-      if (units.value[unitIndex]) {
-        material.type = "MATERIAL"; // Identifica como material
-        units.value[unitIndex].items.push(material);
-      }
-    });
-  } catch (error) {
-    console.error("Error al obtener los materiales:", error);
   }
 };
 
