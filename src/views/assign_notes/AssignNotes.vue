@@ -1,5 +1,6 @@
 <template>
     <div class="alumno-list">
+      <h3 class="text-center">ASIGNACIÓN DE NOTAS</h3><br>
       <CTable class="alumno-table">
         <CTableHead>
           <CTableRow>

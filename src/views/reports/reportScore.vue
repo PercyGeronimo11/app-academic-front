@@ -46,6 +46,9 @@
       </table>
       <p v-else class="no-data-text">No hay datos de estudiantes disponibles.</p>
     </div>
+    <CButton color="secondary" @click="generatePDF" class="back-button">
+      Generar PDF
+    </CButton>
   </div>
 </template>
 
@@ -54,6 +57,8 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import TaskService from "@/services/TaskService";
 import CourseClassService from "@/services/CourseClassService";
+import jsPDF from 'jspdf';
+import autoTable from "jspdf-autotable";
 
 // Obtener acceso al enrutador y a los parámetros de la ruta
 const route = useRoute();
@@ -108,6 +113,44 @@ const fetchData = async () => {
 const goBack = () => {
   router.back();
 };
+
+function generatePDF() {
+  const doc = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  doc.setFont('helvetica', 'normal');
+
+  // Student Data (Organized as requested)
+  const studentData = [
+    [{ content: 'Nombre', styles: { fontStyle: 'bold' } }, { content: 'Apellido', styles: { fontStyle: 'bold' } }, { content: 'T1', styles: { fontStyle: 'bold' } }, { content: 'T2', styles: { fontStyle: 'bold' } }, { content: 'T3', styles: { fontStyle: 'bold' } }],
+  ];
+
+  students.value.forEach((student) => {
+    studentData.push([
+      { content: student.student_name },
+      { content: student.student_surname },
+      ...student.scores.map((score) => score.score || '---'), // Map scores to '---' if empty
+    ]);
+  });
+
+  // Set the title
+  doc.setFontSize(16);
+  doc.setFont("bold");
+  doc.text("Reportes de Notas", 10, 10); // Adjust position if needed
+
+  // Generate the Student Information Table
+  autoTable(doc, {
+    body: studentData,
+    startY: 20, // Start the table below the title
+    theme: 'grid',
+    styles: { font: 'helvetica', fontStyle: 'normal', fontSize: 10 },
+  });
+
+  doc.save("students.pdf");
+}
 
 // Ejecutar funciones al montar el componente
 onMounted(() => {
