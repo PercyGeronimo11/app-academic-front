@@ -4,7 +4,11 @@ const API_URL = import.meta.env.VITE_API_URL;
 
 export default {
   async getItems(courseClassId) {
-    return await axios.get(`${API_URL}/material/course-class/${courseClassId}`);
+    return await axios.get(`${API_URL}/material/list`,{
+      params: {
+        course_class_id: courseClassId
+      },
+    });
   },
   
   async getItem(id) {

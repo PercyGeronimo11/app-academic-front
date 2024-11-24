@@ -131,15 +131,18 @@ const routes = [
         name: 'Área Principal para estudiante',
         component: () => import('@/views/main_area_student/MainAreaStudent.vue'),
       },
+      {
+        path: '/student/courseClass/:courseClass/detalle',
+        name: 'Detalle del curso para estudiante',
+        component: () => import('@/views/main_area_student/CourseDetail.vue'),
+      },
 
-      // Para estudiantes y docentes
+      // Para docentes
       {
         path: '/courseClass/:courseClass/detalle',
         name: 'Detalle del curso',
         component: () => import('@/views/main_area_teacher/CourseDetail.vue'),
       },
-
-
 
       // {
       //   path: '/classroom/assignment-courses',

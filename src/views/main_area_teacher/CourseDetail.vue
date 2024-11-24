@@ -1,6 +1,6 @@
 <template>
   <div class="course-section">
-    <h1 class="course-title">CURSO DE MATEMÁTICA</h1>
+    <h1 class="course-title">Curso de {{ courseClassData.course_name }}</h1>
     <CDropdown class="mb-3 me-2" v-if="ConfirmRole()">
       <CDropdownToggle color="primary">CREAR NUEVO(A)</CDropdownToggle>
       <CDropdownMenu>
@@ -9,8 +9,10 @@
         <CDropdownItem href="#">Aviso</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
-    <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence"><b>Reporte general de asistencia</b></CButton>
-    
+    <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence"
+      ><b>Reporte general de asistencia</b></CButton
+    >
+
     <div>
       <h2 @click="toggleGeneralVisibility" class="general-title">
         General
@@ -229,8 +231,8 @@ import CryptoJS from "crypto-js";
 import { useRoute, useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import TaskService from "@/services/TaskService";
-import AssistanceService from "@/services/AssistanceService";
 import MaterialService from "@/services/MaterialService";
+import CourseClassService from "@/services/CourseClassService";
 
 const route = useRoute();
 const router = useRouter();
@@ -263,6 +265,11 @@ const units = ref([
   { isVisible: false, items: [] },
 ]);
 
+const courseClassData = ref({
+  course_name: "",
+  teacher_name: "",
+});
+
 const formData = ref({
   title: "",
   description: "",
@@ -281,6 +288,7 @@ onMounted(() => {
   formData.value.due_date = getPeruvianDate();
   fetchListTasks();
   fetchListMaterials();
+  getCourseClassData();
 });
 
 const getPeruvianDate = () => {
@@ -315,11 +323,18 @@ const handleFileChange = (event) => {
   pdfFile.value = event.target.files[0];
 };
 
+const getCourseClassData = async () => {
+  try {
+    const response = await CourseClassService.getCourseClass(course_class_id);
+    courseClassData.value = response.data.data;
+    console.log("dataaa:",courseClassData);
+  } catch (error) {
+    console.error("Error al cargar datos del curso:", error);
+  }
+};
+
 const fetchListTasks = async () => {
-  const data = {
-    course_id: course_class_id,
-  };
-  const response = await TaskService.getItems(data);
+  const response = await TaskService.getItems(course_class_id);
   taskData.value = response.data.data;
   units.value = [
     { isVisible: false, items: [] },

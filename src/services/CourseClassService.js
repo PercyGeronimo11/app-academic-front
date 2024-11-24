@@ -27,8 +27,8 @@ export default {
     return await axios.post(`${API_URL}/course-class/horary`, data);
   },
 
-  async getDataCourse(id) {
-    return await axios.get(`${API_URL}/course-class/data`, {
+  async getCourseClass(id) {
+    return await axios.get(`${API_URL}/course-class/get`, {
       params:{
         course_class_id : id
       }

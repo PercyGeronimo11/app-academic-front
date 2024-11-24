@@ -3,10 +3,10 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL; 
 
 export default {
-  async getItems(data) {
+  async getItems(id) {
     return await axios.get(`${API_URL}/task/list`,{
       params: {
-        data: data,
+        course_class_id: id,
       }
     });
   },
