@@ -127,9 +127,9 @@ const routes = [
 
       // Para estudiantes
       {
-        path: '/mainArea',
-        name: 'Área Principal',
-        component: () => import('@/views/main_area/MainArea.vue'),
+        path: '/mainAreaStudent',
+        name: 'Área Principal para estudiante',
+        component: () => import('@/views/main_area_student/MainAreaStudent.vue'),
       },
 
       // Para estudiantes y docentes

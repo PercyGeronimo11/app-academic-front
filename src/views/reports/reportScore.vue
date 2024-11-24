@@ -1,23 +1,27 @@
 <template>
   <div class="grades-container">
-    <CButton color="secondary" @click="goBack" class="back-button">
-      ← Regresar
-    </CButton>
+    <CButton color="secondary" @click="goBack" class="back-button"> ← Regresar </CButton>
     <h2>Calificaciones de Estudiantes</h2>
 
     <!-- Mostrar la información del curso -->
     <div v-if="dataCourse" class="info-wrapper">
       <div class="info-container">
         <div class="info-box">
-          <p>Curso: <b>{{ dataCourse.course_name }}</b></p>
+          <p>
+            Curso: <b>{{ dataCourse.course_name }}</b>
+          </p>
           <span></span>
         </div>
         <div class="info-box">
-          <p>Grado: <b>{{ dataCourse.grade }}</b></p>
+          <p>
+            Grado: <b>{{ dataCourse.grade }}</b>
+          </p>
           <span></span>
         </div>
         <div class="info-box">
-          <p>Sección: <b>{{ dataCourse.section }}</b></p>
+          <p>
+            Sección: <b>{{ dataCourse.section }}</b>
+          </p>
           <span></span>
         </div>
       </div>
@@ -29,9 +33,7 @@
           <tr>
             <th>Nombre</th>
             <th>Apellido</th>
-            <th v-for="index in maxTasks" :key="index">
-              T{{ index }}
-            </th>
+            <th v-for="index in maxTasks" :key="index">T{{ index }}</th>
           </tr>
         </thead>
         <tbody>
@@ -57,7 +59,7 @@ import { ref, onMounted, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import TaskService from "@/services/TaskService";
 import CourseClassService from "@/services/CourseClassService";
-import jsPDF from 'jspdf';
+import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 // Obtener acceso al enrutador y a los parámetros de la ruta
@@ -115,24 +117,31 @@ const goBack = () => {
 };
 
 function generatePDF() {
+  const inicioPdf = Date.now();
   const doc = new jsPDF({
-    orientation: 'portrait',
-    unit: 'mm',
-    format: 'a4',
+    orientation: "portrait",
+    unit: "mm",
+    format: "a4",
   });
 
-  doc.setFont('helvetica', 'normal');
+  doc.setFont("helvetica", "normal");
 
   // Student Data (Organized as requested)
   const studentData = [
-    [{ content: 'Nombre', styles: { fontStyle: 'bold' } }, { content: 'Apellido', styles: { fontStyle: 'bold' } }, { content: 'T1', styles: { fontStyle: 'bold' } }, { content: 'T2', styles: { fontStyle: 'bold' } }, { content: 'T3', styles: { fontStyle: 'bold' } }],
+    [
+      { content: "Nombre", styles: { fontStyle: "bold" } },
+      { content: "Apellido", styles: { fontStyle: "bold" } },
+      { content: "T1", styles: { fontStyle: "bold" } },
+      { content: "T2", styles: { fontStyle: "bold" } },
+      { content: "T3", styles: { fontStyle: "bold" } },
+    ],
   ];
 
   students.value.forEach((student) => {
     studentData.push([
       { content: student.student_name },
       { content: student.student_surname },
-      ...student.scores.map((score) => score.score || '---'), // Map scores to '---' if empty
+      ...student.scores.map((score) => score.score || "---"), // Map scores to '---' if empty
     ]);
   });
 
@@ -145,11 +154,43 @@ function generatePDF() {
   autoTable(doc, {
     body: studentData,
     startY: 20, // Start the table below the title
-    theme: 'grid',
-    styles: { font: 'helvetica', fontStyle: 'normal', fontSize: 10 },
+    theme: "grid",
+    styles: { font: "helvetica", fontStyle: "normal", fontSize: 10 },
   });
 
   doc.save("students.pdf");
+
+  const inicio = localStorage.getItem("tiempoLogin");
+  const ahora = Date.now();
+  const finPdf = Date.now();
+  const tiempoTranscurrido = (ahora - inicio) / 1000;
+  console.log(
+    `Tiempo desde el inicio de sesión hasta la generación del PDF: ${tiempoTranscurrido.toFixed(2)} segundos`
+  );
+  const diferencia = (inicioPdf - finPdf) / 1000;
+  // console.log(
+  //   `Tiempo de generación del PDF: ${diferencia.toFixed(2)} segundos`
+  // );
+
+  // const timeStart = new Date(Number(inicio)).toISOString().substr(11, 8); // Convertir a formato HH:mm:ss
+  //       const timeEnd = new Date(ahora).toISOString().substr(11, 8);
+  //       const diff = new Date(ahora - inicio).toISOString().substr(11, 8);
+
+  //       // Enviar datos a la API
+  //       try {
+  //         const response = await axios.post('http://tu-dominio/api/time-post', {
+  //           time_report_start: timeStart,
+  //           time_report_end: timeEnd,
+  //           time_report_total: diff,
+  //         });
+
+  //         console.log('Respuesta de la API:', response.data);
+  //         // Restablecer cronómetro
+  //         localStorage.removeItem('tiempoLogin');
+  //       } catch (error) {
+  //         console.error('Error al registrar tiempo:', error);
+  //       }
+
 }
 
 // Ejecutar funciones al montar el componente
@@ -165,7 +206,7 @@ onMounted(() => {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
   background-color: #ffffff;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -182,7 +223,7 @@ h2 {
 
 /* Botón de Regreso */
 .back-button {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   font-size: 1rem;
   padding: 10px 20px;
@@ -258,7 +299,8 @@ h2 {
   overflow: hidden;
 }
 
-.grades-table th, .grades-table td {
+.grades-table th,
+.grades-table td {
   padding: 15px;
   border-bottom: 1px solid #ddd;
   border-right: 1px solid #ddd; /* Separación entre columnas */
@@ -270,7 +312,7 @@ h2 {
 }
 
 .grades-table th {
-  background-color: #007BFF;
+  background-color: #007bff;
   color: white;
   text-transform: uppercase;
   font-weight: bold;
@@ -301,7 +343,8 @@ h2 {
     font-size: 1.5rem;
   }
 
-  .grades-table th, .grades-table td {
+  .grades-table th,
+  .grades-table td {
     padding: 10px;
     font-size: 0.9rem;
   }

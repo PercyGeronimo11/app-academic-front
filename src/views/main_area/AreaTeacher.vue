@@ -4,7 +4,7 @@
       <input
         type="text"
         v-model="searchQuery"
-        placeholder="Buscar cursos..."
+        placeholder="Buscar cursos - teacher ..."
         class="search-bar"
       />
     </div>

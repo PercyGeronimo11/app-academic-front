@@ -1,5 +1,5 @@
 <template>
-  <a :href="url" target="_blank" class="card">
+  <a :href="url"  class="card">
     <div v-if="image" class="image-wrapper">
       <img :src="image" alt="Imagen del Curso" class="card-image" />
     </div>

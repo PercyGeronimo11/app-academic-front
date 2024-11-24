@@ -60,36 +60,38 @@
 </template>
 
 <script>
-import AuthService from '@/services/AuthService'; 
-import CryptoJS from 'crypto-js';
-import Swal from 'sweetalert2';
+import AuthService from "@/services/AuthService";
+import CryptoJS from "crypto-js";
+import Swal from "sweetalert2";
 
 export default {
   data() {
     return {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     };
   },
   methods: {
     async handleLogin() {
       try {
+        const inicio = Date.now(); // Marca de tiempo al iniciar sesión
+        localStorage.setItem("tiempoLogin", inicio);
         const credentials = {
           email: this.email,
           password: this.password,
         };
 
         const response = await AuthService.loginService(credentials);
-        
+
         const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
 
         const role = response.data.user.role;
         const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
         console.log(encryptedRol);
-        localStorage.setItem('r_key', encryptedRol);//role_key
+        localStorage.setItem("r_key", encryptedRol); //role_key
         if (response.success) {
-          console.log('Inicio de sesión exitoso:', response);
-          this.$router.push('/dashboard');
+          console.log("Inicio de sesión exitoso:", response);
+          this.$router.push("/dashboard");
           const Toast = Swal.mixin({
             toast: true,
             position: "top-end",
@@ -99,33 +101,33 @@ export default {
             didOpen: (toast) => {
               toast.onmouseenter = Swal.stopTimer;
               toast.onmouseleave = Swal.resumeTimer;
-            }
+            },
           });
           Toast.fire({
             icon: "success",
-            title: "Sesión iniciada correctamente"
+            title: "Sesión iniciada correctamente",
           });
         } else {
-          console.error('Error en el inicio de sesión:', response.message);
-          alert('Error en el inicio de sesión. Verifique sus credenciales.');
+          console.error("Error en el inicio de sesión:", response.message);
+          alert("Error en el inicio de sesión. Verifique sus credenciales.");
         }
       } catch (error) {
-        console.error('Error en la solicitud:', error);
+        console.error("Error en la solicitud:", error);
         const Toast = Swal.mixin({
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.onmouseenter = Swal.stopTimer;
-              toast.onmouseleave = Swal.resumeTimer;
-            }
-          });
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+          didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+          },
+        });
         Toast.fire({
-            icon: "warning",
-            title: "Credenciales incorrectas"
-          });
+          icon: "warning",
+          title: "Credenciales incorrectas",
+        });
       }
     },
   },

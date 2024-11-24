@@ -7,18 +7,15 @@ export default {
     return axios.post(`${API_URL}/auth/login`, credentials)
       .then(response => {
         localStorage.setItem('access_token', response.data.data.access_token);
-        localStorage.setItem('user_name', response.data.data.user.name);
+        localStorage.setItem('user', JSON.stringify(response.data.data.user));
         return response.data;
       })
       .catch(error => {
         if (error.response) {
-          // El servidor respondió con un estado de error
           console.error('Error al iniciar sesión:', error.response.data);
         } else if (error.request) {
-          // La solicitud fue hecha pero no se recibió respuesta
           console.error('Error en la solicitud:', error.request);
         } else {
-          // Ocurrió un error al configurar la solicitud
           console.error('Error:', error.message);
         }
         throw error;
@@ -34,21 +31,23 @@ export default {
     })
       .then(response => {
         localStorage.removeItem('access_token');
-        localStorage.removeItem('user_name');
+        localStorage.removeItem('user');
         return response.data;
       })
       .catch(error => {
         if (error.response) {
-          // El servidor respondió con un estado de error
           console.error('Error al cerrar sesión:', error.response.data);
         } else if (error.request) {
-          // La solicitud fue hecha pero no se recibió respuesta
           console.error('Error en la solicitud:', error.request);
         } else {
-          // Ocurrió un error al configurar la solicitud
           console.error('Error:', error.message);
         }
         throw error;
       });
   },
+
+  getUserDataService() {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  }
 };

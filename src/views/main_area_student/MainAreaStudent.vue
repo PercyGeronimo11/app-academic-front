@@ -4,18 +4,10 @@
       <input
         type="text"
         v-model="searchQuery"
-        placeholder="Buscar cursos..."
+        placeholder="Buscar cursos ..."
         class="search-bar"
       />
-      <select v-model="selectedCategory" class="category-filter">
-        <option value="">Todas las Categorías</option>
-        <option value="Ciencias">Ciencias</option>
-        <option value="Arte">Arte</option>
-        <option value="Idiomas">Idiomas</option>
-        <option value="Tecnología">Tecnología</option>
-      </select>
     </div>
-
 
     <div v-if="filteredCourses.length" class="courses-container">
       <CourseCard
