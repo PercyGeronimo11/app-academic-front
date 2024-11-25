@@ -22,7 +22,7 @@ export default {
   },
 
   listAssistanceFromStudent(id){
-    return axios.post(`${API_URL}/assistance/listByStudent`, {
+    return axios.get(`${API_URL}/assistance/listByStudent`, {
       params: {
         course_class_id: id 
       },

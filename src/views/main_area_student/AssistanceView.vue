@@ -1,48 +1,71 @@
 <template>
   <div>
-    <h2>Asistencias del Estudiante</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Fecha</th>
-          <th>Hora Inicio</th>
-          <th>Hora Fin</th>
-          <th>Estado</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="assistance in assistances" :key="assistance.id">
-          <td>{{ assistance.date_assistance }}</td>
-          <td>{{ assistance.horary_data.hour_start }}</td>
-          <td>{{ assistance.horary_data.hour_end }}</td>
-          <td>
-            <span :class="getStatusClass(assistance.status)">
-              {{ assistance.status }}
-            </span>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <CRow class="mb-3">
+      <CCol>
+        <h2 class="mb-3">Asistencias del Estudiante</h2>
+      </CCol>
+    </CRow>
+    <CTable align="middle" class="mb-0 border" hover responsive>
+      <CTableHead class="text-nowrap">
+        <CTableRow>
+          <CTableHeaderCell class="bg-body-secondary text-center">
+            Fecha
+          </CTableHeaderCell>
+          <CTableHeaderCell class="bg-body-secondary text-center">
+            Hora Inicio
+          </CTableHeaderCell>
+          <CTableHeaderCell class="bg-body-secondary text-center">
+            Hora Fin
+          </CTableHeaderCell>
+          <CTableHeaderCell class="bg-body-secondary text-center">
+            Estado
+          </CTableHeaderCell>
+        </CTableRow>
+      </CTableHead>
+      <CTableBody>
+        <CTableRow v-for="assistance in assistances" :key="assistance.id">
+          <CTableDataCell>
+            <div class="text-center">{{ assistance.date_assistance }}</div>
+          </CTableDataCell>
+          <CTableDataCell>
+            <div class="text-center">{{ assistance.hour_start }}</div>
+          </CTableDataCell>
+          <CTableDataCell>
+            <div class="text-center">{{ assistance.hour_end }}</div>
+          </CTableDataCell>
+          <CTableDataCell>
+            <div class="text-center">
+              <span :class="getStatusClass(assistance.status)">
+                {{ assistance.status }}
+              </span>
+            </div>
+          </CTableDataCell>
+        </CTableRow>
+      </CTableBody>
+    </CTable>
   </div>
 </template>
 
-<script setupGT>
+<script setup>
 import { ref, onMounted } from "vue";
-import AssistanceService from "@/services/AssistanceService";
-import { useRoute, useRouter } from "vue-router";
+import AssistanceService from "../../services/AssistanceService";
 
-const route = useRoute();
 const assistances = ref([]);
-const course_class_id = Number(route.params.courseClass);
 
-const fetchAssistances = async () => {
+
+const fetchAssistancesByStudent = async () => {
   try {
-    const response = await AssistanceService.listAssistanceFromStudent(course_class_id);
-    assistances.value = response.data.data;
+    const response = await AssistanceService.listAssistanceFromStudent(1);
+    if (response && response.data && response.data.data) {
+      assistances.value = response.data.data;
+    } else {
+      console.error("Unexpected response structure:", response);
+    }
   } catch (error) {
     console.error("Error fetching assistances:", error);
   }
 };
+
 
 const getStatusClass = (status) => {
   switch (status) {
@@ -55,7 +78,8 @@ const getStatusClass = (status) => {
   }
 };
 
-onMounted(fetchAssistances);
+onMounted(fetchAssistancesByStudent);
+
 </script>
 
 <style>
