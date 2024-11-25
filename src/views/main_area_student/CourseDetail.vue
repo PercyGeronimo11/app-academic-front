@@ -31,16 +31,6 @@
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
 
-      <!-- Botón de Reporte -->
-      <CButton
-        class="mb-3 text-white btn-report"
-        color="info"
-        @click="generateReportScore(course_class_id, index + 1)"
-        v-if="ConfirmRole()"
-      >
-        <b>Reporte de notas</b>
-      </CButton>
-
       <!-- Tareas y Materiales -->
       <CRow v-if="unit.isVisible" class="mb-3">
         <div v-for="item in unit.items" :key="item.id">
@@ -65,7 +55,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import CryptoJS from "crypto-js";
+import MaterialDetail from "./../main_area_teacher/MaterialDetail.vue";
+import TaskDetail from "./../main_area_teacher/TaskDetail.vue";
 import { useRoute, useRouter } from "vue-router";
 import TaskService from "@/services/TaskService";
 import MaterialService from "@/services/MaterialService";
@@ -86,21 +77,24 @@ const listTaskAndMaterial = ref([
   { isVisible: false, items: [] },
 ]);
 
-const decryptedRole = CryptoJS.AES.decrypt(
-  localStorage.getItem("r_key") || "guest",
-  import.meta.env.VITE_ROLE_KEY
-).toString(CryptoJS.enc.Utf8);
+onMounted(() => {
+  fetchListTasks();
+  fetchListMaterials();
+  getCourseClassData();
+});
+
 
 const fetchListTasks = async () => {
   try {
     const response = await TaskService.getItems(course_class_id);
     response.data.data.forEach((task) => {
-      const unitIndex = task.unit_id - 1; // Asume que `unit_id` empieza desde 1.
+      const unitIndex = task.unit_id - 1; 
       if (listTaskAndMaterial.value[unitIndex]) {
-        task.type = "TAREA"; // Marca como tarea
+        task.type = "TAREA"; 
         listTaskAndMaterial.value[unitIndex].items.push(task);
       }
     });
+    console.log("tasksss:", listTaskAndMaterial.value);
   } catch (error) {
     console.error("Error al obtener tareas:", error);
   }
@@ -116,6 +110,7 @@ const fetchListMaterials = async () => {
         listTaskAndMaterial.value[unitIndex].items.push(material);
       }
     });
+    console.log("materialaaa:", listTaskAndMaterial.value);
   } catch (error) {
     console.error("Error al obtener materiales:", error);
   }
@@ -138,17 +133,12 @@ const toggleGeneralVisibility = () => {
   isvisibleGeneral.value = !isvisibleGeneral.value;
 };
 
-const ConfirmRole = () => decryptedRole === "Profesor";
 
 const generateReportScore = (course_class_id, unit_id) => {
   router.push({ name: "StudentScores", params: { course_class_id, unit_id } });
 };
 
-onMounted(() => {
-  fetchListTasks();
-  fetchListMaterials();
-  getCourseClassData();
-});
+
 </script>
 
 <style>

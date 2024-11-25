@@ -12,13 +12,11 @@
     <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence"
       ><b>Reporte general de asistencia</b></CButton
     >
-
     <div>
       <h2 @click="toggleGeneralVisibility" class="general-title">
         General
         <i :class="isvisibleGeneral ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
-
       <div v-if="isvisibleGeneral">
         <CRow>
           <CCol :xs="12">
