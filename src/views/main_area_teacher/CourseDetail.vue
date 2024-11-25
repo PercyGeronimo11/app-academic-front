@@ -65,7 +65,7 @@
         class="mb-3 text-white btn-report"
         color="info"
         @click="generateReportScore(course_class_id, index + 1)"
-        v-if="ConfirmRole()"
+        v-if="ConfirmRole() && unit.isVisible"
       >
         <b>Reporte de notas</b>
       </CButton>

@@ -39,6 +39,7 @@
             :title="'TAREA: ' + item.title"
             :description="item.description"
             :id="item.id"
+            :score="item.score"
             @delete="deleteTask(item.id)"
             @score="scoreTask(item.id)"
           />
@@ -56,7 +57,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import MaterialDetail from "./../main_area_teacher/MaterialDetail.vue";
-import TaskDetail from "./../main_area_teacher/TaskDetail.vue";
+import TaskDetail from "./../main_area_student/TaskDetail.vue";
 import { useRoute, useRouter } from "vue-router";
 import TaskService from "@/services/TaskService";
 import MaterialService from "@/services/MaterialService";
@@ -86,7 +87,7 @@ onMounted(() => {
 
 const fetchListTasks = async () => {
   try {
-    const response = await TaskService.getItems(course_class_id);
+    const response = await TaskService.getItemsByStudentAndClass(course_class_id);
     response.data.data.forEach((task) => {
       const unitIndex = task.unit_id - 1; 
       if (listTaskAndMaterial.value[unitIndex]) {
