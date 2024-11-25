@@ -124,6 +124,11 @@ const routes = [
         name: 'Lista de asistencias',
         component: () => import('@/views/main_area_teacher/AssistanceDates.vue'),
       },
+      {
+        path: '/courseClass/:courseClass/detalle',
+        name: 'Detalle del curso',
+        component: () => import('@/views/main_area_teacher/CourseDetail.vue'),
+      },
 
       // Para estudiantes
       {
@@ -136,12 +141,10 @@ const routes = [
         name: 'Detalle del curso para estudiante',
         component: () => import('@/views/main_area_student/CourseDetail.vue'),
       },
-
-      // Para docentes
       {
-        path: '/courseClass/:courseClass/detalle',
-        name: 'Detalle del curso',
-        component: () => import('@/views/main_area_teacher/CourseDetail.vue'),
+        path: '/student/courseClass/:courseClass/assistance',
+        name: 'Asistencias del alumno',
+        component: () => import('@/views/main_area_student/AssistanceView.vue'),
       },
 
       // {

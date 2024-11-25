@@ -21,6 +21,20 @@
             </CCard>
           </CCol>
         </CRow>
+        <CRow>
+          <CCol :xs="12">
+            <CCard class="mb-4 p-3 card-custom">
+              <div class="section-header">
+                <router-link
+                  :to="`/student/courseClass/${course_class_id}/assistance`"
+                  class="no-underline"
+                >
+                  <strong>Ver asistencias</strong>
+                </router-link>
+              </div>
+            </CCard>
+          </CCol>
+        </CRow>
       </div>
     </div>
 
@@ -132,12 +146,6 @@ const toggleUnitVisibility = (index) => {
 const toggleGeneralVisibility = () => {
   isvisibleGeneral.value = !isvisibleGeneral.value;
 };
-
-
-const generateReportScore = (course_class_id, unit_id) => {
-  router.push({ name: "StudentScores", params: { course_class_id, unit_id } });
-};
-
 
 </script>
 

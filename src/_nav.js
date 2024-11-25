@@ -119,7 +119,7 @@ export default [
   //   Para Estudiante
   {
     component: 'CNavItem',
-    name: 'Área Personal',
+    name: 'Mis Cursos',
     to: '/mainAreaStudent',
     icon: 'cil-options',
     roles: ['Estudiante'],

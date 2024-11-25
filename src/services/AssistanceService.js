@@ -21,6 +21,14 @@ export default {
     return axios.post(`${API_URL}/assistances/update`, data);
   },
 
+  listAssistanceFromStudent(id){
+    return axios.post(`${API_URL}/assistance/listByStudent`, {
+      params: {
+        course_class_id: id 
+      },
+    });
+  },
+
   getReport(id){
     return axios.get(`${API_URL}/assistances/report`, {
       params: {

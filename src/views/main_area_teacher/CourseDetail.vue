@@ -9,9 +9,9 @@
         <CDropdownItem href="#">Aviso</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
-    <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence"
-      ><b>Reporte general de asistencia</b></CButton
-    >
+    <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence">
+      <b>Reporte general de asistencia</b>
+    </CButton>
     <div>
       <h2 @click="toggleGeneralVisibility" class="general-title">
         General
@@ -324,7 +324,7 @@ const getCourseClassData = async () => {
   try {
     const response = await CourseClassService.getCourseClass(course_class_id);
     courseClassData.value = response.data.data;
-    console.log("dataaa:",courseClassData);
+    console.log("dataaa:", courseClassData);
   } catch (error) {
     console.error("Error al cargar datos del curso:", error);
   }
@@ -466,14 +466,13 @@ const ReportAssistence = async () => {
   router.push({
     name: "StudentAssistence",
     params: {
-      course_class_id: course_class_id
+      course_class_id: course_class_id,
     },
   });
-}
+};
 </script>
 
 <style scoped>
-
 .course-title {
   color: #034285;
   text-align: center;
