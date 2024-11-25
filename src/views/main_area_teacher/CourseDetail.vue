@@ -32,7 +32,6 @@
             </CCard>
           </CCol>
         </CRow>
-
         <CRow>
           <CCol :xs="12">
             <CCard class="mb-4 p-3 card-custom">
@@ -476,6 +475,7 @@ const ReportAssistence = async () => {
 </script>
 
 <style scoped>
+
 .course-title {
   color: #034285;
   text-align: center;

@@ -10,7 +10,7 @@ const routes = [
     component: () => import('@/views/login/Login'),
   },
   {
-    path: '/',
+    path: '',
     name: 'Inicio',
     component: DefaultLayout,
     redirect: '/login',
@@ -480,18 +480,15 @@ const router = createRouter({
   },
 })
 
-// Guard de navegación global
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('access_token');
-  console.log("¿Esta Autenticado?:", isAuthenticated);
+  const isAuthenticated = !!localStorage.getItem('access_token'); 
 
-  // Si la ruta requiere autenticación y no hay token
-  if (!isAuthenticated && to.path !== '/login') {
-    next('/login');
-  } else if (to.path === '/login' && isAuthenticated) {
-    next('/dashboard'); // Si ya está autenticado y está en login, redirigir al dashboard
+  if (to.name !== 'Login' && !isAuthenticated && isAuthenticated!="undefined") {
+    next({ name: 'Login' }); // Redirige al login si no está autenticado
+  } else if (to.name === 'Login' && isAuthenticated) {
+    next({ path: '/dashboard' }); // Redirige al dashboard si está autenticado e intenta ir al login
   } else {
-    next();
+    next(); // Permite la navegación
   }
 });
 

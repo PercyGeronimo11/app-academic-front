@@ -36,16 +36,17 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Asignacion de cursos',
-        to: '/classroom/assignment-courses',
+        name: 'Lista de aulas',
+        to: '/classroom/list',
         roles: ['Administrador', 'Administrativo'],
       },
       {
         component: 'CNavItem',
-        name: 'Lista',
-        to: '/classroom/list',
+        name: 'Asignar Cursos',
+        to: '/classroom/assignment-courses',
         roles: ['Administrador', 'Administrativo'],
       },
+
     ],
   },
   {

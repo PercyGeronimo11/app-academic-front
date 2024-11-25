@@ -1,12 +1,13 @@
 <template>
   <div class="course-section">
     <h1 class="course-title">Curso de {{ courseClassData.course_name }}</h1>
+    
+    <!-- General Section -->
     <div>
       <h2 @click="toggleGeneralVisibility" class="general-title">
         General
         <i :class="isvisibleGeneral ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
-
       <div v-if="isvisibleGeneral">
         <CRow>
           <CCol :xs="12">
@@ -23,12 +24,14 @@
       </div>
     </div>
 
-    <div v-for="(unit, index) in units" :key="index">
+    <!-- listTaskAndMaterial Section -->
+    <div v-for="(unit, index) in listTaskAndMaterial" :key="index">
       <h2 @click="toggleUnitVisibility(index)" class="unit-title">
         Unidad {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
 
+      <!-- Botón de Reporte -->
       <CButton
         class="mb-3 text-white btn-report"
         color="info"
@@ -38,9 +41,9 @@
         <b>Reporte de notas</b>
       </CButton>
 
-      <CRow v-if="unit && unit.isVisible" class="mb-3">
+      <!-- Tareas y Materiales -->
+      <CRow v-if="unit.isVisible" class="mb-3">
         <div v-for="item in unit.items" :key="item.id">
-          <!-- Mostrar solo si el tipo es 'TAREA' -->
           <TaskDetail
             v-if="item.type === 'TAREA'"
             :title="'TAREA: ' + item.title"
@@ -49,7 +52,6 @@
             @delete="deleteTask(item.id)"
             @score="scoreTask(item.id)"
           />
-          <!-- Mostrar solo si el tipo es 'MATERIAL' -->
           <MaterialDetail
             v-if="item.type === 'MATERIAL' && item.path_file"
             :title="item.title"
@@ -58,7 +60,6 @@
         </div>
       </CRow>
     </div>
-
   </div>
 </template>
 
@@ -73,115 +74,85 @@ import CourseClassService from "@/services/CourseClassService";
 const route = useRoute();
 const router = useRouter();
 
-const role_key = localStorage.getItem("r_key") || "guest";
-const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
-const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(
-  CryptoJS.enc.Utf8
-);
-
 const course_class_id = Number(route.params.courseClass);
 const isvisibleGeneral = ref(false);
-const taskData = ref([]);
-const listMaterials = ref([]);
+const courseClassData = ref({ course_name: "", teacher_name: "" });
 
 
-const units = ref([
+const listTaskAndMaterial = ref([
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
 ]);
 
-const courseClassData = ref({
-  course_name: "",
-  teacher_name: "",
-});
+const decryptedRole = CryptoJS.AES.decrypt(
+  localStorage.getItem("r_key") || "guest",
+  import.meta.env.VITE_ROLE_KEY
+).toString(CryptoJS.enc.Utf8);
 
+const fetchListTasks = async () => {
+  try {
+    const response = await TaskService.getItems(course_class_id);
+    response.data.data.forEach((task) => {
+      const unitIndex = task.unit_id - 1; // Asume que `unit_id` empieza desde 1.
+      if (listTaskAndMaterial.value[unitIndex]) {
+        task.type = "TAREA"; // Marca como tarea
+        listTaskAndMaterial.value[unitIndex].items.push(task);
+      }
+    });
+  } catch (error) {
+    console.error("Error al obtener tareas:", error);
+  }
+};
 
-// --------------------------------METODOS--------------------------
-
+const fetchListMaterials = async () => {
+  try {
+    const response = await MaterialService.getItems(course_class_id);
+    response.data.data.forEach((material) => {
+      const unitIndex = material.unit_id - 1;
+      if (listTaskAndMaterial.value[unitIndex]) {
+        material.type = "MATERIAL"; 
+        listTaskAndMaterial.value[unitIndex].items.push(material);
+      }
+    });
+  } catch (error) {
+    console.error("Error al obtener materiales:", error);
+  }
+};
 
 const getCourseClassData = async () => {
   try {
     const response = await CourseClassService.getCourseClass(course_class_id);
     courseClassData.value = response.data.data;
-    console.log("dataaa:",courseClassData);
   } catch (error) {
-    console.error("Error al cargar datos del curso:", error);
+    console.error("Error al obtener datos del curso:", error);
   }
 };
 
-
-const fetchListTasks = async () => {
-  const response = await TaskService.getItems(course_class_id);
-  taskData.value = response.data.data;
-  units.value = [
-    { isVisible: false, items: [] },
-    { isVisible: false, items: [] },
-    { isVisible: false, items: [] },
-    { isVisible: false, items: [] },
-  ];
-  response.data.data.forEach((task) => {
-    const unitIndex = task.unit_id - 1;
-    task.type = "TAREA";
-    units.value[unitIndex].items.push(task);
-  });
+const toggleUnitVisibility = (index) => {
+  listTaskAndMaterial.value[index].isVisible = !listTaskAndMaterial.value[index].isVisible;
 };
 
-function toggleUnitVisibility(index) {
-  units.value[index].isVisible = !units.value[index].isVisible;
-}
-
-function toggleGeneralVisibility() {
+const toggleGeneralVisibility = () => {
   isvisibleGeneral.value = !isvisibleGeneral.value;
-}
-
-const ConfirmRole = () => {
-  return decryptedRole == "Profesor";
 };
 
+const ConfirmRole = () => decryptedRole === "Profesor";
 
-const fetchListMaterials = async () => {
-  try {
-    const response = await MaterialService.getItems(course_class_id);
-    listMaterials.value = response.data.data;
-
-    listMaterials.value.forEach((material) => {
-      const unitIndex = material.unit_id - 1; // Ajusta el índice (si unit_id empieza en 1)
-      if (units.value[unitIndex]) {
-        material.type = "MATERIAL";
-        units.value[unitIndex].items.push(material);
-      }
-    });
-    console.log("listaaa: ", units.value);
-  } catch (error) {
-    console.error("Error al obtener los materiales:", error);
-  }
+const generateReportScore = (course_class_id, unit_id) => {
+  router.push({ name: "StudentScores", params: { course_class_id, unit_id } });
 };
 
-
-const scoreTask = (id) => {
-  router.push(`/assingNotes/${course_class_id}/${id}`);
-};
-
-const generateReportScore = (course_class_id, idUnit) => {
-  router.push({
-    name: "StudentScores",
-    params: {
-      course_class_id: course_class_id,
-      unit_id: idUnit,
-    },
-  });
-};
 onMounted(() => {
   fetchListTasks();
   fetchListMaterials();
   getCourseClassData();
 });
-
 </script>
 
-<style scoped>
+<style>
+
 .course-title {
   color: #034285;
   text-align: center;
@@ -216,4 +187,5 @@ i {
   text-decoration: none;
   color: inherit;
 }
+
 </style>
