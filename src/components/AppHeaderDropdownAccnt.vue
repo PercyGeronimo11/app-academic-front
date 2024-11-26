@@ -83,6 +83,7 @@ const handleLogout = async () => {
     if ((response.data.success = 200)) {
       localStorage.removeItem("acces_token");
       localStorage.removeItem("user");
+      localStorage.removeItem("tiempoLogin");
       console.log("Logout exitoso:", response);
       router.push("/login");
     } else {

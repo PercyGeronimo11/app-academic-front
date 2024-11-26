@@ -63,6 +63,7 @@
 import AuthService from "@/services/AuthService";
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
+import { getPeruTime } from "@/utils/time";
 
 export default {
   data() {
@@ -74,7 +75,8 @@ export default {
   methods: {
     async handleLogin() {
       try {
-        const inicio = Date.now();
+        const inicio = getPeruTime();
+        
         localStorage.setItem("tiempoLogin", inicio);
         const credentials = {
           email: this.email,

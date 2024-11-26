@@ -62,6 +62,7 @@ import CourseClassService from "@/services/CourseClassService";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import TimePostService from "../../services/TimePostService";
+import { getPeruTime } from "@/utils/time";
 
 const route = useRoute();
 const router = useRouter();
@@ -104,10 +105,9 @@ const fetchData = async () => {
 
         // Reporte de post time
         const data = {
-          time_report_start: localStorage.getItem("tiempoLogin"), 
-          time_report_end: Date.now(), 
+          time_report_start: localStorage.getItem("tiempoLogin"),
+          time_report_end: getPeruTime(),
         };
-
         try {
           const response = await TimePostService.storeTimePost(data);
           console.log("Tiempo registrado correctamente:", response.data.data);
