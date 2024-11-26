@@ -1,113 +1,112 @@
 <template>
-    <div class="alumno-list">
-      <h3 class="text-center">ASIGNACIÓN DE NOTAS</h3><br>
-      <CTable class="alumno-table">
-        <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell class="bg-body-secondary text-center">
-              Nombre
-            </CTableHeaderCell>
-            <CTableHeaderCell class="bg-body-secondary text-center">
-              Nota
-            </CTableHeaderCell>
-          </CTableRow>
-          
-        </CTableHead>
-        <CTableBody>
-          <CTableRow v-for="(alumno, index) in items" :key="index">
-            <CTableDataCell>
-              <div class="text-center">{{ alumno.nombre }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <select v-model="alumno.value" @change="updateScore(alumno.id, alumno.value)">
-                  <option value="AD">AD</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                </select>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-      </CTable>
-    </div>
-  </template>
-  
+  <div class="alumno-list">
+    <h3 class="text-center">Calificaciones de tareas</h3>
+    <br />
+    <CTable class="alumno-table">
+      <CTableHead>
+        <CTableRow>
+          <CTableHeaderCell class="bg-body-secondary text-center">
+            Alumno
+          </CTableHeaderCell>
+          <CTableHeaderCell class="bg-body-secondary text-center">
+            Nota
+          </CTableHeaderCell>
+        </CTableRow>
+      </CTableHead>
+      <CTableBody>
+        <CTableRow v-for="(alumno, index) in items" :key="index">
+          <CTableDataCell>
+            <div class="text-center">{{ alumno.nombre }}</div>
+          </CTableDataCell>
+          <CTableDataCell>
+            <select v-model="alumno.value" @change="updateScore(alumno.id, alumno.value)">
+              <option value="AD">AD</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+            </select>
+          </CTableDataCell>
+        </CTableRow>
+      </CTableBody>
+    </CTable>
+  </div>
+</template>
+
 <script setup>
-  import { ref, onMounted } from 'vue'
-  import Swal from 'sweetalert2'
-  import StudentService from '@/services/StudentService'
-  import TaskService from '@/services/TaskService'
-  import {useRoute} from "vue-router";
+import { ref, onMounted } from "vue";
+import Swal from "sweetalert2";
+import StudentService from "@/services/StudentService";
+import TaskService from "@/services/TaskService";
+import { useRoute } from "vue-router";
 
-  const route=useRoute();
-  const course_id = route.params.course_id; 
-  const task_id = route.params.id; 
+const route = useRoute();
+const course_id = route.params.course_id;
+const task_id = route.params.id;
 
-  const items = ref([]);
+const items = ref([]);
 
-  const listItem = ref([]);
+const listItem = ref([]);
 
-  onMounted(async () => {
+onMounted(async () => {
   try {
-      await listItems();
-    } catch (error) {
-      console.error(error);
-    }
-  });
+    await listItems();
+  } catch (error) {
+    console.error(error);
+  }
+});
 
-  const listItems = async () => {
-    const data = {
-      id: task_id
-    };
-    const response = await StudentService.getitemsByCourse(data);
-    listItem.value = response.data.data;
-    console.log(listItem.value.name);
+const listItems = async () => {
+  const data = {
+    id: task_id,
+  };
+  const response = await StudentService.getitemsByCourse(data);
+  listItem.value = response.data.data;
+  console.log(listItem.value.name);
 
-    listItem.value.forEach(item => {
-      items.value.push({
-        id: item.student_id,
-        nombre: item.names,
-        value: item.score!=null && item.score!='' ? item.score : ''
-      });
+  listItem.value.forEach((item) => {
+    items.value.push({
+      id: item.student_id,
+      nombre: item.names,
+      value: item.score != null && item.score != "" ? item.score : "",
     });
-    
-  }
+  });
+};
 
-  const updateScore = async (student_id, nota) => {
-    try {
-      const data = {
-        task_id: parseInt(task_id),
-        student_id: student_id,
-        score: nota
-      }
-      await TaskService.scoreTaskStudent(data);
-      const Toast = Swal.mixin({
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        didOpen: (toast) => {
-          toast.onmouseenter = Swal.stopTimer;
-          toast.onmouseleave = Swal.resumeTimer;
-        }
+const updateScore = async (student_id, nota) => {
+  try {
+    const data = {
+      task_id: parseInt(task_id),
+      student_id: student_id,
+      score: nota,
+    };
+    await TaskService.scoreTaskStudent(data);
+    const Toast = Swal.mixin({
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+      },
+    });
+    Toast.fire({
+      icon: "success",
+      title: "Guardado exitosamente",
+    });
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.message) {
+      Swal.fire({
+        icon: "error",
+        title: "Error al Guardar",
+        text: error.response.data.message[0],
       });
-      Toast.fire({
-        icon: "success",
-        title: "Guardado exitosamente"
-      });
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al Guardar',
-          text: error.response.data.message[0],
-        });
-      } else {
-        console.log("error:" + error);
-      }
+    } else {
+      console.log("error:" + error);
     }
   }
+};
 </script>
 
 <style>
@@ -123,9 +122,9 @@
   border-collapse: collapse;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
-  overflow: hidden; 
-  background-color: #fff; 
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente elegante */
+  overflow: hidden;
+  background-color: #fff;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; /* Fuente elegante */
 }
 
 .alumno-table th,
@@ -172,7 +171,8 @@
 }
 
 /* Estilos para la columna de Nota */
-.alumno-table td:last-child { /* Selecciona la última columna (Nota) */
+.alumno-table td:last-child {
+  /* Selecciona la última columna (Nota) */
   text-align: center;
   width: 150px; /* Ancho fijo para la columna de Nota */
 }
@@ -196,9 +196,10 @@
     padding: 8px 12px; /* Menos padding */
   }
   .alumno-table th {
-    font-size: 12px; 
+    font-size: 12px;
   }
-  .alumno-table td:last-child { /* Ajusta el ancho de la columna en pantallas pequeñas */
+  .alumno-table td:last-child {
+    /* Ajusta el ancho de la columna en pantallas pequeñas */
     width: 120px;
   }
 }
