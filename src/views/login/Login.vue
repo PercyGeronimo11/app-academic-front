@@ -91,9 +91,20 @@ export default {
         const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
         console.log(encryptedRol);
         localStorage.setItem("r_key", encryptedRol); //role_key
+
         if (response.success) {
           console.log("Inicio de sesión exitoso:", response);
-          this.$router.push("/dashboard");
+          if (role == 'Administrador' || role === 'Administrativo') {
+            this.$router.push("/dashboard");
+          } else if (role == 'Profesor') {
+            this.$router.push("/mainAreaTeacher");
+          } else if (role == 'Estudiante') {
+            this.$router.push("/mainArea");
+          }
+          else {
+            router.push('/') // Ruta por defecto para roles desconocidos
+          }
+          //this.$router.push("/dashboard");
           const Toast = Swal.mixin({
             toast: true,
             position: "top-end",

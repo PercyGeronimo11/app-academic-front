@@ -29,12 +29,12 @@ const getUserRole = () => {
 // Navegación condicional según el rol desencriptado
 const navigateByRole = () => {
   const role = getUserRole()
-
-  if (role === 'Administrador' || role === 'Administrativo') {
+  
+  if (role == 'Administrador' || role === 'Administrativo') {
     router.push('/')
-  } else if (role === 'Profesor') {
+  } else if (role == 'Profesor') {
     router.push('/mainAreaTeacher')
-  } else if (role === 'Estudiante') {
+  } else if (role == 'Estudiante') {
     router.push('/mainArea')
   }
    else {
@@ -53,8 +53,8 @@ const navigateByRole = () => {
     @visible-change="(value) => sidebar.toggleVisible(value)"
   >
     <CSidebarHeader class="border-bottom">
-      <RouterLink custom v-slot="{ href }" @click="navigateByRole">
-        <CSidebarBrand as="a" :href="href">
+      <RouterLink custom>
+        <CSidebarBrand as="a" @click="navigateByRole">
           <img v-if="sidebar.unfoldable"
             custom-class-name="sidebar-brand-full"
             src="/src/assets/images/logo.png"
