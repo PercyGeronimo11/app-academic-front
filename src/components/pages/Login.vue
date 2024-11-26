@@ -88,18 +88,11 @@ export default {
         localStorage.setItem('r_key', encryptedRol);//role_key
 
         if (response.success) {
-          // Maneja la respuesta de éxito, como almacenar el token y redirigir
-          console.log('Inicio de sesión exitoso:', response);
-          // Redirige al dashboard o almacena el token en el almacenamiento local
           this.$router.push('/dashboard');
         } else {
-          // Maneja los errores de inicio de sesión
-          console.error('Error en el inicio de sesión:', response.message);
           alert('Error en el inicio de sesión. Verifique sus credenciales.');
         }
       } catch (error) {
-        // Maneja los errores de la solicitud
-        console.error('Error en la solicitud:', error);
         alert('Error en la solicitud. Por favor intente nuevamente.');
       }
     },

@@ -61,12 +61,11 @@ import TaskService from "@/services/TaskService";
 import CourseClassService from "@/services/CourseClassService";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import TimePostService from "../../services/TimePostService";
 
-// Obtener acceso al enrutador y a los parámetros de la ruta
 const route = useRoute();
 const router = useRouter();
 
-// Obtener `course_class_id` y `unit_id` de los parámetros de la ruta
 const course_class_id = ref(Number(route.params.course_class_id) || 0);
 const unit_id = ref(Number(route.params.unit_id) || 0);
 
@@ -102,6 +101,20 @@ const fetchData = async () => {
 
       if (response.data.success) {
         students.value = response.data.data;
+
+        // Reporte de post time
+        const data = {
+          time_report_start: localStorage.getItem("tiempoLogin"), 
+          time_report_end: Date.now(), 
+        };
+
+        try {
+          const response = await TimePostService.storeTimePost(data);
+          console.log("Tiempo registrado correctamente:", response.data.data);
+        } catch (error) {
+          console.error("Error al registrar el tiempo:", error);
+        }
+        // -----fin de post test -----
       }
     } catch (error) {
       console.error("Error al cargar los datos:", error);
@@ -111,7 +124,6 @@ const fetchData = async () => {
   }
 };
 
-// Función para regresar a la página anterior
 const goBack = () => {
   router.back();
 };
@@ -159,38 +171,6 @@ function generatePDF() {
   });
 
   doc.save("students.pdf");
-
-  const inicio = localStorage.getItem("tiempoLogin");
-  const ahora = Date.now();
-  const finPdf = Date.now();
-  const tiempoTranscurrido = (ahora - inicio) / 1000;
-  console.log(
-    `Tiempo desde el inicio de sesión hasta la generación del PDF: ${tiempoTranscurrido.toFixed(2)} segundos`
-  );
-  const diferencia = (inicioPdf - finPdf) / 1000;
-  // console.log(
-  //   `Tiempo de generación del PDF: ${diferencia.toFixed(2)} segundos`
-  // );
-
-  // const timeStart = new Date(Number(inicio)).toISOString().substr(11, 8); // Convertir a formato HH:mm:ss
-  //       const timeEnd = new Date(ahora).toISOString().substr(11, 8);
-  //       const diff = new Date(ahora - inicio).toISOString().substr(11, 8);
-
-  //       // Enviar datos a la API
-  //       try {
-  //         const response = await axios.post('http://tu-dominio/api/time-post', {
-  //           time_report_start: timeStart,
-  //           time_report_end: timeEnd,
-  //           time_report_total: diff,
-  //         });
-
-  //         console.log('Respuesta de la API:', response.data);
-  //         // Restablecer cronómetro
-  //         localStorage.removeItem('tiempoLogin');
-  //       } catch (error) {
-  //         console.error('Error al registrar tiempo:', error);
-  //       }
-
 }
 
 // Ejecutar funciones al montar el componente

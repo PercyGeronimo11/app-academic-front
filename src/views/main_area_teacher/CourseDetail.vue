@@ -6,7 +6,6 @@
       <CDropdownMenu>
         <CDropdownItem href="#" @click="openModal(true)">Tarea</CDropdownItem>
         <CDropdownItem href="#" @click="openModalMaterial(true)">Material</CDropdownItem>
-        <CDropdownItem href="#">Aviso</CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
     <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence">
@@ -282,10 +281,11 @@ var assistenceData = ref([]);
 
 // --------------------------------METODOS--------------------------
 onMounted(() => {
+  getCourseClassData();
   formData.value.due_date = getPeruvianDate();
   fetchListTasks();
   fetchListMaterials();
-  getCourseClassData();
+
 });
 
 const getPeruvianDate = () => {

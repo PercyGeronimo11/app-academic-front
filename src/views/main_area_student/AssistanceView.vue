@@ -49,13 +49,15 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import AssistanceService from "../../services/AssistanceService";
+import { useRoute} from "vue-router";
 
+const route = useRoute();
 const assistances = ref([]);
-
+const course_class_id = Number(route.params.courseClass);
 
 const fetchAssistancesByStudent = async () => {
   try {
-    const response = await AssistanceService.listAssistanceFromStudent(1);
+    const response = await AssistanceService.listAssistanceFromStudent(course_class_id);
     if (response && response.data && response.data.data) {
       assistances.value = response.data.data;
     } else {
@@ -69,12 +71,12 @@ const fetchAssistancesByStudent = async () => {
 
 const getStatusClass = (status) => {
   switch (status) {
-    case "PRESENTE":
-      return "text-success";
-    case "AUSENTE":
-      return "text-danger";
+    case "asistio":
+      return "status-success";
+    case "falto":
+      return "status-danger";
     default:
-      return "text-muted";
+      return "status-muted";
   }
 };
 
@@ -83,13 +85,28 @@ onMounted(fetchAssistancesByStudent);
 </script>
 
 <style>
-.text-success {
-  color: green;
+.status-success, .status-danger, .status-muted {
+  display: inline-block;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  text-align: center;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-.text-danger {
-  color: red;
+
+.status-success {
+  color: aliceblue;
+  background-color: #28a745; /* Verde */
 }
-.text-muted {
-  color: gray;
+
+.status-danger {
+  color: white;
+  background-color: #dc3545; /* Rojo */
+}
+
+.status-muted {
+  color: white;
+  background-color: #6c757d; /* Gris */
 }
 </style>

@@ -100,6 +100,8 @@ export default [
     roles: ['Administrador'],
   },
 
+
+
   //   Para Profesor  
   {
     component: 'CNavTitle',
@@ -107,6 +109,15 @@ export default [
     roles: ['Profesor'],
   },
   
+  // Profesor y alumnos
+  {
+    component: 'CNavItem',
+    name: 'Area Principal',
+    to: '/classroom/main',
+    icon: 'cil-notes',
+    roles: ['Profesor','Estudiante'],
+  },
+
   {
     component: 'CNavItem',
     name: 'Mis Cursos',

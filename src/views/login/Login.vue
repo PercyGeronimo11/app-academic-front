@@ -74,7 +74,7 @@ export default {
   methods: {
     async handleLogin() {
       try {
-        const inicio = Date.now(); // Marca de tiempo al iniciar sesión
+        const inicio = Date.now();
         localStorage.setItem("tiempoLogin", inicio);
         const credentials = {
           email: this.email,

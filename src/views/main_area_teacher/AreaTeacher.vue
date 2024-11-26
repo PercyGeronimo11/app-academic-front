@@ -1,17 +1,8 @@
 <template>
   <div class="courses-wrapper">
-    <div class="filters">
-      <input
-        type="text"
-        v-model="searchQuery"
-        placeholder="Buscar cursos..."
-        class="search-bar"
-      />
-    </div>
-
-    <div v-if="filteredCourses.length" class="courses-container">
+    <div v-if="courses.length" class="courses-container">
       <CourseCard
-        v-for="(course, index) in filteredCourses"
+        v-for="(course, index) in courses"
         :key="index"
         :title="course.title"
         :image="course.image"
@@ -28,22 +19,8 @@ import { ref, onMounted, computed } from "vue";
 import CourseCard from "@/components/CourseCard.vue";
 import CourseClassService from "../../services/CourseClassService";
 
-// Definición de reactivas
-const searchQuery = ref("");
-const selectedCategory = ref("");
 const courses = ref([]);
 
-// Computed para filtrar cursos
-const filteredCourses = computed(() =>
-  courses.value.filter((course) => {
-    const matchesCategory =
-      !selectedCategory.value || course.category === selectedCategory.value;
-    const matchesSearch = course.title
-      .toLowerCase()
-      .includes(searchQuery.value.toLowerCase());
-    return matchesCategory && matchesSearch;
-  })
-);
 
 // Función para obtener los cursos del API
 const listItems = async () => {
@@ -51,14 +28,11 @@ const listItems = async () => {
     const data = { idPeriod: 1 };
     const response = await CourseClassService.listCoursesByTeacher()
     const courseData = response.data.data;
-    console.log(response.data.data);
     
-    // Mapea los cursos al formato necesario para las tarjetas
     courses.value = courseData.map((course) => ({
       title: course.course_name,
       image: null,
-      url: `/courseClass/${course.course_class_id}/detalle`, 
-      category: "Ciencias",
+      url: `/teacher/${course.course_class_id}/detalle`, 
     }));
 
     console.log(courses.value); 
@@ -67,7 +41,6 @@ const listItems = async () => {
   }
 };
 
-// Llama a la función para obtener los datos cuando el componente se monta
 onMounted(listItems);
 </script>
 
@@ -102,7 +75,7 @@ onMounted(listItems);
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 20px;
   padding: 20px;
-  justify-items: center;
+  justify-items: start;
 }
 
 @media (max-width: 480px) {
