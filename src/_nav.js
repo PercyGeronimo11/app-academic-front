@@ -18,13 +18,13 @@ export default [
     icon: 'cil-options',
     roles: ['Administrador', 'Administrativo'],
   },
-  /* {
+  {
     component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
-  }, */
+  },
   
   //Para administrativo
   {

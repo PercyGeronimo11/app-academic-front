@@ -2,6 +2,7 @@
   <div class="alumno-list">
     <h3 class="text-center">Calificaciones de tareas</h3>
     <br />
+      
     <CTable class="alumno-table">
       <CTableHead>
         <CTableRow>
@@ -30,6 +31,10 @@
       </CTableBody>
     </CTable>
   </div>
+    <div class="div-button-back">
+      <CButton color="secondary" @click="goBack" class="back-button"> ← Regresar </CButton>
+    </div>
+    
 </template>
 
 <script setup>
@@ -37,11 +42,12 @@ import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 import StudentService from "@/services/StudentService";
 import TaskService from "@/services/TaskService";
-import { useRoute } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 
 const route = useRoute();
 const course_id = route.params.course_id;
 const task_id = route.params.id;
+  const router = useRouter();
 
 const items = ref([]);
 
@@ -107,6 +113,11 @@ const updateScore = async (student_id, nota) => {
     }
   }
 };
+
+  const goBack = () => {
+    router.back();
+  };
+
 </script>
 
 <style>
@@ -202,5 +213,27 @@ const updateScore = async (student_id, nota) => {
     /* Ajusta el ancho de la columna en pantallas pequeñas */
     width: 120px;
   }
+}
+
+.div-button-back{
+  margin-left: 10%;
+}
+
+/* Botón de Regreso */
+.back-button {
+  background-color: #007bff;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
+}
+
+.back-button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 </style>
