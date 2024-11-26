@@ -37,7 +37,7 @@
         </CTableBody>
       </CTable>
       <div class="mt-4 flex justify-end">
-        <CButton type="button" color="success" @click="saveAssistances">
+        <CButton type="button" color="success" class="text-white button-save" @click="saveAssistances">
           Guardar Cambios
         </CButton>
         <CButton type="button" color="secondary" @click="goToBack"> Retroceder </CButton>
@@ -169,5 +169,11 @@ onMounted(fetchAssistances);
   bottom: 20px;
   right: 20px;
   z-index: 1050;
+}
+.button-save{
+  margin-right: 10px;
+}
+.text-start{
+  padding-left: 20px;
 }
 </style>

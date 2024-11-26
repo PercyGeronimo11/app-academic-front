@@ -31,13 +31,13 @@
         </CRow>
         <CRow>
           <CCol :xs="12">
-            <CCard class="mb-4 p-3 card-custom">
+            <CCard class="mb-4 p-3 card-custom card_attendence">
               <div class="section-header">
                 <router-link
                   :to="`/teacher/${course_class_id}/horary`"
                   class="no-underline"
                 >
-                  <strong>Crear un horario</strong>
+                  <strong class="button-attendance">Crear un horario</strong>
                 </router-link>
               </div>
               <div class="section-header">
@@ -45,7 +45,7 @@
                   :to="`/teacher/${course_class_id}/assistance-dates`"
                   class="no-underline"
                 >
-                  <strong>Tomar asistencia</strong>
+                  <strong class="button-attendance">Tomar asistencia</strong>
                 </router-link>
               </div>
             </CCard>
@@ -506,5 +506,25 @@ i {
 .no-underline {
   text-decoration: none;
   color: inherit;
+}
+
+.button-attendance{
+  background: #0756be;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  margin: 20px auto;
+}
+
+.button-attendance:hover{
+  background: #053575;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  margin: 20px auto; 
+}
+
+.card_attendence div{
+  margin: 10px 0px;
 }
 </style>

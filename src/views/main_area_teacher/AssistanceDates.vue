@@ -43,6 +43,9 @@
         </CTableRow>
       </CTableBody>
     </CTable>
+    <div class="mt-4 flex justify-end">
+      <CButton type="button" color="primary" @click="goToBack"> ← Retroceder </CButton>
+    </div>
   </div>
 </template>
 
@@ -83,6 +86,10 @@ const showStudentAssistances = (date) => {
     path: `/teacher/${idcourseclass}/assistance-students/${date}`,
   });
 };
+
+const goToBack = (date) => {
+  router.back();
+}
 
 
 onMounted(fetchAssistances); 
