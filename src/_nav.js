@@ -13,13 +13,6 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Cursos',
-    to: '/courses',
-    icon: 'cil-options',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
     icon: 'cil-people',
@@ -28,26 +21,26 @@ export default [
   
   //Para administrativo
   {
-    component: 'CNavGroup',
-    name: 'Aulas de clases',
-    to: '/classroom',
+    component: 'CNavItem',
+    name: 'Aulas',
+    to: '/classroom/list',
     icon: 'cil-star',
     roles: ['Administrador', 'Administrativo'],
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Lista de aulas',
-        to: '/classroom/list',
-        roles: ['Administrador', 'Administrativo'],
-      },
-      {
-        component: 'CNavItem',
-        name: 'Asignar Cursos',
-        to: '/classroom/assignment-courses',
-        roles: ['Administrador', 'Administrativo'],
-      },
-
-    ],
+  },
+  
+  {
+    component: 'CNavItem',
+    name: 'Asignar Cursos',
+    to: '/classroom/assignment-courses',
+    icon: 'cil-star',
+    roles: ['Administrador', 'Administrativo'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Cursos',
+    to: '/courses',
+    icon: 'cil-options',
+    roles: ['Administrador', 'Administrativo'],
   },
   {
     component: 'CNavTitle',
@@ -74,30 +67,6 @@ export default [
     to: '/students',
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavTitle',
-    name: 'Configuraciones',
-    roles: ['Administrador'],
-  },
-  {
-    component: 'CNavGroup',
-    name: 'Configuracion',
-    to: '/pages',
-    icon: 'cil-settings',
-    items: [
-      {
-        component: 'CNavItem',
-        name: 'Roles',
-        to: '/teachers'
-      },
-      {
-        component: 'CNavItem',
-        name: 'Usuarios',
-        to: '/theme/colors'
-      },
-    ],
-    roles: ['Administrador'],
   },
 
 
