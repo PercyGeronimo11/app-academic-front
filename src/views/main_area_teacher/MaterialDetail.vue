@@ -23,15 +23,28 @@
 
 <script setup>
 import { computed } from "vue";
+import { getPeruTime } from "@/utils/time";
+import TimePostService from "../../services/TimePostService";
 
 defineProps({
   title: String,
   pathFile: String,  
 });
 
-const viewMaterial = (pathFile) => {
+const viewMaterial = async (pathFile) => {
   const apiUrl = import.meta.env.VITE_API_URL.replace("/api", "");
   const fileUrl = `${apiUrl}/storage/${pathFile}`;
+  const data = {
+    time_report_start: localStorage.getItem("tiempoLogin"),
+    time_report_end: getPeruTime(),
+    number_indicator: '2'
+  };
+  try {
+    const response = await TimePostService.storeTimePost(data);
+    console.log("Tiempo registrado correctamente:", response.data.data);
+  } catch (error) {
+    console.error("Error al registrar el tiempo:", error);
+  }
   window.open(fileUrl, "_blank");
 };
 

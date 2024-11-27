@@ -107,6 +107,7 @@ const fetchData = async () => {
         const data = {
           time_report_start: localStorage.getItem("tiempoLogin"),
           time_report_end: getPeruTime(),
+          number_indicator: '3'
         };
         try {
           const response = await TimePostService.storeTimePost(data);

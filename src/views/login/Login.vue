@@ -99,7 +99,7 @@ export default {
           } else if (role == 'Profesor') {
             this.$router.push("/mainAreaTeacher");
           } else if (role == 'Estudiante') {
-            this.$router.push("/mainArea");
+            this.$router.push("/mainAreaStudent");
           }
           else {
             router.push('/') // Ruta por defecto para roles desconocidos
