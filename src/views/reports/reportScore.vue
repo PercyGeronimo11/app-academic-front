@@ -51,6 +51,9 @@
     <CButton color="secondary" @click="generatePDF" class="back-button">
       Generar PDF
     </CButton>
+    <CButton color="success" @click="exportToExcel" class="excel-button text-white">
+        Generar Excel
+      </CButton>
   </div>
 </template>
 
@@ -63,6 +66,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import TimePostService from "../../services/TimePostService";
 import { getPeruTime } from "@/utils/time";
+import xlsx from 'xlsx/dist/xlsx.full.min';
 
 const route = useRoute();
 const router = useRouter();
@@ -139,7 +143,6 @@ function generatePDF() {
 
   doc.setFont("helvetica", "normal");
 
-  // Student Data (Organized as requested)
   const studentData = [
     [
       { content: "Nombre", styles: { fontStyle: "bold" } },
@@ -154,25 +157,41 @@ function generatePDF() {
     studentData.push([
       { content: student.student_name },
       { content: student.student_surname },
-      ...student.scores.map((score) => score.score || "---"), // Map scores to '---' if empty
+      ...student.scores.map((score) => score.score || "---"),
     ]);
   });
 
   // Set the title
   doc.setFontSize(16);
   doc.setFont("bold");
-  doc.text("Reportes de Notas", 10, 10); // Adjust position if needed
+  doc.text("Reportes de Notas", 10, 10);
 
-  // Generate the Student Information Table
   autoTable(doc, {
     body: studentData,
-    startY: 20, // Start the table below the title
+    startY: 20,
     theme: "grid",
     styles: { font: "helvetica", fontStyle: "normal", fontSize: 10 },
   });
 
   doc.save("students.pdf");
 }
+
+const exportToExcel = () => {
+  const columnHeaders = ["Nombre", "Apellido", ...Array.from({ length: maxTasks.value }, (_, i) => `T${i + 1}`)];
+
+  const jsonData = students.value.map((student) => {
+    const scores = Array.from({ length: maxTasks.value }, (_, i) => student.scores[i]?.score || "---");
+    return [student.student_name, student.student_surname, ...scores];
+  });
+
+  const excelData = [columnHeaders, ...jsonData];
+
+  const workbook = xlsx.utils.book_new();
+  const worksheet = xlsx.utils.aoa_to_sheet(excelData);
+  xlsx.utils.book_append_sheet(workbook, worksheet, "Calificaciones");
+
+  xlsx.writeFile(workbook, "calificaciones.xlsx");
+};
 
 // Ejecutar funciones al montar el componente
 onMounted(() => {
@@ -342,5 +361,17 @@ h2 {
   .info-box {
     min-width: 100%;
   }
+}
+
+.excel-button{
+  margin-left: 10px;
+  color: white;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-bottom: 15px;
 }
 </style>

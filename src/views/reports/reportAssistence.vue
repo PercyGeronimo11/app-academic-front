@@ -37,6 +37,9 @@
       <CButton color="primary" @click="generatePDF" class="pdf-button">
         Generar PDF
       </CButton>
+      <CButton color="success" @click="exportToExcel" class="excel-button text-white">
+        Generar Excel
+      </CButton>
     </div>
   </div>
 </template>
@@ -47,6 +50,7 @@ import { useRouter, useRoute } from 'vue-router'
 import AssistanceService from "@/services/AssistanceService"
 import jsPDF from 'jspdf'
 import autoTable from "jspdf-autotable";
+import xlsx from 'xlsx/dist/xlsx.full.min';
 
 const route = useRoute()
 const router = useRouter()
@@ -118,8 +122,21 @@ const generatePDF = () => {
 
   // Save the PDF
   doc.save('reporte_asistencia.pdf');
-}
+};
 
+const exportToExcel = () => {
+  const XLSX = xlsx;
+      const workbook = XLSX.utils.book_new();
+      const worksheet = XLSX.utils.json_to_sheet(assistenceData.value.map(student => ({
+        Estudiante: student.student_name, 
+        asistio: student.assistances.asistio, 
+        falto: student.assistances.falto, 
+        tardanza: student.assistances.tardanza, 
+        Falta_Justificada: student.assistances.falta_justificada
+    })));
+      XLSX.utils.book_append_sheet(workbook, worksheet, "framework");
+      XLSX.writeFile(workbook, "framework.xlsx");
+};
 onMounted(fetchData)
 </script>
 
@@ -246,5 +263,9 @@ onMounted(fetchData)
 
 .div-pdf{
   margin: 15px 0px;
+}
+
+.excel-button{
+  margin-left: 10px;
 }
 </style>

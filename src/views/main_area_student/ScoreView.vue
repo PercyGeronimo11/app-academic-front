@@ -2,7 +2,7 @@
     <div>
       <CRow class="mb-3">
         <CCol>
-          <h2 class="mb-3">Asistencias del Estudiante</h2>
+          <h2 class="mb-3">Notas del Estudiante</h2>
         </CCol>
       </CRow>
       <div class="div-pdf" >
@@ -89,7 +89,7 @@
 
     // Agrega el título del PDF
     doc.setFontSize(20);
-    doc.text("Asistencias del Estudiante", 10, 10);
+    doc.text("Notas del Estudiante", 10, 10);
 
     // Agrega la tabla al PDF
     doc.setFontSize(12);
