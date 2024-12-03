@@ -266,7 +266,7 @@ const courseClassData = ref({
   teacher_name: "",
 });
 
-const formData = ref({
+var formData = ref({
   title: "",
   description: "",
   due_date: "",
@@ -309,6 +309,9 @@ const ConfirmRole = () => {
 };
 
 const openModal = (decision) => {
+  if(!decision){
+    clearFormDataTask();
+  }
   isModalOpen.value = decision;
 };
 
@@ -363,6 +366,17 @@ const fetchListMaterials = async () => {
   }
 };
 
+const clearFormDataTask = () => {
+  formData = ref({
+    title: "",
+    description: "",
+    due_date: "",
+    unit_id: "",
+    course_class_id: "",
+    period_id: 1,
+  });
+}
+
 const submitToCreate = async () => {
   formData.value.course_class_id = course_class_id;
   if (validateForm()) {
@@ -375,6 +389,7 @@ const submitToCreate = async () => {
         title: "Registro exitoso",
         text: "Tarea registrada con éxito.",
       });
+      clearFormDataTask();
     } catch (error) {
       Swal.fire({
         icon: "error",

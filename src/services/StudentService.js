@@ -58,4 +58,12 @@ export default {
       params: data
     });
   },
+
+  async getScoresByStudentAndClass(course_class_id) {
+    return await axios.get(`${API_URL}/task/list/byStudentAndClass`, {
+      params: {
+        course_class_id:course_class_id
+      }
+    });
+  },
 };

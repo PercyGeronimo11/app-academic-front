@@ -33,6 +33,16 @@
                 </router-link>
               </div>
             </CCard>
+            <CCard class="mb-4 p-3 card-custom">
+              <div class="section-header">
+                <router-link
+                  :to="`/student/courseClass/${course_class_id}/scores`"
+                  class="no-underline"
+                >
+                  <strong>Ver Notas</strong>
+                </router-link>
+              </div>
+            </CCard>
           </CCol>
         </CRow>
       </div>

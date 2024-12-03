@@ -146,6 +146,11 @@ const routes = [
         name: 'Asistencias del alumno',
         component: () => import('@/views/main_area_student/AssistanceView.vue'),
       },
+      {
+        path: '/student/courseClass/:courseClass/scores',
+        name: 'Notas del alumno',
+        component: () => import('@/views/main_area_student/ScoreView.vue'),
+      },
 
 
       //Para estudiantes y profesores

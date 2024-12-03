@@ -1,6 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import axios from 'axios'
+import OpenChmPlugin from './open-chm';
 
 import App from './App.vue'
 import router from './router'
@@ -15,6 +16,7 @@ const app = createApp(App)
 app.use(createPinia())
 app.use(router)
 app.use(CoreuiVue)
+app.use(OpenChmPlugin); 
 app.provide('icons', icons)
 app.component('CIcon', CIcon)
 app.component('DocsExample', DocsExample)
