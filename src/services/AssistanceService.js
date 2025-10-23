@@ -1,12 +1,21 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL; 
+const API_URL = import.meta.env.VITE_API_URL;
+const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
 export default {
+
+  registrarAsistenciaAuxiliar(dni) {
+    return axios.post(`${API_URL_DJANGO}/assistances/register`, {
+        dni: dni
+      }
+    );
+  },
+
   getAssistanceByCourseClass(idCourseClass) {
-    return axios.get(`${API_URL}/assistances/list`,{
-      params:{
-        course_class_id:idCourseClass
+    return axios.get(`${API_URL}/assistances/list`, {
+      params: {
+        course_class_id: idCourseClass
       }
     });
   },
@@ -17,22 +26,22 @@ export default {
     });
   },
 
-  updateAssistances(data){
+  updateAssistances(data) {
     return axios.post(`${API_URL}/assistances/update`, data);
   },
 
-  listAssistanceFromStudent(id){
+  listAssistanceFromStudent(id) {
     return axios.get(`${API_URL}/assistance/listByStudent`, {
       params: {
-        course_class_id: id 
+        course_class_id: id
       },
     });
   },
 
-  getReport(id){
+  getReport(id) {
     return axios.get(`${API_URL}/assistances/report`, {
       params: {
-        course_class_id: id 
+        course_class_id: id
       },
     });
   }

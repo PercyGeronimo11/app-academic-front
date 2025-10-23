@@ -97,6 +97,11 @@ const routes = [
         component: () => import('@/views/assign_notes/AssignNotes.vue'),
       },
       {
+        path: '/assistances',
+        name: 'Assistances',
+        component: () => import('@/views/main_area_auxiliar/AssistenceScanner.vue'),
+      },
+      {
         path: '/chatbot',
         name: 'Chatbot',
         component: () => import('@/views/chatbot/ChatBot.vue'),
@@ -108,7 +113,7 @@ const routes = [
         name: 'Mis Cursos',
         component: () => import('@/views/main_area_teacher/AreaTeacher.vue'),
       },
-      
+
       {
         path: '/teacher/:courseClass/horary',
         name: 'Horario',
@@ -493,9 +498,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('access_token'); 
+  const isAuthenticated = !!localStorage.getItem('access_token');
 
-  if (to.name !== 'Login' && !isAuthenticated && isAuthenticated!="undefined") {
+  if (to.name !== 'Login' && !isAuthenticated && isAuthenticated != "undefined") {
     next({ name: 'Login' }); // Redirige al login si no está autenticado
   } else if (to.name === 'Login' && isAuthenticated) {
     next({ path: '/dashboard' }); // Redirige al dashboard si está autenticado e intenta ir al login
