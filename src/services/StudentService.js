@@ -66,4 +66,8 @@ export default {
       }
     });
   },
+
+  async importStudents(data) {
+    return await axios.post(`${API_URL}/student/register-excel`, data);
+  },
 };

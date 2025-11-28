@@ -1,5 +1,32 @@
 <template>
   <div>
+    <CardComponent title="Lista de Alumnos">
+      <div class="box-tools">
+        <CRow class="mb-3">
+          <CCol>
+            <CInputGroup>
+              <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
+                aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
+              <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+            </CInputGroup>
+          </CCol>
+          <CCol></CCol>
+          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+          </CCol>
+        </CRow>
+      </div>
+      <ElegantCrudList :columns="listColumns" :data="alumnos">
+        <template #actions="{ item }">
+          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+                <CIcon :content="cilPencil" size="lg"></CIcon>
+              </CButton>
+              <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+                <CIcon :content="cilTrash" size="lg"></CIcon>
+              </CButton>
+        </template>
+      </ElegantCrudList>
+    </CardComponent>
     <div class="mb-2">
       <h1>Lista de Alumnos</h1>
       <CRow class="mb-3">
@@ -11,10 +38,11 @@
           </CInputGroup>
         </CCol>
         <CCol></CCol>
-        <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+        <CCol class="d-grid gap-5 d-md-flex justify-content-md-end">
             <router-link to="/new-student" class="CButton" >
             <CButton color="info text-white" >Nuevo</CButton>
             </router-link>
+            <CButton color="primary text-white" @click="isOpenModalImportStudents = true">Importar Estudiantes</CButton>
         </CCol>
       </CRow>
     </div>
@@ -64,6 +92,10 @@
       </CTableBody>
     </CTable>
   </div>
+
+  <ImportStudents
+    v-model:isOpenModal = isOpenModalImportStudents
+  />
 </template>
 
 <script setup>
@@ -71,13 +103,25 @@ import StudentService from '@/services/StudentService'
 import { useRouter } from 'vue-router';
 import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
+import ImportStudents from './ImportStudents.vue';
+import CardComponent from '@/components/cruds/CardComponent.vue';
+import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
+import { cilPencil, cilTrash } from '@coreui/icons';
 
+const isOpenModalImportStudents = ref(false);
 const alumnos = ref([]);
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 var idItemSelected = ref(0);
 var searchData = ref('');
 const router = useRouter();
+const listColumns = ref([
+  { key: 'id', label: 'N°'},
+  { key: 'name', label: 'Nombre y Apellidos' },
+  { key: 'dni', label: 'DNI' },
+  { key: 'representative_phone', label: 'Numero de Celular' },
+  { key: 'actions', label: 'OPCIONES' }, // El key 'actions' activa el slot
+]);
 const alumnoData = ref({
   name: '',
   surname_father: '',

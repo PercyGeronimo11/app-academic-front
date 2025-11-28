@@ -45,14 +45,14 @@ const navigateByRole = () => {
 
 <template>
   <CSidebar
-    class="border-end"
+    class="custom-sidebar border-end"
     colorScheme="dark"
     position="fixed"
     :unfoldable="sidebar.unfoldable"
     :visible="sidebar.visible"
     @visible-change="(value) => sidebar.toggleVisible(value)"
   >
-    <CSidebarHeader class="border-bottom">
+    <CSidebarHeader>
       <RouterLink custom>
         <CSidebarBrand as="a" @click="navigateByRole">
           <img v-if="sidebar.unfoldable"
@@ -70,7 +70,7 @@ const navigateByRole = () => {
       <CCloseButton class="d-lg-none" dark @click="sidebar.toggleVisible()" />
     </CSidebarHeader>
     <AppSidebarNav />
-    <CSidebarFooter class="border-top d-none d-lg-flex">
+    <CSidebarFooter class="d-none d-lg-flex">
       <CSidebarToggler @click="sidebar.toggleUnfoldable()" />
     </CSidebarFooter>
   </CSidebar>

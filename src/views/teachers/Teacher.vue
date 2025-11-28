@@ -1,66 +1,32 @@
 <template>
   <div>
-    <div class="mb-2">
-      <h1>Lista de Docentes</h1>
-      <CRow class="mb-3">
-        <CCol>
-          <CInputGroup>
-            <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-              aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-            <CButton type="button" color="primary" id="button-addon2" @click="listTeacherService(searchData)">Buscar</CButton>
-          </CInputGroup>
-        </CCol>
-        <CCol></CCol>
-        <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
-        </CCol>
-      </CRow>
-    </div>
-    <CTable align="middle" class="mb-0 border" hover responsive>
-      <CTableHead class="text-nowrap">
-        <CTableRow>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            #
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Nombres y apellidos
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            DNI
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            N° celular
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Acciones
-          </CTableHeaderCell>
-        </CTableRow>
-      </CTableHead>
-      <CTableBody>
-        <CTableRow v-for="item in teachers" :key="item.name">
-          <CTableDataCell>
-            <div class="text-center">{{ item.id }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.name }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.dni }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.phone }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-              <CButton color="warning" shape="rounded-pill" class="text-white" @click="openEditModal(item.id)">Editar
+    <CardComponent title="Lista de Docentes" style="margin: 20px 10px;">
+      <div class="box-tools">
+        <CRow class="mb-3">
+          <CCol>
+            <CInputGroup>
+              <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
+                aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
+              <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+            </CInputGroup>
+          </CCol>
+          <CCol></CCol>
+          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+          </CCol>
+        </CRow>
+      </div>
+      <ElegantCrudList :columns="listColumns" :data="teachers">
+        <template #actions="{ item }">
+          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+                <CIcon :content="cilPencil" size="lg"></CIcon>
               </CButton>
-              <CButton color="danger" shape="rounded-pill" class="text-white" @click="deleteItem(item.id)">Eliminar
+              <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+                <CIcon :content="cilTrash" size="lg"></CIcon>
               </CButton>
-            </div>
-          </CTableDataCell>
-        </CTableRow>
-      </CTableBody>
-    </CTable>
+        </template>
+      </ElegantCrudList>
+    </CardComponent>
 
     <!-- Modal para Crear/Editar Profesor -->
     <CModal :visible="isModalOpen" scrollable size="lg" @close="() => { isModalOpen = false }"
@@ -148,11 +114,22 @@
 import TeacherService from '@/services/TeacherService'
 import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
+import CardComponent from '@/components/cruds/CardComponent.vue';
+import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
+import { cilPencil, cilTrash } from '@coreui/icons';
+
 const teachers = ref([]);
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 var idItemSelected = ref(0);
 var searchData = ref('');
+const listColumns = ref([
+  { key: 'id', label: 'N°'},
+  { key: 'name', label: 'Nombre y Apellidos' },
+  { key: 'dni', label: 'DNI' },
+  { key: 'phone', label: 'Numero de Celular' },
+  { key: 'actions', label: 'OPCIONES' }, // El key 'actions' activa el slot
+]);
 const teacherData = ref({
   name: '',
   surname_father: '',
