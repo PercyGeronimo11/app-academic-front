@@ -44,5 +44,4 @@ docker-compose.yml
 *.vi
 *.zip
 *~
-/dist
 
