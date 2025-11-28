@@ -7,14 +7,16 @@ export default [
     roles: ['Administrador', 'Administrativo'],
   },
   {
-    component: 'CNavTitle',
-    name: 'FUNCIONALIDADES',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
     component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
+    icon: 'cil-people',
+    roles: ['Administrador', 'Administrativo'],
+  },
+    {
+    component: 'CNavItem',
+    name: 'Asistencias',
+    to: '/assistances',
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
   },
