@@ -82,6 +82,8 @@ export default {
           if (role === "Administrador" || role === "Administrativo") route = "/dashboard";
           else if (role === "Profesor") route = "/mainAreaTeacher";
           else if (role === "Estudiante") route = "/mainAreaStudent";
+          else if (role === "Auxiliar") route = "/assistances";
+
           this.$router.push(route);
 
           Swal.fire({

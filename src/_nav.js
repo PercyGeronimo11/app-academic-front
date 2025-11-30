@@ -4,7 +4,7 @@ export default [
     name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['Administrador', 'Administrativo', 'Auxiliar'],
   },
   {
     component: 'CNavItem',
