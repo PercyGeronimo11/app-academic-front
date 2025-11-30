@@ -13,14 +13,14 @@ export default [
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
   },
-    {
+  {
     component: 'CNavItem',
     name: 'Asistencias',
     to: '/assistances',
-    icon: 'cil-people',
-    roles: ['Administrador', 'Administrativo'],
+    icon: 'Flags',
+    roles: ['Auxiliar'],
   },
-  
+
   //Para administrativo
   {
     component: 'CNavItem',
@@ -29,7 +29,7 @@ export default [
     icon: 'cil-star',
     roles: ['Administrador', 'Administrativo'],
   },
-  
+
   {
     component: 'CNavItem',
     name: 'Asignar Cursos',
@@ -79,14 +79,14 @@ export default [
     name: 'ADMINISTRACIÓN',
     roles: ['Profesor'],
   },
-  
+
   // Profesor y alumnos
   {
     component: 'CNavItem',
     name: 'Area Principal',
     to: '/classroom/main',
     icon: 'cil-notes',
-    roles: ['Profesor','Estudiante'],
+    roles: ['Profesor', 'Estudiante'],
   },
 
   {
@@ -106,7 +106,7 @@ export default [
     icon: 'cil-options',
     roles: ['Estudiante'],
   },
-  
+
 
 
   // ---------------------------------- PLANTILLA -------------------------
