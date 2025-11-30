@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --force --host",
     "build": "vite build",
+    "build:prod": "vite build --mode production",
     "lint": "eslint \"src/**/*.{js,vue}\"",
     "preview": "vite preview"
   },

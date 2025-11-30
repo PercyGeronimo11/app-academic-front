@@ -3,3 +3,15 @@
 // If you want to customize your project please add your variables below.
 
 $enable-deprecation-messages: false !default;
+
+:root {
+  --box-content-bg: #F9FAFB;
+  --box-content-color: #000000;
+  --box-content-bg-hover: #dcdcdc;
+}
+
+[data-coreui-theme="dark"] {
+  --box-content-bg: #38342f;
+  --box-content-color: #ffffff;
+  --box-content-bg-hover: #707070;
+}
