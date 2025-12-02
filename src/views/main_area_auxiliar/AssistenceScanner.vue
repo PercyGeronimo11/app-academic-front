@@ -48,11 +48,21 @@ async function empezarScan() {
       return
     }
 
-    selectedDeviceId = devices[0].deviceId
+    let backCamera = devices.find(d =>
+      d.label.toLowerCase().includes("back") ||
+      d.label.toLowerCase().includes("environment")
+    )
+
+    // Si no hay etiqueta, usar la segunda cámara
+    if (!backCamera && devices.length > 1) {
+      backCamera = devices[1]
+    }
+
+    selectedDeviceId = backCamera ? backCamera.deviceId : devices[0].deviceId
 
     stream = await navigator.mediaDevices.getUserMedia({
-      // video: { deviceId: selectedDeviceId },
-      video: { facingMode: 'environment' }
+      video: { deviceId: selectedDeviceId },
+      // video: { facingMode: 'environment' }
     })
     videoElement.srcObject = stream
     videoElement.play()
