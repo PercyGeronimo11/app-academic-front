@@ -33,12 +33,11 @@
           />
         </CInputGroup>
 
-        <CButton color="primary" class="w-100 fw-semibold py-2" type="submit">
-          Iniciar sesión
-        </CButton>
-
-        <CButton color="link" class="mt-3 text-decoration-none text-primary">
-          ¿Olvidó su contraseña?
+        <CButton color="primary" class="w-100 fw-semibold py-2" type="submit" :disable="loadingLogin">
+          <span v-if="!loadingLogin">Iniciar sesión</span>
+          <span v-else>
+            <CSpinner/>
+          </span>
         </CButton>
       </CForm>
 
@@ -62,10 +61,12 @@ export default {
     return {
       email: "",
       password: "",
+      loadingLogin: false
     };
   },
   methods: {
     async handleLogin() {
+      this.loadingLogin = true;
       try {
         const inicio = getPeruTime();
         localStorage.setItem("tiempoLogin", inicio);
@@ -112,6 +113,8 @@ export default {
           showConfirmButton: false,
           timer: 3000,
         });
+      } finally {
+        this.loadingLogin = false;
       }
     },
   },
