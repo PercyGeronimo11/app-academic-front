@@ -45,5 +45,4 @@ docker-compose.yml
 *.zip
 *~
 
-/dist
 .env.production
