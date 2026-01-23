@@ -1,1 +1,0 @@
-/* empty css                                                                   */import{c as e,a as r,o as t}from"./index-C4i4XpOx.js";const a="/assets/solider_main-B4Eryzhv.png",o={class:"courses-wrapper"},i={__name:"MainArea",setup(n){return(c,s)=>(t(),e("div",o,s[0]||(s[0]=[r("img",{src:a,alt:""},null,-1)])))}};export{i as default};
