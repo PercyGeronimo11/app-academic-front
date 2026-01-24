@@ -1,6 +1,8 @@
 <template>
   <div class="scanner-container">
-    <video id="video" class="scanner-video"></video>
+    <!-- <video id="video" class="scanner-video"></video> -->
+    <video ref="videoRef" class="scanner-video"></video>
+
 
     <p v-if="dniDetectado" class="fw-bold text-primary mt-2">
       🧾 DNI detectado: {{ dniDetectado }}
@@ -30,6 +32,7 @@ let stream = null
 let selectedDeviceId = null
 let decodeControl = null
 
+const videoRef = ref(null);
 
 
 // === Función para iniciar la cámara y escaneo ===
@@ -64,11 +67,14 @@ async function empezarScan() {
       video: { deviceId: selectedDeviceId },
       // video: { facingMode: 'environment' }
     })
-    videoElement.srcObject = stream
-    videoElement.play()
+    videoRef.value.srcObject = stream
+    await videoRef.value.play()
+
+    // videoElement.srcObject = stream
+    // videoElement.play()
 
     // Mantener la lógica original de detección continua
-    decodeControl = codeReader.decodeFromVideoDevice(selectedDeviceId, 'video', async (result, err) => {
+    decodeControl = codeReader.decodeFromVideoDevice(selectedDeviceId,  videoRef.value, async (result, err) => {
       if (result) {
         const dni = result.text.trim()
         if (dni !== dniDetectado.value) {

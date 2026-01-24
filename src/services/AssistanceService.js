@@ -6,7 +6,7 @@ const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 export default {
 
   registrarAsistenciaAuxiliar(dni) {
-    return axios.post(`${API_URL_DJANGO}/assistances/register`, {
+    return axios.post(`${API_URL_DJANGO}/assistances/register/`, {
         dni: dni
       }
     );
