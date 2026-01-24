@@ -1,1 +1,0 @@
-function s(){const e=new Date,t=new Date(e.toLocaleString("en-US",{timeZone:"America/Lima"})),n=t.getHours().toString().padStart(2,"0"),o=t.getMinutes().toString().padStart(2,"0"),r=t.getSeconds().toString().padStart(2,"0");return`${n}:${o}:${r}`}export{s as g};
