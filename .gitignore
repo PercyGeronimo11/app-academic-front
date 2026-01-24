@@ -1,14 +1,14 @@
 # Folders to ignore
 node_modules/
-tests/e2e/reports/
+dist/
 
 # local env files
-.env.local
-.env.*.local
 .env
+.env.*
+
+
 # dependencies
-/node_modules
-yarn.lock
+*.log
 
 # OS or Editor folders
 ._*
@@ -32,16 +32,4 @@ Thumbs.db
 
 Dockerfile
 docker-compose.yml
-
-# Numerous always-ignore extensions
-*.diff
-*.err
-*.log
-*.orig
-*.rej
-*.swo
-*.swp
-*.vi
-*.zip
-*~
 
