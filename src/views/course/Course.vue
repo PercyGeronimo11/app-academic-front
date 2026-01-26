@@ -1,57 +1,31 @@
 <template>
   <div>
-    <div class="mb-2">
-      <h1>Lista de Cursos</h1>
-      <CRow class="mb-3">  
-        <CCol>
-          <CInputGroup>
-            <CFormInput v-model="searchData" placeholder="Buscar por nombre" aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2"/>
-            <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">Buscar</CButton>
-          </CInputGroup>
-        </CCol>
-        <CCol></CCol>
-        <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
-        </CCol>
-      </CRow>
-    </div>
-    <CTable align="middle" class="mb-0 border" hover responsive>
-      <CTableHead class="text-nowrap">
-        <CTableRow>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            #
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Nombres
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Descripcion
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Acciones
-          </CTableHeaderCell>
-        </CTableRow>
-      </CTableHead>
-      <CTableBody>
-        <CTableRow v-for="item in items" :key="item.name">
-          <CTableDataCell>
-            <div class="text-center">{{ item.id }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.name }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.description }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-              <CButton color="warning" shape="rounded-pill" class="text-white" @click="openEditModal(item.id)">Editar</CButton>
-              <CButton color="danger" shape="rounded-pill" class="text-white" @click="deleteItem(item.id)">Eliminar</CButton>
-            </div>
-          </CTableDataCell>
-        </CTableRow>
-      </CTableBody>
-    </CTable>
+    <CardComponent title="Lista de Cursos" style="margin: 20px 10px;">
+      <div class="box-tools">
+        <CRow class="mb-3">
+          <CCol>
+            <CInputGroup>
+              <CFormInput v-model="searchData" placeholder="Buscar por nombre" aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2"/>
+              <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">Buscar</CButton>
+            </CInputGroup>
+          </CCol>
+          <CCol></CCol>
+          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+          </CCol>
+        </CRow>
+      </div>
+      <ElegantCrudList :columns="listColumns" :data="items">
+        <template #actions="{ item }">
+          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+            <CIcon :content="cilPencil" size="lg"></CIcon>
+          </CButton>
+          <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+            <CIcon :content="cilTrash" size="lg"></CIcon>
+          </CButton>
+        </template>
+      </ElegantCrudList>
+    </CardComponent>
     
     <!-- Modal para Crear/Editar curso -->
     <CModal 
@@ -97,6 +71,10 @@
   import CourseService from '@/services/CourseService'
   import { ref, onMounted, watch } from 'vue';
   import Swal from 'sweetalert2'
+  import CardComponent from '@/components/cruds/CardComponent.vue';
+  import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
+  import { cilPencil, cilTrash } from '@coreui/icons';
+
   const items = ref([]);
   const isModalOpen = ref(false);
   const isEditMode = ref(false);
@@ -106,6 +84,12 @@
     name:'',
     description:'',
   });
+  const listColumns = ref([
+    { key: 'id', label: 'N°'},
+    { key: 'name', label: 'Nombre y Apellidos' },
+    { key: 'description', label: 'Descripcion' },
+    { key: 'actions', label: 'OPCIONES' }, // El key 'actions' activa el slot
+  ]);
 
   onMounted(async () => {
     try {

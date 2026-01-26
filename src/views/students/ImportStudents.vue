@@ -30,8 +30,9 @@
 <script setup>
 import { ref } from 'vue';
 import StudentService from '../../services/StudentService';
+import Swal from 'sweetalert2';
 
-const emit = defineEmits(['update:isOpenModal']);
+const emit = defineEmits(['update:isOpenModal','updateData']);
 const params = defineProps({
     isOpenModal: {
         type: Boolean,
@@ -54,7 +55,13 @@ const sendFile = async() => {
 
         if(response.success){
             console.log(response.data);
-            
+            Swal.fire({
+                icon: 'success',
+                title: 'Importacion exitosa',
+                text: 'Alumnos importados correctamente',
+            });
+            closeModal();
+            emit('updateData');
         }
     } catch (error) {
         console.log("Error en el envio: "+ error);

@@ -200,6 +200,21 @@ const routes = [
         name: 'StudentAssistence',
         component: () => import('@/views/reports/reportAssistence.vue'),
       },
+      {
+        path: '/mis-futs',
+        name: 'MisFuts',
+        component: () => import('@/views/fut/FutListPadre.vue'),
+      },
+      {
+        path: '/mesa-futs',
+        name: 'MesaFuts',
+        component: () => import('@/views/fut/FutListMesa.vue'),
+      },
+      {
+        path: '/crear-fut',
+        name: 'crearFut',
+        component: () => import('@/views/fut/FutCreate.vue'),
+      },
       // ------------------------RUTAS DE LA PLANTILLA---------------------
       {
         path: '/theme',

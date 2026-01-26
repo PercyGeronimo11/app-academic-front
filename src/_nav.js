@@ -107,7 +107,14 @@ export default [
     roles: ['Estudiante'],
   },
 
-
+  //Mesa de partes
+  {
+    component: 'CNavItem',
+    name: 'Solicitudes de Permiso',
+    to: '/mesa-futs',
+    icon: 'cil-options',
+    roles: ['Mesa de partes'],
+  },
 
   // ---------------------------------- PLANTILLA -------------------------
   /* {

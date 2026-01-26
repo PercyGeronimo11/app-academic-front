@@ -25,7 +25,6 @@ export default {
 .card-container {
   border-radius: 12px;
   border: 1px solid var(--color-border, #E5E9F0);
-  background-color: var(--color-surface, #fff);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
   overflow: hidden;
   transition: all 0.3s ease;
@@ -55,8 +54,6 @@ export default {
 
 .card-body {
   padding: 18px;
-  background-color: var(--color-background, #F9FAFB);
-  color: var(--color-text, #1E293B);
   font-size: 0.95rem;
   line-height: 1.6;
 }

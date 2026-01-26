@@ -7,6 +7,7 @@
           v-for="column in columns"
           :key="column.key"
           :class="{ 'table-cell': true, 'center-cell': column.center||false}"
+          role="columnheader"
         >
           {{ column.label }}
         </div>
@@ -17,6 +18,12 @@
         class="table-row"
         v-for="(item, index) in data"
         :key="index"
+        role="row"
+        tabindex="0"
+        @click="onRowClick(item)"
+        @keydown.enter.prevent="onRowClick(item)"
+        :aria-label="getNestedValue(item, columns[0] && columns[0].key || '')"
+        :class="{ 'row-selected': isSelected(item) }"
       >
         <div
           v-for="column in columns"
@@ -33,8 +40,12 @@
           <!-- Checkbox -->
           <input
             v-else-if="column.key === 'checkbox'"
+            v-if="props.selectable"
             type="checkbox"
             class="checkbox"
+            :checked="isSelected(item)"
+            @change.prevent="toggleCheckbox(item)"
+            :aria-checked="isSelected(item)"
           />
 
           <!-- Avatar -->
@@ -43,10 +54,13 @@
             class="avatar-wrapper"
           >
             <img
-              :src="item[column.key]"
+              v-if="getNestedValue(item, column.key)"
+              :src="getNestedValue(item, column.key)"
               alt="avatar"
               class="avatar"
+              @error="(e) => { e.target.style.display='none' }"
             />
+            <div v-else class="avatar-fallback">{{ getInitials(item) }}</div>
           </div>
 
           <!-- Estado -->
@@ -67,7 +81,7 @@
 
           <!-- Texto plano -->
           <span v-else :class="{'center-cell': column.center||false}">
-            {{ item[column.key] }}
+            {{ getNestedValue(item, column.key) }}
           </span>
         </div>
       </div>
@@ -76,139 +90,158 @@
 </template>
 
 <script setup>
-defineProps({
-  columns: Array,
-  data: Array,
-});
+import { ref, computed, watch } from 'vue'
 
-// Devuelve clase por estado
+const props = defineProps({
+  columns: { type: Array, default: () => [] },
+  data: { type: Array, default: () => [] },
+  selectable: { type: Boolean, default: false },
+  selected: { type: Array, default: () => [] },
+  rowKey: { type: String, default: 'id' }
+})
+
+const emit = defineEmits(['update:selected', 'row-click'])
+
+const internalSelected = ref(new Set(props.selected || []))
+
+watch(
+  () => props.selected,
+  (val) => {
+    internalSelected.value = new Set(val || [])
+  }
+)
+
+function toggleCheckbox(item) {
+  const key = getNestedValue(item, props.rowKey)
+  if (internalSelected.value.has(key)) {
+    internalSelected.value.delete(key)
+  } else {
+    internalSelected.value.add(key)
+  }
+  emit('update:selected', Array.from(internalSelected.value))
+}
+
+function isSelected(item) {
+  const key = getNestedValue(item, props.rowKey)
+  return internalSelected.value.has(key)
+}
+
+function onRowClick(item) {
+  emit('row-click', item)
+}
+
 function statusColor(status) {
-  switch (status.toLowerCase()) {
+  if (!status) return 'status-gray'
+  const s = String(status).toLowerCase()
+  switch (s) {
     case 'active':
-      return 'status-green';
+      return 'status-green'
     case 'muted':
     case 'inactive':
-      return 'status-red';
+      return 'status-red'
     case 'on sale':
-      return 'status-blue';
+      return 'status-blue'
     case 'bouncing':
-      return 'status-purple';
+      return 'status-purple'
     case 'pending':
-      return 'status-yellow';
+      return 'status-yellow'
     default:
-      return 'status-gray';
+      return 'status-gray'
   }
+}
+
+function getNestedValue(obj, path) {
+  if (!obj || !path) return undefined
+  return path.split('.').reduce((acc, part) => (acc && acc[part] !== undefined ? acc[part] : undefined), obj)
+}
+
+function getInitials(item) {
+  const name = item.name || item.fullName || item.title || ''
+  const parts = String(name).trim().split(/\s+/)
+  if (!parts.length) return ''
+  return (parts[0][0] || '') + (parts[1] ? parts[1][0] : '')
 }
 </script>
 
 <style scoped>
+:root {
+  --bg: #ffffff;
+  --cell-bg: #ffffff;
+  --cell-hover: #f7fafc;
+  --header-bg: #f3f4f6;
+  --text-color: #0f172a;
+  --muted: #6b7280;
+  --border: #e6e9ef;
+  --primary: #1f6feb;
+  --avatar-border: #e5e7eb;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #071016;
+    --cell-bg: #07101a;
+    --cell-hover: rgba(255,255,255,0.02);
+    --header-bg: rgba(255,255,255,0.03);
+    --text-color: #e6eef8;
+    --muted: #9ca3af;
+    --border: rgba(255,255,255,0.06);
+    --primary: #6fb8ff;
+    --avatar-border: rgba(255,255,255,0.06);
+    --row-alt-bg: rgba(255,255,255,0.01);
+  }
+}
+
 .modern-list-wrapper {
-  padding: 20px;
-  /* Sin bordes redondeados en esquinas superiores */
-  border-radius: 0 0 16px 16px;
-  overflow-x: auto;
+  padding: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text-color);
+  border: 1px solid var(--border);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
 }
 
-/* Tabla visual */
-.modern-table {
-  display: grid;
-  gap: 8px;
-}
+/* Use table layout for a formal appearance */
+.modern-table { display: table; width: 100%; border-collapse: collapse }
+.table-header { display: table-header-group; background: var(--header-bg); }
+.table-row { display: table-row; }
+.table-cell { display: table-cell; padding: 10px 12px; vertical-align: middle; font-size: 14px }
 
-/* Fila general */
-.table-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  align-items: center;
-  border-radius: 12px;
-  padding: 12px 20px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.09);
-  transition: 0.2s ease;
-}
+.table-header .table-cell { font-weight: 700; text-transform: uppercase; font-size: 12px; color: var(--muted); border-bottom: 2px solid var(--border) }
 
-.table-row:hover {
-  background: var(--box-content-bg-hover);
-}
+.center-cell { text-align: center }
 
-/* Encabezado */
-.table-header {
-  box-shadow: none;
-  font-weight: 600;
-  text-transform: uppercase;
-  font-size: 13px;
-  cursor: default;
-  border-radius: 12px 12px 12px 12px; /* Solo esquinas superiores */
-}
+.table-row:hover { background: var(--cell-hover) }
 
-.table-cell {
-  padding: 4px 8px;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  word-break: break-word;
-}
+/* Visible column separators and zebra stripes for clarity */
+.modern-table { border: 1px solid var(--border); }
+.table-cell { border-right: 1px solid var(--border) }
+.table-cell:last-child { border-right: none }
+.table-row { border-bottom: none }
+.table-row:nth-child(even) { background: var(--row-alt-bg, rgba(0,0,0,0.02)) }
 
-.center-cell{
-  justify-content: center;
-}
+.checkbox { width: 16px; height: 16px }
 
-/* Checkbox */
-.checkbox {
-  width: 18px;
-  height: 18px;
-}
+/* Avatar more formal: small square with subtle radius */
+.avatar-wrapper { display: inline-flex; align-items: center }
+.avatar-wrapper .avatar { width: 32px; height: 32px; border-radius: 6px; object-fit: cover; border: 1px solid var(--avatar-border) }
+.avatar-fallback { width: 32px; height: 32px; border-radius: 6px; display:inline-flex; align-items:center; justify-content:center; background: transparent; color: var(--muted); border:1px solid var(--avatar-border); font-weight:600 }
 
-/* Avatar */
-.avatar-wrapper .avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #e5e7eb;
-}
+.email-link { color: var(--primary); text-decoration: none }
+.email-link:hover { text-decoration: underline }
 
-/* Email */
-.email-link {
-  color: #2563eb;
-  text-decoration: none;
-}
-.email-link:hover {
-  text-decoration: underline;
-}
+/* Status pills: subtle bordered badges */
+.status-pill { padding: 4px 8px; border-radius: 6px; font-size: 13px; font-weight: 600; border: 1px solid var(--border); background: transparent }
+.status-green { background-color: rgba(34,197,94,0.08); color: #065f46; border-color: rgba(34,197,94,0.12) }
+.status-red { background-color: rgba(239,68,68,0.06); color: #991b1b; border-color: rgba(239,68,68,0.12) }
+.status-yellow { background-color: rgba(245,158,11,0.06); color: #92400e; border-color: rgba(245,158,11,0.12) }
+.status-blue { background-color: rgba(59,130,246,0.06); color: #1d4ed8; border-color: rgba(59,130,246,0.12) }
+.status-purple { background-color: rgba(124,58,237,0.06); color: #6d28d9; border-color: rgba(124,58,237,0.12) }
+.status-gray { background-color: rgba(107,114,128,0.04); color: var(--muted); border-color: rgba(107,114,128,0.08) }
 
-/* Status pills */
-.status-pill {
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 13px;
-  font-weight: 500;
-  text-transform: capitalize;
-  white-space: nowrap;
-}
+.row-selected { outline: 2px solid rgba(31,111,235,0.12) }
 
-.status-green {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-.status-red {
-  background-color: #fee2e2;
-  color: #991b1b;
-}
-.status-yellow {
-  background-color: #fef3c7;
-  color: #92400e;
-}
-.status-blue {
-  background-color: #dbeafe;
-  color: #1d4ed8;
-}
-.status-purple {
-  background-color: #ede9fe;
-  color: #6d28d9;
-}
-.status-gray {
-  background-color: #e5e7eb;
-  color: #374151;
-}
+/* Focus visible for keyboard users */
+.table-row:focus { outline: 3px solid rgba(31,111,235,0.12); outline-offset: 0 }
+
 </style>

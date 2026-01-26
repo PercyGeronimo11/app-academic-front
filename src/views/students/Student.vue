@@ -1,6 +1,6 @@
 <template>
   <div>
-    <CardComponent title="Lista de Alumnos">
+    <CardComponent title="Lista de Alumnos" style="margin: 20px 10px;">
       <div class="box-tools">
         <CRow class="mb-3">
           <CCol>
@@ -12,13 +12,14 @@
           </CCol>
           <CCol></CCol>
           <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+            <!-- <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton> -->
+            <CButton color="info text-white" @click="openImportStudentsModal">Importar Estudiantes</CButton>
           </CCol>
         </CRow>
       </div>
       <ElegantCrudList :columns="listColumns" :data="alumnos">
         <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+          <CButton color="warning" class="text-white" @click="navigateToEditStudent(item.id)">
                 <CIcon :content="cilPencil" size="lg"></CIcon>
               </CButton>
               <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
@@ -27,74 +28,11 @@
         </template>
       </ElegantCrudList>
     </CardComponent>
-    <div class="mb-2">
-      <h1>Lista de Alumnos</h1>
-      <CRow class="mb-3">
-        <CCol>
-          <CInputGroup>
-            <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-              aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-            <CButton type="button" color="primary" id="button-addon2" >Buscar</CButton>
-          </CInputGroup>
-        </CCol>
-        <CCol></CCol>
-        <CCol class="d-grid gap-5 d-md-flex justify-content-md-end">
-            <router-link to="/new-student" class="CButton" >
-            <CButton color="info text-white" >Nuevo</CButton>
-            </router-link>
-            <CButton color="primary text-white" @click="isOpenModalImportStudents = true">Importar Estudiantes</CButton>
-        </CCol>
-      </CRow>
-    </div>
-    <CTable align="middle" class="mb-0 border" hover responsive>
-      <CTableHead class="text-nowrap">
-        <CTableRow>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            #
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Nombres y apellidos
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            DNI
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            N° celular
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Acciones
-          </CTableHeaderCell>
-        </CTableRow>
-      </CTableHead>
-      <CTableBody>
-        <CTableRow v-for="item in alumnos" :key="item.name">
-          <CTableDataCell>
-            <div class="text-center">{{ item.id }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.name }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.dni }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.representative_phone }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-              <CButton color="warning" shape="rounded-pill" class="text-white" @click="navigateToEditStudent(item.id)">Editar
-              </CButton>
-              <CButton color="danger" shape="rounded-pill" class="text-white" @click="deleteItem(item.id)">Eliminar
-              </CButton>
-            </div>
-          </CTableDataCell>
-        </CTableRow>
-      </CTableBody>
-    </CTable>
   </div>
 
   <ImportStudents
     v-model:isOpenModal = isOpenModalImportStudents
+    @updateData = listStudentService
   />
 </template>
 
@@ -148,11 +86,14 @@ onMounted(async () => {
   }
 });
 
+const openImportStudentsModal = () => {
+  isOpenModalImportStudents.value = true;
+};
+
 const listStudentService = async () => {
   const response = await StudentService.getItems();
   alumnos.value = response.data.data;
 }
-
 
 const navigateToEditStudent = async (id) => {
   return router.push({

@@ -152,6 +152,7 @@ const listColumns = ref([
   { key: 'names', label: 'Nombre y Apellidos' },
   { key: 'dni', label: 'DNI' },
   { key: 'phone_number', label: 'Numero de Celular' },
+  { key: 'rol.name', label: 'Rol' },
   { key: 'actions', label: 'OPCIONES' }, // El key 'actions' activa el slot
 ]);
 
@@ -372,9 +373,6 @@ watch(searchData, (newVal) => {
 .box-tools {
   height: 100%;
   padding: 15px 20px;
-  background: #fafafa;
-  border-bottom: 1px solid #e0e0e0;
-  border-radius: 8px;
   margin-bottom: 15px;
 }
 </style>
