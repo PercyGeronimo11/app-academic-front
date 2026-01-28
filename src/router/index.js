@@ -59,11 +59,11 @@ const routes = [
       {
         path: '/classroom/',
         children: [
-          {
+          /* {
             path: 'assignment-courses',
             name: 'Asignar Cursos',
             component: () => import('@/views/classroom/AssignmentCourses.vue'),
-          },
+          }, */
           {
             path: ':grade/:section/:id/teachers',
             name: 'Asignar Profesores',

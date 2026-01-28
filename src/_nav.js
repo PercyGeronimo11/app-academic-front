@@ -30,13 +30,13 @@ export default [
     roles: ['Administrador', 'Administrativo'],
   },
 
-  {
+  /* {
     component: 'CNavItem',
     name: 'Asignar Cursos',
     to: '/classroom/assignment-courses',
     icon: 'cil-star',
     roles: ['Administrador', 'Administrativo'],
-  },
+  }, */
   {
     component: 'CNavItem',
     name: 'Cursos',
