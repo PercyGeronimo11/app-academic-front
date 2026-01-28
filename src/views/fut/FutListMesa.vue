@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import FutService from '@/services/futService'
+import FutService from '@/services/FutService.js'
 
 export default {
   data() {

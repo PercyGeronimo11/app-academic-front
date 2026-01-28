@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import FutService from '@/services/fut.service'
+import FutService from '@/services/FutService.js'
 
 export default {
   data() {
