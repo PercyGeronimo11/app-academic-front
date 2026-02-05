@@ -106,6 +106,13 @@ export default [
     icon: 'cil-options',
     roles: ['Estudiante'],
   },
+  {
+    component: 'CNavItem',
+    name: 'Mis Trámites',
+    to: '/myPaperworks',
+    icon: 'cil-file',
+    roles: ['Estudiante'],
+  },
 
   //Mesa de partes
   {

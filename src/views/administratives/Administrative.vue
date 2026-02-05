@@ -12,18 +12,27 @@
           </CCol>
           <CCol></CCol>
           <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+            <CRow class="mb-3">
+              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <ImportDataModal descripcion="Alumnos" />
+              </CCol>
+              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+              </CCol>
+            </CRow>
           </CCol>
         </CRow>
       </div>
       <ElegantCrudList :columns="listColumns" :data="teachers">
         <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-                <CIcon :content="cilPencil" size="lg"></CIcon>
-              </CButton>
-              <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-                <CIcon :content="cilTrash" size="lg"></CIcon>
-              </CButton>
+          <div class="d-flex gap-2">
+            <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+              <CIcon :content="cilPencil" size="lg"></CIcon>
+            </CButton>
+            <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+              <CIcon :content="cilTrash" size="lg"></CIcon>
+            </CButton>
+          </div>
         </template>
       </ElegantCrudList>
       <!-- <CTable align="middle" class="mb-0 border" hover responsive>
@@ -146,6 +155,7 @@ import Swal from 'sweetalert2'
 import CardComponent from '../../components/cruds/CardComponent.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
 import ElegantCrudList from '../../components/cruds/ElegantCrudList.vue';
+import ImportDataModal from '@/components/modals/ImportDataModal.vue';
 
 const listColumns = ref([
   { key: 'id', label: 'N°'},

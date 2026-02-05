@@ -156,6 +156,11 @@ const routes = [
         name: 'Notas del alumno',
         component: () => import('@/views/main_area_student/ScoreView.vue'),
       },
+      {
+        path: '/myPaperworks',
+        name: 'Trámites del Estudiante',
+        component: () => import('@/views/main_area_student/Paperworks.vue'),
+      },
 
 
       //Para estudiantes y profesores
