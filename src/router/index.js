@@ -171,6 +171,10 @@ const routes = [
         component: () => import('@/views/main_area_general/MainArea.vue'),
       },
 
+
+
+
+
       // {
       //   path: '/classroom/:grade/:section/:id/teachers',
       //   name: 'Asignar Profesores',
@@ -220,6 +224,27 @@ const routes = [
         name: 'crearFut',
         component: () => import('@/views/fut/FutCreate.vue'),
       },
+
+      // --------- PARA ASISTENCIAS -------------
+      {
+        path: '/assistances/',
+        children: [
+          {
+            path: 'dashboard',
+            name: 'Dashboard de Asistencias',
+            component: () => import('@/views/assistances/DashboardAssistance.vue'),
+          },
+
+        ],
+      },
+
+
+
+
+
+
+
+
       // ------------------------RUTAS DE LA PLANTILLA---------------------
       {
         path: '/theme',

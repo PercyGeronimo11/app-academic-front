@@ -5,10 +5,17 @@ const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
 export default {
 
+  getResumenDiario() {
+    return axios.get(`${API_URL_DJANGO}/assistances/resumen-hoy/`);
+  },
+  getResumenSemanal() {
+    return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
+  },
+
   registrarAsistenciaAuxiliar(dni) {
     return axios.post(`${API_URL_DJANGO}/assistances/register/`, {
-        dni: dni
-      }
+      dni: dni
+    }
     );
   },
 

@@ -15,9 +15,16 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Asistencias',
+    name: 'ASISTENCIAS',
+    to: '/assistances/dashboard',
+    icon: 'cil-star',
+    roles: ['Administrador', 'Administrativo'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'ASISTENCIAS',
     to: '/assistances',
-    icon: 'Flags',
+    icon: 'cil-star',
     roles: ['Auxiliar'],
   },
 
