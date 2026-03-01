@@ -151,11 +151,11 @@ const routes = [
         name: 'Asistencias del alumno',
         component: () => import('@/views/main_area_student/AssistanceView.vue'),
       },
-      {
+      /* {
         path: '/student/courseClass/:courseClass/scores',
         name: 'Notas del alumno',
         component: () => import('@/views/main_area_student/ScoreView.vue'),
-      },
+      }, */
       {
         path: '/myPaperworks',
         name: 'Trámites del Estudiante',
@@ -199,7 +199,7 @@ const routes = [
 
 
 
-      {
+      /* {
         path: '/class/grade/:course_class_id/:unit_id',
         name: 'StudentScores',
         component: () => import('@/views/reports/reportScore.vue'),
@@ -208,7 +208,7 @@ const routes = [
         path: '/class/grade/:course_class_id',
         name: 'StudentAssistence',
         component: () => import('@/views/reports/reportAssistence.vue'),
-      },
+      }, */
       {
         path: '/mis-futs',
         name: 'MisFuts',
@@ -226,7 +226,7 @@ const routes = [
       },
 
       // --------- PARA ASISTENCIAS -------------
-      {
+      /* {
         path: '/assistances/',
         children: [
           {
@@ -236,7 +236,7 @@ const routes = [
           },
 
         ],
-      },
+      }, */
 
 
 
@@ -360,7 +360,7 @@ const routes = [
         children: [
           {
             path: '/buttons/standard-buttons',
-            name: 'Buttons',
+            name: 'ButtonsStandar',
             component: () => import('@/components/buttons/Buttons.vue'),
           },
           {
