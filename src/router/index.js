@@ -226,7 +226,7 @@ const routes = [
       },
 
       // --------- PARA ASISTENCIAS -------------
-      /* {
+      {
         path: '/assistances/',
         children: [
           {
@@ -236,7 +236,7 @@ const routes = [
           },
 
         ],
-      }, */
+      }, 
 
 
 

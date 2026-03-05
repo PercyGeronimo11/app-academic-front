@@ -8,6 +8,11 @@ export default {
   getResumenDiario() {
     return axios.get(`${API_URL_DJANGO}/assistances/resumen-hoy/`);
   },
+
+  getAsistenciaBySeccion() {
+    return axios.get(`${API_URL_DJANGO}/assistances/resumen-by-seccion/`);
+  },
+
   getResumenSemanal() {
     return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
   },
