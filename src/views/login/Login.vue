@@ -77,13 +77,15 @@ export default {
         const role = response.data.user.role;
         const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
         localStorage.setItem("r_key", encryptedRol);
-
+        console.log('Respuesa de login', response);
+        
         if (response.success) {
           let route = "/";
           if (role === "Administrador" || role === "Administrativo") route = "/dashboard";
           else if (role === "Profesor") route = "/mainAreaTeacher";
           else if (role === "Estudiante") route = "/mainAreaStudent";
           else if (role === "Auxiliar") route = "/assistances";
+          else route = "/dashboard";
 
           this.$router.push(route);
 
