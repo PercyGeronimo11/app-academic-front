@@ -234,9 +234,24 @@ const routes = [
             name: 'Dashboard de Asistencias',
             component: () => import('@/views/assistances/DashboardAssistance.vue'),
           },
+          {
+            path: 'seccion/:id',
+            name: 'Asistencias por Sección',
+            component: () => import('@/views/assistances/DetailSeccionAssistance.vue'),
+          },
+          {
+            path: 'list-alumnos',
+            name: 'Asistencias por Alumnos',
+            component: () => import('@/views/assistances/AlumnosReportAssistance.vue'),
+          },
+           {
+            path: 'detail-alumno/:id',
+            name: 'Detalle de Alumno',
+            component: () => import('@/views/assistances/AlumnoHistorialAssistance.vue'),
+          },
 
         ],
-      }, 
+      },
 
 
 

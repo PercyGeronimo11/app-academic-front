@@ -13,13 +13,27 @@ export default [
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
   },
+  
   {
-    component: 'CNavItem',
+    component: 'CNavGroup',
     name: 'ASISTENCIAS',
-    to: '/assistances/dashboard',
     icon: 'cil-star',
     roles: ['Administrador', 'Administrativo'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Seguimiento Diario',
+        to: '/assistances/dashboard',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Reporte por alumnos',
+        to: '/assistances/list-alumnos',
+      }
+    ],
   },
+
+
   {
     component: 'CNavItem',
     name: 'ASISTENCIAS',

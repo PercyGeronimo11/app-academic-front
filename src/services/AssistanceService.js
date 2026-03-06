@@ -17,12 +17,50 @@ export default {
     return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
   },
 
+  getDetailAssistanceBySeccion(seccionId) {
+    return axios.get(`${API_URL_DJANGO}/assistances/detail-by-seccion/${seccionId}/`);
+  },
+
+
+  listarAlumnos: (page = 1, search = '' ,grade = '', section = '') => {
+    return axios.get(`${API_URL_DJANGO}/assistances/listar-alumnos/`, {
+      params: {
+        page: page,
+        search: search,
+        grade: grade,
+        section: section
+      }
+    })
+  },
+
+  getAlumnoDetail: (alumnoId) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/detail-alumno/${alumnoId}/`);
+  },
+  
+
+  getHistorialAsistencias: (alumnoId, page = 1) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/historial-alumno/${alumnoId}/`, {
+      params: {
+        page: page,
+        alumno_id: alumnoId
+      }
+    })
+  },
+  
+
+
+
+
+
   registrarAsistenciaAuxiliar(dni) {
     return axios.post(`${API_URL_DJANGO}/assistances/register/`, {
       dni: dni
     }
     );
   },
+
+
+
 
   getAssistanceByCourseClass(idCourseClass) {
     return axios.get(`${API_URL}/assistances/list`, {

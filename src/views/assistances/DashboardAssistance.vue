@@ -1,110 +1,215 @@
 <template>
-  <div class="dashboard">
+  <CContainer fluid>
 
-    <h2 class="title">Resumen de Hoy</h2>
+    <CRow class="mb-4">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="d-flex justify-content-between align-items-center py-3 px-4">
 
-    <div class="cards">
+            <div>
+              <h3 class="fw-bold text-primary mb-1">
+                Seguimiento de asistencias del día
+              </h3>
 
-      <!-- Total alumnos -->
-      <div class="card total">
-        <h3>Total Alumnos</h3>
-        <p class="number">{{ data.total }}</p>
-        <span class="percent">
-          {{ porcentaje(data.total) }}%
-        </span>
-      </div>
+              <div class="d-flex align-items-center gap-2 small">
+
+                <CBadge color="primary" class="px-3 py-2 fs-6">
+                  {{ fecha_actual }}
+                </CBadge>
+              </div>
+            </div>
+
+            <!-- Indicador visual -->
+            <div class="d-flex align-items-center">
+              <span class="me-2 text-success fw-semibold ">
+                En seguimiento
+              </span>
+              <span style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
+            </div>
+
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+
+    <!-- Cards resumen -->
+    <CRow>
+
+      <!-- Total -->
+      <CCol sm="6" lg="3">
+        <CCard class="text-white bg-primary shadow">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Total Alumnos</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.total }} <span class="fs-6 fw-normal opacity-75">
+                ({{ porcentaje(data.total) }}%)
+              </span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
 
       <!-- Asistencias -->
-      <div class="card success">
-        <h3>Asistencias</h3>
-        <p class="number">
-          {{ data.presentes }}
-        </p>
-        <span class="percent">
-          {{ porcentaje(data.presentes) }}%
-        </span>
-      </div>
+      <CCol sm="6" lg="3">
+        <CCard class="text-white bg-success shadow">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Total Asistencias</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.presentes }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.presentes) }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
 
       <!-- Tardanzas -->
-      <div class="card warning">
-        <h3>Tardanzas</h3>
-        <p class="number">
-          {{ data.tardanzas }}
-        </p>
-        <span class="percent">
-          {{ porcentaje(data.tardanzas) }}%
-        </span>
-      </div>
+      <CCol sm="6" lg="3">
+        <CCard class="text-white bg-warning shadow">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Total Tardanzas</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.tardanzas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.tardanzas) }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
 
       <!-- Faltas -->
-      <div class="card danger">
-        <h3>Faltas</h3>
-        <p class="number">
-          {{ data.faltas }}
-        </p>
-        <span class="percent">
-          {{ porcentaje(data.faltas) }}%
-        </span>
-      </div>
-
-    </div>
-
-  </div>
+      <CCol sm="6" lg="3">
+        <CCard class="text-white bg-danger shadow">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Total Faltas</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.faltas) }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
 
-  <h2 class="title">Asistencias por Sección - Tiempo real</h2>
+    <!-- Tabla secciones -->
+    <CRow class="mt-5">
+      <CCol>
 
-  <div class="table-container">
-    <table class="custom-table">
-      <thead>
-        <tr>
-          <th>Sección</th>
-          <th>Total</th>
-          <th>Asistencias</th>
-          <th>Tardanzas</th>
-          <th>Faltas</th>
-        </tr>
-      </thead>
+        <CCard class="shadow-sm border-0">
 
-      <tbody>
-        <tr v-for="item in secciones" :key="item.id">
-          <td class="section-name">
-            {{ item.grado }}° {{ item.seccion }}
-          </td>
+          <!-- HEADER -->
+          <CCardHeader class="bg-white border-bottom py-3">
+            <div class="d-flex justify-content-between align-items-center">
 
-          <td class="success">
-            {{ item.total }}
-          </td>
+              <h5 class="fw-bold text-primary mb-0">
+                <i class="fas fa-chart-bar me-2"></i>
+                Seguimiento de asistencias por sección
+              </h5>
 
-          <td class="success">
-            {{ item.asistencias }}
-          </td>
+              <div class="d-flex align-items-center">
+                <span class="me-2 text-success fw-semibold ">
+                  Actualización automática
+                </span>
+                <span style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
+              </div>
 
-          <td class="warning">
-            {{ item.tardanzas }}
-          </td>
+            </div>
+          </CCardHeader>
 
-          <td class="danger">
-            {{ item.faltas }}
-          </td>
-        </tr>
-      </tbody>
+          <!-- BODY -->
+          <CCardBody class="p-0">
 
-    </table>
-  </div>
+            <CTable hover responsive striped align="middle" class="mb-0 text-center">
+
+              <!-- CABECERA -->
+              <CTableHead class="table-light text-center">
+                <CTableRow>
+                  <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Total</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Asistencias</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Tardanzas</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Faltas</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+
+              <!-- CUERPO -->
+              <CTableBody>
+
+                <CTableRow v-for="item in secciones" :key="item.id">
+
+                  <CTableDataCell class="fw-semibold text-center">
+                    {{ item.grado }}° {{ item.seccion }}
+                  </CTableDataCell>
+
+                  <!-- TOTAL -->
+                  <CTableDataCell>
+                    <CBadge color="primary" class="px-3 py-2 fs-6">
+                      {{ item.total }}
+                    </CBadge>
+                  </CTableDataCell>
+
+                  <!-- ASISTENCIAS -->
+                  <CTableDataCell>
+                    <CBadge color="success" class="px-3 py-2 fs-6">
+                      {{ item.asistencias }}
+                    </CBadge>
+                  </CTableDataCell>
+
+                  <!-- TARDANZAS -->
+                  <CTableDataCell>
+                    <CBadge color="warning" class="px-3 py-2 fs-6">
+                      {{ item.tardanzas }}
+                    </CBadge>
+                  </CTableDataCell>
+
+                  <!-- FALTAS -->
+                  <CTableDataCell>
+                    <CBadge color="danger" class="px-3 py-2 fs-6">
+                      {{ item.faltas }}
+                    </CBadge>
+                  </CTableDataCell>
+                  <CTableDataCell>
+                    <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
+                      @click="verDetalle(item)"></i>
+                  </CTableDataCell>
+
+
+                </CTableRow>
+
+              </CTableBody>
+
+            </CTable>
+
+          </CCardBody>
+
+        </CCard>
+
+      </CCol>
+    </CRow>
+
+  </CContainer>
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import AssistanceService from '@/services/AssistanceService'
+import { useRouter } from 'vue-router'
+import { CCard } from '@coreui/vue'
 
-
+const router = useRouter()
 const data = ref({
   total: 0,
   presentes: 0,
   tardanzas: 0,
   faltas: 0
 })
+
+const fecha_actual = new Date().toLocaleDateString('es-ES', {
+  day: '2-digit',
+  month: '2-digit',
+  year: 'numeric'
+})
+
+
+const verDetalle = (item) => {
+  router.push(`/assistances/seccion/${item.grade_section_id}`)
+}
 
 const obtenerResumen = async () => {
   const res = await AssistanceService.getResumenDiario()
@@ -127,36 +232,6 @@ const generarDatosSimulados = () => {
 }
 
 
-// const generarDatosSimulados = () => {
-//   const grados = [1, 2, 3, 4, 5]
-//   const letras = ['A', 'B', 'C', 'D']
-
-//   let id = 1
-//   const datos = []
-
-//   grados.forEach(grado => {
-//     letras.forEach(letra => {
-//       const total = 32
-
-//       const asistencias = Math.floor(Math.random() * 30) + 1
-//       const tardanzas = Math.floor(Math.random() * 5)
-//       const faltas = total - asistencias
-
-//       datos.push({
-//         id: id++,
-//         grado,
-//         seccion: letra,
-//         total,
-//         asistencias,
-//         tardanzas,
-//         faltas
-//       })
-//     })
-//   })
-
-//   secciones.value = datos
-// }
-
 onMounted(() => {
   generarDatosSimulados()
   obtenerResumen()
@@ -165,129 +240,4 @@ onMounted(() => {
 })
 
 </script>
-<style scoped>
-.dashboard {
-  padding: 20px;
-}
-
-.title {
-  margin-bottom: 25px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 20px;
-}
-
-.card {
-  padding: 20px;
-  border-radius: 16px;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-5px);
-}
-
-.card h3 {
-  margin: 0;
-  font-size: 16px;
-  color: #6c757d;
-}
-
-.number {
-  font-size: 28px;
-  font-weight: bold;
-  margin: 10px 0 5px;
-}
-
-.percent {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Colores */
-
-.total {
-  border-left: 6px solid #321fdb;
-}
-
-.success {
-  border-left: 6px solid #2eb85c;
-}
-
-.warning {
-  border-left: 6px solid #f9b115;
-}
-
-.danger {
-  border-left: 6px solid #e55353;
-}
-
-
-.section-dashboard {
-  padding: 20px;
-}
-
-.title {
-  margin-bottom: 20px;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.table-container {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  overflow-x: auto;
-}
-
-.custom-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.custom-table thead {
-  background: #321fdb;
-  color: white;
-}
-
-.custom-table th,
-.custom-table td {
-  padding: 12px 15px;
-  text-align: center;
-}
-
-.custom-table tbody tr {
-  border-bottom: 1px solid #eee;
-  transition: background 0.2s;
-}
-
-.custom-table tbody tr:hover {
-  background: #f8f9fa;
-}
-
-.section-name {
-  font-weight: 600;
-}
-
-.success {
-  color: #2eb85c;
-  font-weight: bold;
-}
-
-.warning {
-  color: #f9b115;
-  font-weight: bold;
-}
-
-.danger {
-  color: #e55353;
-  font-weight: bold;
-}
-</style>
+<style scoped></style>
