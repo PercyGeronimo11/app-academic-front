@@ -27,17 +27,17 @@ onMounted(() => {
       <CHeaderToggler @click="sidebar.toggleVisible()" style="margin-inline-start: -14px">
         <CIcon icon="cil-menu" size="lg" />
       </CHeaderToggler>
-      <CHeaderNav class="d-none d-md-flex">
-        <CNavItem>
+      <!-- <CHeaderNav class="d-none d-md-flex">
+         <CNavItem>
           <CNavLink href="/dashboard"> Inicio </CNavLink>
-        </CNavItem>
-        <!-- <CNavItem>
+        </CNavItem> 
+        <CNavItem>
           <CNavLink href="#">Users</CNavLink>
         </CNavItem>
         <CNavItem>
           <CNavLink href="#">Settings</CNavLink>
-        </CNavItem> -->
-      </CHeaderNav>
+        </CNavItem>
+      </CHeaderNav> -->
       <CHeaderNav class="ms-auto">
         <CNavItem>
           
@@ -93,8 +93,8 @@ onMounted(() => {
         <AppHeaderDropdownAccnt />
       </CHeaderNav>
     </CContainer>
-    <CContainer class="px-4" fluid>
+    <!-- <CContainer class="px-4" fluid>
       <AppBreadcrumb />
-    </CContainer>
+    </CContainer> -->
   </CHeader>
 </template>

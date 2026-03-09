@@ -13,7 +13,7 @@ export default [
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
   },
-  
+
   {
     component: 'CNavGroup',
     name: 'ASISTENCIAS',
@@ -23,7 +23,7 @@ export default [
       {
         component: 'CNavItem',
         name: 'Seguimiento Diario',
-        to: '/assistances/dashboard',
+        to: '/assistances/seguimiento',
       },
       {
         component: 'CNavItem',
@@ -32,6 +32,8 @@ export default [
       }
     ],
   },
+
+
 
 
   {
@@ -127,6 +129,26 @@ export default [
     icon: 'cil-options',
     roles: ['Estudiante'],
   },
+
+  {
+    component: 'CNavGroup',
+    name: 'ASISTENCIAS',
+    icon: 'cil-star',
+    roles: ['Estudiante'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Reporte General',
+        to: '/assistances/alumno/reporte',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Reporte detallado',
+        to: '/assistances/alumno/reporte-detallado',
+      },
+    ],
+  },
+
   {
     component: 'CNavItem',
     name: 'Mis Trámites',
@@ -143,6 +165,7 @@ export default [
     icon: 'cil-options',
     roles: ['Mesa de partes'],
   },
+
 
   // ---------------------------------- PLANTILLA -------------------------
   /* {

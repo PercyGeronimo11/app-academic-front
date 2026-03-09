@@ -1,31 +1,26 @@
 <template>
     <CContainer fluid>
-
         <CRow class="mb-4">
             <CCol>
                 <CCard class="shadow-sm border-0">
-                    <CCardBody class="d-flex justify-content-between align-items-center py-3 px-4">
-
-                        <!-- Información del aula con botón volver -->
-                        <div class="d-flex align-items-center gap-3">
-
-                            <!-- Botón Volver -->
-                            <CButton color="dark" size="lg" class="shadow-sm" @click="$router.back()">
-                                <i class="fas fa-arrow-left"></i>
-                            </CButton>
-
-                            <div>
-                                <h3 class="fw-bold text-primary mb-1">
-                                    Registro de asistencias Diarias
-                                </h3>
-                                <div class="text-muted fw-semibold">
-                                    Grado y Sección: {{ gradoTexto(grado) }} - {{ seccion }}
-                                </div>
+                    <CCardBody class="d-flex justify-content-between align-items-center py-2 px-2">
+                        <!-- Información -->
+                        <div>
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <a href="#" @click.prevent="$router.back()"
+                                    class="text-decoration-underline text-primary">
+                                   <i class="fas fa-arrow-left"></i>
+                                </a>
+                                <h4 class="fw-bold text-primary mb-0">
+                                    Registro de asistencias diarias
+                                </h4>
                             </div>
-
+                            <h5 class="text-muted fw-semibold mb-0 ms-4">
+                                Grado: {{ gradoTexto(grado) }} - {{ seccion }}
+                            </h5>
                         </div>
 
-                        <!-- Indicadores -->
+                        <!-- Fecha -->
                         <div class="d-flex align-items-center gap-3">
                             <CBadge color="dark" class="px-3 py-2 fs-6">
                                 📅 {{ fecha_actual }}
@@ -77,30 +72,17 @@
 
                                 <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
 
-                                    <CTableDataCell class="fw-semibold">
-                                        {{ index + 1 }}
-                                    </CTableDataCell>
-
-                                    <CTableDataCell class="fw-semibold text-dark">
-                                        {{ alumno.apellidos }}
-                                    </CTableDataCell>
-
+                                    <CTableDataCell class="fw-semibold">{{ index + 1 }}</CTableDataCell>
+                                    <CTableDataCell class="fw-semibold text-dark">{{ alumno.apellidos }}</CTableDataCell>
+                                    <CTableDataCell>{{ alumno.nombre }}</CTableDataCell>
                                     <CTableDataCell>
-                                        {{ alumno.nombre }}
-                                    </CTableDataCell>
-
-                                    <CTableDataCell>
-
                                         <CBadge :color="colorEstado(alumno.estado)" class="px-3 py-2">
                                             {{ textoEstado(alumno.estado) }}
                                         </CBadge>
-
                                     </CTableDataCell>
-
                                     <CTableDataCell class="text-muted">
                                         {{ alumno.hora || "-" }}
                                     </CTableDataCell>
-
                                 </CTableRow>
                             </CTableBody>
                         </CTable>
@@ -116,7 +98,7 @@
 
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-import AssistanceService from '../../services/AssistanceService'
+import AssistanceService from '../../../services/AssistanceService'
 
 const route = useRoute()
 const seccionId = route.params.id

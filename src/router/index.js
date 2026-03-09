@@ -2,7 +2,7 @@ import { h, resolveComponent } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
-
+ 
 const routes = [
   {
     path: '/login',
@@ -228,26 +228,37 @@ const routes = [
       // --------- PARA ASISTENCIAS -------------
       {
         path: '/assistances/',
+        name:  'Asistencias',
         children: [
           {
-            path: 'dashboard',
-            name: 'Dashboard de Asistencias',
-            component: () => import('@/views/assistances/DashboardAssistance.vue'),
+            path: 'seguimiento',
+            name: 'Seguimiento de Asistencias',
+            component: () => import('@/views/assistances/admin/SeguimientoGeneralAssist.vue'),
           },
           {
-            path: 'seccion/:id',
+            path: 'seguimiento/seccion/:id',
             name: 'Asistencias por Sección',
-            component: () => import('@/views/assistances/DetailSeccionAssistance.vue'),
+            component: () => import('@/views/assistances/admin/SeguimientoBySeccionAssist.vue'),
           },
           {
             path: 'list-alumnos',
             name: 'Asistencias por Alumnos',
-            component: () => import('@/views/assistances/AlumnosReportAssistance.vue'),
+            component: () => import('@/views/assistances/admin/AlumnosReportAssistance.vue'),
           },
-           {
+          {
             path: 'detail-alumno/:id',
             name: 'Detalle de Alumno',
-            component: () => import('@/views/assistances/AlumnoHistorialAssistance.vue'),
+            component: () => import('@/views/assistances/admin/AlumnoHistorialAssistance.vue'),
+          },
+          {
+            path: 'alumno/reporte',
+            name: 'Reporte General',
+            component: () => import('@/views/assistances/student/ReportGeneralAssist.vue'),
+          },
+          {
+            path: 'alumno/reporte-detallado',
+            name: 'Reporte Detallado',
+            component: () => import('@/views/assistances/student/ReportDetailAssist.vue'),
           },
 
         ],

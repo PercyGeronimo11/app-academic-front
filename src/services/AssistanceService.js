@@ -4,7 +4,7 @@ const API_URL = import.meta.env.VITE_API_URL;
 const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
 export default {
-
+  // Para ADMIN
   getResumenDiario() {
     return axios.get(`${API_URL_DJANGO}/assistances/resumen-hoy/`);
   },
@@ -22,7 +22,7 @@ export default {
   },
 
 
-  listarAlumnos: (page = 1, search = '' ,grade = '', section = '') => {
+  listarAlumnos: (page = 1, search = '', grade = '', section = '') => {
     return axios.get(`${API_URL_DJANGO}/assistances/listar-alumnos/`, {
       params: {
         page: page,
@@ -33,23 +33,23 @@ export default {
     })
   },
 
-  getAlumnoDetail: (alumnoId) => {
-    return axios.get(`${API_URL_DJANGO}/assistances/detail-alumno/${alumnoId}/`);
+  getVAdmin_AlumnoDetail: (alumnoId) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/detail-alumno/${alumnoId}/`);
   },
-  
 
-  getHistorialAsistencias: (alumnoId, page = 1) => {
-    return axios.get(`${API_URL_DJANGO}/assistances/historial-alumno/${alumnoId}/`, {
-      params: {
-        page: page,
-        alumno_id: alumnoId
-      }
-    })
+
+  getVAdmin_HistorialByAlumno: (params) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/historial-by-alumno/`, {params})
   },
-  
 
+  // Para vista alumnos
+  getReporteGeneralAlumno() {
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-general/`);
+  },
 
-
+  getAlumnoReporteDetallado(params) {
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-detallado/`, { params })
+  },
 
 
   registrarAsistenciaAuxiliar(dni) {

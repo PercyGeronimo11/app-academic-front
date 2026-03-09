@@ -1,30 +1,25 @@
 <template>
   <CContainer fluid>
 
-    <CRow class="mb-4">
+    <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardBody class="d-flex justify-content-between align-items-center py-3 px-4">
 
             <div>
-              <h3 class="fw-bold text-primary mb-1">
-                Seguimiento de asistencias del día
-              </h3>
-
-              <div class="d-flex align-items-center gap-2 small">
-
-                <CBadge color="primary" class="px-3 py-2 fs-6">
-                  {{ fecha_actual }}
-                </CBadge>
-              </div>
+              <h4 class="fw-bold text-primary mb-1">
+                <i class="fas fa-chart-line me-2"></i>
+                Seguimiento total de asistencias
+              </h4>
             </div>
 
             <!-- Indicador visual -->
             <div class="d-flex align-items-center">
-              <span class="me-2 text-success fw-semibold ">
-                En seguimiento
-              </span>
-              <span style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
+              <div class="d-flex align-items-center gap-3">
+                <CBadge color="dark" class="px-3 py-2 fs-6">
+                  📅Hoy: {{ fecha_actual }}
+                </CBadge>
+              </div>
             </div>
 
           </CCardBody>
@@ -33,8 +28,7 @@
     </CRow>
 
     <!-- Cards resumen -->
-    <CRow>
-
+    <CRow class="m-1">
       <!-- Total -->
       <CCol sm="6" lg="3">
         <CCard class="text-white bg-primary shadow">
@@ -88,12 +82,9 @@
 
 
     <!-- Tabla secciones -->
-    <CRow class="mt-5">
+    <CRow class="mt-3">
       <CCol>
-
         <CCard class="shadow-sm border-0">
-
-          <!-- HEADER -->
           <CCardHeader class="bg-white border-bottom py-3">
             <div class="d-flex justify-content-between align-items-center">
 
@@ -104,9 +95,8 @@
 
               <div class="d-flex align-items-center">
                 <span class="me-2 text-success fw-semibold ">
-                  Actualización automática
+                  En seguimiento  <i class="fas fa-eye me-2"></i>
                 </span>
-                <span style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
               </div>
 
             </div>
@@ -115,7 +105,7 @@
           <!-- BODY -->
           <CCardBody class="p-0">
 
-            <CTable hover responsive striped align="middle" class="mb-0 text-center">
+            <CTable hover responsive align="middle" class="mb-0 text-center">
 
               <!-- CABECERA -->
               <CTableHead class="table-light text-center">
@@ -131,35 +121,29 @@
 
               <!-- CUERPO -->
               <CTableBody>
-
                 <CTableRow v-for="item in secciones" :key="item.id">
 
                   <CTableDataCell class="fw-semibold text-center">
                     {{ item.grado }}° {{ item.seccion }}
                   </CTableDataCell>
 
-                  <!-- TOTAL -->
                   <CTableDataCell>
                     <CBadge color="primary" class="px-3 py-2 fs-6">
                       {{ item.total }}
                     </CBadge>
                   </CTableDataCell>
 
-                  <!-- ASISTENCIAS -->
                   <CTableDataCell>
                     <CBadge color="success" class="px-3 py-2 fs-6">
                       {{ item.asistencias }}
                     </CBadge>
                   </CTableDataCell>
 
-                  <!-- TARDANZAS -->
                   <CTableDataCell>
                     <CBadge color="warning" class="px-3 py-2 fs-6">
                       {{ item.tardanzas }}
                     </CBadge>
                   </CTableDataCell>
-
-                  <!-- FALTAS -->
                   <CTableDataCell>
                     <CBadge color="danger" class="px-3 py-2 fs-6">
                       {{ item.faltas }}
@@ -169,21 +153,13 @@
                     <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
                       @click="verDetalle(item)"></i>
                   </CTableDataCell>
-
-
                 </CTableRow>
-
               </CTableBody>
-
             </CTable>
-
           </CCardBody>
-
         </CCard>
-
       </CCol>
     </CRow>
-
   </CContainer>
 </template>
 <script setup>
@@ -208,7 +184,7 @@ const fecha_actual = new Date().toLocaleDateString('es-ES', {
 
 
 const verDetalle = (item) => {
-  router.push(`/assistances/seccion/${item.grade_section_id}`)
+  router.push(`/assistances/seguimiento/seccion/${item.grade_section_id}`)
 }
 
 const obtenerResumen = async () => {
