@@ -158,7 +158,13 @@ const totalPages = computed(() => Math.ceil(totalCount.value / pageSize))
 // --- Función para obtener alumnos paginados desde API
 const fetchAlumnos = async (page = 1) => {
     try {
-        const res = await AssistanceService.listarAlumnos(page, search.value, selectedGrade.value, selectedSection.value)
+        const params = {
+            page: page,
+            search: search.value,
+            grade: selectedGrade.value,
+            section: selectedSection.value
+        }
+        const res = await AssistanceService.listarAlumnos(params)
         alumnos.value = res.data.results
         nextPage.value = res.data.next
         previousPage.value = res.data.previous

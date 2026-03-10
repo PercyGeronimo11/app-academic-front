@@ -35,14 +35,25 @@ export default [
 
 
 
-
   {
-    component: 'CNavItem',
+    component: 'CNavGroup',
     name: 'ASISTENCIAS',
-    to: '/assistances',
     icon: 'cil-star',
     roles: ['Auxiliar'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Registrar QR',
+        to: '/assistances/auxiliar/register-qr',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Registro DNI',
+        to: '/assistances/auxiliar/register-dni',
+      }
+    ],
   },
+
 
   //Para administrativo
   {

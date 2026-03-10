@@ -2,7 +2,7 @@ import { h, resolveComponent } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
- 
+
 const routes = [
   {
     path: '/login',
@@ -96,11 +96,7 @@ const routes = [
         name: 'AssingNotes',
         component: () => import('@/views/assign_notes/AssignNotes.vue'),
       },
-      {
-        path: '/assistances',
-        name: 'Assistances',
-        component: () => import('@/views/main_area_auxiliar/AssistenceScanner.vue'),
-      },
+
       {
         path: '/chatbot',
         name: 'Chatbot',
@@ -228,7 +224,7 @@ const routes = [
       // --------- PARA ASISTENCIAS -------------
       {
         path: '/assistances/',
-        name:  'Asistencias',
+        name: 'Asistencias',
         children: [
           {
             path: 'seguimiento',
@@ -259,6 +255,16 @@ const routes = [
             path: 'alumno/reporte-detallado',
             name: 'Reporte Detallado',
             component: () => import('@/views/assistances/student/ReportDetailAssist.vue'),
+          },
+          {
+            path: 'auxiliar/register-qr',
+            name: 'Registrar Asistencia QR',
+            component: () => import('@/views/assistances/auxiliar/RegisterQrAssist.vue'),
+          },
+          {
+            path: 'auxiliar/register-dni',
+            name: 'Registrar DNI',
+            component: () => import('@/views/assistances/auxiliar/RegisterDniAssist.vue'),
           },
 
         ],

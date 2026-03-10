@@ -4,33 +4,26 @@ const API_URL = import.meta.env.VITE_API_URL;
 const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
 export default {
+  // getResumenSemanal() {
+  //   return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
+  // },
+
   // Para ADMIN
   getResumenDiario() {
-    return axios.get(`${API_URL_DJANGO}/assistances/resumen-hoy/`);
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-totales/`);
   },
 
   getAsistenciaBySeccion() {
-    return axios.get(`${API_URL_DJANGO}/assistances/resumen-by-seccion/`);
-  },
-
-  getResumenSemanal() {
-    return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-by-seccion/`);
   },
 
   getDetailAssistanceBySeccion(seccionId) {
-    return axios.get(`${API_URL_DJANGO}/assistances/detail-by-seccion/${seccionId}/`);
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/detail-by-seccion/${seccionId}/`);
   },
 
 
-  listarAlumnos: (page = 1, search = '', grade = '', section = '') => {
-    return axios.get(`${API_URL_DJANGO}/assistances/listar-alumnos/`, {
-      params: {
-        page: page,
-        search: search,
-        grade: grade,
-        section: section
-      }
-    })
+  listarAlumnos: (params) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/listar-alumnos/`, {params})
   },
 
   getVAdmin_AlumnoDetail: (alumnoId) => {
@@ -39,7 +32,7 @@ export default {
 
 
   getVAdmin_HistorialByAlumno: (params) => {
-    return axios.get(`${API_URL_DJANGO}/assistances/admin/historial-by-alumno/`, {params})
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/historial-by-alumno/`, { params })
   },
 
   // Para vista alumnos
@@ -52,13 +45,26 @@ export default {
   },
 
 
-  registrarAsistenciaAuxiliar(dni) {
-    return axios.post(`${API_URL_DJANGO}/assistances/register/`, {
+  // Para el auxiliar
+  VAuxiliar_registrarAsistencia(dni) {
+    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/register-assist/`, {
       dni: dni
     }
     );
   },
 
+  VAuxiliar_generarAsistencias(dni) {
+    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/generar-assist/`);
+  },
+
+    VAuxiliar_totalesAsistencias(dni) {
+    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/total-asistencias/`);
+  },
+
+
+  getVAuxiliar_listarAlumnos: (params) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/listar-alumnos/`, {params})
+  },
 
 
 
