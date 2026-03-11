@@ -3,6 +3,8 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
+const token = localStorage.getItem('access_token');
+
 export default {
   // getResumenSemanal() {
   //   return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
@@ -23,7 +25,7 @@ export default {
 
 
   listarAlumnos: (params) => {
-    return axios.get(`${API_URL_DJANGO}/assistances/admin/listar-alumnos/`, {params})
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/listar-alumnos/`, { params })
   },
 
   getVAdmin_AlumnoDetail: (alumnoId) => {
@@ -37,11 +39,22 @@ export default {
 
   // Para vista alumnos
   getReporteGeneralAlumno() {
-    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-general/`);
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-general/`, 
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
   },
 
   getAlumnoReporteDetallado(params) {
-    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-detallado/`, { params })
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-detallado/`, { params },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
   },
 
 
@@ -57,13 +70,13 @@ export default {
     return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/generar-assist/`);
   },
 
-    VAuxiliar_totalesAsistencias(dni) {
+  VAuxiliar_totalesAsistencias(dni) {
     return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/total-asistencias/`);
   },
 
 
   getVAuxiliar_listarAlumnos: (params) => {
-    return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/listar-alumnos/`, {params})
+    return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/listar-alumnos/`, { params })
   },
 
 
