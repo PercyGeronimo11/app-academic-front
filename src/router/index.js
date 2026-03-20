@@ -227,6 +227,11 @@ const routes = [
         name: 'Asistencias',
         children: [
           {
+            path: 'admin/reporte-periodico',
+            name: 'Reporte periódico',
+            component: () => import('@/views/assistances/admin/ReportPeriodicoAssist.vue'),
+          },
+          {
             path: 'seguimiento',
             name: 'Seguimiento de Asistencias',
             component: () => import('@/views/assistances/admin/SeguimientoGeneralAssist.vue'),

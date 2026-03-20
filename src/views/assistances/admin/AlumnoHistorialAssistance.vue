@@ -101,11 +101,12 @@
 
               <CTableBody>
                 <CTableRow v-for="(item, index) in asistencias" :key="index" class="align-middle">
-                  <CTableDataCell class="text-center fw-medium">{{ item.fecha }}</CTableDataCell>
-                  <CTableDataCell class="text-center fw-medium">{{ item.hora }}</CTableDataCell>
+                  <CTableDataCell class="text-center fw-medium"> {{  formatDate(item.fecha_hora) }}
+                    </CTableDataCell>
+                  <CTableDataCell class="text-center fw-medium">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
                   <CTableDataCell class="text-center">
-                    <CBadge :color="getBadgeColor(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
-                      {{ getBadgeText(item.estado) }}
+                    <CBadge :color="colorEstado(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
+                      {{ textoEstado(item.estado) }}
                     </CBadge>
                   </CTableDataCell>
                 </CTableRow>
@@ -146,6 +147,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AssistanceService from '../../../services/AssistanceService'
 import { CBadge } from '@coreui/vue'
+import { textoEstado, colorEstado, formatDate, formatTime } from '../../../utils/utils'
 
 const route = useRoute()
 const router = useRouter()
@@ -215,22 +217,6 @@ const fetchAsistencias = async (page = 1) => {
   } catch (error) {
     console.error('Error al obtener asistencias:', error)
   }
-}
-
-// Mapear estado a texto bonito
-const getBadgeText = (estado) => {
-  if (estado === 'A') return 'Asistió'
-  if (estado === 'T') return 'Tardanza'
-  if (estado === 'F') return 'Faltó'
-  return estado
-}
-
-// Mapear estado a color
-const getBadgeColor = (estado) => {
-  if (estado === 'A') return 'success'
-  if (estado === 'T') return 'warning'
-  if (estado === 'F') return 'danger'
-  return 'secondary'
 }
 
 onMounted(() => {

@@ -18,11 +18,11 @@
             </div>
 
             <!-- Indicador visual -->
-            <div class="d-flex align-items-center gap-3">
-              <span class="me-2 text-success fw-semibold ">
-                Actualizado hasta hoy <span
-                  style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
-              </span>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
+              style="cursor:pointer; background: linear-gradient(135deg, #321fdb, #1f1498); transition: all 0.2s ease;"
+              @click="verReporte(alumno)">
+              <i class="fas fa-eye text-white"></i>
+              <span class="text-white fw-semibold">Ver Totales</span>
             </div>
           </CCardBody>
         </CCard>
@@ -93,19 +93,14 @@
 
               <CTableBody>
                 <CTableRow v-for="(item, index) in asistencias" :key="index">
-
-                  <CTableDataCell class="text-center fw-medium">{{ formatDate(item.fecha) }}</CTableDataCell>
-
-                  <CTableDataCell>{{ item.hora }}</CTableDataCell>
-
+                  <CTableDataCell>{{ formatDate(item.fecha_hora) }}</CTableDataCell>
+                  <CTableDataCell>{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
                   <CTableDataCell>
-
-                    <CBadge :color="getBadgeColor(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
-                      {{ getBadgeText(item.estado) }}
+                    <CBadge :color="colorEstado(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
+                      {{ textoEstado(item.estado) }}
                     </CBadge>
 
                   </CTableDataCell>
-
                 </CTableRow>
               </CTableBody>
 
@@ -144,7 +139,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AssistanceService from '../../../services/AssistanceService'
+import { textoEstado, colorEstado, formatDate, formatTime } from '../../../utils/utils'
+import { useRouter } from 'vue-router'
 
+
+const router = useRouter()
 const asistencias = ref([])
 const currentPage = ref(1)
 const totalPages = ref(1)
@@ -157,14 +156,7 @@ const filters = ref({
   estado: ''
 })
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return ''
-  const date = new Date(dateStr)
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = date.getFullYear()
-  return `${day}/${month}/${year}`
-}
+
 
 const fetchAsistencias = async (page = 1) => {
   try {
@@ -204,20 +196,9 @@ const limpiar = () => {
   fetchAsistencias(1)
 }
 
-const getBadgeText = (estado) => {
-  if (estado === 'A') return 'Asistió'
-  if (estado === 'T') return 'Tardanza'
-  if (estado === 'F') return 'Faltó'
-  return estado
+const verReporte = () => {
+  router.push(`/assistances/alumno/reporte`)
 }
-
-const getBadgeColor = (estado) => {
-  if (estado === 'A') return 'success'
-  if (estado === 'T') return 'warning'
-  if (estado === 'F') return 'danger'
-  return 'secondary'
-}
-
 onMounted(() => {
   fetchAsistencias()
 })

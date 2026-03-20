@@ -15,8 +15,8 @@ export default {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-totales/`);
   },
 
-  getAsistenciaBySeccion() {
-    return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-by-seccion/`);
+  getAsistenciaBySeccion(params) {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-by-seccion/`, {params});
   },
 
   getDetailAssistanceBySeccion(seccionId) {

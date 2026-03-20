@@ -21,59 +21,56 @@
                 </CBadge>
               </div>
             </div>
-
           </CCardBody>
         </CCard>
       </CCol>
     </CRow>
 
     <!-- Cards resumen -->
-    <CRow class="m-1">
-      <!-- Total -->
-      <CCol sm="6" lg="3">
+    <CRow class="mb-2">
+      <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-primary shadow">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Alumnos</div>
             <div class="fs-4 fw-semibold">
-              {{ data.total }} <span class="fs-6 fw-normal opacity-75">
-                ({{ porcentaje(data.total) }}%)
+              {{ data.total_alumnos }} <span class="fs-6 fw-normal opacity-75">
+                ({{ porcentaje(data.total_alumnos) }}%)
               </span>
             </div>
           </CCardBody>
         </CCard>
       </CCol>
 
-      <!-- Asistencias -->
-      <CCol sm="6" lg="3">
+      <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-success shadow">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Asistencias</div>
             <div class="fs-4 fw-semibold">
-              {{ data.presentes }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.presentes) }}%)</span>
+              {{ data.total_presentes }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_presentes) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
       </CCol>
 
       <!-- Tardanzas -->
-      <CCol sm="6" lg="3">
+      <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-warning shadow">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Tardanzas</div>
             <div class="fs-4 fw-semibold">
-              {{ data.tardanzas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.tardanzas) }}%)</span>
+              {{ data.total_tardanzas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_tardanzas) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
       </CCol>
 
       <!-- Faltas -->
-      <CCol sm="6" lg="3">
+      <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-danger shadow">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
-              {{ data.faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.faltas) }}%)</span>
+              {{ data.total_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_faltas) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -95,7 +92,7 @@
 
               <div class="d-flex align-items-center">
                 <span class="me-2 text-success fw-semibold ">
-                  En seguimiento  <i class="fas fa-eye me-2"></i>
+                  En seguimiento <i class="fas fa-eye me-2"></i>
                 </span>
               </div>
 
@@ -160,21 +157,27 @@
         </CCard>
       </CCol>
     </CRow>
+
   </CContainer>
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
 import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
 import { CCard } from '@coreui/vue'
 
+const secciones = ref([])
 const router = useRouter()
 const data = ref({
-  total: 0,
-  presentes: 0,
-  tardanzas: 0,
-  faltas: 0
+  total_alumnos: 0,
+  total_presentes: 0,
+  total_tardanzas: 0,
+  total_faltas: 0
 })
+
+
+
 
 const fecha_actual = new Date().toLocaleDateString('es-ES', {
   day: '2-digit',
@@ -187,32 +190,27 @@ const verDetalle = (item) => {
   router.push(`/assistances/seguimiento/seccion/${item.grade_section_id}`)
 }
 
-const obtenerResumen = async () => {
-  const res = await AssistanceService.getResumenDiario()
-  data.value = res.data
-}
-
 const porcentaje = (valor) => {
-  if (!data.value.total) return 0
-  return ((valor / data.value.total) * 100).toFixed(1)
+  if (!data.value.total_alumnos) return 0
+  return ((valor / data.value.total_alumnos) * 100).toFixed(1)
 }
 
 
-// ----------------------------------------
-const secciones = ref([])
+const loadAsistencesBySeccion = async() => {
+  let params = {
+    tipo: 'diario'
+  }
 
-const generarDatosSimulados = () => {
-  AssistanceService.getAsistenciaBySeccion().then(res => {
-    secciones.value = res.data
+  AssistanceService.getAsistenciaBySeccion(params).then(res => {
+    secciones.value = res.data.data
+    data.value = res.data
   })
-}
 
+}
 
 onMounted(() => {
-  generarDatosSimulados()
-  obtenerResumen()
-  setInterval(obtenerResumen, 5000)
-  setInterval(generarDatosSimulados, 5000)
+  loadAsistencesBySeccion()
+  setInterval(loadAsistencesBySeccion, 10000)
 })
 
 </script>
