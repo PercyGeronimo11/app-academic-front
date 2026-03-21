@@ -91,7 +91,6 @@
                                 <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
-
                         <CTableBody>
                             <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
                                 <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>

@@ -1,171 +1,176 @@
 <template>
   <CRow>
     <CCol :xs="12">
-      <CCard class="mb-4">
-        <CCardHeader class="text-center">
-          <strong>Nuevo Alumno</strong>
+      <CCard class="mb-4 shadow">
+        <CCardHeader class="bg-primary text-center text-white">
+          <strong>Editar información del alumno</strong>
         </CCardHeader>
+
         <CCardBody>
-          <CForm @submit.prevent="submitToEdit()">
+          <CForm @submit.prevent="submitToEdit">
             <CContainer>
-              <CFormLabel><strong>Datos del Estudiante: </strong> </CFormLabel>
-              <CRow class="mb-4">
+
+              <!-- ================= DATOS DEL ESTUDIANTE ================= -->
+              <CCard class="mb-4 ">
+                <CCardHeader class="bg-dark text-white">
+                  <strong>Datos del Estudiante</strong>
+                </CCardHeader>
+
+                <CCardBody>
+                  <CRow class="mb-3">
+                    <CCol>
+                      <CFormInput v-model="alumnoData.dni" label="DNI" required />
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.name" label="Nombres" required />
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.surname_father" label="Apellido paterno" required />
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.surname_mother" label="Apellido materno" required />
+                    </CCol>
+                  </CRow>
+
+                  <CRow class="mb-3">
+                    <CCol>
+                      <CFormInput v-model="alumnoData.grade_section_current" label="Grado y sección" disabled />
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.birth_date" type="date" label="Fecha de nacimiento" />
+                    </CCol>
+
+                    <CCol>
+                      <CFormSelect v-model="alumnoData.sex" label="Sexo">
+                        <option disabled value="">Seleccionar</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Femenino</option>
+                      </CFormSelect>
+                    </CCol>
+
+                    <CCol class="d-flex align-items-end">
+                      <CButton color="primary" @click="obtenerQrCode()">
+                        Ver QR
+                      </CButton>
+                    </CCol>
+                  </CRow>
+
+                  <CRow>
+                    <CCol>
+                      <CFormInput v-model="alumnoData.address" label="Dirección" />
+                    </CCol>
+                  </CRow>
+                </CCardBody>
+              </CCard>
+              <!-- ================= DATOS DEL APODERADO ================= -->
+              <CCard class="mb-4">
+                <CCardHeader class="bg-dark text-white">
+                  <strong>Datos del Apoderado</strong>
+                </CCardHeader>
+
+                <CCardBody>
+                  <CRow class="mb-3">
+                    <CCol>
+                      <CFormInput v-model="alumnoData.representative_dni" label="DNI" />
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.representative_name" label="Nombre completo" />
+                    </CCol>
+                  </CRow>
+
+                  <CRow>
+                    <CCol>
+                      <CFormInput v-model="alumnoData.representative_phone" label="Teléfono" />
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.representative_relationship" label="Parentesco" />
+                    </CCol>
+                  </CRow>
+                </CCardBody>
+              </CCard>
+
+
+              <!-- ================= DATOS DE USUARIO ================= -->
+              <CCard class="mb-4 ">
+                <CCardHeader class="bg-dark text-white">
+                  <strong>Datos de Usuario</strong>
+                </CCardHeader>
+
+                <CCardBody>
+                  <CRow>
+                    <CCol>
+                      <CFormLabel>Email</CFormLabel>
+                      <div class="input-group">
+                        <input type="text" class="form-control" v-model="alumnoData.email" @input="updateEmail" />
+                        <span class="input-group-text">@ierp.edu.pe</span>
+                      </div>
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.password" label="Contraseña" />
+                    </CCol>
+                  </CRow>
+                </CCardBody>
+              </CCard>
+
+              <!-- BOTONES -->
+              <CRow class="mt-3 mx-5">
                 <CCol>
-                  <CFormInput
-                    v-model="alumnoData.dni"
-                    label="DNI"
-                    placeholder="Documento de identidad"
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.name"
-                    label="Nombres"
-                    placeholder="Nombre"
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.surname_father"
-                    label="Apellido paterno"
-                    placeholder="Apellido paterno"
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.surname_mother"
-                    label="Apellido materno"
-                    placeholder="Apellido materno"
-                    required
-                  />
-                </CCol>
-              </CRow>
-              <CRow class="mb-4">
-                <CCol>
-                  <CFormLabel for="email">Email</CFormLabel>
-                  <div class="input-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="nombre"
-                      v-model="alumnoData.email"
-                      @input="updateEmail"
-                      required
-                    />
-                    <span class="input-group-text">@ierp.edu.pe</span>
-                    <!-- Parte fija con el dominio -->
-                  </div>
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.password"
-                    label="Contraseña"
-                    placeholder="password"
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.grade_section_current"
-                    label="Grado y sección"
-                    placeholder="1° - A"
-                    required
-                    disabled
-                  />
-                </CCol>
-              </CRow>
-              <CRow class="mb-3">
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.address"
-                    label="Dirección"
-                    placeholder="Dirección"
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.birth_date"
-                    label="Fecha de nacimiento"
-                    type="date"
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormLabel for="exampleFormControlInput1">Sexo</CFormLabel>
-                  <CFormSelect
-                    aria-label="Default select example"
-                    v-model="alumnoData.sex"
-                  >
-                    <option disabled value="0">Seleccionar una opción</option>
-                    <option value="M">Masculino</option>
-                    <option value="F">Femenino</option>
-                  </CFormSelect>
-                </CCol>
-              </CRow>
-              <CRow class="mb-4">
-                <CFormLabel><strong>Datos del Apoderado </strong> </CFormLabel>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.representative_dni"
-                    label="Dni"
-                    placeholder="Dni..."
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.representative_name"
-                    label="Nombre completo"
-                    placeholder="Nombre..."
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.representative_phone"
-                    label="Telefono"
-                    placeholder="telefono..."
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.representative_relationship"
-                    label="Parentesco"
-                    placeholder="parentesco..."
-                    required
-                  />
-                </CCol>
-              </CRow>
-              <CRow class="mt-3 justify-content-end">
-                <CCol>
-                  <router-link to="/students" class="CButton text-white" color="info">
+                  <router-link to="/students">
                     <CButton color="secondary">Regresar</CButton>
                   </router-link>
                 </CCol>
-                <CCol>
-                  <CButton class="mx-5" color="primary" @click="submitToEdit()">
+
+                <CCol class="text-end">
+                  <CButton color="primary" type="submit">
                     Actualizar
                   </CButton>
                 </CCol>
               </CRow>
+
             </CContainer>
           </CForm>
         </CCardBody>
       </CCard>
     </CCol>
   </CRow>
+
+  <!-- ================= MODAL QR ================= -->
+  <CModal :visible="showQRModal" @close="showQRModal = false">
+    <CModalHeader class="bg-primary text-white">
+      <CModalTitle>QR del Estudiante</CModalTitle>
+    </CModalHeader>
+
+    <CModalBody class="text-center">
+      <img :src="qrImage" alt="QR" class="img-fluid" />
+    </CModalBody>
+
+    <CModalFooter>
+      <CButton color="success" @click="downloadQR">
+        Descargar QR
+      </CButton>
+      <CButton color="secondary" @click="showQRModal = false">
+        Cerrar
+      </CButton>
+    </CModalFooter>
+  </CModal>
 </template>
 
 <script setup>
+
 import StudentService from "@/services/StudentService";
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import Swal from "sweetalert2";
+import { CCard, CCardBody, CCardHeader } from "@coreui/vue";
+const URL_DJANGO_MEDIA = import.meta.env.VITE_URL_DJANGO_MEDIA;
+
 
 const router = useRouter();
 const studentId = ref("");
@@ -184,8 +189,24 @@ const alumnoData = ref({
   representative_phone: "",
   representative_relationship: "",
   email: "",
-  password: "",
+  password: ""
 });
+const showQRModal = ref(false)
+const qrImage = ref('https://es.wikipedia.org/wiki/C%C3%B3digo_QR')
+
+const downloadQR = async () => {
+  const response = await fetch(qrImage.value)
+  const blob = await response.blob()
+
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a')
+
+  link.href = url
+  link.download = `qr-${alumnoData.value.dni}.png`
+  link.click()
+
+  window.URL.revokeObjectURL(url)
+}
 
 const calculateAge = () => {
   if (!alumnoData.value.birth_date) return;
@@ -240,10 +261,29 @@ const submitToEdit = async () => {
   }
 };
 
+const obtenerQrCode = async () => {
+  try {
+    const response = await StudentService.getPathImageQrCode(studentId.value);
+    qrImage.value = `${URL_DJANGO_MEDIA}/${response.data.qr_code}`;
+    console.log("QR obtenido:", qrImage.value);
+    showQRModal.value = true;
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.message) {
+      Swal.fire({
+        icon: "error",
+        title: "Error al Obtener QR",
+        text: error.response.data.message,
+      });
+    } else {
+      console.log("error:" + error);
+    }
+  }
+};
+
 onMounted(() => {
-  const route = useRoute(); // Accede a la ruta actual 
-  studentId.value = route.params.id; 
-  getDataStudent(studentId.value); 
+  const route = useRoute();
+  studentId.value = route.params.id;
+  getDataStudent(studentId.value);
 });
 </script>
 

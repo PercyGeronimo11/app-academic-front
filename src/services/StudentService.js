@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL; 
+const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
 export default {
   async getItems() {
@@ -25,6 +26,10 @@ export default {
 
   async updateItem(data) {
     return await axios.put(`${API_URL}/student/update`, data);
+  },
+
+  async getPathImageQrCode(idStudent) {
+    return await axios.get(`${API_URL_DJANGO}/alumno/info/obtener-qr/${idStudent}`);
   },
 
   async deleteItem(id) {
