@@ -22,7 +22,10 @@ export default {
   getDetailAssistanceBySeccion(seccionId) {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/detail-by-seccion/${seccionId}/`);
   },
-
+  
+  getDashboardAlumno(idAlumno) {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/dashboard-alumno/${idAlumno}/`);
+  },
 
   listarAlumnos: (params) => {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/listar-alumnos/`, { params })

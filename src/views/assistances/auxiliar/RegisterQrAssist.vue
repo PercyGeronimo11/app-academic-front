@@ -2,90 +2,36 @@
   <CRow class="mb-3">
     <CCol>
       <CCard class="shadow-sm border-0">
-        <CCardHeader class="bg-white border-bottom py-3">
-          <div class="d-flex justify-content-between align-items-center">
+        <CCardHeader class="bg-white border-bottom py-3 px-3 px-md-4">
 
-            <h5 class="fw-bold text-primary mb-0">
+          <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
+
+            <!-- Título -->
+            <h5 class="fw-bold text-primary mb-0 d-flex align-items-center">
               <i class="fas fa-chart-line me-2"></i>
               Registrar asistencias por QR
             </h5>
 
-            <div class="d-flex align-items-center">
-              <span class="me-2 text-success fw-semibold ">
-                Monitoreo
-              </span>
-              <span style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
+            <!-- Fecha -->
+            <div class="w-30 w-md-auto">
+              <CBadge color="dark" class="px-3 py-2 fs-6 w-100 w-md-auto text-center">
+                📅 {{ fechaHora }}
+              </CBadge>
             </div>
           </div>
+
         </CCardHeader>
       </CCard>
     </CCol>
   </CRow>
+
+
   <CRow class="mb-3">
     <CCol>
-      <CCard class="shadow-sm border-0">
-
-        <CCardBody class="bg-white py-3">
-
-          <div class="d-flex justify-content-between align-items-center">
-
-            <!-- Estadísticas -->
-            <div class="d-flex align-items-center gap-4">
-
-              <div>
-                <div class="text-muted small">Total alumnos</div>
-                <div class="fw-bold fs-5">
-                  <i class="fas fa-users text-primary me-1"></i>
-                  {{ totalAlumnos }}
-                </div>
-              </div>
-
-              <div>
-                <div class="text-muted small">Asistencias  generadas</div>
-                <div class="fw-bold fs-5">
-                  <i class="fas fa-calendar-check text-success me-1"></i>
-                  {{ asistenciasHoy }}
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Botón -->
-            <CButton color="primary" size="lg" @click="generarAsistencias" :disabled="asistenciasCompletas">
-              <i class="fas fa-check-circle me-2"></i>
-              Generar Asistencias
-            </CButton>
-
-          </div>
-
-          <!-- Estado -->
-          <div class="mt-3 text-end">
-
-            <span v-if="asistenciasCompletas" class="text-success fw-semibold">
-              <i class="fas fa-circle-check me-1"></i>
-              Las asistencias del día ya fueron generadas
-            </span>
-
-            <span v-else class="text-warning fw-semibold">
-              <i class="fas fa-exclamation-circle me-1"></i>
-              Faltan asistencias por generar
-            </span>
-
-          </div>
-
-        </CCardBody>
-
-      </CCard>
-    </CCol>
-  </CRow>
-
-  <CRow class="justify-content-center">
-    <CCol md="8" lg="6">
-
       <CCard class="shadow-lg border-0">
-
-        <CCardHeader class="bg-light d-flex align-items-center justify-content-between">
-          <div class="fw-bold text-primary">
+        <CCardHeader class="bg-primary d-flex align-items-center justify-content-between">
+          <div class="fw-bold text-white">
             <i class="fas fa-qrcode me-2"></i>
             Escáner de Asistencia
           </div>
@@ -94,7 +40,7 @@
             <i class="fas fa-circle me-1"></i> Activo
           </CBadge>
 
-          <CBadge color="secondary" v-else>
+          <CBadge color="danger" v-else>
             Inactivo
           </CBadge>
         </CCardHeader>
@@ -121,16 +67,60 @@
           <!-- Botones -->
           <div class="d-flex justify-content-center gap-3 mt-4">
 
-            <CButton color="primary" size="lg" @click="empezarScan" :disabled="scanning">
+            <CButton color="primary" size="md" @click="empezarScan" :disabled="scanning">
               <i class="fas fa-camera me-2"></i>
               Iniciar escaneo
             </CButton>
 
-            <CButton color="danger" size="lg" variant="outline" @click="apagarCamara" :disabled="!scanning">
+            <CButton color="danger" size="md" variant="outline" @click="apagarCamara" :disabled="!scanning">
               <i class="fas fa-power-off me-2"></i>
               Apagar cámara
             </CButton>
           </div>
+        </CCardBody>
+      </CCard>
+    </CCol>
+  </CRow>
+
+
+  <CRow class="mb-3">
+    <CCol>
+      <CCard class="shadow-sm border-0">
+        <CCardBody class="bg-white py-3 px-3 px-md-4">
+
+          <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+            <div class="d-flex flex-column flex-sm-row gap-3 gap-md-4 w-100">
+              <div class="flex-fill p-2 rounded bg-light">
+                <div class="text-muted small">Total alumnos</div>
+                <div class="fw-bold fs-5 d-flex align-items-center">
+                  <i class="fas fa-users text-primary me-2"></i>
+                  {{ totalAlumnos }}
+                </div>
+              </div>
+              <div class="flex-fill p-2 rounded bg-light">
+                <div class="text-muted small">Asistencias generadas</div>
+                <div class="fw-bold fs-5 d-flex align-items-center">
+                  <i class="fas fa-calendar-check text-success me-2"></i>
+                  {{ asistenciasHoy }}
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Botón -->
+            <CButton :color="asistenciasCompletas ? 'success' : 'primary'" size="lg" class="w-100 w-md-auto shadow-sm"
+              @click="generarAsistencias" :disabled="asistenciasCompletas">
+              <i :class="asistenciasCompletas
+                ? 'fas fa-check-circle me-2'
+                : 'fas fa-play-circle me-2'"></i>
+
+              {{ asistenciasCompletas ? 'Asistencias generadas' : 'Generar Asistencias' }}
+            </CButton>
+
+          </div>
+
+
         </CCardBody>
       </CCard>
     </CCol>
@@ -143,6 +133,11 @@ import { BrowserQRCodeReader } from '@zxing/browser'
 import AssistanceService from "@/services/AssistanceService";
 import Swal from 'sweetalert2'
 import { CCardBody } from '@coreui/vue';
+import { useFechaHora } from '@/composables/useFechaHora'
+// import { CRow, CCol, CCard, CCardHeader } from '@coreui/vue';
+
+const { fechaHora } = useFechaHora()
+
 
 const dniDetectado = ref(null)
 const scanning = ref(false)

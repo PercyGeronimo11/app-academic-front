@@ -232,6 +232,11 @@ const routes = [
             component: () => import('@/views/assistances/admin/ReportPeriodicoAssist.vue'),
           },
           {
+            path: 'admin/dashboard-alumno/:id',
+            name: 'Dashboard del Alumno',
+            component: () => import('@/views/assistances/admin/AlumnoDashboardAssist.vue'),
+          },
+          {
             path: 'seguimiento',
             name: 'Seguimiento de Asistencias',
             component: () => import('@/views/assistances/admin/SeguimientoGeneralAssist.vue'),
@@ -242,12 +247,12 @@ const routes = [
             component: () => import('@/views/assistances/admin/SeguimientoBySeccionAssist.vue'),
           },
           {
-            path: 'list-alumnos',
+            path: 'admin/list-alumnos',
             name: 'Asistencias por Alumnos',
             component: () => import('@/views/assistances/admin/AlumnosReportAssistance.vue'),
           },
           {
-            path: 'detail-alumno/:id',
+            path: 'admin/detail-alumno/:id',
             name: 'Detalle de Alumno',
             component: () => import('@/views/assistances/admin/AlumnoHistorialAssistance.vue'),
           },

@@ -1,7 +1,7 @@
 <template>
 
 
-  <CRow class="mb-3">
+  <CRow class="mb-2">
     <CCol>
       <CCard class="shadow-sm border-0">
         <CCardHeader class="bg-white border-bottom py-3">
@@ -11,49 +11,55 @@
               <i class="fas fa-chart-line me-2"></i>
               Registrar asistencia manualmente
             </h5>
-
-            <div class="d-flex align-items-center">
-              <span class="me-2 text-success fw-semibold ">
-                Actualizado hasta hoy
-              </span>
-              <span style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
-            </div>
           </div>
         </CCardHeader>
       </CCard>
     </CCol>
   </CRow>
 
-  <CRow class="mb-3">
+  <CRow class="mb-2">
     <CCol>
       <CCard class="shadow-sm border-0">
         <CCardBody>
-          <CForm class="row gx-3 gy-2 align-items-center" @submit.prevent="fetchAlumnos(1)">
-            <CCol xs="auto">
-              <CFormLabel class="visually-hidden" for="searchInput">Apellido</CFormLabel>
-              <CFormInput id="searchInput" placeholder="Buscar por apellido..." v-model="search" />
+          <CRow class="g-2 align-items-center flex-md-nowrap">
+
+            <!-- Buscar -->
+            <CCol xs="12" md="4">
+              <CFormInput placeholder="Buscar por apellido..." v-model="search" />
             </CCol>
 
-            <CCol xs="auto">
-              <CFormLabel class="visually-hidden" for="gradeSelect">Grado</CFormLabel>
-              <CFormSelect id="gradeSelect" v-model="selectedGrade">
-                <option value="">Todos los grados</option>
-                <option v-for="g in grados" :key="g" :value="g">{{ g }}</option>
+            <!-- Grado -->
+            <CCol xs="6" md="2">
+              <CFormSelect v-model="selectedGrade" >
+                <option value="">Grado</option>
+                <option v-for="g in grados" :key="g" :value="g">
+                  {{ g }}
+                </option>
               </CFormSelect>
             </CCol>
 
-            <CCol xs="auto">
-              <CFormLabel class="visually-hidden" for="sectionSelect">Sección</CFormLabel>
-              <CFormSelect id="sectionSelect" v-model="selectedSection">
-                <option value="">Todas las secciones</option>
-                <option v-for="s in secciones" :key="s" :value="s">{{ s }}</option>
+            <!-- Sección -->
+            <CCol xs="6" md="2">
+              <CFormSelect v-model="selectedSection" >
+                <option value="">Sección</option>
+                <option v-for="s in secciones" :key="s" :value="s">
+                  {{ s }}
+                </option>
               </CFormSelect>
             </CCol>
 
-            <CCol xs="auto">
-              <CButton type="submit" color="primary">Buscar</CButton>
+            <!-- Botones -->
+            <CCol xs="12" md="3" class="d-flex gap-2">
+              <CButton color="primary" class="flex-fill" @click="fetchAlumnos(1)">
+                Buscar
+              </CButton>
+
+              <CButton color="secondary" variant="outline" class="flex-fill" @click="limpiar">
+                Limpiar
+              </CButton>
             </CCol>
-          </CForm>
+
+          </CRow>
         </CCardBody>
       </CCard>
     </CCol>
@@ -65,7 +71,7 @@
         <CCardBody>
           <CTable hover responsive align="middle" class="mb-0 ">
 
-            <CTableHead color="light">
+            <CTableHead color="dark">
               <CTableRow>
                 <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
                 <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
@@ -92,8 +98,8 @@
                 </CTableDataCell>
 
                 <CTableDataCell class="text-center">
-                  <i class="fas fa-user-check" :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'"
-                    :style="{
+                  <i class="fas fa-user-check"
+                    :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'" :style="{
                       cursor: alumno.asistencia_estado === 'F' ? 'pointer' : 'not-allowed',
                       fontSize: '16px',
                       opacity: alumno.asistencia_estado === 'F' ? 1 : 0.5
@@ -130,68 +136,68 @@
     </CCol>
   </CRow>
 
-<CModal :visible="modalAsistencia" @close="modalAsistencia = false">
-  <CModalHeader>
-    <CModalTitle class="fw-bold text-success">
-      <i class="fas fa-user-check me-2"></i>
-      Confirmar registro de asistencia
-    </CModalTitle>
-  </CModalHeader>
+  <CModal :visible="modalAsistencia" @close="modalAsistencia = false">
+    <CModalHeader>
+      <CModalTitle class="fw-bold text-success">
+        <i class="fas fa-user-check me-2"></i>
+        Confirmar registro de asistencia
+      </CModalTitle>
+    </CModalHeader>
 
-  <CModalBody v-if="alumnoSeleccionado">
+    <CModalBody v-if="alumnoSeleccionado">
 
-    <div class="text-center mb-3">
-      <i class="fas fa-user-check text-success" style="font-size:40px"></i>
-    </div>
-
-    <p class="text-center text-muted mb-4">
-      ¿Estás seguro de registrar asistencia para este alumno?
-    </p>
-
-    <div class="bg-light rounded p-3">
-
-      <div class="mb-2">
-        <strong>
-          <i class="fas fa-user text-primary me-1"></i>
-          Alumno:
-        </strong>
-        {{ alumnoSeleccionado.nombres }} {{ alumnoSeleccionado.apellidos }}
+      <div class="text-center mb-3">
+        <i class="fas fa-user-check text-success" style="font-size:40px"></i>
       </div>
 
-      <div class="mb-2">
-        <strong>
-          <i class="fas fa-graduation-cap text-primary me-1"></i>
-          Grado:
-        </strong>
-        {{ alumnoSeleccionado.grade }}°
+      <p class="text-center text-muted mb-4">
+        ¿Estás seguro de registrar asistencia para este alumno?
+      </p>
+
+      <div class="bg-light rounded p-3">
+
+        <div class="mb-2">
+          <strong>
+            <i class="fas fa-user text-primary me-1"></i>
+            Alumno:
+          </strong>
+          {{ alumnoSeleccionado.nombres }} {{ alumnoSeleccionado.apellidos }}
+        </div>
+
+        <div class="mb-2">
+          <strong>
+            <i class="fas fa-graduation-cap text-primary me-1"></i>
+            Grado:
+          </strong>
+          {{ alumnoSeleccionado.grade }}°
+        </div>
+
+        <div>
+          <strong>
+            <i class="fas fa-layer-group text-primary me-1"></i>
+            Sección:
+          </strong>
+          {{ alumnoSeleccionado.section }}
+        </div>
+
       </div>
 
-      <div>
-        <strong>
-          <i class="fas fa-layer-group text-primary me-1"></i>
-          Sección:
-        </strong>
-        {{ alumnoSeleccionado.section }}
-      </div>
+    </CModalBody>
 
-    </div>
+    <CModalFooter>
 
-  </CModalBody>
+      <CButton color="secondary" @click="modalAsistencia = false">
+        <i class="fas fa-times me-1"></i>
+        Cancelar
+      </CButton>
 
-  <CModalFooter>
+      <CButton color="success" @click="registrarAsistencia">
+        <i class="fas fa-check me-1"></i>
+        Confirmar asistencia
+      </CButton>
 
-    <CButton color="secondary" @click="modalAsistencia = false">
-      <i class="fas fa-times me-1"></i>
-      Cancelar
-    </CButton>
-
-    <CButton color="success" @click="registrarAsistencia">
-      <i class="fas fa-check me-1"></i>
-      Confirmar asistencia
-    </CButton>
-
-  </CModalFooter>
-</CModal>
+    </CModalFooter>
+  </CModal>
 </template>
 
 <script setup>
@@ -299,6 +305,15 @@ const registrarAsistencia = async (alumno) => {
 
   }
 
+}
+
+
+const limpiar = () => {
+  search.value = ''
+  selectedGrade.value = ''
+  selectedSection.value = ''
+
+  fetchAlumnos(1)
 }
 
 onMounted(() => {

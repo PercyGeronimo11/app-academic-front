@@ -1,29 +1,25 @@
 <template>
   <CContainer fluid>
 
-    <!-- Header -->
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <CCardBody class="d-flex justify-content-between align-items-center py-3 px-4">
-            <!-- Información del historial -->
-            <div>
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <h4 class="fw-bold text-primary mb-0">
-                  Historial de Asistencias
-                </h4>
-              </div>
+          <CCardBody
+            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center py-3 px-3 px-md-4 gap-2">
 
-
+            <!-- Título -->
+            <div class="text-center">
+              <h5 class="fw-bold text-primary mb-0">
+                Historial de Asistencias
+              </h5>
             </div>
 
-            <!-- Indicador visual -->
-            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill shadow-sm"
-              style="cursor:pointer; background: linear-gradient(135deg, #321fdb, #1f1498); transition: all 0.2s ease;"
-              @click="verReporte(alumno)">
+            <!-- Botón / Acción -->
+            <CButton class="bg-dark w-30 w-md-auto shadow-sm" @click="verReporte(alumno)">
               <i class="fas fa-eye text-white"></i>
-              <span class="text-white fw-semibold">Ver Totales</span>
-            </div>
+              <span class="text-white fw-semibold"> Ver Reporte</span>
+            </CButton>
+
           </CCardBody>
         </CCard>
       </CCol>
@@ -35,20 +31,22 @@
         <CCard class="shadow-sm border-0">
           <CCardBody>
 
-            <CRow class="align-items-end">
+            <CRow class="g-3 align-items-end">
 
-              <CCol md="3">
+              <!-- Desde -->
+              <CCol xs="12" md="3">
                 <label class="form-label fw-semibold">Desde</label>
                 <CFormInput type="date" v-model="filters.desde" />
               </CCol>
 
-              <CCol md="3">
+              <!-- Hasta -->
+              <CCol xs="12" md="3">
                 <label class="form-label fw-semibold">Hasta</label>
-
                 <CFormInput type="date" v-model="filters.hasta" />
               </CCol>
 
-              <CCol md="3">
+              <!-- Estado -->
+              <CCol xs="12" md="3">
                 <label class="form-label fw-semibold">Asistencia</label>
                 <CFormSelect v-model="filters.estado">
                   <option value="">Todos</option>
@@ -58,12 +56,13 @@
                 </CFormSelect>
               </CCol>
 
-              <CCol md="3" class="d-flex gap-2">
-                <CButton color="primary" @click="buscar">
+              <!-- Botones -->
+              <CCol xs="12" md="3" class="d-flex flex-column flex-md-row gap-2">
+                <CButton color="primary" class="w-100" @click="buscar">
                   Buscar
                 </CButton>
 
-                <CButton color="secondary" variant="outline" @click="limpiar">
+                <CButton color="secondary" variant="outline" class="w-100" @click="limpiar">
                   Limpiar
                 </CButton>
               </CCol>

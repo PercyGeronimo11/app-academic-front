@@ -108,7 +108,7 @@
     </CRow>
 
     <!-- Tabla secciones -->
-    <CRow>
+    <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardHeader class="bg-white border-bottom py-2">
@@ -187,17 +187,33 @@
       </CCol>
     </CRow>
 
-    <div style="overflow-x: auto;">
-      <div style="min-width: 900px; height: 500px;">
-        <CChartBar :data="chartData" :options="options" :plugins="plugins" />
-      </div>
-    </div>
+
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody>
+            <h5 class="fw-bold text-secondary mb-4 ms-4 text-center">
+              Distribución de asistencias por aula
+            </h5>
+
+            <div style="overflow-x: auto;">
+              <div style="min-width: 900px; height: 500px;">
+                <CChartBar :data="chartData" :options="options" :plugins="plugins" />
+              </div>
+            </div>
+
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+
+
 
 
   </CContainer>
 </template>
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { CChartBar } from '@coreui/vue-chartjs'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import AssistanceService from '@/services/AssistanceService'
@@ -215,56 +231,41 @@ const data = ref({
   fecha_inicio: '',
   fecha_fin: ''
 })
-
-const asistenciasArr = ref([])
-const tardanzasArr = ref([])
-const faltasArr = ref([])
-
 const filtros = ref({
   tipo: 'diario',
   fecha: new Date().toISOString().split('T')[0], // fecha actual
   mes: new Date().getMonth() + 1
 })
 
-const chartData = {
+const asistenciasArr = ref([])
+const tardanzasArr = ref([])
+const faltasArr = ref([])
+
+
+const chartData = computed(() => ({
   labels: ['1-A°', '1-B°', '1-C°', '1-D°', '2-A°', '2-B°', '2-C°', '2-D°', '3-A°', '3-B°', '3-C°', '3-D°', '4-A°', '4-B°', '4-C°', '4-D°', '5-A°', '5-B°', '5-C°', '5-D°'],
   datasets: [
     {
       label: 'Asistencias',
-      data: [10, 15, 4, 5, 14, 13, 4, 12, 22, 18, 10, 15, 4, 5, 14, 13, 4, 12, 22, 18],
+      data: asistenciasArr.value,
       backgroundColor: '#2eb85c',
       barThickness: 10
     },
     {
       label: 'Tardanzas',
-      data: [8, 5, 14, 3, 5, 7, 5, 5, 0, 2, 8, 5, 14, 3, 5, 7, 5, 5, 0, 2],
+      data: tardanzasArr.value,
       backgroundColor: '#f9b115',
       barThickness: 10
     },
     {
       label: 'Faltas',
-      data: [4, 1, 4, 12, 1, 4, 13, 2, 1, 1, 4, 1, 4, 12, 1, 4, 13, 2, 1, 1],
+      data: faltasArr.value,
       backgroundColor: '#e55353',
       barThickness: 10
     }
   ]
-}
+}))
 
-const options = {
-  responsive: true,
-
-  plugins: {
-    legend: {
-      position: 'top'
-    }
-  },
-
-  scales: {
-    y: {
-      beginAtZero: true
-    }
-  }
-}
 
 
 const consultarReporte = () => {
@@ -293,12 +294,14 @@ const consultarReporte = () => {
     faltasArr.value = []
 
     // llenar arrays ordenadamente
-    lista.forEach(item => {
-      asistenciasArr.value.push(item.asistencias)
-      tardanzasArr.value.push(item.tardanzas)
-      faltasArr.value.push(item.faltas)
-    })
+
+    asistenciasArr.value = lista.map(item => item.asistencias)
+    tardanzasArr.value = lista.map(item => item.tardanzas)
+    faltasArr.value = lista.map(item => item.faltas)
   })
+  console.log('total asistencias:', asistenciasArr.value)
+  console.log('total tardanzas:', tardanzasArr.value)
+  console.log('total faltas:', faltasArr.value)
 }
 
 const onChangeTipo = () => {
@@ -313,6 +316,22 @@ const verDetalle = (item) => {
 const porcentaje = (valor) => {
   if (!data.value.total_registros) return 0
   return ((valor / data.value.total_registros) * 100).toFixed(1)
+}
+
+const options = {
+  responsive: true,
+
+  plugins: {
+    legend: {
+      position: 'top'
+    }
+  },
+
+  scales: {
+    y: {
+      beginAtZero: true
+    }
+  }
 }
 
 const plugins = [ChartDataLabels]

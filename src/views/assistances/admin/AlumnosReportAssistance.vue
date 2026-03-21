@@ -9,7 +9,7 @@
 
                         <h5 class="fw-bold text-primary mb-0">
                             <i class="fas fa-chart-line me-2"></i>
-                            Reporte total de asistencias por alumno
+                            Reporte total por alumno
                         </h5>
 
                         <div class="d-flex align-items-center">
@@ -24,57 +24,70 @@
             </CCard>
         </CCol>
     </CRow>
-
-    <CRow class="mb-3">
+    <CRow class="mb-2">
         <CCol>
             <CCard class="shadow-sm border-0">
                 <CCardBody>
-                    <CForm class="row gx-3 gy-2 align-items-center" @submit.prevent="fetchAlumnos(1)">
-                        <CCol xs="auto">
-                            <CFormLabel class="visually-hidden" for="searchInput">Apellido</CFormLabel>
-                            <CFormInput id="searchInput" placeholder="Buscar por apellido..." v-model="search" />
+                    <CRow class="g-2 align-items-center flex-md-nowrap">
+
+                        <!-- Buscar -->
+                        <CCol xs="12" md="4">
+                            <CFormInput placeholder="Buscar por apellido..." v-model="search"
+                                @keyup.enter="fetchAlumnos(1)" />
                         </CCol>
 
-                        <CCol xs="auto">
-                            <CFormLabel class="visually-hidden" for="gradeSelect">Grado</CFormLabel>
-                            <CFormSelect id="gradeSelect" v-model="selectedGrade">
-                                <option value="">Todos los grados</option>
-                                <option v-for="g in grados" :key="g" :value="g">{{ g }}</option>
+                        <!-- Grado -->
+                        <CCol xs="6" md="2">
+                            <CFormSelect v-model="selectedGrade">
+                                <option value="">Grado</option>
+                                <option v-for="g in grados" :key="g" :value="g">
+                                    {{ g }}
+                                </option>
                             </CFormSelect>
                         </CCol>
 
-                        <CCol xs="auto">
-                            <CFormLabel class="visually-hidden" for="sectionSelect">Sección</CFormLabel>
-                            <CFormSelect id="sectionSelect" v-model="selectedSection">
-                                <option value="">Todas las secciones</option>
-                                <option v-for="s in secciones" :key="s" :value="s">{{ s }}</option>
+                        <!-- Sección -->
+                        <CCol xs="6" md="2">
+                            <CFormSelect v-model="selectedSection">
+                                <option value="">Sección</option>
+                                <option v-for="s in secciones" :key="s" :value="s">
+                                    {{ s }}
+                                </option>
                             </CFormSelect>
                         </CCol>
 
-                        <CCol xs="auto">
-                            <CButton type="submit" color="primary">Buscar</CButton>
+                        <!-- Botones -->
+                        <CCol xs="12" md="3" class="d-flex gap-2">
+                            <CButton color="primary" class="flex-fill" @click="fetchAlumnos(1)">
+                                Buscar
+                            </CButton>
+
+                            <CButton color="secondary" variant="outline" class="flex-fill" @click="limpiar">
+                                Limpiar
+                            </CButton>
                         </CCol>
-                    </CForm>
+
+                    </CRow>
                 </CCardBody>
             </CCard>
         </CCol>
     </CRow>
-
     <CRow class="mb-4">
         <CCol>
             <CCard class="shadow-sm border-0">
                 <CCardBody>
                     <CTable hover responsive align="middle" class="mb-0 text-center">
 
-                        <CTableHead color="light">
+                        <CTableHead color="dark">
                             <CTableRow>
                                 <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Grado y Sección</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Total Asistencias</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Total Tardanzas</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Total Faltas</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center">Grado</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center"> Asistencias</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center"> Tardanzas</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center"> Faltas</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
@@ -84,21 +97,34 @@
                                 <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
                                 <CTableDataCell class="fw-semibold">{{ alumno.apellidos }}</CTableDataCell>
                                 <CTableDataCell>{{ alumno.nombres }}</CTableDataCell>
-                                <CTableDataCell class="text-center">{{ alumno.grade }}° {{ alumno.section }}
+                                <CTableDataCell class="text-center">{{ alumno.grade }}°
+                                </CTableDataCell>
+                                <CTableDataCell class="text-center">{{ alumno.section }}
                                 </CTableDataCell>
                                 <CTableDataCell>
-                                    <CBadge color="success" class="px-3 py-2 fs-6">{{ alumno.total_asistencias }}
+                                    <CBadge color="success" class="px-3 py-1 fs-6">{{ alumno.total_asistencias }}
                                     </CBadge>
                                 </CTableDataCell>
                                 <CTableDataCell>
-                                    <CBadge color="warning" class="px-3 py-2 fs-6">{{ alumno.total_tardanzas }}</CBadge>
+                                    <CBadge color="warning" class="px-3 py-1 fs-6">{{ alumno.total_tardanzas }}</CBadge>
                                 </CTableDataCell>
                                 <CTableDataCell>
-                                    <CBadge color="danger" class="px-3 py-2 fs-6">{{ alumno.total_faltas }}</CBadge>
+                                    <CBadge color="danger" class="px-3 py-1 fs-6">{{ alumno.total_faltas }}</CBadge>
                                 </CTableDataCell>
+
                                 <CTableDataCell class="text-center">
-                                    <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
-                                        @click="verDetalle(alumno)"></i>
+                                    <i class="fas fa-eye text-primary mx-2" style="cursor:pointer; font-size:16px"
+                                        v-c-tooltip="{
+                                            content: 'Ver detalle',
+                                            placement: 'top'
+                                        }" @click="verDetalle(alumno)"></i>
+
+                                    <i class="fas fa-chart-line text-success mx-2"
+                                        style="cursor:pointer; font-size:16px" v-c-tooltip="{
+                                            content: 'Ver gráfico',
+                                            placement: 'top'
+                                        }" @click="verDashboard(alumno)"></i>
+
                                 </CTableDataCell>
                             </CTableRow>
                         </CTableBody>
@@ -137,7 +163,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AssistanceService from '@/services/AssistanceService'
 
-
 const router = useRouter()
 
 const alumnos = ref([])
@@ -175,8 +200,20 @@ const fetchAlumnos = async (page = 1) => {
     }
 }
 
+const limpiar = () => {
+    search.value = ''
+    selectedGrade.value = ''
+    selectedSection.value = ''
+
+    fetchAlumnos(1)
+}
+
 const verDetalle = (alumno) => {
-    router.push(`/assistances/detail-alumno/${alumno.id}`)
+    router.push(`/assistances/admin/detail-alumno/${alumno.id}`)
+}
+
+const verDashboard = (alumno) => {
+    router.push(`/assistances/admin/dashboard-alumno/${alumno.id}`)
 }
 
 onMounted(() => {

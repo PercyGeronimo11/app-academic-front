@@ -5,20 +5,14 @@
         <CCard class="shadow-sm border-0">
           <CCardBody
             class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center py-2 px-3 px-md-4 gap-2">
-
-            <!-- Título -->
             <div class="text-center">
-              <h5 class="fw-bold text-primary mb-0">
+              <h5 class="fw-bold text-primary mb-2">
+                <a href="#" @click.prevent="$router.back()" class="text-decoration-underline text-primary">
+                  <i class="fas fa-arrow-left"></i>
+                </a>
                 Reporte total de asistencias
               </h5>
             </div>
-
-            <!-- Botón / Acción -->
-            <CButton class="bg-dark w-30 w-md-auto shadow-sm" @click="verDetalle(alumno)">
-              <i class="fas fa-eye text-white"></i>
-              <span class="text-white fw-semibold"> Ver detalle</span>
-            </CButton>
-
           </CCardBody>
         </CCard>
       </CCol>
@@ -113,11 +107,13 @@ import { ref, onMounted, computed } from 'vue'
 import AssistanceService from '../../../services/AssistanceService'
 import { CChartBar } from '@coreui/vue-chartjs'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { CButton, CCard, CCardBody } from '@coreui/vue'
 
 const router = useRouter()
-// Simulación de respuesta de API
+const route = useRoute()
+const idAlumno = route.params.id
+
 const data = ref({
   total_registros: 0,
   total_asistencias: 0,
@@ -172,7 +168,7 @@ const options = {
 
 // Simular llamada API
 const cargarReporte = async () => {
-  const response = await AssistanceService.getReporteGeneralAlumno()
+  const response = await AssistanceService.getDashboardAlumno(idAlumno)
   data.value = response.data
   list_asistencias.value = response.data.asistencias
   list_tardanzas.value = response.data.tardanzas
@@ -187,9 +183,6 @@ const porcentaje = (valor) => {
 
 const plugins = [ChartDataLabels]
 
-const verDetalle = () => {
-  router.push(`/assistances/alumno/reporte-detallado`)
-}
 
 onMounted(() => {
   cargarReporte()

@@ -34,6 +34,20 @@ npm run build   # construir versión de producción
 ```
 
 
+### Iconos usados
+### Graficos
+<CIcon icon="cil-chart" />
+<CIcon icon="cil-chart-line" />
+<CIcon icon="cil-chart-pie" />
+
+### Reportes
+<CIcon icon="cil-chart-pie" />
+<CIcon icon="cil-file" />
+<CIcon icon="cil-list" />
+<CIcon icon="cil-history" />
+<CIcon icon="cil-graph" />
+
+
 ## Autores
 ``` bash
 1. Percy Geronimo 

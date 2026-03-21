@@ -1,6 +1,8 @@
 import {
   cilQrCode, cilCalendar, cilPencil, cilChatBubble, cilChartLine, cilTask, cilChart,
-  cilStar, cilNotes
+  cilStar, cilNotes,
+  cilGraph,
+  cilList
 } from '@coreui/icons'
 export default [
   // TODOS
@@ -41,8 +43,8 @@ export default [
       {
         component: 'CNavItem',
         name: 'Reporte por alumnos',
-        icon: cilChart,
-        to: '/assistances/list-alumnos',
+        icon: cilList,
+        to: '/assistances/admin/list-alumnos',
       }
     ],
   },
