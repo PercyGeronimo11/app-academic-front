@@ -1,0 +1,379 @@
+<template>
+
+
+  <CRow class="mb-2">
+    <CCol>
+      <CCard class="shadow-sm border-0">
+        <CCardHeader class="bg-white border-bottom py-3">
+          <div class="d-flex justify-content-between align-items-center">
+
+            <h5 class="fw-bold text-primary mb-0">
+              <i class="fas fa-chart-line me-2"></i>
+              Registrar asistencia manualmente
+            </h5>
+          </div>
+        </CCardHeader>
+      </CCard>
+    </CCol>
+  </CRow>
+
+  <CRow class="mb-2">
+    <CCol>
+      <CCard class="shadow-sm border-0">
+        <CCardBody>
+          <CRow class="g-2 align-items-center flex-md-nowrap">
+
+            <!-- Buscar -->
+            <CCol xs="12" md="4">
+              <CFormInput placeholder="Buscar por apellido..." v-model="search" />
+            </CCol>
+
+            <!-- Grado -->
+            <CCol xs="6" md="2">
+              <CFormSelect v-model="selectedGrade" >
+                <option value="">Grado</option>
+                <option v-for="g in grados" :key="g" :value="g">
+                  {{ g }}
+                </option>
+              </CFormSelect>
+            </CCol>
+
+            <!-- Sección -->
+            <CCol xs="6" md="2">
+              <CFormSelect v-model="selectedSection" >
+                <option value="">Sección</option>
+                <option v-for="s in secciones" :key="s" :value="s">
+                  {{ s }}
+                </option>
+              </CFormSelect>
+            </CCol>
+
+            <!-- Botones -->
+            <CCol xs="12" md="3" class="d-flex gap-2">
+              <CButton color="primary" class="flex-fill" @click="fetchAlumnos(1)">
+                Buscar
+              </CButton>
+
+              <CButton color="secondary" variant="outline" class="flex-fill" @click="limpiar">
+                Limpiar
+              </CButton>
+            </CCol>
+
+          </CRow>
+        </CCardBody>
+      </CCard>
+    </CCol>
+  </CRow>
+
+  <CRow class="mb-4">
+    <CCol>
+      <CCard class="shadow-sm border-0">
+        <CCardBody>
+          <CTable hover responsive align="middle" class="mb-0 ">
+
+            <CTableHead color="dark">
+              <CTableRow>
+                <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
+                <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
+                <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
+                <CTableHeaderCell class="text-center">Grado </CTableHeaderCell>
+                <CTableHeaderCell class="text-center"> Sección</CTableHeaderCell>
+                <CTableHeaderCell class="text-center"> Asistencia</CTableHeaderCell>
+                <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
+              </CTableRow>
+            </CTableHead>
+
+            <CTableBody>
+              <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
+                <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
+                <CTableDataCell class="fw-semibold text-left">{{ alumno.apellidos }}</CTableDataCell>
+                <CTableDataCell class="text-left">{{ alumno.nombres }}</CTableDataCell>
+                <CTableDataCell class="text-center">{{ alumno.grade }}° </CTableDataCell>
+                <CTableDataCell class="text-center"> {{ alumno.section }} </CTableDataCell>
+
+                <CTableDataCell class="text-center">
+                  <CBadge :color="colorEstado(alumno.asistencia_estado)" class="px-3 py-2">
+                    {{ textoEstado(alumno.asistencia_estado) }}
+                  </CBadge>
+                </CTableDataCell>
+
+                <CTableDataCell class="text-center">
+                  <i class="fas fa-user-check"
+                    :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'" :style="{
+                      cursor: alumno.asistencia_estado === 'F' ? 'pointer' : 'not-allowed',
+                      fontSize: '16px',
+                      opacity: alumno.asistencia_estado === 'F' ? 1 : 0.5
+                    }" @click="abrirModalAsistencia(alumno)"></i>
+
+                </CTableDataCell>
+              </CTableRow>
+            </CTableBody>
+
+          </CTable>
+
+          <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">
+            <CButton color="primary" variant="outline" :disabled="!previousPage" @click="fetchAlumnos(currentPage - 1)"
+              class="d-flex align-items-center gap-2">
+              <i class="fas fa-chevron-left"></i>
+              Anterior
+            </CButton>
+
+            <div class="text-center fw-semibold text-muted">
+              <i class="fas fa-file-alt me-1"></i>
+              Página <span class="text-dark">{{ currentPage }}</span>
+              /
+              <span class="text-dark">{{ totalPages }}</span>
+            </div>
+
+            <CButton color="primary" variant="outline" :disabled="!nextPage" @click="fetchAlumnos(currentPage + 1)"
+              class="d-flex align-items-center gap-2">
+              Siguiente
+              <i class="fas fa-chevron-right"></i>
+            </CButton>
+          </div>
+        </CCardBody>
+      </CCard>
+    </CCol>
+  </CRow>
+
+  <CModal :visible="modalAsistencia" @close="modalAsistencia = false">
+    <CModalHeader>
+      <CModalTitle class="fw-bold text-success">
+        <i class="fas fa-user-check me-2"></i>
+        Confirmar registro de asistencia
+      </CModalTitle>
+    </CModalHeader>
+
+    <CModalBody v-if="alumnoSeleccionado">
+
+      <div class="text-center mb-3">
+        <i class="fas fa-user-check text-success" style="font-size:40px"></i>
+      </div>
+
+      <p class="text-center text-muted mb-4">
+        ¿Estás seguro de registrar asistencia para este alumno?
+      </p>
+
+      <div class="bg-light rounded p-3">
+
+        <div class="mb-2">
+          <strong>
+            <i class="fas fa-user text-primary me-1"></i>
+            Alumno:
+          </strong>
+          {{ alumnoSeleccionado.nombres }} {{ alumnoSeleccionado.apellidos }}
+        </div>
+
+        <div class="mb-2">
+          <strong>
+            <i class="fas fa-graduation-cap text-primary me-1"></i>
+            Grado:
+          </strong>
+          {{ alumnoSeleccionado.grade }}°
+        </div>
+
+        <div>
+          <strong>
+            <i class="fas fa-layer-group text-primary me-1"></i>
+            Sección:
+          </strong>
+          {{ alumnoSeleccionado.section }}
+        </div>
+
+      </div>
+
+    </CModalBody>
+
+    <CModalFooter>
+
+      <CButton color="secondary" @click="modalAsistencia = false">
+        <i class="fas fa-times me-1"></i>
+        Cancelar
+      </CButton>
+
+      <CButton color="success" @click="registrarAsistencia">
+        <i class="fas fa-check me-1"></i>
+        Confirmar asistencia
+      </CButton>
+
+    </CModalFooter>
+  </CModal>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import AssistanceService from '@/services/AssistanceService'
+import { textoEstado, colorEstado } from '@/utils/utils'
+
+
+const router = useRouter()
+
+const alumnos = ref([])
+const search = ref('')
+const selectedGrade = ref('')
+const selectedSection = ref('')
+const grados = ref(['1', '2', '3', '4', '5'])
+const secciones = ref(['A', 'B', 'C', 'D'])
+
+
+
+const modalAsistencia = ref(false)
+const alumnoSeleccionado = ref(null)
+
+
+const currentPage = ref(1)
+const pageSize = 20
+const nextPage = ref(null)
+const previousPage = ref(null)
+const totalCount = ref(0)
+const totalPages = computed(() => Math.ceil(totalCount.value / pageSize))
+
+// --- Función para obtener alumnos paginados desde API
+const fetchAlumnos = async (page = 1) => {
+  try {
+    const params = {
+      page: page,
+      search: search.value,
+      grade: selectedGrade.value,
+      section: selectedSection.value
+    }
+    const res = await AssistanceService.getVAuxiliar_listarAlumnos(params)
+    alumnos.value = res.data.results
+    nextPage.value = res.data.next
+    previousPage.value = res.data.previous
+    totalCount.value = res.data.count
+    currentPage.value = page
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+
+import Swal from 'sweetalert2'
+
+const abrirModalAsistencia = async (alumno) => {
+
+  if (alumno.asistencia_estado === 'A' || alumno.asistencia_estado === 'T') {
+    return
+  }
+
+  const result = await Swal.fire({
+    title: 'Registrar asistencia',
+    html: `
+      <div style="text-align:left">
+        <p><b>Alumno:</b> ${alumno.nombres} ${alumno.apellidos}</p>
+        <p><b>Grado:</b> ${alumno.grade}°</p>
+        <p><b>Sección:</b> ${alumno.section}</p>
+      </div>
+      <p style="margin-top:10px">¿Deseas registrar la asistencia?</p>
+    `,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, registrar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#198754',
+    cancelButtonColor: '#6c757d'
+  })
+
+  if (result.isConfirmed) {
+    registrarAsistencia(alumno)
+  }
+}
+const registrarAsistencia = async (alumno) => {
+
+  try {
+
+    await AssistanceService.VAuxiliar_registrarAsistencia(alumno.dni)
+
+    await Swal.fire({
+      icon: 'success',
+      title: 'Asistencia registrada',
+      text: `Se registró la asistencia de ${alumno.nombres}`,
+      confirmButtonColor: '#198754'
+    })
+
+    fetchAlumnos(currentPage.value)
+
+  } catch (error) {
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo registrar la asistencia'
+    })
+
+  }
+
+}
+
+
+const limpiar = () => {
+  search.value = ''
+  selectedGrade.value = ''
+  selectedSection.value = ''
+
+  fetchAlumnos(1)
+}
+
+onMounted(() => {
+  fetchAlumnos()
+})
+</script>
+
+<!-- 
+<script setup>
+import { ref, onBeforeUnmount } from 'vue'
+import { BrowserQRCodeReader } from '@zxing/browser'
+import AssistanceService from "@/services/AssistanceService";
+import Swal from 'sweetalert2'
+
+const dniDetectado = ref('')
+const scanning = ref(false)
+let codeReader = null
+let stream = null
+let selectedDeviceId = null
+let decodeControl = null
+
+const videoRef = ref(null);
+
+
+// === Función para iniciar la cámara y escaneo ===
+async function empezarScan() {
+  if (scanning.value) return
+  scanning.value = true
+
+  try {
+   await registrarAsistencia(dni)
+
+  } catch (error) {
+    console.error('❌ Error al iniciar cámara:', error)
+    Swal.fire('Error', 'No se pudo iniciar la cámara.', 'error')
+    scanning.value = false
+  }
+}
+
+async function registrarAsistencia(dni) {
+  try {
+    const response = await AssistanceService.registrarAsistenciaAuxiliar(dni)
+    Swal.fire({
+      icon: 'success',
+      title: 'Asistencia registrada',
+      text: `Usuario con DNI ${dni} registrado correctamente.`,
+      confirmButtonText: 'Aceptar'
+    })
+  } catch (error) {
+    console.error('❌ Error al registrar asistencia:', error)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudo registrar la asistencia.',
+      confirmButtonText: 'Aceptar'
+    })
+  }
+}
+
+
+</script> -->
+
+<style scoped></style>

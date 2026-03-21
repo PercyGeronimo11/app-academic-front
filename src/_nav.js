@@ -1,4 +1,11 @@
+import {
+  cilQrCode, cilCalendar, cilPencil, cilChatBubble, cilChartLine, cilTask, cilChart,
+  cilStar, cilNotes,
+  cilGraph,
+  cilList
+} from '@coreui/icons'
 export default [
+  // TODOS
   {
     component: 'CNavItem',
     name: 'Dashboard',
@@ -6,44 +13,48 @@ export default [
     icon: 'cil-speedometer',
     roles: ['Administrador', 'Administrativo', 'Auxiliar'],
   },
+
+  // ADMINISTRADOR O ADMINISTRATIVO
   {
     component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
-    icon: 'cil-people',
+    icon: cilChatBubble,
     roles: ['Administrador', 'Administrativo'],
   },
   {
-    component: 'CNavItem',
+    component: 'CNavGroup',
     name: 'ASISTENCIAS',
-    to: '/assistances/dashboard',
-    icon: 'cil-star',
+    icon: cilCalendar,
     roles: ['Administrador', 'Administrativo'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Seguimiento Diario',
+        icon: cilTask,
+        to: '/assistances/seguimiento',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Reporte periódico',
+        icon: cilChart,
+        to: '/assistances/admin/reporte-periodico',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Reporte por alumnos',
+        icon: cilList,
+        to: '/assistances/admin/list-alumnos',
+      }
+    ],
   },
-  {
-    component: 'CNavItem',
-    name: 'ASISTENCIAS',
-    to: '/assistances',
-    icon: 'cil-star',
-    roles: ['Auxiliar'],
-  },
-
-  //Para administrativo
   {
     component: 'CNavItem',
     name: 'Aulas',
     to: '/classroom/list',
-    icon: 'cil-star',
+    icon: cilStar,
     roles: ['Administrador', 'Administrativo'],
   },
-
-  /* {
-    component: 'CNavItem',
-    name: 'Asignar Cursos',
-    to: '/classroom/assignment-courses',
-    icon: 'cil-star',
-    roles: ['Administrador', 'Administrativo'],
-  }, */
   {
     component: 'CNavItem',
     name: 'Cursos',
@@ -77,6 +88,38 @@ export default [
     icon: 'cil-people',
     roles: ['Administrador', 'Administrativo'],
   },
+
+  // AUXILIAR
+  {
+    component: 'CNavGroup',
+    name: 'ASISTENCIAS',
+    icon: cilCalendar,
+    roles: ['Auxiliar'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Registro QR',
+        icon: cilQrCode,
+        to: '/assistances/auxiliar/register-qr',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Registro Normal',
+        icon: cilPencil,
+        to: '/assistances/auxiliar/register-dni',
+      }
+    ],
+  },
+
+
+
+  /* {
+    component: 'CNavItem',
+    name: 'Asignar Cursos',
+    to: '/classroom/assignment-courses',
+    icon: 'cil-star',
+    roles: ['Administrador', 'Administrativo'],
+  }, */
 
 
 
@@ -113,6 +156,28 @@ export default [
     icon: 'cil-options',
     roles: ['Estudiante'],
   },
+
+  {
+    component: 'CNavGroup',
+    name: 'ASISTENCIAS',
+    icon: cilCalendar,
+    roles: ['Estudiante'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Reporte General',
+        icon: cilChartLine,
+        to: '/assistances/alumno/reporte',
+      },
+      {
+        component: 'CNavItem',
+        icon: cilNotes,
+        name: 'Reporte detallado',
+        to: '/assistances/alumno/reporte-detallado',
+      },
+    ],
+  },
+
   {
     component: 'CNavItem',
     name: 'Mis Trámites',
@@ -129,6 +194,7 @@ export default [
     icon: 'cil-options',
     roles: ['Mesa de partes'],
   },
+
 
   // ---------------------------------- PLANTILLA -------------------------
   /* {

@@ -3,21 +3,86 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
+const token = localStorage.getItem('access_token');
+
 export default {
+  // getResumenSemanal() {
+  //   return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
+  // },
 
+  // Para ADMIN
   getResumenDiario() {
-    return axios.get(`${API_URL_DJANGO}/assistances/resumen-hoy/`);
-  },
-  getResumenSemanal() {
-    return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-totales/`);
   },
 
-  registrarAsistenciaAuxiliar(dni) {
-    return axios.post(`${API_URL_DJANGO}/assistances/register/`, {
+  getAsistenciaBySeccion(params) {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-by-seccion/`, {params});
+  },
+
+  getDetailAssistanceBySeccion(seccionId) {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/detail-by-seccion/${seccionId}/`);
+  },
+  
+  getDashboardAlumno(idAlumno) {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/dashboard-alumno/${idAlumno}/`);
+  },
+
+  listarAlumnos: (params) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/listar-alumnos/`, { params })
+  },
+
+  getVAdmin_AlumnoDetail: (alumnoId) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/detail-alumno/${alumnoId}/`);
+  },
+
+
+  getVAdmin_HistorialByAlumno: (params) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/historial-by-alumno/`, { params })
+  },
+
+  // Para vista alumnos
+  getReporteGeneralAlumno() {
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-general/`, 
+    {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  },
+
+  getAlumnoReporteDetallado(params) {
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-detallado/`, { params },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+  },
+
+
+  // Para el auxiliar
+  VAuxiliar_registrarAsistencia(dni) {
+    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/register-assist/`, {
       dni: dni
     }
     );
   },
+
+  VAuxiliar_generarAsistencias(dni) {
+    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/generar-assist/`);
+  },
+
+  VAuxiliar_totalesAsistencias(dni) {
+    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/total-asistencias/`);
+  },
+
+
+  getVAuxiliar_listarAlumnos: (params) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/listar-alumnos/`, { params })
+  },
+
+
 
   getAssistanceByCourseClass(idCourseClass) {
     return axios.get(`${API_URL}/assistances/list`, {

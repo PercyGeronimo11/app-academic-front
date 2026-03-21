@@ -25,13 +25,13 @@ onMounted(() => {
 
 <template>
   <CBreadcrumb class="my-0">
-    <CBreadcrumbItem
+    <!-- <CBreadcrumbItem
       v-for="item in breadcrumbs"
       :key="item"
       :href="item.active ? '' : item.path"
       :active="item.active"
     >
       {{ item.name }}
-    </CBreadcrumbItem>
+    </CBreadcrumbItem> -->
   </CBreadcrumb>
 </template>
