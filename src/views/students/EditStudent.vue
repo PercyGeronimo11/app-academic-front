@@ -109,15 +109,22 @@
                 <CCardBody>
                   <CRow>
                     <CCol>
-                      <CFormLabel>Email</CFormLabel>
-                      <div class="input-group">
-                        <input type="text" class="form-control" v-model="alumnoData.user.email" @input="updateEmail" />
-                        <!-- <span class="input-group-text">@ierp.edu.pe</span> -->
-                      </div>
+                      <CFormInput
+                        v-model="alumnoData.user.email"
+                        label="Correo electrónico"
+                        readonly
+                        text="No se puede modificar el correo del estudiante."
+                      />
                     </CCol>
 
                     <CCol>
-                      <CFormInput v-model="alumnoData.password" label="Contraseña" />
+                      <CFormInput
+                        v-model="alumnoData.password"
+                        type="password"
+                        label="Nueva contraseña"
+                        placeholder="Dejar vacío para no cambiar"
+                        autocomplete="new-password"
+                      />
                     </CCol>
                   </CRow>
                 </CCardBody>
@@ -170,7 +177,7 @@
 
 import StudentService from "@/services/StudentService";
 import { useRoute, useRouter } from "vue-router";
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 import { CCard, CCardBody, CCardHeader } from "@coreui/vue";
 const URL_DJANGO_MEDIA = import.meta.env.VITE_URL_DJANGO_MEDIA;
@@ -198,7 +205,8 @@ const alumnoData = ref({
     seccion: ''
   },
   user: {
-    name:''
+    name: "",
+    email: "",
   },
   password: ""
 });
