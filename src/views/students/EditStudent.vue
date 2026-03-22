@@ -37,7 +37,11 @@
 
                   <CRow class="mb-3">
                     <CCol>
-                      <CFormInput v-model="alumnoData.grade_section_current" label="Grado y sección" disabled />
+                      <CFormInput v-model="alumnoData.grade_section.grade" label="Grado y sección" disabled />
+                    </CCol>
+
+                    <CCol>
+                      <CFormInput v-model="alumnoData.grade_section.section" label="Grado y sección" disabled />
                     </CCol>
 
                     <CCol>
@@ -107,8 +111,8 @@
                     <CCol>
                       <CFormLabel>Email</CFormLabel>
                       <div class="input-group">
-                        <input type="text" class="form-control" v-model="alumnoData.email" @input="updateEmail" />
-                        <span class="input-group-text">@ierp.edu.pe</span>
+                        <input type="text" class="form-control" v-model="alumnoData.user.email" @input="updateEmail" />
+                        <!-- <span class="input-group-text">@ierp.edu.pe</span> -->
                       </div>
                     </CCol>
 
@@ -189,6 +193,13 @@ const alumnoData = ref({
   representative_phone: "",
   representative_relationship: "",
   email: "",
+  grade_section: {
+    grade: '',
+    seccion: ''
+  },
+  user: {
+    name:''
+  },
   password: ""
 });
 const showQRModal = ref(false)
