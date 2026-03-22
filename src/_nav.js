@@ -194,6 +194,27 @@ export default [
     icon: 'cil-options',
     roles: ['Mesa de partes'],
   },
+  {
+    component: 'CNavItem',
+    name: 'Trámites (Mesa)',
+    to: '/mesa-tramites',
+    icon: 'cil-file',
+    roles: ['Mesa de partes'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Trámites (Administración)',
+    to: '/admin-tramites',
+    icon: 'cil-file',
+    roles: ['Administrador', 'Administrativo'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Permisos derivados',
+    to: '/auxiliar-tramites',
+    icon: 'cil-notes',
+    roles: ['Auxiliar'],
+  },
 
 
   // ---------------------------------- PLANTILLA -------------------------

@@ -220,6 +220,21 @@ const routes = [
         name: 'crearFut',
         component: () => import('@/views/fut/FutCreate.vue'),
       },
+      {
+        path: '/mesa-tramites',
+        name: 'MesaTramites',
+        component: () => import('@/views/paperworks/PaperworksMesa.vue'),
+      },
+      {
+        path: '/admin-tramites',
+        name: 'AdminTramites',
+        component: () => import('@/views/paperworks/PaperworksAdmin.vue'),
+      },
+      {
+        path: '/auxiliar-tramites',
+        name: 'AuxiliarTramites',
+        component: () => import('@/views/paperworks/PaperworksAuxiliar.vue'),
+      },
 
       // --------- PARA ASISTENCIAS -------------
       {

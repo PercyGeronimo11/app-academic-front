@@ -190,16 +190,14 @@ const savePaperwork = () => {
     }
   });
 
-  files.value.forEach(file => {
-    formData.append('files[]', file);
+  files.value.forEach((file) => {
+    formData.append('documents[]', file);
   });
 
   if (isEditMode.value) {
     emit('updatePaperwork', formData);
-    Swal.fire('Actualizado', 'El trámite fue actualizado correctamente', 'success');
   } else {
     emit('createPaperwork', formData);
-    Swal.fire('Creado', 'El trámite fue registrado correctamente', 'success');
   }
 
   resetForm();
