@@ -32,7 +32,7 @@
       <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-primary shadow">
           <CCardBody>
-            <div class="fs-6 fw-semibold">Total Alumnos</div>
+            <div class="fs-6 fw-semibold">Total Registros</div>
             <div class="fs-4 fw-semibold">
               {{ data.total_registros }} <span class="fs-6 fw-normal opacity-75">
                 ({{ porcentaje(data.total_registros) }}%)
