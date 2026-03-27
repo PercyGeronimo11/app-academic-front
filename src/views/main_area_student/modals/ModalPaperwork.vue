@@ -59,8 +59,9 @@
                             <FileDropzone
                             v-model="files"
                             :maxFiles="5"
-                            label="Adjuntar Archivos"
-                            helperText="PDF o imágenes - Máximo 5 archivos"
+                            accept=".pdf,application/pdf"
+                            label="Documentos anexos (solo PDF)"
+                            helperText="Solo archivos PDF (máximo 5). Se incorporarán al final del PDF del trámite."
                             />
                         </CCol>
                     </CRow>

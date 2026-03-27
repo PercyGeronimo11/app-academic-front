@@ -1,66 +1,125 @@
 <template>
   <CardComponent title="Trámites — Administración" style="margin: 20px 10px">
-    <CRow class="mb-3">
-      <CCol>
-        <CTable hover responsive>
-          <CTableHead>
+    <TramiteListShell>
+      <template #intro>
+        <p class="tls-intro-text mb-0">
+          Trámites ya revisados por mesa de partes. Puedes aprobar y derivar al auxiliar o observar para que el estudiante subsane y vuelva a mesa.
+        </p>
+      </template>
+
+      <CTable responsive hover class="align-middle mb-0">
+        <CTableHead>
+          <CTableRow>
+            <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Solicitante</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">FUT</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody v-if="!items.length">
+          <CTableRow>
+            <CTableDataCell colspan="8" class="tls-empty-cell">
+              <div class="tls-empty">
+                <span class="tls-empty__icon" aria-hidden="true">📭</span>
+                <p class="mb-1 fw-semibold">No hay trámites pendientes</p>
+                <p class="mb-0 small text-body-secondary">
+                  Aparecerán aquí cuando mesa de partes envíe solicitudes a administración.
+                </p>
+              </div>
+            </CTableDataCell>
+          </CTableRow>
+        </CTableBody>
+        <CTableBody v-else>
+          <template v-for="(item, index) in items" :key="item.id">
             <CTableRow>
-              <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Solicitante</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Seguimiento</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">PDF</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
-            </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            <template v-for="(item, index) in items" :key="item.id">
-              <CTableRow>
-                <CTableHeaderCell class="text-center">{{ index + 1 }}</CTableHeaderCell>
-                <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.names }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
-                <CTableDataCell class="text-start small">{{ truncate(item.reason, 80) }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.status }}</CTableDataCell>
-                <CTableDataCell class="text-center">
-                  <CButton color="secondary" size="sm" variant="outline" @click="toggle(item.id)">
-                    {{ expanded[item.id] ? 'Ocultar' : 'Ver' }} historial
-                  </CButton>
-                </CTableDataCell>
-                <CTableDataCell class="text-center">
-                  <CButton color="info" size="sm" @click="downloadPdf(item.id)">Descargar</CButton>
-                </CTableDataCell>
-                <CTableDataCell class="text-center d-flex gap-1 flex-wrap justify-content-center">
+              <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
+                {{ index + 1 }}
+              </CTableHeaderCell>
+              <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
+              <CTableDataCell class="text-center fw-medium">{{ item.names }}</CTableDataCell>
+              <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
+              <CTableDataCell class="text-start small">{{ truncate(item.reason, 80) }}</CTableDataCell>
+              <CTableDataCell class="text-center">
+                <TramiteStatusBadge :status="item.status" />
+              </CTableDataCell>
+              <CTableDataCell class="text-center">
+                <CButton
+                  color="primary"
+                  size="sm"
+                  variant="outline"
+                  class="px-3"
+                  :aria-label="`Ver documento FUT del trámite ${item.id}`"
+                  @click="openPdfPreview(item)"
+                >
+                  <i class="fas fa-eye" aria-hidden="true"></i>
+                </CButton>
+              </CTableDataCell>
+              <CTableDataCell class="text-center">
+                <div class="d-flex gap-1 flex-wrap justify-content-center align-items-center">
                   <CButton color="success" size="sm" @click="approve(item.id)">Aprobar y derivar</CButton>
                   <CButton color="warning" size="sm" @click="openObserve(item)">Observar</CButton>
-                </CTableDataCell>
-              </CTableRow>
-              <CTableRow v-show="expanded[item.id]">
-                <CTableDataCell colspan="9">
+                  <CButton
+                    color="secondary"
+                    size="sm"
+                    variant="outline"
+                    class="px-2"
+                    :aria-expanded="!!expanded[item.id]"
+                    :aria-label="expanded[item.id] ? 'Ocultar historial' : 'Desplegar historial'"
+                    @click="toggle(item.id)"
+                  >
+                    <i
+                      class="fas fa-chevron-down expand-chevron"
+                      :class="{ 'expand-chevron--open': expanded[item.id] }"
+                      aria-hidden="true"
+                    ></i>
+                  </CButton>
+                </div>
+              </CTableDataCell>
+            </CTableRow>
+            <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
+              <CTableDataCell colspan="8" class="p-0 border-0">
+                <div class="tls-expand-inner">
                   <TramiteHistory :steps="item.status_history" />
-                </CTableDataCell>
-              </CTableRow>
-            </template>
-          </CTableBody>
-        </CTable>
-      </CCol>
-    </CRow>
+                </div>
+              </CTableDataCell>
+            </CTableRow>
+          </template>
+        </CTableBody>
+      </CTable>
+    </TramiteListShell>
+
+    <TramitePdfPreviewModal
+      :visible="pdfModalVisible"
+      :loading="pdfLoading"
+      :pdf-object-url="pdfObjectUrl"
+      :observations="pdfModalObservations"
+      @close="closePdfModal"
+    />
   </CardComponent>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import Swal from 'sweetalert2';
 import CardComponent from '@/components/cruds/CardComponent.vue';
+import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import TramiteHistory from '@/components/paperworks/TramiteHistory.vue';
+import TramiteStatusBadge from '@/components/paperworks/TramiteStatusBadge.vue';
+import TramitePdfPreviewModal from '@/components/paperworks/TramitePdfPreviewModal.vue';
 import PaperworkService from '@/services/PaperworkService';
 import { formatDatabaseDate } from '@/utils/time';
 
 const items = ref([]);
 const expanded = reactive({});
+
+const pdfModalVisible = ref(false);
+const pdfLoading = ref(false);
+const pdfObjectUrl = ref('');
+const pdfModalObservations = ref('');
 
 const truncate = (s, n) => (s && s.length > n ? `${s.slice(0, n)}…` : s || '');
 
@@ -84,6 +143,7 @@ const load = async () => {
         reason: item.reason,
         date,
         status: item.current_status,
+        observations: item.observations,
         status_history: mapHistory(item.details),
       };
     });
@@ -97,13 +157,49 @@ const toggle = (id) => {
   expanded[id] = !expanded[id];
 };
 
-const downloadPdf = async (id) => {
-  try {
-    await PaperworkService.downloadPdf(id);
-  } catch (e) {
-    Swal.fire('Error', e.response?.data?.message || 'No se pudo descargar el PDF.', 'error');
+const revokePdfUrl = () => {
+  if (pdfObjectUrl.value) {
+    URL.revokeObjectURL(pdfObjectUrl.value);
+    pdfObjectUrl.value = '';
   }
 };
+
+const openPdfPreview = async (item) => {
+  pdfModalObservations.value = item.observations || '';
+  pdfModalVisible.value = true;
+  pdfLoading.value = true;
+  revokePdfUrl();
+  try {
+    const blob = await PaperworkService.fetchPdfBlob(item.id);
+    pdfObjectUrl.value = URL.createObjectURL(blob);
+    await load();
+    const refreshed = items.value.find((r) => r.id === item.id);
+    if (refreshed?.observations) {
+      pdfModalObservations.value = refreshed.observations;
+    }
+  } catch (e) {
+    const msg =
+      e.response?.data?.message ||
+      (typeof e.response?.data === 'string' ? e.response.data : null) ||
+      e.message ||
+      'No se pudo cargar el PDF.';
+    Swal.fire('Error', msg, 'error');
+    pdfModalVisible.value = false;
+    pdfModalObservations.value = '';
+  } finally {
+    pdfLoading.value = false;
+  }
+};
+
+const closePdfModal = () => {
+  pdfModalVisible.value = false;
+  pdfModalObservations.value = '';
+  revokePdfUrl();
+};
+
+onBeforeUnmount(() => {
+  revokePdfUrl();
+});
 
 const approve = async (id) => {
   const ok = await Swal.fire({
@@ -145,3 +241,14 @@ const openObserve = async (item) => {
 
 onMounted(load);
 </script>
+
+<style scoped>
+.expand-chevron {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.expand-chevron--open {
+  transform: rotate(-180deg);
+}
+</style>

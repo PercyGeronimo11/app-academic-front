@@ -1,28 +1,31 @@
 <template>
   <div>
     <CardComponent title="Lista de Administrativos" style="margin: 20px 10px;">
-      <div class="box-tools">
-        <CRow class="mb-3">
-          <CCol>
-            <CInputGroup>
-              <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-                aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-              <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
-            </CInputGroup>
-          </CCol>
-          <CCol></CCol>
-          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+      <TramiteListShell>
+        <template #toolbar>
+          <div class="box-tools">
             <CRow class="mb-3">
-              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <ImportDataModal descripcion="Alumnos" />
+              <CCol>
+                <CInputGroup>
+                  <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
+                    aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
+                  <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+                </CInputGroup>
               </CCol>
+              <CCol></CCol>
               <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+                <CRow class="mb-3">
+                  <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <ImportDataModal descripcion="Alumnos" />
+                  </CCol>
+                  <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+                  </CCol>
+                </CRow>
               </CCol>
             </CRow>
-          </CCol>
-        </CRow>
-      </div>
+          </div>
+        </template>
       <ElegantCrudList :columns="listColumns" :data="teachers">
         <template #actions="{ item }">
           <div class="d-flex gap-2">
@@ -35,6 +38,7 @@
           </div>
         </template>
       </ElegantCrudList>
+      </TramiteListShell>
       <!-- <CTable align="middle" class="mb-0 border" hover responsive>
         <CTableHead class="text-nowrap">
           <CTableRow>
@@ -155,6 +159,7 @@ import Swal from 'sweetalert2'
 import CardComponent from '../../components/cruds/CardComponent.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
 import ElegantCrudList from '../../components/cruds/ElegantCrudList.vue';
+import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import ImportDataModal from '@/components/modals/ImportDataModal.vue';
 
 const listColumns = ref([

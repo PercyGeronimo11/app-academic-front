@@ -55,4 +55,10 @@ export default {
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
   },
+
+  /** Blob PDF para vista previa en iframe (misma autenticación que downloadPdf). */
+  async fetchPdfBlob(id) {
+    const res = await axios.get(`${API_URL}/${id}/pdf`, { responseType: 'blob' });
+    return new Blob([res.data], { type: 'application/pdf' });
+  },
 };

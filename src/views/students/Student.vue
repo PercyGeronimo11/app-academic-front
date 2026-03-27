@@ -1,22 +1,24 @@
 <template>
   <div>
     <CardComponent title="Lista de Alumnos" style="margin: 20px 10px;">
-      <div class="box-tools">
-        <CRow class="mb-3">
-          <CCol>
-            <CInputGroup>
-              <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-                aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-              <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
-            </CInputGroup>
-          </CCol>
-          <CCol></CCol>
-          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <!-- <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton> -->
-            <CButton color="info text-white" @click="openImportStudentsModal">Importar Estudiantes</CButton>
-          </CCol>
-        </CRow>
-      </div>
+      <TramiteListShell>
+        <template #toolbar>
+          <div class="box-tools">
+            <CRow class="mb-3">
+              <CCol>
+                <CInputGroup>
+                  <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
+                    aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
+                  <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+                </CInputGroup>
+              </CCol>
+              <CCol></CCol>
+              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <CButton color="info text-white" @click="openImportStudentsModal">Importar Estudiantes</CButton>
+              </CCol>
+            </CRow>
+          </div>
+        </template>
       <ElegantCrudList :columns="listColumns" :data="alumnos">
         <template #actions="{ item }">
           <CButton color="warning" class="text-white" @click="navigateToEditStudent(item.id)">
@@ -27,6 +29,7 @@
               </CButton>
         </template>
       </ElegantCrudList>
+      </TramiteListShell>
     </CardComponent>
   </div>
 
@@ -44,6 +47,7 @@ import Swal from 'sweetalert2'
 import ImportStudents from './ImportStudents.vue';
 import CardComponent from '@/components/cruds/CardComponent.vue';
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
+import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
 
 const isOpenModalImportStudents = ref(false);

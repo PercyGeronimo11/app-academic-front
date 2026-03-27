@@ -1,21 +1,24 @@
 <template>
   <div>
     <CardComponent title="Lista de Docentes" style="margin: 20px 10px;">
-      <div class="box-tools">
-        <CRow class="mb-3">
-          <CCol>
-            <CInputGroup>
-              <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-                aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-              <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
-            </CInputGroup>
-          </CCol>
-          <CCol></CCol>
-          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
-          </CCol>
-        </CRow>
-      </div>
+      <TramiteListShell>
+        <template #toolbar>
+          <div class="box-tools">
+            <CRow class="mb-3">
+              <CCol>
+                <CInputGroup>
+                  <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
+                    aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
+                  <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+                </CInputGroup>
+              </CCol>
+              <CCol></CCol>
+              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+              </CCol>
+            </CRow>
+          </div>
+        </template>
       <ElegantCrudList :columns="listColumns" :data="teachers">
         <template #actions="{ item }">
           <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
@@ -26,6 +29,7 @@
               </CButton>
         </template>
       </ElegantCrudList>
+      </TramiteListShell>
     </CardComponent>
 
     <!-- Modal para Crear/Editar Profesor -->
@@ -116,6 +120,7 @@ import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
 import CardComponent from '@/components/cruds/CardComponent.vue';
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
+import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
 
 const teachers = ref([]);

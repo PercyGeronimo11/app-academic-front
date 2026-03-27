@@ -1,53 +1,73 @@
 <template>
   <CardComponent title="Permisos derivados — Auxiliar" style="margin: 20px 10px">
-    <p class="text-body-secondary mb-3">
-      Trámites aprobados por administración y mesa de partes. Aquí puedes tomar conocimiento del alumno, la fecha de registro y el motivo del permiso.
-    </p>
-    <CRow class="mb-3">
-      <CCol>
-        <CTable hover responsive>
-          <CTableHead>
+    <TramiteListShell>
+      <template #intro>
+        <p class="tls-intro-text mb-0">
+          Trámites aprobados por administración y mesa de partes. Aquí puedes tomar conocimiento del alumno, la fecha de registro y el motivo del permiso.
+        </p>
+      </template>
+
+      <CTable responsive hover class="align-middle mb-0">
+        <CTableHead>
+          <CTableRow>
+            <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Fecha registro</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Alumno</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">DNI</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Seguimiento</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Acción</CTableHeaderCell>
+          </CTableRow>
+        </CTableHead>
+        <CTableBody v-if="!items.length">
+          <CTableRow>
+            <CTableDataCell colspan="9" class="tls-empty-cell">
+              <div class="tls-empty">
+                <span class="tls-empty__icon" aria-hidden="true">📭</span>
+                <p class="mb-1 fw-semibold">No hay permisos derivados</p>
+                <p class="mb-0 small text-body-secondary">
+                  Cuando administración derive trámites al auxiliar, se listarán aquí.
+                </p>
+              </div>
+            </CTableDataCell>
+          </CTableRow>
+        </CTableBody>
+        <CTableBody v-else>
+          <template v-for="(item, index) in items" :key="item.id">
             <CTableRow>
-              <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Fecha registro</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Alumno</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">DNI</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Seguimiento</CTableHeaderCell>
-              <CTableHeaderCell class="text-center">Acción</CTableHeaderCell>
+              <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
+                {{ index + 1 }}
+              </CTableHeaderCell>
+              <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
+              <CTableDataCell class="text-center fw-medium">{{ item.names }}</CTableDataCell>
+              <CTableDataCell class="text-center">{{ item.dni }}</CTableDataCell>
+              <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
+              <CTableDataCell class="text-start small">{{ item.reason }}</CTableDataCell>
+              <CTableDataCell class="text-center">
+                <TramiteStatusBadge :status="item.status" />
+              </CTableDataCell>
+              <CTableDataCell class="text-center">
+                <CButton color="secondary" size="sm" variant="outline" @click="toggle(item.id)">
+                  {{ expanded[item.id] ? 'Ocultar' : 'Historial' }}
+                </CButton>
+              </CTableDataCell>
+              <CTableDataCell class="text-center">
+                <CButton color="primary" size="sm" @click="ack(item.id)">Marcar completado</CButton>
+              </CTableDataCell>
             </CTableRow>
-          </CTableHead>
-          <CTableBody>
-            <template v-for="(item, index) in items" :key="item.id">
-              <CTableRow>
-                <CTableHeaderCell class="text-center">{{ index + 1 }}</CTableHeaderCell>
-                <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.names }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.dni }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
-                <CTableDataCell class="text-start small">{{ item.reason }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.status }}</CTableDataCell>
-                <CTableDataCell class="text-center">
-                  <CButton color="secondary" size="sm" @click="toggle(item.id)">
-                    {{ expanded[item.id] ? 'Ocultar' : 'Ver' }} historial
-                  </CButton>
-                </CTableDataCell>
-                <CTableDataCell class="text-center">
-                  <CButton color="primary" size="sm" @click="ack(item.id)">Marcar completado</CButton>
-                </CTableDataCell>
-              </CTableRow>
-              <CTableRow v-show="expanded[item.id]">
-                <CTableDataCell colspan="9">
+            <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
+              <CTableDataCell colspan="9" class="p-0 border-0">
+                <div class="tls-expand-inner">
                   <TramiteHistory :steps="item.status_history" />
-                </CTableDataCell>
-              </CTableRow>
-            </template>
-          </CTableBody>
-        </CTable>
-      </CCol>
-    </CRow>
+                </div>
+              </CTableDataCell>
+            </CTableRow>
+          </template>
+        </CTableBody>
+      </CTable>
+    </TramiteListShell>
   </CardComponent>
 </template>
 
@@ -55,7 +75,9 @@
 import { onMounted, reactive, ref } from 'vue';
 import Swal from 'sweetalert2';
 import CardComponent from '@/components/cruds/CardComponent.vue';
+import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import TramiteHistory from '@/components/paperworks/TramiteHistory.vue';
+import TramiteStatusBadge from '@/components/paperworks/TramiteStatusBadge.vue';
 import PaperworkService from '@/services/PaperworkService';
 import { formatDatabaseDate } from '@/utils/time';
 
