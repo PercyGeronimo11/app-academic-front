@@ -73,6 +73,15 @@ export default {
   },
 
   async importStudents(data) {
-    return await axios.post(`${API_URL}/student/register-excel`, data);
+    return await axios.post(`${API_URL}/student/register-excel`, data, {
+      timeout: 0,
+    });
+  },
+
+  async downloadStudentImportTemplate() {
+    return await axios.get(`${API_URL}/student/import-template`, {
+      responseType: 'blob',
+      timeout: 60000,
+    });
   },
 };

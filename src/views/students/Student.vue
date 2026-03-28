@@ -34,8 +34,8 @@
   </div>
 
   <ImportStudents
-    v-model:isOpenModal = isOpenModalImportStudents
-    @updateData = listStudentService
+    v-model:isOpenModal="isOpenModalImportStudents"
+    @updateData="listStudentService"
   />
 </template>
 
