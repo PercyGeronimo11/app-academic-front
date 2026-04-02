@@ -134,7 +134,7 @@ import AssistanceService from "@/services/AssistanceService";
 import Swal from 'sweetalert2'
 import { CCardBody } from '@coreui/vue';
 import { useFechaHora } from '@/composables/useFechaHora'
-// import { CRow, CCol, CCard, CCardHeader } from '@coreui/vue';
+import { toastSuccess,toastError } from '@/utils/alerts'
 
 const { fechaHora } = useFechaHora()
 
@@ -183,20 +183,10 @@ const generarAsistencias = async () => {
 
     asistenciasHoy.value = res.data.asistencias_hoy
     totalAlumnos.value = res.data.total_alumnos
-
-    Swal.fire({
-      icon: "success",
-      title: "Asistencias generadas correctamente",
-      text: `Total generadas hoy: ${asistenciasHoy.value}`
-    })
+    toastSuccess(`${asistenciasHoy.value} Asistencias generadas correctamente `)
 
   } catch (error) {
-
-    Swal.fire({
-      icon: "error",
-      title: "Error al generar asistencias"
-    })
-
+    toastError('Error al generar asistencias')
   }
 
 }
@@ -214,7 +204,7 @@ async function empezarScan() {
     const devices = await BrowserQRCodeReader.listVideoInputDevices()
 
     if (devices.length === 0) {
-      Swal.fire('Error', 'No se encontró cámara.', 'error')
+      toastError('No se encontró cámara')
       scanning.value = false
       return
     }
@@ -260,7 +250,7 @@ async function empezarScan() {
     })
   } catch (error) {
     console.error('❌ Error al iniciar cámara:', error)
-    Swal.fire('Error', 'No se pudo iniciar la cámara.', 'error')
+    toastError('No se pudo iniciar la cámara')
     scanning.value = false
   }
 }
@@ -293,21 +283,11 @@ function apagarCamara() {
 // === Función para registrar asistencia ===
 async function registrarAsistencia(dni) {
   try {
-    const response = await AssistanceService.VAuxiliar_registrarAsistencia(dni)
-    Swal.fire({
-      icon: 'success',
-      title: 'Asistencia registrada',
-      text: `Usuario con DNI ${dni} registrado correctamente.`,
-      confirmButtonText: 'Aceptar'
-    })
+    await AssistanceService.VAuxiliar_registrarAsistencia(dni)
+    toastSuccess(`Asistencia registrada para DNI: ${dni}`)
   } catch (error) {
     console.error('❌ Error al registrar asistencia:', error)
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudo registrar la asistencia.',
-      confirmButtonText: 'Aceptar'
-    })
+    toastError(`No se pudo registrar la asistencia para DNI: ${dni}`)
   }
 }
 

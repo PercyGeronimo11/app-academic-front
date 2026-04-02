@@ -1,6 +1,4 @@
 <template>
-
-
     <CRow class="mb-3">
         <CCol>
             <CCard class="shadow-sm border-0">
@@ -27,6 +25,7 @@
     <CRow class="mb-2">
         <CCol>
             <CCard class="shadow-sm border-0">
+
                 <CCardBody>
                     <CRow class="g-2 align-items-center flex-md-nowrap">
 
@@ -75,6 +74,22 @@
     <CRow class="mb-4">
         <CCol>
             <CCard class="shadow-sm border-0">
+                <CCardHeader class="bg-white border-bottom py-2">
+                    <div class="d-flex justify-content-between align-items-center">
+
+                        <h5 class="fw-bold  text-primary mb-0">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            Seguimiento por aula
+                        </h5>
+
+                        <div class="d-flex align-items-center">
+                            <CButton color="success" class="text-white" @click="descargarExcel">
+                                Descargar Excel
+                            </CButton>
+                        </div>
+
+                    </div>
+                </CCardHeader>
                 <CCardBody>
                     <CTable hover responsive align="middle" class="mb-0 text-center">
 
@@ -161,6 +176,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AssistanceService from '@/services/AssistanceService'
+import { exportarExcel } from '@/utils/exportExcel'
 
 const router = useRouter()
 
@@ -213,6 +229,32 @@ const verDetalle = (alumno) => {
 
 const verDashboard = (alumno) => {
     router.push(`/assistances/admin/dashboard-alumno/${alumno.id}`)
+}
+
+const descargarExcel = async() => {
+    const alumnosReport = ref([])
+    const params = {
+        search: search.value,
+        grade: selectedGrade.value,
+        section: selectedSection.value
+    }
+    const resp = await AssistanceService.listarAlumnosExportExcel(params)
+    alumnosReport.value = resp.data
+
+  exportarExcel({
+    fileName: 'reporte_alumnos.xlsx',
+    sheetName: 'reporte',
+    data: alumnosReport.value,
+    columns: [
+      { header: 'Apellidos', key: 'apellidos', width: 20 },
+      { header: 'Nombres', key: 'nombres', width: 15 },
+      { header: 'Grado', key: 'grade', width: 15 },
+      { header: 'Seccion', key: 'section', width: 15 },
+      { header: 'Asistencias', key: 'total_asistencias', width: 15 },
+      { header: 'Tardanzas', key: 'total_tardanzas', width: 15 },
+      { header: 'Faltas', key: 'total_faltas', width: 15 }
+    ]
+  })
 }
 
 onMounted(() => {

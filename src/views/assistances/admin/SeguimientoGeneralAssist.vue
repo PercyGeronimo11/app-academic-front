@@ -90,7 +90,7 @@
 
               <h5 class="fw-bold text-primary mb-0">
                 <i class="fas fa-chart-bar me-1"></i>
-                Seguimiento por sección
+                Seguimiento por aula
               </h5>
 
               <div class="d-flex align-items-center">

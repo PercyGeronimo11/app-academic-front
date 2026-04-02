@@ -81,10 +81,10 @@ export default {
         
         if (response.success) {
           let route = "/";
-          if (role === "Administrador" || role === "Administrativo") route = "/dashboard";
-          else if (role === "Profesor") route = "/mainAreaTeacher";
-          else if (role === "Estudiante") route = "/mainAreaStudent";
-          else if (role === "Auxiliar") route = "/assistances";
+          if (role === "DIRECCION" ) route = "/dashboard";
+          else if (role === "PROFESOR") route = "/mainAreaTeacher";
+          else if (role === "ESTUDIANTE") route = "/mainAreaStudent";
+          else if (role === "AUXILIAR") route = "/assistances";
           else route = "/dashboard";
 
           this.$router.push(route);

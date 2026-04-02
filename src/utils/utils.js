@@ -17,8 +17,6 @@ export const colorEstado = (estado) => {
     return 'secondary'
 }
 
-
-
 export const meses = [
   { value: 1, label: 'Enero' },
   { value: 2, label: 'Febrero' },
@@ -34,31 +32,15 @@ export const meses = [
   { value: 12, label: 'Diciembre' }
 ]
 
-export const formatDate = (dateStr) => {
-  if (!dateStr) return '-'
-  const date = new Date(dateStr)
 
-  // Fecha: DD/MM/YYYY
-  const day = String(date.getDate()).padStart(2, '0')
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const year = date.getFullYear()
-  const fecha = `${day}/${month}/${year}`
-
-  return fecha
+export const gradoTexto = (grado) => {
+    const grados = {
+        1: 'Primero',
+        2: 'Segundo',
+        3: 'Tercero',
+        4: 'Cuarto',
+        5: 'Quinto'
+    }
+    return grados[grado] || grado
 }
-
-
-export const formatTime = (dateStr) => {
-  if (!dateStr) return '-'
-
-  const date = new Date(dateStr)
-
-  // Hora: HH:mm
-  const hours = String(date.getHours()).padStart(2, '0')
-  const minutes = String(date.getMinutes()).padStart(2, '0')
-  const hora = `${hours}:${minutes}`
-
-  return hora
-}
-
 

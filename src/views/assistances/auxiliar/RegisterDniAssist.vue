@@ -205,6 +205,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AssistanceService from '@/services/AssistanceService'
 import { textoEstado, colorEstado } from '@/utils/utils'
+import { toastSuccess } from '../../../utils/alerts'
 
 
 const router = useRouter()
@@ -280,18 +281,14 @@ const abrirModalAsistencia = async (alumno) => {
     registrarAsistencia(alumno)
   }
 }
+
 const registrarAsistencia = async (alumno) => {
 
   try {
 
     await AssistanceService.VAuxiliar_registrarAsistencia(alumno.dni)
 
-    await Swal.fire({
-      icon: 'success',
-      title: 'Asistencia registrada',
-      text: `Se registró la asistencia de ${alumno.nombres}`,
-      confirmButtonColor: '#198754'
-    })
+    toastSuccess(`Se registró la asistencia de ${alumno.nombres}`)
 
     fetchAlumnos(currentPage.value)
 

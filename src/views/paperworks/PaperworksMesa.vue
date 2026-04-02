@@ -1,5 +1,5 @@
 <template>
-  <CardComponent title="Trámites — Mesa de partes" style="margin: 20px 10px">
+  <CardComponent title="Trámites — MESA_PARTES" style="margin: 20px 10px">
     <TramiteListShell>
       <template #intro>
         <p class="tls-intro-text mb-0">

@@ -11,22 +11,22 @@ export default [
     name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    roles: ['Administrador', 'Administrativo', 'Auxiliar'],
+    roles: ['DIRECCION', 'Auxiliar'],
   },
 
-  // ADMINISTRADOR O ADMINISTRATIVO
+  // DIRECCION O ADMINISTRATIVO
   {
     component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
     icon: cilChatBubble,
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION',],
   },
   {
     component: 'CNavGroup',
     name: 'ASISTENCIAS',
     icon: cilCalendar,
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION', 'AUXILIAR'],
     items: [
       {
         component: 'CNavItem',
@@ -45,57 +45,7 @@ export default [
         name: 'Reporte por alumnos',
         icon: cilList,
         to: '/assistances/admin/list-alumnos',
-      }
-    ],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Aulas',
-    to: '/classroom/list',
-    icon: cilStar,
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Cursos',
-    to: '/courses',
-    icon: 'cil-options',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavTitle',
-    name: 'USUARIOS',
-    roles: ['Administrador'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Administrativos',
-    to: '/administratives',
-    icon: 'cil-user',
-    roles: ['Administrador'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Docentes',
-    to: '/teachers',
-    icon: 'cil-user',
-    roles: ['Administrador', 'Administrativo'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Estudiantes',
-    to: '/students',
-    icon: 'cil-people',
-    roles: ['Administrador', 'Administrativo'],
-  },
-
-  // AUXILIAR
-  {
-    component: 'CNavGroup',
-    name: 'ASISTENCIAS',
-    icon: cilCalendar,
-    roles: ['Auxiliar'],
-    items: [
+      },
       {
         component: 'CNavItem',
         name: 'Registro QR',
@@ -110,6 +60,57 @@ export default [
       }
     ],
   },
+  {
+    component: 'CNavItem',
+    name: 'Aulas',
+    to: '/classroom/list',
+    icon: cilStar,
+    roles: ['DIRECCION',],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Cursos',
+    to: '/courses',
+    icon: 'cil-options',
+    roles: ['DIRECCION',],
+  },
+  {
+    component: 'CNavTitle',
+    name: 'USUARIOS',
+    roles: ['DIRECCION'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Administrativos',
+    to: '/administratives',
+    icon: 'cil-user',
+    roles: ['DIRECCION'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Docentes',
+    to: '/teachers',
+    icon: 'cil-user',
+    roles: ['DIRECCION'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Estudiantes',
+    to: '/students',
+    icon: 'cil-people',
+    roles: ['DIRECCION'],
+  },
+
+  // AUXILIAR
+  // {
+  //   component: 'CNavGroup',
+  //   name: 'ASISTENCIAS',
+  //   icon: cilCalendar,
+  //   roles: ['Auxiliar'],
+  //   items: [
+
+  //   ],
+  // },
 
 
 
@@ -118,7 +119,7 @@ export default [
     name: 'Asignar Cursos',
     to: '/classroom/assignment-courses',
     icon: 'cil-star',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
   }, */
 
 
@@ -127,7 +128,7 @@ export default [
   {
     component: 'CNavTitle',
     name: 'ADMINISTRACIÓN',
-    roles: ['Profesor'],
+    roles: ['PROFESOR'],
   },
 
   // Profesor y alumnos
@@ -136,7 +137,7 @@ export default [
     name: 'Area Principal',
     to: '/classroom/main',
     icon: 'cil-notes',
-    roles: ['Profesor', 'Estudiante'],
+    roles: ['PROFESOR', 'ESTUDIANTE'],
   },
 
   {
@@ -144,7 +145,7 @@ export default [
     name: 'Mis Cursos',
     to: '/mainAreaTeacher',
     icon: 'cil-notes',
-    roles: ['Profesor'],
+    roles: ['PROFESOR'],
   },
 
 
@@ -154,14 +155,14 @@ export default [
     name: 'Mis Cursos',
     to: '/mainAreaStudent',
     icon: 'cil-options',
-    roles: ['Estudiante'],
+    roles: ['ESTUDIANTE'],
   },
 
   {
     component: 'CNavGroup',
     name: 'ASISTENCIAS',
     icon: cilCalendar,
-    roles: ['Estudiante'],
+    roles: ['ESTUDIANTE'],
     items: [
       {
         component: 'CNavItem',
@@ -183,30 +184,30 @@ export default [
     name: 'Mis Trámites',
     to: '/myPaperworks',
     icon: 'cil-file',
-    roles: ['Estudiante'],
+    roles: ['ESTUDIANTE'],
   },
 
-  //Mesa de partes
+  //MESA_PARTES
   {
     component: 'CNavItem',
     name: 'Solicitudes de Permiso',
     to: '/mesa-futs',
     icon: 'cil-options',
-    roles: ['Mesa de partes'],
+    roles: ['MESA_PARTES'],
   },
   {
     component: 'CNavItem',
     name: 'Trámites (Mesa)',
     to: '/mesa-tramites',
     icon: 'cil-file',
-    roles: ['Mesa de partes'],
+    roles: ['MESA_PARTES'],
   },
   {
     component: 'CNavItem',
     name: 'Trámites (Administración)',
     to: '/admin-tramites',
     icon: 'cil-file',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
   },
   {
     component: 'CNavItem',
@@ -221,7 +222,7 @@ export default [
   /* {
     component: 'CNavTitle',
     name: 'COMPONENTES DE LA PLANTILLA ',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
   },
 
   {
@@ -229,7 +230,7 @@ export default [
     name: 'Icons',
     to: '/icons',
     icon: 'cil-star',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',
@@ -258,7 +259,7 @@ export default [
     name: 'Base',
     to: '/base',
     icon: 'cil-puzzle',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',
@@ -342,7 +343,7 @@ export default [
     name: 'Buttons',
     to: '/buttons',
     icon: 'cil-cursor',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',
@@ -366,7 +367,7 @@ export default [
     name: 'Forms',
     to: '/forms',
     icon: 'cil-notes',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',
@@ -416,7 +417,7 @@ export default [
     name: 'Icons',
     to: '/icons',
     icon: 'cil-star',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',
@@ -444,7 +445,7 @@ export default [
     name: 'Notifications',
     to: '/notifications',
     icon: 'cil-bell',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',
@@ -474,7 +475,7 @@ export default [
     name: 'Configuracion',
     to: '/pages',
     icon: 'cil-settings',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',
@@ -504,7 +505,7 @@ export default [
     component: 'CNavGroup',
     name: 'themes',
     icon: 'cil-settings',
-    roles: ['Administrador', 'Administrativo'],
+    roles: ['DIRECCION'],
     items: [
       {
         component: 'CNavItem',

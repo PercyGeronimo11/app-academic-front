@@ -58,7 +58,7 @@
 
                         <CTable hover responsive striped align="middle" class="text-center border">
 
-                            <CTableHead color="light">
+                            <CTableHead color="dark">
                                 <CTableRow>
                                     <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
                                     <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
@@ -80,9 +80,8 @@
                                             {{ textoEstado(alumno.estado) }}
                                         </CBadge>
                                     </CTableDataCell>
-                                    <CTableDataCell class="text-muted">
-                                        {{ alumno.hora || "-" }}
-                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center fw-medium">{{ alumno.estado === 'F' ? '--' : formatTime(alumno.hora) }}</CTableDataCell>
+                                  
                                 </CTableRow>
                             </CTableBody>
                         </CTable>
@@ -99,16 +98,14 @@
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AssistanceService from '../../../services/AssistanceService'
+import { formatTime, fecha_actual } from '@/utils/time'
+import { textoEstado, colorEstado, gradoTexto } from '@/utils/utils'
 
 const route = useRoute()
 const seccionId = route.params.id
 const grado = ref(null)
 const seccion = ref(null)
-const fecha_actual = new Date().toLocaleDateString('es-ES', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-})
+
 
 
 const alumnos = ref([])
@@ -118,36 +115,6 @@ AssistanceService.getDetailAssistanceBySeccion(seccionId).then(response => {
     seccion.value = response.data.section
 })
 
-const textoEstado = (estado) => {
 
-    if (estado === 'A') return 'Asistió'
-    if (estado === 'T') return 'Tardanza'
-    if (estado === 'F') return 'Faltó'
-
-    return 'Sin registro'
-}
-
-const colorEstado = (estado) => {
-
-    if (estado === 'A') return 'success'
-    if (estado === 'T') return 'warning'
-    if (estado === 'F') return 'danger'
-
-    return 'secondary'
-}
-
-const gradoTexto = (grado) => {
-
-    const grados = {
-        1: 'Primero',
-        2: 'Segundo',
-        3: 'Tercero',
-        4: 'Cuarto',
-        5: 'Quinto',
-        6: 'Sexto'
-    }
-
-    return grados[grado] || grado
-}
 
 </script>

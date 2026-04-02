@@ -147,8 +147,8 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AssistanceService from '../../../services/AssistanceService'
 import { CBadge } from '@coreui/vue'
-import { textoEstado, colorEstado, formatDate, formatTime } from '../../../utils/utils'
-
+import { textoEstado, colorEstado } from '../../../utils/utils'
+import { formatDate, formatTime } from '../../../utils/time'
 const route = useRoute()
 const router = useRouter()
 const alumnoId = route.params.id

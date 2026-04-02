@@ -1,53 +1,42 @@
 <template>
-  <CDropdown placement="bottom-end" variant="nav-item">
+  <CDropdown placement="bottom-end" variant="nav-item" autoClose="outside">
     <CDropdownToggle class="py-0 pe-0" :caret="false">
-      <span class="me-2"
-        ><b>{{ userData.role_user }}: {{ userData.name_user }} </b>
+      <span class="me-2"><b>{{ userData.role_user }}: {{ userData.name_user }} </b>
       </span>
       <CAvatar :src="avatar" size="md" />
     </CDropdownToggle>
 
-    <CDropdownMenu class="pt-0">
-      <CDropdownHeader
-        component="h6"
-        class="bg-body-secondary text-body-secondary fw-semibold mb-2 rounded-top"
-      >
-        Perfil de {{ userData.role_user }}
-      </CDropdownHeader>
-      <CDropdownItem> <CIcon icon="cil-user" /> {{ userData.name_user }} </CDropdownItem>
-      <CDropdownItem>
-        <CIcon icon="cil-envelope-open" /> {{ userData.email_user }}
+    <CDropdownMenu class="pt-0 shadow-lg border-0 rounded-4 overflow-hidden" style="min-width: 280px;">
+
+      <!-- Header tipo perfil -->
+      <div class="d-flex align-items-center p-3 border-bottom profile-header" role="button" @click="goToProfile">
+        <CAvatar :src="avatar" size="lg" class="me-3" />
+        <div>
+          <div class="fw-semibold">{{ userData.name_user }}</div>
+          <span class="badge-role">
+            {{ userData.role_user }}
+          </span>
+        </div>
+      </div>
+      <div class="px-3 py-2 d-flex align-items-center gap-2 email-select">
+        <CIcon icon="cil-envelope-open" />
+        <span class="email-text">{{ userData.email_user }}</span>
+      </div>
+      <!-- Mi perfil -->
+      <CDropdownItem class="d-flex align-items-center gap-2 py-2 item-hover" @click="goToProfile" role="button">
+        <CIcon icon="cil-user" />
+        <span>Ver mi perfil</span>
       </CDropdownItem>
-      <!-- <CDropdownItem>
-        <CIcon icon="cil-task" /> Tasks
-        <CBadge color="danger" class="ms-auto">{{ itemsCount }}</CBadge>
-      </CDropdownItem>
-      <CDropdownItem>
-        <CIcon icon="cil-comment-square" /> Comments
-        <CBadge color="warning" class="ms-auto">{{ itemsCount }}</CBadge>
-      </CDropdownItem>
-      <CDropdownHeader
-        component="h6"
-        class="bg-body-secondary text-body-secondary fw-semibold my-2"
-      >
-        Settings
-      </CDropdownHeader>
-      <CDropdownItem> <CIcon icon="cil-user" /> Profile </CDropdownItem>
-      <CDropdownItem> <CIcon icon="cil-settings" /> Settings </CDropdownItem>
-      <CDropdownItem>
-        <CIcon icon="cil-dollar" /> Payments
-        <CBadge color="secondary" class="ms-auto">{{ itemsCount }}</CBadge>
-      </CDropdownItem>
-      <CDropdownItem>
-        <CIcon icon="cil-file" /> Projects
-        <CBadge color="primary" class="ms-auto">{{ itemsCount }}</CBadge>
-      </CDropdownItem> -->
+
       <CDropdownDivider />
-      <CDropdownItem >
-        <CButton @click="handleLogout">
-          <CIcon icon="cil-lock-locked" /> Cerrar Sesión
-        </CButton>
+
+      <!-- Logout -->
+      <CDropdownItem class="d-flex align-items-center gap-2 py-2 fw-semibold logout-item" @click="handleLogout"
+        role="button">
+        <CIcon icon="cil-lock-locked" />
+        <span>Cerrar sesión</span>
       </CDropdownItem>
+
     </CDropdownMenu>
   </CDropdown>
 </template>
@@ -57,6 +46,7 @@ import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import authService from "@/services/AuthService";
 import avatar from "@/assets/images/avatars/8.jpg";
+import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem, CDropdownDivider } from "@coreui/vue";
 
 const itemsCount = 42;
 const router = useRouter();
@@ -93,4 +83,55 @@ const handleLogout = async () => {
     console.error("Error en la solicitud de logout:", error);
   }
 };
+
+const goToProfile = () => {
+  router.push('/user/perfil')
+}
+
+
 </script>
+<style>
+.profile-header {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.profile-header:hover {
+  background-color: rgba(161, 157, 244, 0.5);
+}
+.item-hover {
+  transition: background 0.2s ease;
+}
+
+.item-hover:hover {
+  background-color: rgba(161, 157, 244, 0.5);;
+}
+
+.badge-role {
+  background: #0d6efd;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.logout-item {
+  color: #cb2a3a;
+  transition: all 0.2s ease;
+}
+
+.logout-item:hover {
+  background-color: rgba(203, 23, 41, 0.8);
+  color: #f1eeee;
+}
+
+.email-select {
+  user-select: text;
+  /* permite seleccionar */
+}
+
+.email-text {
+  cursor: text;
+}
+</style>

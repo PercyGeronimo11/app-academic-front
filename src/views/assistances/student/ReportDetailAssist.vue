@@ -138,7 +138,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AssistanceService from '../../../services/AssistanceService'
-import { textoEstado, colorEstado, formatDate, formatTime } from '../../../utils/utils'
+import { textoEstado, colorEstado } from '../../../utils/utils'
+import { formatDate, formatTime } from '../../../utils/time'
 import { useRouter } from 'vue-router'
 
 

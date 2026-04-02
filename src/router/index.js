@@ -33,7 +33,7 @@ const routes = [
       },
       {
         path: '/students',
-        name: 'Estudiante',
+        name: 'ESTUDIANTE',
         component: () => import('@/views/students/Student.vue'),
       },
       {
@@ -295,7 +295,17 @@ const routes = [
         ],
       },
 
-
+      // {
+      //   path: '/user/',
+      //   name: 'Usuarios',
+      //   children: [
+      //     {
+      //       path: 'perfil',
+      //       name: 'Perfil de Usuario',
+      //       component: () => import('@/views/user/Profile.vue'),
+      //     },
+      //   ],
+      // },
 
 
 

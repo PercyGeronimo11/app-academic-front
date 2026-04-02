@@ -12,14 +12,12 @@
                   Reporte de asistencias
                 </h4>
 
-                <!-- Filtros -->
                 <div class="d-flex flex-wrap align-items-center gap-2">
                   <CFormSelect v-model="filtros.tipo" @change="onChangeTipo" style="width: 160px;">
                     <option value="diario">Diario</option>
                     <option value="semanal">Semanal</option>
                     <option value="mensual">Mensual</option>
                   </CFormSelect>
-
 
                   <!-- Fecha -->
                   <CFormInput v-if="filtros.tipo === 'diario' || filtros.tipo === 'semanal'" type="date"
@@ -46,7 +44,6 @@
                   <div class="my-1">📅 Hasta : {{ data.fecha_fin }}</div>
                 </CBadge>
               </CCol>
-
             </CRow>
           </CCardBody>
         </CCard>
@@ -74,7 +71,7 @@
             <div class="fs-6 fw-semibold">Total Asistencias</div>
             <div class="fs-4 fw-semibold">
               {{ data.total_presentes }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_presentes)
-                }}%)</span>
+              }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -87,7 +84,7 @@
             <div class="fs-6 fw-semibold">Total Tardanzas</div>
             <div class="fs-4 fw-semibold">
               {{ data.total_tardanzas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_tardanzas)
-                }}%)</span>
+              }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -100,7 +97,7 @@
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
               {{ data.total_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_faltas)
-                }}%)</span>
+              }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -113,18 +110,15 @@
         <CCard class="shadow-sm border-0">
           <CCardHeader class="bg-white border-bottom py-2">
             <div class="d-flex justify-content-between align-items-center">
-
               <h5 class="fw-bold  text-primary mb-0">
                 <i class="fas fa-chart-bar me-2"></i>
                 Seguimiento por aula
               </h5>
-
               <div class="d-flex align-items-center">
-                <span class="me-2 text-success fw-semibold ">
-                  En seguimiento <i class="fas fa-eye me-2"></i>
-                </span>
+                <CButton color="success" class="text-white" @click="descargarExcel">
+                  Descargar Excel
+                </CButton>
               </div>
-
             </div>
           </CCardHeader>
 
@@ -186,8 +180,6 @@
         </CCard>
       </CCol>
     </CRow>
-
-
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
@@ -206,10 +198,6 @@
         </CCard>
       </CCol>
     </CRow>
-
-
-
-
   </CContainer>
 </template>
 <script setup>
@@ -220,6 +208,7 @@ import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
 import { CCard, CCardBody, CCol, CRow } from '@coreui/vue'
 import { meses } from '../../../utils/utils'
+import { exportarExcel } from '../../../utils/exportExcel'
 
 const router = useRouter()
 const secciones = ref([])
@@ -231,6 +220,7 @@ const data = ref({
   fecha_inicio: '',
   fecha_fin: ''
 })
+
 const filtros = ref({
   tipo: 'diario',
   fecha: new Date().toISOString().split('T')[0], // fecha actual
@@ -240,10 +230,11 @@ const filtros = ref({
 const asistenciasArr = ref([])
 const tardanzasArr = ref([])
 const faltasArr = ref([])
+const labelsArr = ref([])
 
 
 const chartData = computed(() => ({
-  labels: ['1-A°', '1-B°', '1-C°', '1-D°', '2-A°', '2-B°', '2-C°', '2-D°', '3-A°', '3-B°', '3-C°', '3-D°', '4-A°', '4-B°', '4-C°', '4-D°', '5-A°', '5-B°', '5-C°', '5-D°'],
+  labels: labelsArr.value,
   datasets: [
     {
       label: 'Asistencias',
@@ -292,12 +283,14 @@ const consultarReporte = () => {
     asistenciasArr.value = []
     tardanzasArr.value = []
     faltasArr.value = []
+    labelsArr.value = []
 
     // llenar arrays ordenadamente
 
     asistenciasArr.value = lista.map(item => item.asistencias)
     tardanzasArr.value = lista.map(item => item.tardanzas)
     faltasArr.value = lista.map(item => item.faltas)
+    labelsArr.value = lista.map(item => `${item.grado}-${item.seccion}°`)
   })
   console.log('total asistencias:', asistenciasArr.value)
   console.log('total tardanzas:', tardanzasArr.value)
@@ -312,6 +305,26 @@ const verDetalle = (item) => {
   router.push(`/assistances/seguimiento/seccion/${item.grade_section_id}`)
 }
 
+
+const descargarExcel = () => {
+  exportarExcel({
+    fileName: 'reporte_asistencia.xlsx',
+    sheetName: 'Asistencia',
+    data: secciones.value,
+    columns: [
+      {
+        header: 'Sección',
+        key: 'seccion',
+        width: 20,
+        formatter: (item) => `${item.grado}° ${item.seccion}`
+      },
+      { header: 'Total', key: 'total', width: 15 },
+      { header: 'Asistencias', key: 'asistencias', width: 15 },
+      { header: 'Tardanzas', key: 'tardanzas', width: 15 },
+      { header: 'Faltas', key: 'faltas', width: 15 }
+    ]
+  })
+}
 
 const porcentaje = (valor) => {
   if (!data.value.total_registros) return 0

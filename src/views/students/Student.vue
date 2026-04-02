@@ -9,7 +9,8 @@
                 <CInputGroup>
                   <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
                     aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-                  <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+                  <CButton type="button" color="primary" id="button-addon2"
+                    @click="listAdministrativeService(searchData)">Buscar</CButton>
                 </CInputGroup>
               </CCol>
               <CCol></CCol>
@@ -19,24 +20,21 @@
             </CRow>
           </div>
         </template>
-      <ElegantCrudList :columns="listColumns" :data="alumnos">
-        <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="navigateToEditStudent(item.id)">
-                <CIcon :content="cilPencil" size="lg"></CIcon>
-              </CButton>
-              <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-                <CIcon :content="cilTrash" size="lg"></CIcon>
-              </CButton>
-        </template>
-      </ElegantCrudList>
+        <ElegantCrudList :columns="listColumns" :data="alumnos">
+          <template #actions="{ item }">
+            <CButton color="warning" class="text-white" @click="navigateToEditStudent(item.id)">
+              <CIcon :content="cilPencil" size="lg"></CIcon>
+            </CButton>
+            <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+              <CIcon :content="cilTrash" size="lg"></CIcon>
+            </CButton>
+          </template>
+        </ElegantCrudList>
       </TramiteListShell>
     </CardComponent>
   </div>
 
-  <ImportStudents
-    v-model:isOpenModal="isOpenModalImportStudents"
-    @updateData="listStudentService"
-  />
+  <ImportStudents v-model:isOpenModal="isOpenModalImportStudents" @updateData="listStudentService" />
 </template>
 
 <script setup>
@@ -58,7 +56,7 @@ var idItemSelected = ref(0);
 var searchData = ref('');
 const router = useRouter();
 const listColumns = ref([
-  { key: 'id', label: 'N°'},
+  { key: 'id', label: 'N°' },
   { key: 'name', label: 'Nombre y Apellidos' },
   { key: 'dni', label: 'DNI' },
   { key: 'representative_phone', label: 'Numero de Celular' },
@@ -68,10 +66,10 @@ const alumnoData = ref({
   name: '',
   surname_father: '',
   surname_mother: '',
-  grade_current:"",
+  grade_current: "",
   birth_date: '',
   dni: '',
-  age:"",
+  age: "",
   address: '',
   sex: '',
   representative_dni: '',

@@ -30,6 +30,11 @@ export default {
   listarAlumnos: (params) => {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/listar-alumnos/`, { params })
   },
+  
+  listarAlumnosExportExcel: (params) => {
+    return axios.get(`${API_URL_DJANGO}/assistances/export-excel/`, { params })
+  },
+
 
   getVAdmin_AlumnoDetail: (alumnoId) => {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/detail-alumno/${alumnoId}/`);

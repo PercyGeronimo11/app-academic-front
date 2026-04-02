@@ -19,3 +19,37 @@ export function formatDatabaseDate(isoString) {
 
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
+
+export const formatDate = (dateStr) => {
+  if (!dateStr) return '-'
+  const date = new Date(dateStr)
+
+  // Fecha: DD/MM/YYYY
+  const day = String(date.getDate()).padStart(2, '0')
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const year = date.getFullYear()
+  const fecha = `${day}/${month}/${year}`
+
+  return fecha
+}
+
+
+export const formatTime = (dateStr) => {
+  if (!dateStr) return '-'
+
+  const date = new Date(dateStr)
+
+  // Hora: HH:mm
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const hora = `${hours}:${minutes}`
+
+  return hora
+}
+
+
+export const fecha_actual = new Date().toLocaleDateString('es-ES', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+})

@@ -30,11 +30,11 @@ const getUserRole = () => {
 const navigateByRole = () => {
   const role = getUserRole()
   
-  if (role == 'Administrador' || role === 'Administrativo') {
+  if (role == 'DIRECCION') {
     router.push('/')
-  } else if (role == 'Profesor') {
+  } else if (role == 'PROFESOR') {
     router.push('/mainAreaTeacher')
-  } else if (role == 'Estudiante') {
+  } else if (role == 'ESTUDIANTE') {
     router.push('/mainArea')
   }
    else {

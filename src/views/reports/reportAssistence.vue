@@ -92,7 +92,7 @@ const generatePDF = () => {
   doc.text(courseName, doc.internal.pageSize.getWidth() / 2, 28, { align: 'center' }); 
 
   // Set table headers and data
-  const headers = ['Estudiante', 'Asistió', 'Faltó', 'Tardanza', 'Falta Justificada'];
+  const headers = ['ESTUDIANTE', 'Asistió', 'Faltó', 'Tardanza', 'Falta Justificada'];
   const data = assistenceData.value.map(student => [
     student.student_name,
     student.assistances.asistio,
