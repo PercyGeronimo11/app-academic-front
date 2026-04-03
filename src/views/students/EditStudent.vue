@@ -266,6 +266,12 @@ const submitToEdit = async () => {
   try {
     calculateAge();
     await StudentService.updateItem(alumnoData.value);
+    await Swal.fire({
+      icon: "success",
+      title: "Estudiante actualizado",
+      text: "Los cambios se guardaron correctamente.",
+      confirmButtonText: "Aceptar",
+    });
     router.push("/students");
   } catch (error) {
     if (error.response && error.response.data && error.response.data.message) {

@@ -69,7 +69,7 @@
                 </CCol>
                 <CCol>
                   <CFormInput
-                    v-model="alumnoData.grade_section_current"
+                    v-model="alumnoData.grade_section_id"
                     label="Grado y sección"
                     placeholder="1° - A"
                     required
@@ -163,18 +163,16 @@
 
 <script setup>
 import StudentService from "@/services/StudentService";
-import { useRoute, useRouter } from "vue-router";
-import { ref, onMounted, watch } from "vue";
+import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 
 const router=useRouter();
-const alumnos = ref([]);
-var searchData = ref("");
 const alumnoData = ref({
   name: "",
   surname_father: "",
   surname_mother: "",
-  grade_section_current: "",
+  grade_section_id: "",
   birth_date: "",
   dni: "",
   age: "",
@@ -231,9 +229,6 @@ const submitToCreate = async () => {
   }
 };
 
-watch(searchData, (newVal) => {
-  listStudentService(newVal);
-});
 </script>
 
 <style>

@@ -4,11 +4,12 @@ const API_URL = import.meta.env.VITE_API_URL;
 const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
 export default {
-  async getItems() {
-    return await axios.get(`${API_URL}/student/list`,{
+  async getItems(params = {}) {
+    return await axios.get(`${API_URL}/student/list`, {
       params: {
         status: 1,
-      }
+        ...params,
+      },
     });
   },
   
