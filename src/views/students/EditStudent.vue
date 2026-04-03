@@ -37,20 +37,19 @@
 
                   <CRow class="mb-3">
                     <CCol>
-                      <CFormInput v-model="alumnoData.grade_section.grade" label="Grado y sección" disabled />
+                      <CFormInput v-model="alumnoData.grade_section.grade" label="Grado" disabled />
                     </CCol>
 
                     <CCol>
-                      <CFormInput v-model="alumnoData.grade_section.section" label="Grado y sección" disabled />
+                      <CFormInput v-model="alumnoData.grade_section.section" label="Sección" disabled />
                     </CCol>
 
                     <CCol>
-                      <CFormInput v-model="alumnoData.birth_date" type="date" label="Fecha de nacimiento" />
+                      <CFormInput v-model="alumnoData.birth_date" type="date" label="Fecha de nacimiento" required />
                     </CCol>
 
                     <CCol>
-                      <CFormSelect v-model="alumnoData.sex" label="Sexo">
-                        <option disabled value="">Seleccionar</option>
+                      <CFormSelect v-model="alumnoData.sex" label="Sexo" required>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                       </CFormSelect>
@@ -65,7 +64,7 @@
 
                   <CRow>
                     <CCol>
-                      <CFormInput v-model="alumnoData.address" label="Dirección" />
+                      <CFormInput v-model="alumnoData.address" label="Dirección (opcional)" />
                     </CCol>
                   </CRow>
                 </CCardBody>
@@ -73,7 +72,7 @@
               <!-- ================= DATOS DEL APODERADO ================= -->
               <CCard class="mb-4">
                 <CCardHeader class="bg-dark text-white">
-                  <strong>Datos del Apoderado</strong>
+                  <strong>Datos del apoderado</strong> <span class="fw-normal small">(opcional)</span>
                 </CCardHeader>
 
                 <CCardBody>
@@ -249,6 +248,9 @@ const getDataStudent = async (id) => {
   try {
     const response = await StudentService.getItem(id);
     alumnoData.value = response.data.data;
+    if (alumnoData.value.sex !== "M" && alumnoData.value.sex !== "F") {
+      alumnoData.value.sex = "M";
+    }
   } catch (error) {
     if (error.response && error.response.data && error.response.data.message) {
       Swal.fire({
@@ -263,6 +265,27 @@ const getDataStudent = async (id) => {
 };
 
 const submitToEdit = async () => {
+  const d = alumnoData.value;
+  if (!String(d.dni || "").trim()) {
+    Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Ingrese el DNI." });
+    return;
+  }
+  if (!String(d.name || "").trim()) {
+    Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Ingrese los nombres." });
+    return;
+  }
+  if (!String(d.surname_father || "").trim() || !String(d.surname_mother || "").trim()) {
+    Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Ingrese apellido paterno y materno." });
+    return;
+  }
+  if (!d.birth_date) {
+    Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Ingrese la fecha de nacimiento." });
+    return;
+  }
+  if (d.sex !== "M" && d.sex !== "F") {
+    Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Seleccione el sexo." });
+    return;
+  }
   try {
     calculateAge();
     await StudentService.updateItem(alumnoData.value);
