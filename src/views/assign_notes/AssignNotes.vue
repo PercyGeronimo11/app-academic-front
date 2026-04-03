@@ -15,19 +15,28 @@
         </CTableRow>
       </CTableHead>
       <CTableBody>
-        <CTableRow v-for="(alumno, index) in items" :key="index">
-          <CTableDataCell>
-            <div class="text-center">{{ alumno.nombre }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <select v-model="alumno.value" @change="updateScore(alumno.id, alumno.value)">
-              <option value="AD">AD</option>
-              <option value="A">A</option>
-              <option value="B">B</option>
-              <option value="C">C</option>
-            </select>
-          </CTableDataCell>
-        </CTableRow>
+        <template v-if="!items.length">
+          <CTableRow>
+            <CTableDataCell colspan="2" class="list-empty-message py-4">
+              No hay registros para mostrar.
+            </CTableDataCell>
+          </CTableRow>
+        </template>
+        <template v-else>
+          <CTableRow v-for="(alumno, index) in items" :key="index">
+            <CTableDataCell>
+              <div class="text-center">{{ alumno.nombre }}</div>
+            </CTableDataCell>
+            <CTableDataCell>
+              <select v-model="alumno.value" @change="updateScore(alumno.id, alumno.value)">
+                <option value="AD">AD</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </CTableDataCell>
+          </CTableRow>
+        </template>
       </CTableBody>
     </CTable>
   </div>

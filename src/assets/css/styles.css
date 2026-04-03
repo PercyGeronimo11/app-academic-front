@@ -38,3 +38,100 @@ body {
   background-color: var(--color-secondary) !important;
   color: #fff !important;
 }
+
+/* Tablas alineadas con ElegantCrudList (lista de estudiantes): contenedor + cabecera + celdas */
+.modern-table-shell {
+  padding: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  color: var(--cui-body-color, #212631);
+  border: 1px solid rgba(23, 111, 182, 0.18);
+  box-shadow:
+    0 4px 18px rgba(23, 111, 182, 0.1),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+}
+
+.modern-table-shell .table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  --cui-table-border-color: #e8edf3;
+}
+
+.modern-table-shell tbody td {
+  border-right: 1px solid #e8edf3;
+  border-bottom: 1px solid #e8edf3;
+  padding: 0.7rem 0.65rem;
+  font-size: 0.875rem;
+  vertical-align: middle;
+}
+
+.modern-table-shell tbody td:last-child {
+  border-right: none;
+}
+
+.modern-table-shell tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.modern-table-shell tbody tr:hover {
+  background-color: rgba(23, 111, 182, 0.06);
+}
+
+/* Cabecera de tabla (misma línea visual que ElegantCrudList / lista de estudiantes) */
+.modern-table-header th {
+  background: #176fb6 !important;
+  color: #fff !important;
+  font-weight: 600;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.75rem 0.65rem !important;
+  border: none !important;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.25) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.2) !important;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.modern-table-header th:last-child {
+  border-right: none !important;
+}
+
+[data-coreui-theme='dark'] .modern-table-shell {
+  background: var(--cui-body-bg, #212631) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  color: var(--cui-body-color, #e7eaee) !important;
+  box-shadow:
+    0 4px 18px rgba(0, 0, 0, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-coreui-theme='dark'] .modern-table-shell tbody td {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+[data-coreui-theme='dark'] .modern-table-shell tbody tr:hover {
+  background-color: rgba(23, 111, 182, 0.14) !important;
+}
+
+[data-coreui-theme='dark'] .modern-table-header th {
+  background: #176fb6 !important;
+  color: #fff !important;
+  border-bottom-color: rgba(255, 255, 255, 0.25) !important;
+  border-right-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Mensaje cuando una tabla no tiene filas (listas, reportes) */
+.list-empty-message {
+  margin: 0;
+  text-align: center;
+  color: var(--cui-secondary-color, #6b7280);
+  font-size: 0.9375rem;
+}
+
+.modern-table-shell .list-empty-message {
+  padding: 1.25rem 0.75rem;
+}

@@ -100,16 +100,25 @@
               </CTableHead>
 
               <CTableBody>
-                <CTableRow v-for="(item, index) in asistencias" :key="index" class="align-middle">
-                  <CTableDataCell class="text-center fw-medium"> {{  formatDate(item.fecha_hora) }}
+                <template v-if="!asistencias.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="3" class="list-empty-message py-4">
+                      No hay registros para mostrar.
                     </CTableDataCell>
-                  <CTableDataCell class="text-center fw-medium">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
-                  <CTableDataCell class="text-center">
-                    <CBadge :color="colorEstado(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
-                      {{ textoEstado(item.estado) }}
-                    </CBadge>
-                  </CTableDataCell>
-                </CTableRow>
+                  </CTableRow>
+                </template>
+                <template v-else>
+                  <CTableRow v-for="(item, index) in asistencias" :key="index" class="align-middle">
+                    <CTableDataCell class="text-center fw-medium"> {{  formatDate(item.fecha_hora) }}
+                      </CTableDataCell>
+                    <CTableDataCell class="text-center fw-medium">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <CBadge :color="colorEstado(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
+                        {{ textoEstado(item.estado) }}
+                      </CBadge>
+                    </CTableDataCell>
+                  </CTableRow>
+                </template>
               </CTableBody>
             </CTable>
 

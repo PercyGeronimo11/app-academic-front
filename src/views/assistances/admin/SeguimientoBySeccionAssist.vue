@@ -69,20 +69,28 @@
                             </CTableHead>
 
                             <CTableBody>
+                                <template v-if="!alumnos.length">
+                                    <CTableRow>
+                                        <CTableDataCell colspan="5" class="list-empty-message py-4">
+                                            No hay registros para mostrar.
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                </template>
+                                <template v-else>
+                                    <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
 
-                                <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
+                                        <CTableDataCell class="fw-semibold">{{ index + 1 }}</CTableDataCell>
+                                        <CTableDataCell class="fw-semibold text-dark">{{ alumno.apellidos }}</CTableDataCell>
+                                        <CTableDataCell>{{ alumno.nombre }}</CTableDataCell>
+                                        <CTableDataCell>
+                                            <CBadge :color="colorEstado(alumno.estado)" class="px-3 py-2">
+                                                {{ textoEstado(alumno.estado) }}
+                                            </CBadge>
+                                        </CTableDataCell>
+                                        <CTableDataCell class="text-center fw-medium">{{ alumno.estado === 'F' ? '--' : formatTime(alumno.hora) }}</CTableDataCell>
 
-                                    <CTableDataCell class="fw-semibold">{{ index + 1 }}</CTableDataCell>
-                                    <CTableDataCell class="fw-semibold text-dark">{{ alumno.apellidos }}</CTableDataCell>
-                                    <CTableDataCell>{{ alumno.nombre }}</CTableDataCell>
-                                    <CTableDataCell>
-                                        <CBadge :color="colorEstado(alumno.estado)" class="px-3 py-2">
-                                            {{ textoEstado(alumno.estado) }}
-                                        </CBadge>
-                                    </CTableDataCell>
-                                    <CTableDataCell class="text-center fw-medium">{{ alumno.estado === 'F' ? '--' : formatTime(alumno.hora) }}</CTableDataCell>
-                                  
-                                </CTableRow>
+                                    </CTableRow>
+                                </template>
                             </CTableBody>
                         </CTable>
                     </CCardBody>

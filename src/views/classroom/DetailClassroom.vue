@@ -34,20 +34,29 @@
         </CTableRow>
       </CTableHead>
       <CTableBody>
-        <CTableRow v-for="item in listStudents" :key="item.name">
-          <CTableDataCell>
-            <div class="text-center">{{ item.id }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.name }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.dni }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ item.representative_phone }}</div>
-          </CTableDataCell>
-        </CTableRow>
+        <template v-if="!listStudents.length">
+          <CTableRow>
+            <CTableDataCell colspan="4" class="list-empty-message py-4">
+              No hay registros para mostrar.
+            </CTableDataCell>
+          </CTableRow>
+        </template>
+        <template v-else>
+          <CTableRow v-for="item in listStudents" :key="item.name">
+            <CTableDataCell>
+              <div class="text-center">{{ item.id }}</div>
+            </CTableDataCell>
+            <CTableDataCell>
+              <div class="text-center">{{ item.name }}</div>
+            </CTableDataCell>
+            <CTableDataCell>
+              <div class="text-center">{{ item.dni }}</div>
+            </CTableDataCell>
+            <CTableDataCell>
+              <div class="text-center">{{ item.representative_phone }}</div>
+            </CTableDataCell>
+          </CTableRow>
+        </template>
       </CTableBody>
     </CTable>
 

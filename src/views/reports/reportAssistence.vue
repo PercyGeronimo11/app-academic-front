@@ -5,7 +5,11 @@
     </CButton>
     <h1 class="report-title">Reporte de Asistencia</h1>
 
-    <div v-if="assistenceData.length > 0">
+    <div v-if="loading" class="loading-container">
+      <p class="loading-text">Cargando...</p>
+    </div>
+
+    <div v-else-if="assistenceData.length > 0">
       <div class="table-wrapper">
         <table class="attendance-table">
           <thead>
@@ -30,9 +34,9 @@
       </div>
     </div>
 
-    <div v-else class="loading-container">
-      <p class="loading-text">Cargando...</p>
-    </div>
+    <p v-else class="list-empty-message py-4 text-center">
+      No hay registros para mostrar.
+    </p>
     <div class="div-pdf" v-if="assistenceData.length > 0">
       <CButton color="primary" @click="generatePDF" class="pdf-button">
         Generar PDF
@@ -57,8 +61,10 @@ const router = useRouter()
 
 const course_class_id = ref(Number(route.params.course_class_id) || 0)
 const assistenceData = ref([])
+const loading = ref(true)
 
 const fetchData = async () => {
+  loading.value = true
   if (course_class_id.value) {
     try {
       const response = await AssistanceService.getReport(course_class_id.value)
@@ -70,6 +76,7 @@ const fetchData = async () => {
       console.error("Error al cargar los datos:", error)
     }
   }
+  loading.value = false
 }
 
 const goBack = () => {

@@ -1,6 +1,9 @@
 <template>
   <div class="modern-list-wrapper">
-    <div class="modern-table">
+    <div v-if="!hasRows" class="modern-list-empty" role="status">
+      <p class="list-empty-message mb-0">{{ emptyMessage }}</p>
+    </div>
+    <div v-else class="modern-table">
       <!-- Encabezados -->
       <div class="table-row table-header">
         <div
@@ -39,8 +42,7 @@
 
           <!-- Checkbox -->
           <input
-            v-else-if="column.key === 'checkbox'"
-            v-if="props.selectable"
+            v-else-if="column.key === 'checkbox' && props.selectable"
             type="checkbox"
             class="checkbox"
             :checked="isSelected(item)"
@@ -95,10 +97,13 @@ import { ref, computed, watch } from 'vue'
 const props = defineProps({
   columns: { type: Array, default: () => [] },
   data: { type: Array, default: () => [] },
+  emptyMessage: { type: String, default: 'No hay registros para mostrar.' },
   selectable: { type: Boolean, default: false },
   selected: { type: Array, default: () => [] },
   rowKey: { type: String, default: 'id' }
 })
+
+const hasRows = computed(() => Array.isArray(props.data) && props.data.length > 0)
 
 const emit = defineEmits(['update:selected', 'row-click'])
 
@@ -165,6 +170,11 @@ function getInitials(item) {
 
 <style scoped>
 /* Misma línea visual que TramiteListShell / tablas FUT */
+.modern-list-empty {
+  padding: 1.35rem 1rem;
+  text-align: center;
+}
+
 .modern-list-wrapper {
   padding: 0;
   border-radius: 12px;

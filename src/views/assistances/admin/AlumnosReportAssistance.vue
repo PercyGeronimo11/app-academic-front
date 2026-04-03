@@ -91,9 +91,10 @@
                     </div>
                 </CCardHeader>
                 <CCardBody>
+                    <div class="modern-table-shell">
                     <CTable hover responsive align="middle" class="mb-0 text-center">
 
-                        <CTableHead color="dark">
+                        <CTableHead class="modern-table-header text-center">
                             <CTableRow>
                                 <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
@@ -107,43 +108,53 @@
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
-                            <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
-                                <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
-                                <CTableDataCell class="fw-semibold">{{ alumno.apellidos }}</CTableDataCell>
-                                <CTableDataCell>{{ alumno.nombres }}</CTableDataCell>
-                                <CTableDataCell class="text-center">{{ alumno.grade }}°
-                                </CTableDataCell>
-                                <CTableDataCell class="text-center">{{ alumno.section }}
-                                </CTableDataCell>
-                                <CTableDataCell>
-                                    <CBadge color="success" class="px-3 py-1 fs-6">{{ alumno.total_asistencias }}
-                                    </CBadge>
-                                </CTableDataCell>
-                                <CTableDataCell>
-                                    <CBadge color="warning" class="px-3 py-1 fs-6">{{ alumno.total_tardanzas }}</CBadge>
-                                </CTableDataCell>
-                                <CTableDataCell>
-                                    <CBadge color="danger" class="px-3 py-1 fs-6">{{ alumno.total_faltas }}</CBadge>
-                                </CTableDataCell>
+                            <template v-if="!alumnos.length">
+                                <CTableRow>
+                                    <CTableDataCell colspan="9" class="list-empty-message py-4">
+                                        No hay registros para mostrar.
+                                    </CTableDataCell>
+                                </CTableRow>
+                            </template>
+                            <template v-else>
+                                <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
+                                    <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
+                                    <CTableDataCell class="fw-semibold">{{ alumno.apellidos }}</CTableDataCell>
+                                    <CTableDataCell>{{ alumno.nombres }}</CTableDataCell>
+                                    <CTableDataCell class="text-center">{{ alumno.grade }}°
+                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center">{{ alumno.section }}
+                                    </CTableDataCell>
+                                    <CTableDataCell>
+                                        <CBadge color="success" class="px-3 py-1 fs-6">{{ alumno.total_asistencias }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell>
+                                        <CBadge color="warning" class="px-3 py-1 fs-6">{{ alumno.total_tardanzas }}</CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell>
+                                        <CBadge color="danger" class="px-3 py-1 fs-6">{{ alumno.total_faltas }}</CBadge>
+                                    </CTableDataCell>
 
-                                <CTableDataCell class="text-center">
-                                    <i class="fas fa-eye text-primary mx-2" style="cursor:pointer; font-size:16px"
-                                        v-c-tooltip="{
-                                            content: 'Ver detalle',
-                                            placement: 'top'
-                                        }" @click="verDetalle(alumno)"></i>
+                                    <CTableDataCell class="text-center">
+                                        <i class="fas fa-eye text-primary mx-2" style="cursor:pointer; font-size:16px"
+                                            v-c-tooltip="{
+                                                content: 'Ver detalle',
+                                                placement: 'top'
+                                            }" @click="verDetalle(alumno)"></i>
 
-                                    <i class="fas fa-chart-line text-success mx-2"
-                                        style="cursor:pointer; font-size:16px" v-c-tooltip="{
-                                            content: 'Ver gráfico',
-                                            placement: 'top'
-                                        }" @click="verDashboard(alumno)"></i>
+                                        <i class="fas fa-chart-line text-success mx-2"
+                                            style="cursor:pointer; font-size:16px" v-c-tooltip="{
+                                                content: 'Ver gráfico',
+                                                placement: 'top'
+                                            }" @click="verDashboard(alumno)"></i>
 
-                                </CTableDataCell>
-                            </CTableRow>
+                                    </CTableDataCell>
+                                </CTableRow>
+                            </template>
                         </CTableBody>
 
                     </CTable>
+                    </div>
 
                     <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">
                         <CButton color="primary" variant="outline" :disabled="!previousPage"

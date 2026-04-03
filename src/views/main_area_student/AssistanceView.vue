@@ -23,24 +23,33 @@
         </CTableRow>
       </CTableHead>
       <CTableBody>
-        <CTableRow v-for="assistance in assistances" :key="assistance.id">
-          <CTableDataCell>
-            <div class="text-center">{{ assistance.date_assistance }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ assistance.hour_start }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">{{ assistance.hour_end }}</div>
-          </CTableDataCell>
-          <CTableDataCell>
-            <div class="text-center">
-              <span :class="getStatusClass(assistance.status)">
-                {{ assistance.status }}
-              </span>
-            </div>
-          </CTableDataCell>
-        </CTableRow>
+        <template v-if="!assistances.length">
+          <CTableRow>
+            <CTableDataCell colspan="4" class="list-empty-message py-4">
+              No hay registros para mostrar.
+            </CTableDataCell>
+          </CTableRow>
+        </template>
+        <template v-else>
+          <CTableRow v-for="assistance in assistances" :key="assistance.id">
+            <CTableDataCell>
+              <div class="text-center">{{ assistance.date_assistance }}</div>
+            </CTableDataCell>
+            <CTableDataCell>
+              <div class="text-center">{{ assistance.hour_start }}</div>
+            </CTableDataCell>
+            <CTableDataCell>
+              <div class="text-center">{{ assistance.hour_end }}</div>
+            </CTableDataCell>
+            <CTableDataCell>
+              <div class="text-center">
+                <span :class="getStatusClass(assistance.status)">
+                  {{ assistance.status }}
+                </span>
+              </div>
+            </CTableDataCell>
+          </CTableRow>
+        </template>
       </CTableBody>
     </CTable>
   </div>

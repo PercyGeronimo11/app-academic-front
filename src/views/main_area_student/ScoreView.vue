@@ -28,20 +28,29 @@
           </CTableRow>
         </CTableHead>
         <CTableBody>
-          <CTableRow v-for="(score, index) in scores" :key="score.task_id">
-            <CTableDataCell>
-              <div class="text-center">{{ index+1 }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ score.unit_id }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ score.title }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ score.score!=''?score.score:'---' }}</div>
-            </CTableDataCell>
-          </CTableRow>
+          <template v-if="!scores.length">
+            <CTableRow>
+              <CTableDataCell colspan="4" class="list-empty-message py-4">
+                No hay registros para mostrar.
+              </CTableDataCell>
+            </CTableRow>
+          </template>
+          <template v-else>
+            <CTableRow v-for="(score, index) in scores" :key="score.task_id">
+              <CTableDataCell>
+                <div class="text-center">{{ index+1 }}</div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div class="text-center">{{ score.unit_id }}</div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div class="text-center">{{ score.title }}</div>
+              </CTableDataCell>
+              <CTableDataCell>
+                <div class="text-center">{{ score.score!=''?score.score:'---' }}</div>
+              </CTableDataCell>
+            </CTableRow>
+          </template>
         </CTableBody>
       </CTable>
     </div>

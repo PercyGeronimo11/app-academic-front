@@ -19,28 +19,37 @@
         </CTableRow>
       </CTableHead>
       <CTableBody>
-        <CTableRow v-for="(item, index) in assistances" :key="item.date_assistance">
-          <CTableDataCell class="text-center">{{ index + 1 }}</CTableDataCell>
-          <CTableDataCell class="text-center">{{ item.date_assistance }}</CTableDataCell>
-          <CTableDataCell class="text-center">{{
-            item.horary_data.hour_start
-          }}</CTableDataCell>
-          <CTableDataCell class="text-center">{{
-            item.horary_data.hour_end
-          }}</CTableDataCell>
-          <CTableDataCell class="text-center">{{
-            item.horary_data.day_week
-          }}</CTableDataCell>
-          <CTableDataCell class="text-center">
-            <CButton
-              color="info"
-              class="text-white"
-              @click="showStudentAssistances(item.date_assistance)"
-            >
-              Ver Asistencias
-            </CButton>
-          </CTableDataCell>
-        </CTableRow>
+        <template v-if="!assistances.length">
+          <CTableRow>
+            <CTableDataCell colspan="6" class="list-empty-message py-4">
+              No hay registros para mostrar.
+            </CTableDataCell>
+          </CTableRow>
+        </template>
+        <template v-else>
+          <CTableRow v-for="(item, index) in assistances" :key="item.date_assistance">
+            <CTableDataCell class="text-center">{{ index + 1 }}</CTableDataCell>
+            <CTableDataCell class="text-center">{{ item.date_assistance }}</CTableDataCell>
+            <CTableDataCell class="text-center">{{
+              item.horary_data.hour_start
+            }}</CTableDataCell>
+            <CTableDataCell class="text-center">{{
+              item.horary_data.hour_end
+            }}</CTableDataCell>
+            <CTableDataCell class="text-center">{{
+              item.horary_data.day_week
+            }}</CTableDataCell>
+            <CTableDataCell class="text-center">
+              <CButton
+                color="info"
+                class="text-white"
+                @click="showStudentAssistances(item.date_assistance)"
+              >
+                Ver Asistencias
+              </CButton>
+            </CTableDataCell>
+          </CTableRow>
+        </template>
       </CTableBody>
     </CTable>
     <div class="mt-4 flex justify-end">

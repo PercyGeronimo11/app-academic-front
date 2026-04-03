@@ -84,29 +84,38 @@
             </CTableHead>
 
             <CTableBody>
-              <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
-                <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
-                <CTableDataCell class="fw-semibold text-left">{{ alumno.apellidos }}</CTableDataCell>
-                <CTableDataCell class="text-left">{{ alumno.nombres }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ alumno.grade }}° </CTableDataCell>
-                <CTableDataCell class="text-center"> {{ alumno.section }} </CTableDataCell>
+              <template v-if="!alumnos.length">
+                <CTableRow>
+                  <CTableDataCell colspan="7" class="list-empty-message py-4">
+                    No hay registros para mostrar.
+                  </CTableDataCell>
+                </CTableRow>
+              </template>
+              <template v-else>
+                <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
+                  <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
+                  <CTableDataCell class="fw-semibold text-left">{{ alumno.apellidos }}</CTableDataCell>
+                  <CTableDataCell class="text-left">{{ alumno.nombres }}</CTableDataCell>
+                  <CTableDataCell class="text-center">{{ alumno.grade }}° </CTableDataCell>
+                  <CTableDataCell class="text-center"> {{ alumno.section }} </CTableDataCell>
 
-                <CTableDataCell class="text-center">
-                  <CBadge :color="colorEstado(alumno.asistencia_estado)" class="px-3 py-2">
-                    {{ textoEstado(alumno.asistencia_estado) }}
-                  </CBadge>
-                </CTableDataCell>
+                  <CTableDataCell class="text-center">
+                    <CBadge :color="colorEstado(alumno.asistencia_estado)" class="px-3 py-2">
+                      {{ textoEstado(alumno.asistencia_estado) }}
+                    </CBadge>
+                  </CTableDataCell>
 
-                <CTableDataCell class="text-center">
-                  <i class="fas fa-user-check"
-                    :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'" :style="{
-                      cursor: alumno.asistencia_estado === 'F' ? 'pointer' : 'not-allowed',
-                      fontSize: '16px',
-                      opacity: alumno.asistencia_estado === 'F' ? 1 : 0.5
-                    }" @click="abrirModalAsistencia(alumno)"></i>
+                  <CTableDataCell class="text-center">
+                    <i class="fas fa-user-check"
+                      :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'" :style="{
+                        cursor: alumno.asistencia_estado === 'F' ? 'pointer' : 'not-allowed',
+                        fontSize: '16px',
+                        opacity: alumno.asistencia_estado === 'F' ? 1 : 0.5
+                      }" @click="abrirModalAsistencia(alumno)"></i>
 
-                </CTableDataCell>
-              </CTableRow>
+                  </CTableDataCell>
+                </CTableRow>
+              </template>
             </CTableBody>
 
           </CTable>

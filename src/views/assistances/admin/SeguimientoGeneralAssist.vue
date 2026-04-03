@@ -103,8 +103,9 @@
 
           <!-- BODY -->
           <CCardBody class="p-0">
+            <div class="modern-table-shell">
             <CTable hover responsive align="middle" class="mb-0 text-center">
-              <CTableHead class="table-dark text-center">
+              <CTableHead class="modern-table-header text-center">
                 <CTableRow>
                   <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
                   <CTableHeaderCell class="text-center">Total</CTableHeaderCell>
@@ -117,41 +118,51 @@
 
               <!-- CUERPO -->
               <CTableBody>
-                <CTableRow v-for="item in secciones" :key="item.id">
+                <template v-if="!secciones.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="6" class="list-empty-message py-4">
+                      No hay registros para mostrar.
+                    </CTableDataCell>
+                  </CTableRow>
+                </template>
+                <template v-else>
+                  <CTableRow v-for="item in secciones" :key="item.id">
 
-                  <CTableDataCell class="fw-semibold text-center">
-                    {{ item.grado }}° {{ item.seccion }}
-                  </CTableDataCell>
+                    <CTableDataCell class="fw-semibold text-center">
+                      {{ item.grado }}° {{ item.seccion }}
+                    </CTableDataCell>
 
-                  <CTableDataCell>
-                    <CBadge color="primary" class="px-3 py-1 fs-6">
-                      {{ item.total }}
-                    </CBadge>
-                  </CTableDataCell>
+                    <CTableDataCell>
+                      <CBadge color="primary" class="px-3 py-1 fs-6">
+                        {{ item.total }}
+                      </CBadge>
+                    </CTableDataCell>
 
-                  <CTableDataCell>
-                    <CBadge color="success" class="px-3 py-1 fs-6">
-                      {{ item.asistencias }}
-                    </CBadge>
-                  </CTableDataCell>
+                    <CTableDataCell>
+                      <CBadge color="success" class="px-3 py-1 fs-6">
+                        {{ item.asistencias }}
+                      </CBadge>
+                    </CTableDataCell>
 
-                  <CTableDataCell>
-                    <CBadge color="warning" class="px-3 py-1 fs-6">
-                      {{ item.tardanzas }}
-                    </CBadge>
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <CBadge color="danger" class="px-3 py-1 fs-6">
-                      {{ item.faltas }}
-                    </CBadge>
-                  </CTableDataCell>
-                  <CTableDataCell>
-                    <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
-                      @click="verDetalle(item)"></i>
-                  </CTableDataCell>
-                </CTableRow>
+                    <CTableDataCell>
+                      <CBadge color="warning" class="px-3 py-1 fs-6">
+                        {{ item.tardanzas }}
+                      </CBadge>
+                    </CTableDataCell>
+                    <CTableDataCell>
+                      <CBadge color="danger" class="px-3 py-1 fs-6">
+                        {{ item.faltas }}
+                      </CBadge>
+                    </CTableDataCell>
+                    <CTableDataCell>
+                      <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
+                        @click="verDetalle(item)"></i>
+                    </CTableDataCell>
+                  </CTableRow>
+                </template>
               </CTableBody>
             </CTable>
+            </div>
           </CCardBody>
         </CCard>
       </CCol>
@@ -206,4 +217,3 @@ onMounted(() => {
 })
 
 </script>
-<style scoped></style>
