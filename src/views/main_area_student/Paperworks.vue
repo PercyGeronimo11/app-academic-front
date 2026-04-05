@@ -1,106 +1,122 @@
 <template>
-  <CardComponent title="Trámites del Estudiante" style="margin: 20px 10px">
-    <TramiteListShell>
-      <template #toolbar>
-        <CRow class="align-items-center g-2">
-          <CCol cols="12" md="auto">
-            <CButton type="button" color="primary" class="px-4" @click="newPaperwork">
-              <CIcon class="me-2" icon="cil-file" size="sm" />
-              Nuevo trámite
-            </CButton>
-          </CCol>
-        </CRow>
-      </template>
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
+              <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
+                <i class="fas fa-file-alt me-2"></i>
+                Trámites del estudiante
+              </h4>
+              <CButton type="button" color="primary" class="px-4" @click="newPaperwork">
+                <CIcon class="me-2" icon="cil-file" size="sm" />
+                Nuevo trámite
+              </CButton>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-      <CTable responsive hover class="align-middle mb-0">
-        <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell
-              v-for="h in tableHeaders"
-              :key="h"
-              scope="col"
-              class="text-center"
-            >
-              {{ h }}
-            </CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody v-if="!tableItems.length">
-          <CTableRow>
-            <CTableDataCell colspan="6" class="tls-empty-cell">
-              <div class="tls-empty">
-                <span class="tls-empty__icon" aria-hidden="true">📋</span>
-                <p class="mb-1 fw-semibold">Aún no registras trámites</p>
-                <p class="mb-0 small text-body-secondary">
-                  Usa <strong>Nuevo trámite</strong> para generar tu solicitud en formato FUT.
-                </p>
-              </div>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-        <CTableBody v-else>
-          <template v-for="(item, index) in tableItems" :key="item.id">
-            <CTableRow>
-              <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
-                {{ index + 1 }}
-              </CTableHeaderCell>
-              <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
-              <CTableDataCell class="text-center fw-medium">{{ item.responsible }}</CTableDataCell>
-              <CTableDataCell class="text-center">
-                <TramiteStatusBadge :status="item.status" />
-              </CTableDataCell>
-              <CTableDataCell class="text-center">
-                <CButton
-                  color="primary"
-                  size="sm"
-                  variant="outline"
-                  class="px-3"
-                  :aria-label="`Ver documento FUT del trámite ${item.id}`"
-                  @click="openPdfPreview(item)"
-                >
-                  <i class="fas fa-eye" aria-hidden="true"></i>
-                </CButton>
-              </CTableDataCell>
-              <CTableDataCell class="text-center">
-                <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
-                  <CButton
-                    color="secondary"
-                    size="sm"
-                    variant="outline"
-                    class="px-2"
-                    :aria-expanded="!!expanded[item.id]"
-                    :aria-label="expanded[item.id] ? 'Ocultar historial de estados' : 'Desplegar historial de estados'"
-                    @click="toggle(item.id)"
-                  >
-                    <i
-                      class="fas fa-chevron-down expand-chevron"
-                      :class="{ 'expand-chevron--open': expanded[item.id] }"
-                      aria-hidden="true"
-                    ></i>
-                  </CButton>
-                  <CButton
-                    v-if="canEditPaperwork(item.status)"
-                    color="warning"
-                    size="sm"
-                    @click="editPaperwork(item)"
-                  >
-                    Subsanar
-                  </CButton>
-                </div>
-              </CTableDataCell>
-            </CTableRow>
-            <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
-              <CTableDataCell colspan="6" class="p-0 border-0">
-                <div class="tls-expand-inner">
-                  <TramiteHistory :steps="item.status_history" />
-                </div>
-              </CTableDataCell>
-            </CTableRow>
-          </template>
-        </CTableBody>
-      </CTable>
-    </TramiteListShell>
-  </CardComponent>
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="modern-table-shell">
+              <CTable responsive hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header text-center">
+                  <CTableRow>
+                    <CTableHeaderCell
+                      v-for="h in tableHeaders"
+                      :key="h"
+                      scope="col"
+                      class="text-center"
+                    >
+                      {{ h }}
+                    </CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody v-if="!tableItems.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="6" class="table-empty-cell">
+                      <div class="table-empty-unified">
+                        <span class="table-empty-unified__icon" aria-hidden="true">📋</span>
+                        <p class="table-empty-unified__title">Aún no registras trámites</p>
+                        <p class="table-empty-unified__hint">
+                          Usa <strong>Nuevo trámite</strong> para generar tu solicitud en formato FUT.
+                        </p>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+                <CTableBody v-else>
+                  <template v-for="(item, index) in tableItems" :key="item.id">
+                    <CTableRow>
+                      <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
+                        {{ index + 1 }}
+                      </CTableHeaderCell>
+                      <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
+                      <CTableDataCell class="text-center fw-medium">{{ item.responsible }}</CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <TramiteStatusBadge :status="item.status" />
+                      </CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <CButton
+                          color="primary"
+                          size="sm"
+                          variant="outline"
+                          class="px-3"
+                          :aria-label="`Ver documento FUT del trámite ${item.id}`"
+                          @click="openPdfPreview(item)"
+                        >
+                          <i class="fas fa-eye" aria-hidden="true"></i>
+                        </CButton>
+                      </CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <div class="d-flex align-items-center justify-content-center gap-2 flex-wrap">
+                          <CButton
+                            color="secondary"
+                            size="sm"
+                            variant="outline"
+                            class="px-2"
+                            :aria-expanded="!!expanded[item.id]"
+                            :aria-label="expanded[item.id] ? 'Ocultar historial de estados' : 'Desplegar historial de estados'"
+                            @click="toggle(item.id)"
+                          >
+                            <i
+                              class="fas fa-chevron-down expand-chevron"
+                              :class="{ 'expand-chevron--open': expanded[item.id] }"
+                              aria-hidden="true"
+                            ></i>
+                          </CButton>
+                          <CButton
+                            v-if="canEditPaperwork(item.status)"
+                            color="warning"
+                            size="sm"
+                            @click="editPaperwork(item)"
+                          >
+                            Subsanar
+                          </CButton>
+                        </div>
+                      </CTableDataCell>
+                    </CTableRow>
+                    <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
+                      <CTableDataCell colspan="6" class="p-0 border-0">
+                        <div class="tls-expand-inner">
+                          <TramiteHistory :steps="item.status_history" />
+                        </div>
+                      </CTableDataCell>
+                    </CTableRow>
+                  </template>
+                </CTableBody>
+              </CTable>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
 
     <ModalPaperwork
       v-model:isOpenModal="isOpenModalPaperwork"
@@ -121,8 +137,6 @@
 <script setup>
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import Swal from 'sweetalert2';
-import CardComponent from '../../components/cruds/CardComponent.vue';
-import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import TramiteHistory from '@/components/paperworks/TramiteHistory.vue';
 import TramiteStatusBadge from '@/components/paperworks/TramiteStatusBadge.vue';
 import TramitePdfPreviewModal from '@/components/paperworks/TramitePdfPreviewModal.vue';

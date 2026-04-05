@@ -1,46 +1,73 @@
 <template>
-  <div>
-    <CardComponent title="Lista de Administrativos" style="margin: 20px 10px;">
-      <TramiteListShell>
-        <template #toolbar>
-          <div class="box-tools">
-            <CRow class="mb-3">
-              <CCol>
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <div class="mb-3">
+              <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
+                <i class="fas fa-user-tie me-2"></i>
+                Lista de administrativos
+              </h4>
+            </div>
+            <CRow class="g-2 align-items-end">
+              <CCol xs="12" md>
                 <CInputGroup>
-                  <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-                    aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-                  <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+                  <CFormInput
+                    v-model="searchData"
+                    placeholder="Buscar por apellido, nombre o DNI"
+                    aria-label="Buscar por apellido, nombre o DNI"
+                    aria-describedby="button-addon2"
+                  />
+                  <CButton
+                    type="button"
+                    color="primary"
+                    id="button-addon2"
+                    @click="listAdministrativeService(searchData)"
+                  >
+                    Buscar
+                  </CButton>
                 </CInputGroup>
               </CCol>
-              <CCol></CCol>
-              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <CRow class="mb-3">
-                  <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <ImportDataModal descripcion="Alumnos" />
-                  </CCol>
-                  <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-                    <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
-                  </CCol>
-                </CRow>
+              <CCol xs="12" md="auto" class="d-flex flex-wrap gap-2 justify-content-md-end">
+                <ImportDataModal descripcion="Alumnos" />
+                <CButton color="info" class="text-white" @click="openCreateModal()">Nuevo</CButton>
               </CCol>
             </CRow>
-          </div>
-        </template>
-      <ElegantCrudList :columns="listColumns" :data="teachers">
-        <template #actions="{ item }">
-          <div class="d-flex gap-2">
-            <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-              <CIcon :content="cilPencil" size="lg"></CIcon>
-            </CButton>
-            <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-              <CIcon :content="cilTrash" size="lg"></CIcon>
-            </CButton>
-          </div>
-        </template>
-      </ElegantCrudList>
-      </TramiteListShell>
-      
-    </CardComponent>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="list-with-pagination-wrap">
+              <ElegantCrudList
+                :columns="listColumns"
+                :data="teachers"
+                empty-message="No hay administrativos para mostrar."
+                empty-hint="Prueba otra búsqueda o usa «Nuevo» para registrar un administrativo."
+                empty-icon="👔"
+              >
+              <template #actions="{ item }">
+                <div class="d-flex gap-2">
+                  <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+                    <CIcon :content="cilPencil" size="lg"></CIcon>
+                  </CButton>
+                  <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+                    <CIcon :content="cilTrash" size="lg"></CIcon>
+                  </CButton>
+                </div>
+              </template>
+            </ElegantCrudList>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
 
     <!-- Modal para Crear/Editar Profesor -->
     <CModal :visible="isModalOpen" scrollable size="lg" @close="() => { isModalOpen = false }"
@@ -107,17 +134,14 @@
         </CButton>
       </CModalFooter>
     </CModal>
-  </div>
 </template>
 
 <script setup>
 import AdministrativeService from '@/services/AdministrativeService'
 import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
-import CardComponent from '../../components/cruds/CardComponent.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
 import ElegantCrudList from '../../components/cruds/ElegantCrudList.vue';
-import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import ImportDataModal from '@/components/modals/ImportDataModal.vue';
 
 const listColumns = ref([

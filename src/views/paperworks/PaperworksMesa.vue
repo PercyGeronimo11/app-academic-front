@@ -1,112 +1,128 @@
 <template>
-  <CardComponent title="Trámites — MESA_PARTES" style="margin: 20px 10px">
-    <TramiteListShell>
-      <template #intro>
-        <p class="tls-intro-text mb-0">
-          Revisa solicitudes FUT: aprueba para enviar a administración o observa para que el estudiante subsane.
-        </p>
-      </template>
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <h4 class="fw-bold text-primary mb-2 d-flex align-items-center">
+              <i class="fas fa-inbox me-2"></i>
+              Trámites — Mesa de partes
+            </h4>
+            <p class="tls-intro-text mb-0 text-body-secondary small">
+              Revisa solicitudes FUT: aprueba para enviar a administración o observa para que el estudiante subsane.
+            </p>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-      <CTable responsive hover class="align-middle mb-0">
-        <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Solicitante</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">FUT</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody v-if="!items.length">
-          <CTableRow>
-            <CTableDataCell colspan="8" class="tls-empty-cell">
-              <div class="tls-empty">
-                <span class="tls-empty__icon" aria-hidden="true">📭</span>
-                <p class="mb-1 fw-semibold">No hay trámites en esta bandeja</p>
-                <p class="mb-0 small text-body-secondary">
-                  Cuando los estudiantes envíen solicitudes, aparecerán aquí.
-                </p>
-              </div>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-        <CTableBody v-else>
-          <template v-for="(item, index) in items" :key="item.id">
-            <CTableRow>
-              <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
-                {{ index + 1 }}
-              </CTableHeaderCell>
-              <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
-              <CTableDataCell class="text-center fw-medium">{{ item.names }}</CTableDataCell>
-              <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
-              <CTableDataCell class="text-start small">{{ truncate(item.reason, 80) }}</CTableDataCell>
-              <CTableDataCell class="text-center">
-                <TramiteStatusBadge :status="item.status" />
-              </CTableDataCell>
-              <CTableDataCell class="text-center">
-                <CButton
-                  color="primary"
-                  size="sm"
-                  variant="outline"
-                  class="px-3"
-                  :aria-label="`Ver documento FUT del trámite ${item.id}`"
-                  @click="openPdfPreview(item)"
-                >
-                  <i class="fas fa-eye" aria-hidden="true"></i>
-                </CButton>
-              </CTableDataCell>
-              <CTableDataCell class="text-center">
-                <div class="d-flex gap-1 flex-wrap justify-content-center align-items-center">
-                  <CButton color="success" size="sm" @click="approve(item.id)">Aprobar</CButton>
-                  <CButton color="warning" size="sm" @click="openObserve(item)">Observar</CButton>
-                  <CButton
-                    color="secondary"
-                    size="sm"
-                    variant="outline"
-                    class="px-2"
-                    :aria-expanded="!!expanded[item.id]"
-                    :aria-label="expanded[item.id] ? 'Ocultar historial' : 'Desplegar historial'"
-                    @click="toggle(item.id)"
-                  >
-                    <i
-                      class="fas fa-chevron-down expand-chevron"
-                      :class="{ 'expand-chevron--open': expanded[item.id] }"
-                      aria-hidden="true"
-                    ></i>
-                  </CButton>
-                </div>
-              </CTableDataCell>
-            </CTableRow>
-            <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
-              <CTableDataCell colspan="8" class="p-0 border-0">
-                <div class="tls-expand-inner">
-                  <TramiteHistory :steps="item.status_history" />
-                </div>
-              </CTableDataCell>
-            </CTableRow>
-          </template>
-        </CTableBody>
-      </CTable>
-    </TramiteListShell>
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="modern-table-shell">
+              <CTable responsive hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header text-center">
+                  <CTableRow>
+                    <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Solicitante</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">FUT</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+                <CTableBody v-if="!items.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="8" class="table-empty-cell">
+                      <div class="table-empty-unified">
+                        <span class="table-empty-unified__icon" aria-hidden="true">📭</span>
+                        <p class="table-empty-unified__title">No hay trámites en esta bandeja</p>
+                        <p class="table-empty-unified__hint">
+                          Cuando los estudiantes envíen solicitudes, aparecerán aquí.
+                        </p>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+                <CTableBody v-else>
+                  <template v-for="(item, index) in items" :key="item.id">
+                    <CTableRow>
+                      <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
+                        {{ index + 1 }}
+                      </CTableHeaderCell>
+                      <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
+                      <CTableDataCell class="text-center fw-medium">{{ item.names }}</CTableDataCell>
+                      <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
+                      <CTableDataCell class="text-start small">{{ truncate(item.reason, 80) }}</CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <TramiteStatusBadge :status="item.status" />
+                      </CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <CButton
+                          color="primary"
+                          size="sm"
+                          variant="outline"
+                          class="px-3"
+                          :aria-label="`Ver documento FUT del trámite ${item.id}`"
+                          @click="openPdfPreview(item)"
+                        >
+                          <i class="fas fa-eye" aria-hidden="true"></i>
+                        </CButton>
+                      </CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <div class="d-flex gap-1 flex-wrap justify-content-center align-items-center">
+                          <CButton color="success" size="sm" @click="approve(item.id)">Aprobar</CButton>
+                          <CButton color="warning" size="sm" @click="openObserve(item)">Observar</CButton>
+                          <CButton
+                            color="secondary"
+                            size="sm"
+                            variant="outline"
+                            class="px-2"
+                            :aria-expanded="!!expanded[item.id]"
+                            :aria-label="expanded[item.id] ? 'Ocultar historial' : 'Desplegar historial'"
+                            @click="toggle(item.id)"
+                          >
+                            <i
+                              class="fas fa-chevron-down expand-chevron"
+                              :class="{ 'expand-chevron--open': expanded[item.id] }"
+                              aria-hidden="true"
+                            ></i>
+                          </CButton>
+                        </div>
+                      </CTableDataCell>
+                    </CTableRow>
+                    <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
+                      <CTableDataCell colspan="8" class="p-0 border-0">
+                        <div class="tls-expand-inner">
+                          <TramiteHistory :steps="item.status_history" />
+                        </div>
+                      </CTableDataCell>
+                    </CTableRow>
+                  </template>
+                </CTableBody>
+              </CTable>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
 
-    <TramitePdfPreviewModal
-      :visible="pdfModalVisible"
-      :loading="pdfLoading"
-      :pdf-object-url="pdfObjectUrl"
-      :observations="pdfModalObservations"
-      @close="closePdfModal"
-    />
-  </CardComponent>
+  <TramitePdfPreviewModal
+    :visible="pdfModalVisible"
+    :loading="pdfLoading"
+    :pdf-object-url="pdfObjectUrl"
+    :observations="pdfModalObservations"
+    @close="closePdfModal"
+  />
 </template>
 
 <script setup>
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
 import Swal from 'sweetalert2';
-import CardComponent from '@/components/cruds/CardComponent.vue';
-import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import TramiteHistory from '@/components/paperworks/TramiteHistory.vue';
 import TramiteStatusBadge from '@/components/paperworks/TramiteStatusBadge.vue';
 import TramitePdfPreviewModal from '@/components/paperworks/TramitePdfPreviewModal.vue';

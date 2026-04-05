@@ -68,10 +68,11 @@
   <CRow class="mb-4">
     <CCol>
       <CCard class="shadow-sm border-0">
-        <CCardBody>
-          <CTable hover responsive align="middle" class="mb-0 ">
+        <CCardBody class="p-0">
+          <div class="modern-table-shell">
+          <CTable hover responsive align="middle" class="mb-0 text-center">
 
-            <CTableHead color="dark">
+            <CTableHead class="modern-table-header text-center">
               <CTableRow>
                 <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
                 <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
@@ -119,8 +120,9 @@
             </CTableBody>
 
           </CTable>
+          </div>
 
-          <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">
+          <div class="d-flex justify-content-between align-items-center mt-4 p-2 px-3">
             <CButton color="primary" variant="outline" :disabled="!previousPage" @click="fetchAlumnos(currentPage - 1)"
               class="d-flex align-items-center gap-2">
               <i class="fas fa-chevron-left"></i>

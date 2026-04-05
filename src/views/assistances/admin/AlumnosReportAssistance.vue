@@ -24,7 +24,8 @@
 
                     </div>
                 </CCardHeader>
-                <CCardBody <!-- Filtros -->
+                <CCardBody class="pt-0 pb-3 px-3">
+                    <!-- Filtros -->
                     <div class="mt-3">
                         <CRow class="g-2 align-items-stretch">
 
@@ -79,7 +80,8 @@
         <CCol>
             <CCard class="shadow-sm border-0">
 
-                <CCardBody>
+                <CCardBody class="p-0">
+                    <div class="modern-table-shell">
                     <CTable hover responsive align="middle" class="mb-0 text-center">
                         <CTableHead class="modern-table-header text-center">
                             <CTableRow>
@@ -144,8 +146,9 @@
                         </CTableBody>
 
                     </CTable>
+                    </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">
+                    <div class="d-flex justify-content-between align-items-center mt-4 p-2 px-3">
                         <CButton color="primary" variant="outline" :disabled="!previousPage"
                             @click="fetchAlumnos(currentPage - 1)" class="d-flex align-items-center gap-2">
                             <i class="fas fa-chevron-left"></i>

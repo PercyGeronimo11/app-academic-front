@@ -1,7 +1,11 @@
 <template>
   <div class="modern-list-wrapper">
     <div v-if="!hasRows" class="modern-list-empty" role="status">
-      <p class="list-empty-message mb-0">{{ emptyMessage }}</p>
+      <div class="table-empty-unified">
+        <span class="table-empty-unified__icon" aria-hidden="true">{{ emptyIcon }}</span>
+        <p class="table-empty-unified__title">{{ emptyMessage }}</p>
+        <p v-if="emptyHint" class="table-empty-unified__hint">{{ emptyHint }}</p>
+      </div>
     </div>
     <div v-else class="modern-table">
       <!-- Encabezados -->
@@ -171,7 +175,7 @@ function getInitials(item) {
 <style scoped>
 /* Misma línea visual que TramiteListShell / tablas FUT */
 .modern-list-empty {
-  padding: 1.35rem 1rem;
+  padding: 2rem 1rem 2.25rem;
   text-align: center;
 }
 
