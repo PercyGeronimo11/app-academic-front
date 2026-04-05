@@ -73,10 +73,10 @@
         </template>
         <ElegantCrudList :columns="listColumns" :data="alumnos">
           <template #actions="{ item }">
-            <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.id)">
+            <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.user_id)">
               <CIcon :content="cilPencil" size="lg"></CIcon>
             </CButton>
-            <CButton color="danger" class="text-white" @click.stop="deleteItem(item.id)">
+            <CButton color="danger" class="text-white" @click.stop="deleteItem(item.user_id)">
               <CIcon :content="cilTrash" size="lg"></CIcon>
             </CButton>
           </template>

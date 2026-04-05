@@ -44,3 +44,18 @@ export const gradoTexto = (grado) => {
     return grados[grado] || grado
 }
 
+
+export const getFirstName = (fullName) => {
+    if (!fullName) {
+        return null;
+    }
+
+    // Limpiar espacios extras
+    fullName = fullName.trim().replace(/\s+/g, ' ');
+
+    // Separar por espacios
+    const parts = fullName.split(' ');
+
+    return parts[0] ?? null;
+}
+

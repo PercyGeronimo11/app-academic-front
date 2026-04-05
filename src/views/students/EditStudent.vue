@@ -1,6 +1,5 @@
 <template>
-  <CRow>
-    <CCol :xs="12">
+
       <CCard class="mb-4 shadow">
         <CCardHeader class="bg-primary text-center text-white">
           <strong>Editar información del alumno</strong>
@@ -18,37 +17,37 @@
 
                 <CCardBody>
                   <CRow class="mb-3">
-                    <CCol>
+                    <CCol xs="12" md="3">
                       <CFormInput v-model="alumnoData.dni" label="DNI" required />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="3">
                       <CFormInput v-model="alumnoData.name" label="Nombres" required />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="3">
                       <CFormInput v-model="alumnoData.surname_father" label="Apellido paterno" required />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="3">
                       <CFormInput v-model="alumnoData.surname_mother" label="Apellido materno" required />
                     </CCol>
                   </CRow>
 
                   <CRow class="mb-3">
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput v-model="alumnoData.grade_section.grade" label="Grado" disabled />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput v-model="alumnoData.grade_section.section" label="Sección" disabled />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="3">
                       <CFormInput v-model="alumnoData.birth_date" type="date" label="Fecha de nacimiento" required />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="3">
                       <CFormSelect v-model="alumnoData.sex" label="Sexo" required>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
@@ -77,21 +76,21 @@
 
                 <CCardBody>
                   <CRow class="mb-3">
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput v-model="alumnoData.representative_dni" label="DNI" />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput v-model="alumnoData.representative_name" label="Nombre completo" />
                     </CCol>
                   </CRow>
 
                   <CRow>
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput v-model="alumnoData.representative_phone" label="Teléfono" />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput v-model="alumnoData.representative_relationship" label="Parentesco" />
                     </CCol>
                   </CRow>
@@ -107,7 +106,7 @@
 
                 <CCardBody>
                   <CRow>
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput
                         v-model="alumnoData.user.email"
                         label="Correo electrónico"
@@ -116,7 +115,7 @@
                       />
                     </CCol>
 
-                    <CCol>
+                    <CCol xs="12" md="6">
                       <CFormInput
                         v-model="alumnoData.password"
                         type="password"
@@ -148,8 +147,7 @@
           </CForm>
         </CCardBody>
       </CCard>
-    </CCol>
-  </CRow>
+
 
   <!-- ================= MODAL QR ================= -->
   <CModal :visible="showQRModal" @close="showQRModal = false">

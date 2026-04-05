@@ -39,53 +39,7 @@
         </template>
       </ElegantCrudList>
       </TramiteListShell>
-      <!-- <CTable align="middle" class="mb-0 border" hover responsive>
-        <CTableHead class="text-nowrap">
-          <CTableRow>
-            <CTableHeaderCell class="bg-body-secondary text-center">
-              #
-            </CTableHeaderCell>
-            <CTableHeaderCell class="bg-body-secondary text-center">
-              Nombres y apellidos
-            </CTableHeaderCell>
-            <CTableHeaderCell class="bg-body-secondary text-center">
-              DNI
-            </CTableHeaderCell>
-            <CTableHeaderCell class="bg-body-secondary text-center">
-              N° celular
-            </CTableHeaderCell>
-            <CTableHeaderCell class="bg-body-secondary text-center">
-              Acciones
-            </CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          <CTableRow v-for="item in teachers" :key="item.name">
-            <CTableDataCell>
-              <div class="text-center">{{ item.id }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ item.names+' '+item.surnames }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ item.dni }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ item.phone_number != null ? item.phone_number : '---' }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="d-grid gap-2 d-md-flex justify-content-md-center">
-                <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-                  <CIcon :content="cilPencil" size="lg"></CIcon>
-                </CButton>
-                <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-                  <CIcon :content="cilTrash" size="lg"></CIcon>
-                </CButton>
-              </div>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-      </CTable> -->
+      
     </CardComponent>
 
     <!-- Modal para Crear/Editar Profesor -->
@@ -104,7 +58,11 @@
                 <CFormInput v-model="administrativeData.names" label="Nombres *" placeholder="Nombre" required />
               </CCol>
               <CCol>
-                <CFormInput v-model="administrativeData.surnames" label="Apellidos *" placeholder="Apellidos"
+                <CFormInput v-model="administrativeData.surname_father" label="Apellido Paterno *" placeholder="Apellido Paterno"
+                  required />
+              </CCol>
+              <CCol>
+                <CFormInput v-model="administrativeData.surname_mother" label="Apellido Materno *" placeholder="Apellido Materno"
                   required />
               </CCol>
             </CRow>
@@ -178,7 +136,8 @@ var idItemSelected = ref(0);
 var searchData = ref('');
 const administrativeData = ref({
   names: '',
-  surnames: '',
+  surname_father: '',
+  surname_mother: '',
   birth_date: '',
   dni: '',
   phone_number: '',
@@ -218,7 +177,8 @@ const openEditModal = async (id) => {
 const clearDataModal = () => {
   administrativeData.value = {
     name: '',
-    surnames: '',
+    surname_father: '',
+    surname_mother: '',
     birth_date: '',
     dni: '',
     phone_number: '',
@@ -345,7 +305,7 @@ const limitDniLength = async(event) => {
 };
 
 const validateForm = () => {
-  if(administrativeData.value.names=='' || administrativeData.value.surnames=='' || administrativeData.value.dni=='' || administrativeData.value.birth_date=='' || administrativeData.value.email==''){
+  if(administrativeData.value.names=='' || administrativeData.value.surname_father=='' || administrativeData.value.surname_mother=='' || administrativeData.value.dni=='' || administrativeData.value.birth_date=='' || administrativeData.value.email==''){
     return false;
   }else{
     return true;

@@ -1,7 +1,7 @@
 <template>
   <CDropdown placement="bottom-end" variant="nav-item" autoClose="outside">
     <CDropdownToggle class="py-0 pe-0" :caret="false">
-      <span class="me-2"><b>{{ userData.role_user }}: {{ userData.name_user }} </b>
+      <span class="me-2"><b>{{ userData.role_user }}: {{ getFirstName(userData.name) }} {{ userData.surname_father }}</b>
       </span>
       <CAvatar :src="avatar" size="md" />
     </CDropdownToggle>
@@ -12,7 +12,7 @@
       <div class="d-flex align-items-center p-3 border-bottom profile-header" role="button" @click="goToProfile">
         <CAvatar :src="avatar" size="lg" class="me-3" />
         <div>
-          <div class="fw-semibold">{{ userData.name_user }}</div>
+          <div class="fw-semibold">{{ getFirstName(userData.name) }} {{ userData.surname_father }} </div>
           <span class="badge-role">
             {{ userData.role_user }}
           </span>
@@ -47,25 +47,18 @@ import { useRouter } from "vue-router";
 import authService from "@/services/AuthService";
 import avatar from "@/assets/images/avatars/8.jpg";
 import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem, CDropdownDivider } from "@coreui/vue";
+import { getFirstName } from "@/utils/utils";
 
-const itemsCount = 42;
 const router = useRouter();
 const userData = ref({
-  name_user: "",
+  name: "",
+  surname_father: "",
+  surname_mother: "",
   role_user: "",
   email_user: "",
 });
 
-onMounted(() => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user && user.name_user) {
-    userData.value.name_user = user.name_user;
-    userData.value.role_user = user.role;
-    userData.value.email_user = user.email;
-  } else {
-    console.warn("No se encontró información del usuario en localStorage");
-  }
-});
+
 
 const handleLogout = async () => {
   try {
@@ -85,10 +78,27 @@ const handleLogout = async () => {
 };
 
 const goToProfile = () => {
-  router.push('/user/perfil')
+  if (userData.value.role_user === "ESTUDIANTE") {
+    router.push('/user/ver-perfil-student')
+  } else if (userData.value.role_user === "DIRECCION") {
+    router.push('/user/ver-perfil-admin')
+  } else if (userData.value.role_user === "DOCENTE") {
+    router.push('/user/ver-perfil-teacher')
+  }
 }
 
-
+onMounted(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    userData.value.name = user.name;
+    userData.value.surname_father = user.surname_father;
+    userData.value.surname_mother = user.surname_mother;
+    userData.value.role_user = user.role;
+    userData.value.email_user = user.email;
+  } else {
+    console.warn("No se encontró información del usuario en localStorage");
+  }
+});
 </script>
 <style>
 .profile-header {

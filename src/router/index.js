@@ -46,6 +46,11 @@ const routes = [
         name: 'editStudent',
         component: () => import('@/views/students/EditStudent.vue'),
       },
+      // {
+      //   path: '/user/ver-perfil',
+      //   name: 'verPerfil',
+      //   component: () => import('@/views/user/ViewProfile.vue'),
+      // },
       {
         path: '/courses',
         name: 'courses',
@@ -55,6 +60,27 @@ const routes = [
         path: '/assignStudents',
         name: 'Asignar estudiantes',
         component: () => import('@/views/assign_students/AssignStudent.vue'),
+      },
+      
+      {
+        path: "/user/",
+        children: [
+          {
+            path: "ver-perfil-student",
+            name: "PerfilEstudent",
+            component: () => import('@/views/users/PerfilEstudent.vue'),
+          },
+          {
+            path: "ver-perfil-admin",
+            name: "PerfilAdmin",
+            component: () => import('@/views/users/PerfilAdmin.vue'),
+          },
+          {
+            path: "ver-perfil-teacher",
+            name: "PerfilTeacher",
+            component: () => import('@/views/users/PerfilTeacher.vue'),
+          }
+        ]
       },
       {
         path: '/classroom/',

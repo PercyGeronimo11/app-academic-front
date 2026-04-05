@@ -45,7 +45,6 @@ export default {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/historial-by-alumno/`, { params })
   },
 
-  // Para vista alumnos
   getReporteGeneralAlumno() {
     return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-general/`, 
     {

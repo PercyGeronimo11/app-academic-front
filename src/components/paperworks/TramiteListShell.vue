@@ -3,7 +3,7 @@
     <div v-if="$slots.intro" class="tls-intro">
       <slot name="intro" />
     </div>
-    <div v-if="$slots.toolbar" class="tls-toolbar">
+    <div v-if="$slots.toolbar" >
       <slot name="toolbar" />
     </div>
     <div class="tls-table-wrap">

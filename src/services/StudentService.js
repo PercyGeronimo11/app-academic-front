@@ -30,7 +30,11 @@ export default {
   },
 
   async getPathImageQrCode(idStudent) {
-    return await axios.get(`${API_URL_DJANGO}/alumno/info/obtener-qr/${idStudent}`);
+    return await axios.get(`${API_URL_DJANGO}/alumno/info/obtener-qr/`, {
+      params: {
+        id: idStudent
+      }
+    });
   },
 
   async deleteItem(id) {

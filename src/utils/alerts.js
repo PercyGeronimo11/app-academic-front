@@ -32,3 +32,10 @@ export const toastInfo = (message) => {
     title: message,
   })
 }
+
+export const toastWarning = (message) => {
+  Toast.fire({
+    icon: "warning",
+    title: message,
+  })
+}
