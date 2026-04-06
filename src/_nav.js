@@ -11,7 +11,7 @@ export default [
     name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    roles: ['DIRECCION', 'Auxiliar'],
+    roles: ['DIRECCION', 'AUXILIAR'],
   },
 
   // DIRECCION O ADMINISTRATIVO
@@ -74,6 +74,46 @@ export default [
     icon: 'cil-options',
     roles: ['DIRECCION',],
   },
+
+  // TRAMITES VIRTUALES
+  {
+    component: 'CNavItem',
+    name: 'Solicitudes de Permiso',
+    to: '/mesa-futs',
+    icon: 'cil-options',
+    roles: ['MESA_PARTES'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Trámites (Mesa)',
+    to: '/mesa-tramites',
+    icon: 'cil-file',
+    roles: ['MESA_PARTES'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Trámites (En proceso)',
+    to: '/admin-tramites',
+    icon: 'cil-file',
+    roles: ['DIRECCION'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Permisos derivados',
+    to: '/auxiliar-tramites',
+    icon: 'cil-notes',
+    roles: ['AUXILIAR'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Mis Trámites',
+    to: '/myPaperworks',
+    icon: 'cil-file',
+    roles: ['ESTUDIANTE'],
+  },
+
+
+
   {
     component: 'CNavTitle',
     name: 'USUARIOS',
@@ -100,17 +140,6 @@ export default [
     icon: 'cil-people',
     roles: ['DIRECCION'],
   },
-
-  // AUXILIAR
-  // {
-  //   component: 'CNavGroup',
-  //   name: 'ASISTENCIAS',
-  //   icon: cilCalendar,
-  //   roles: ['Auxiliar'],
-  //   items: [
-
-  //   ],
-  // },
 
 
 
@@ -179,6 +208,7 @@ export default [
     ],
   },
 
+<<<<<<< HEAD
   {
     component: 'CNavItem',
     name: 'Mis Trámites',
@@ -209,6 +239,8 @@ export default [
     icon: 'cil-notes',
     roles: ['Auxiliar'],
   },
+=======
+>>>>>>> 318d9e3192af3a4420e2fb24f3845fb0d1eaa391
 
 
   // ---------------------------------- PLANTILLA -------------------------
