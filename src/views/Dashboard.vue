@@ -1,110 +1,92 @@
 <template>
-  <CRow :xs="{ gutter: 4 }">
-    <CCol :sm="6" :xl="4" :xxl="3">
-      <CWidgetStatsA color="danger">
-        <template #value
-          >ADMINISTRATIVOS
-          <!-- <span class="fs-6 fw-normal"> (-23.6% <CIcon icon="cil-arrow-bottom" />) </span> -->
-        </template>
-        <template #title>6</template>
-        <template #action>
-          <CDropdown placement="bottom-end">
-            <CDropdownToggle color="transparent" class="p-0 text-white" :caret="false">
-              <CIcon icon="cil-options" class="text-white" />
-            </CDropdownToggle>
-            <CDropdownMenu>
-              <CDropdownItem href="#">Action</CDropdownItem>
-              <CDropdownItem href="#">Another action</CDropdownItem>
-              <CDropdownItem href="#">Something else here</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </template>
-        <template #chart>
-          <CChart
-            type="bar"
-            class="mt-3 mx-3"
-            style="height: 70px"
-           
+  <div>
+    <CRow v-if="loading" class="mb-3">
+      <CCol>
+        <p class="text-body-secondary mb-0">Cargando estadísticas...</p>
+      </CCol>
+    </CRow>
+
+    <CRow v-else :xs="{ gutter: 4 }">
+      <CCol
+        v-for="(role, index) in roleStats"
+        :key="role.id"
+        :sm="6"
+        :xl="4"
+        :xxl="3"
+      >
+        <CWidgetStatsA :color="widgetColor(index)">
+          <template #value>{{ role.name }}</template>
+          <template #title>{{ role.count }}</template>
+          <template #action>
+            <CDropdown placement="bottom-end">
+              <CDropdownToggle color="transparent" class="p-0 text-white" :caret="false">
+                <CIcon icon="cil-options" class="text-white" />
+              </CDropdownToggle>
+              <CDropdownMenu>
+                <CDropdownItem href="#">Action</CDropdownItem>
+                <CDropdownItem href="#">Another action</CDropdownItem>
+                <CDropdownItem href="#">Something else here</CDropdownItem>
+              </CDropdownMenu>
+            </CDropdown>
+          </template>
+          <template #chart>
+            <CChart
+              type="bar"
+              class="mt-3 mx-3"
+              style="height: 70px"
+            />
+          </template>
+        </CWidgetStatsA>
+      </CCol>
+    </CRow>
+
+    <CRow class="mt-4">
+      <CCol>
+        <div class="dashboard-staff-photo">
+          <img
+            src="/img/personal_colegio.png"
+            alt="Personal del colegio"
+            class="img-fluid rounded shadow-sm w-100"
           />
-        </template>
-      </CWidgetStatsA>
-    </CCol>
-    <CCol :sm="6" :xl="4" :xxl="3">
-      <CWidgetStatsA color="success">
-        <template #value
-          >ESTUDIANTES
-          <!-- <span class="fs-6 fw-normal"> (-23.6% <CIcon icon="cil-arrow-bottom" />) </span> -->
-        </template>
-        <template #title>641</template>
-        <template #action>
-          <CDropdown placement="bottom-end">
-            <CDropdownToggle color="transparent" class="p-0 text-white" :caret="false">
-              <CIcon icon="cil-options" class="text-white" />
-            </CDropdownToggle>
-            <CDropdownMenu>
-              <CDropdownItem href="#">Action</CDropdownItem>
-              <CDropdownItem href="#">Another action</CDropdownItem>
-              <CDropdownItem href="#">Something else here</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </template>
-        <template #chart>
-          <CChart
-            type="bar"
-            class="mt-3 mx-3"
-            style="height: 70px"
-          />
-        </template>
-      </CWidgetStatsA>
-    </CCol>
-    <CCol :sm="6" :xl="4" :xxl="3">
-      <CWidgetStatsA color="warning">
-        <template #value
-          >PROFESORES
-          <!-- <span class="fs-6 fw-normal"> (-23.6% <CIcon icon="cil-arrow-bottom" />) </span> -->
-        </template>
-        <template #title>67</template>
-        <template #action>
-          <CDropdown placement="bottom-end">
-            <CDropdownToggle color="transparent" class="p-0 text-white" :caret="false">
-              <CIcon icon="cil-options" class="text-white" />
-            </CDropdownToggle>
-            <CDropdownMenu>
-              <CDropdownItem href="#">Action</CDropdownItem>
-              <CDropdownItem href="#">Another action</CDropdownItem>
-              <CDropdownItem href="#">Something else here</CDropdownItem>
-            </CDropdownMenu>
-          </CDropdown>
-        </template>
-        <template #chart>
-          <CChart
-            type="bar"
-            class="mt-3 mx-3"
-            style="height: 70px"
-          />
-        </template>
-      </CWidgetStatsA>
-    </CCol>
-  </CRow>
+        </div>
+      </CCol>
+    </CRow>
+  </div>
 </template>
 <script setup>
 import DashboardService from '@/services/DashboardService'
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue'
 
-var dashboard = ref();
+const WIDGET_COLORS = ['danger', 'success', 'warning', 'info', 'primary', 'dark', 'secondary']
+
+const dashboard = ref(null)
+const loading = ref(true)
+
+const roleStats = computed(() => dashboard.value?.roles ?? [])
+
+const widgetColor = (index) => WIDGET_COLORS[index % WIDGET_COLORS.length]
 
 onMounted(async () => {
   try {
-    await listDashboard();
+    await listDashboard()
   } catch (error) {
-    console.error(error);
+    console.error(error)
+  } finally {
+    loading.value = false
   }
-});
+})
 
 const listDashboard = async () => {
-  const response = await DashboardService.getItems();
-  dashboard.value = response.data.data;
+  const response = await DashboardService.getItems()
+
+  const roles = response.data.data?.roles || []
+
+  dashboard.value = {
+    ...response.data.data,
+    roles: roles.map(item => ({
+      ...item,
+      name: item.name === 'MESA_PARTES' ? 'MESA DE PARTES' : item.name
+    }))
+  }
 }
 </script>
-
-
