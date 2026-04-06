@@ -11,7 +11,7 @@ export default [
     name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    roles: ['DIRECCION', 'Auxiliar'],
+    roles: ['DIRECCION', 'AUXILIAR'],
   },
 
   // DIRECCION O ADMINISTRATIVO
@@ -74,6 +74,38 @@ export default [
     icon: 'cil-options',
     roles: ['DIRECCION',],
   },
+
+  // TRAMITES VIRTUALES
+  {
+    component: 'CNavItem',
+    name: 'Solicitudes de Permiso',
+    to: '/mesa-futs',
+    icon: 'cil-options',
+    roles: ['MESA_PARTES'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Trámites (Mesa)',
+    to: '/mesa-tramites',
+    icon: 'cil-file',
+    roles: ['MESA_PARTES'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Trámites (En proceso)',
+    to: '/admin-tramites',
+    icon: 'cil-file',
+    roles: ['DIRECCION'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Permisos derivados',
+    to: '/auxiliar-tramites',
+    icon: 'cil-notes',
+    roles: ['AUXILIAR'],
+  },
+  
+
   {
     component: 'CNavTitle',
     name: 'USUARIOS',
@@ -100,17 +132,6 @@ export default [
     icon: 'cil-people',
     roles: ['DIRECCION'],
   },
-
-  // AUXILIAR
-  // {
-  //   component: 'CNavGroup',
-  //   name: 'ASISTENCIAS',
-  //   icon: cilCalendar,
-  //   roles: ['Auxiliar'],
-  //   items: [
-
-  //   ],
-  // },
 
 
 
@@ -185,36 +206,6 @@ export default [
     to: '/myPaperworks',
     icon: 'cil-file',
     roles: ['ESTUDIANTE'],
-  },
-
-  //MESA_PARTES
-  {
-    component: 'CNavItem',
-    name: 'Solicitudes de Permiso',
-    to: '/mesa-futs',
-    icon: 'cil-options',
-    roles: ['MESA_PARTES'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Trámites (Mesa)',
-    to: '/mesa-tramites',
-    icon: 'cil-file',
-    roles: ['MESA_PARTES'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Trámites (Administración)',
-    to: '/admin-tramites',
-    icon: 'cil-file',
-    roles: ['DIRECCION'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Permisos derivados',
-    to: '/auxiliar-tramites',
-    icon: 'cil-notes',
-    roles: ['Auxiliar'],
   },
 
 
