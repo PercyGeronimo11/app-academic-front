@@ -208,39 +208,6 @@ export default [
     ],
   },
 
-<<<<<<< HEAD
-  {
-    component: 'CNavItem',
-    name: 'Mis Trámites',
-    to: '/myPaperworks',
-    icon: 'cil-file',
-    roles: ['ESTUDIANTE'],
-  },
-
-  //SECRETARIA
-  {
-    component: 'CNavItem',
-    name: 'Trámites (Mesa)',
-    to: '/mesa-tramites',
-    icon: 'cil-file',
-    roles: ['SECRETARIA'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Trámites (Administración)',
-    to: '/admin-tramites',
-    icon: 'cil-file',
-    roles: ['DIRECCION'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Permisos derivados',
-    to: '/auxiliar-tramites',
-    icon: 'cil-notes',
-    roles: ['Auxiliar'],
-  },
-=======
->>>>>>> 318d9e3192af3a4420e2fb24f3845fb0d1eaa391
 
 
   // ---------------------------------- PLANTILLA -------------------------
