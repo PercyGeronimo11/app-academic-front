@@ -81,7 +81,7 @@ const goToProfile = () => {
   const role = userData.value.role_user;
   if (role === 'ESTUDIANTE') {
     router.push('/user/ver-perfil-student');
-  } else if (role === 'DIRECCION') {
+  } else if (role === 'DIRECCION' || role === 'AUXILIAR' || role === 'SECRETARIA') {
     router.push('/user/ver-perfil-admin');
   } else if (role === 'PROFESOR' || role === 'DOCENTE') {
     router.push('/user/ver-perfil-teacher');

@@ -11,7 +11,7 @@ export default [
     name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    roles: ['DIRECCION', 'Auxiliar'],
+    roles: ['DIRECCION', 'AUXILIAR'],
   },
 
   // DIRECCION O ADMINISTRATIVO
@@ -106,7 +106,7 @@ export default [
   //   component: 'CNavGroup',
   //   name: 'ASISTENCIAS',
   //   icon: cilCalendar,
-  //   roles: ['Auxiliar'],
+  //   roles: ['AUXILIAR'],
   //   items: [
 
   //   ],
@@ -214,7 +214,7 @@ export default [
     name: 'Permisos derivados',
     to: '/auxiliar-tramites',
     icon: 'cil-notes',
-    roles: ['Auxiliar'],
+    roles: ['AUXILIAR'],
   },
 
 
