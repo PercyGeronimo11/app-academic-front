@@ -78,14 +78,15 @@ const handleLogout = async () => {
 };
 
 const goToProfile = () => {
-  if (userData.value.role_user === "ESTUDIANTE") {
-    router.push('/user/ver-perfil-student')
-  } else if (userData.value.role_user === "DIRECCION") {
-    router.push('/user/ver-perfil-admin')
-  } else if (userData.value.role_user === "DOCENTE") {
-    router.push('/user/ver-perfil-teacher')
+  const role = userData.value.role_user;
+  if (role === 'ESTUDIANTE') {
+    router.push('/user/ver-perfil-student');
+  } else if (role === 'DIRECCION' || role === 'AUXILIAR' || role === 'SECRETARIA') {
+    router.push('/user/ver-perfil-admin');
+  } else if (role === 'PROFESOR' || role === 'DOCENTE') {
+    router.push('/user/ver-perfil-teacher');
   }
-}
+};
 
 onMounted(() => {
   const user = JSON.parse(localStorage.getItem("user"));

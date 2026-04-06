@@ -1,327 +1,160 @@
 <template>
-  <div>
-    <CardComponent title="Lista de Docentes" style="margin: 20px 10px;">
-      <TramiteListShell>
-        <template #toolbar>
-          <div class="box-tools">
-            <CRow class="mb-3">
-              <CCol>
-                <CInputGroup>
-                  <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-                    aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-                  <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
-                </CInputGroup>
-              </CCol>
-              <CCol></CCol>
-              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
-              </CCol>
-            </CRow>
-          </div>
-        </template>
-      <ElegantCrudList :columns="listColumns" :data="teachers">
-        <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-                <CIcon :content="cilPencil" size="lg"></CIcon>
-              </CButton>
-              <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-                <CIcon :content="cilTrash" size="lg"></CIcon>
-              </CButton>
-        </template>
-      </ElegantCrudList>
-      </TramiteListShell>
-    </CardComponent>
+  <CCard class="shadow border-0">
+    <CCardHeader class="bg-primary text-white text-center">
+      <strong>Perfil del docente</strong>
+    </CCardHeader>
 
-    <!-- Modal para Crear/Editar Profesor -->
-    <CModal :visible="isModalOpen" scrollable size="lg" @close="() => { isModalOpen = false }"
-      aria-labelledby="LiveDemoExampleLabel" alignment="center">
-      <CModalHeader>
-        <CModalTitle id="LiveDemoExampleLabel">
-          {{ isEditMode ? 'Editar Profesor' : 'Crear Profesor' }}
-        </CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <CForm @submit.prevent="isEditMode ? updateUser() : submitToCreate()">
-          <CContainer>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="teacherData.dni" label="DNI" placeholder="Documento de identidad" required />
+    <CCardBody>
+      <CContainer v-if="teacherData">
+        <div class="text-center mb-4">
+          <h4 class="mb-1">
+            {{ teacherData.name }} {{ teacherData.surname_father }} {{ teacherData.surname_mother }}
+          </h4>
+          <small class="text-muted">{{ teacherData.email }}</small>
+        </div>
+
+        <CRow class="g-3 mb-4">
+          <CCol xs="12" md="4">
+            <div class="info-box">
+              <label>DNI</label>
+              <p>{{ teacherData.dni }}</p>
+            </div>
+          </CCol>
+
+          <CCol xs="12" md="4">
+            <div class="info-box">
+              <label>Fecha de nacimiento</label>
+              <p>{{ teacherData.birth_date }}</p>
+            </div>
+          </CCol>
+
+          <CCol xs="12" md="4">
+            <div class="info-box">
+              <label>Teléfono</label>
+              <p>{{ teacherData.phone }}</p>
+            </div>
+          </CCol>
+
+          <CCol xs="12" md="6">
+            <div class="info-box">
+              <label>Título académico</label>
+              <p>{{ teacherData.academic_degree }}</p>
+            </div>
+          </CCol>
+        </CRow>
+
+        <CCard class="mb-4 shadow-sm border-0">
+          <CCardHeader class="bg-dark text-white">
+            Editar información
+          </CCardHeader>
+
+          <CCardBody>
+            <CRow class="g-3">
+              <CCol xs="12" md="6">
+                <CFormInput v-model="teacherData.address" label="Dirección" />
               </CCol>
-              <CCol>
-                <CFormInput v-model="teacherData.name" label="Nombres" placeholder="Nombre" required />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="teacherData.surname_father" label="Apellido paterno" placeholder="Nombre"
-                  required />
-              </CCol>
-              <CCol>
-                <CFormInput v-model="teacherData.surname_mother" label="Apellido materno" placeholder="Apellido materno"
-                  required />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="teacherData.address" label="Dirección" placeholder="Dirección" required />
-              </CCol>
-              <CCol>
-                <CFormInput v-model="teacherData.academic_degree" label="Titulo academico"
-                  placeholder="Titulo academico" required />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormLabel for="email">Email</CFormLabel>
-                <div class="input-group">
-                  <input type="text" class="form-control" placeholder="nombre" v-model="teacherData.email"
-                    @input="updateEmail" required />
-                  <span class="input-group-text">@ierp.edu.pe</span> <!-- Parte fija con el dominio -->
-                </div>
-              </CCol>
-              <CCol>
-                <CFormInput v-model="teacherData.password" label="Contraseña" placeholder="password" required />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="teacherData.birth_date" label="Fecha de nacimiento" type="date" required />
-              </CCol>
-              <CCol>
-                <CFormLabel for="exampleFormControlInput1">Sexo</CFormLabel>
-                <CFormSelect aria-label="Default select example" v-model="teacherData.sex">
-                  <option disabled value=0>Seleccionar una opción</option>
-                  <option value="M">Masculino</option>
-                  <option value="F">Femenino</option>
-                </CFormSelect>
-              </CCol>
-              <CCol>
-                <CFormInput v-model="teacherData.phone" label="N° de teléfono" placeholder="N° de teléfono" required />
+
+              <CCol xs="12" md="6">
+                <CFormInput
+                  v-model="teacherData.password"
+                  type="password"
+                  label="Nueva contraseña"
+                  placeholder="Dejar vacío para no cambiar"
+                  autocomplete="new-password"
+                />
               </CCol>
             </CRow>
-          </CContainer>
-        </CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" @click="() => { closeModal() }">
-          Cancelar
-        </CButton>
-        <CButton color="primary" @click="isEditMode ? submitToEdit() : submitToCreate()">
-          {{ isEditMode ? 'Actualizar' : 'Registrar' }}
-        </CButton>
-      </CModalFooter>
-    </CModal>
-  </div>
+          </CCardBody>
+        </CCard>
+
+        <CRow class="mt-3">
+          <CCol xs="6">
+            <CButton color="light" variant="ghost" @click="$router.back()">
+              <i class="cil-arrow-left"></i>
+            </CButton>
+          </CCol>
+
+          <CCol xs="6">
+            <CButton class="w-100" color="primary" @click="submitToEdit">
+              Actualizar
+            </CButton>
+          </CCol>
+        </CRow>
+      </CContainer>
+    </CCardBody>
+  </CCard>
 </template>
 
 <script setup>
-import TeacherService from '@/services/TeacherService'
-import { ref, onMounted, watch } from 'vue';
-import Swal from 'sweetalert2'
-import CardComponent from '@/components/cruds/CardComponent.vue';
-import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
-import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
-import { cilPencil, cilTrash } from '@coreui/icons';
+import TeacherService from '@/services/TeacherService';
+import { ref, onMounted } from 'vue';
+import { CCard, CCardBody, CCardHeader } from '@coreui/vue';
+import { toastError, toastSuccess } from '@/utils/alerts';
 
-const teachers = ref([]);
-const isModalOpen = ref(false);
-const isEditMode = ref(false);
-var idItemSelected = ref(0);
-var searchData = ref('');
-const listColumns = ref([
-  { key: 'id', label: 'N°'},
-  { key: 'name', label: 'Nombre y Apellidos' },
-  { key: 'dni', label: 'DNI' },
-  { key: 'phone', label: 'Numero de Celular' },
-  { key: 'actions', label: 'OPCIONES' }, // El key 'actions' activa el slot
-]);
-const teacherData = ref({
-  name: '',
-  surname_father: '',
-  surname_mother: '',
-  birth_date: '',
-  dni: '',
-  sex: 'M',
-  phone: '',
-  email: '',
-  password: '',
-  address: '',
-  academic_degree: ''
-});
+const teacherData = ref(null);
 
-
-onMounted(async () => {
-  try {
-    await listTeacherService();
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-const listTeacherService = async (data) => {
-  console.log(data);
-  const response = await TeacherService.getItems(data);
-  teachers.value = response.data.data;
-}
-
-const openCreateModal = () => {
-  isEditMode.value = false;
-  isModalOpen.value = true;
-};
-
-const openEditModal = async (id) => {
-  const response = await TeacherService.getItem(id);
-  idItemSelected.value = response.data.data.id;
-  teacherData.value = { ...response.data.data };
-  isEditMode.value = true;
-  isModalOpen.value = true;
-};
-
-const clearDataModal = () => {
-  teacherData.value = {
-    name: '',
-    surname_father: '',
-    surname_mother: '',
-    birth_date: '',
-    dni: '',
-    sex: '',
-    phone: '',
-    email: '',
+const mapProfileRow = (row) => {
+  const emailRaw = row?.user?.email ?? '';
+  const next = { ...row };
+  delete next.user;
+  return {
+    ...next,
+    email: typeof emailRaw === 'string' ? emailRaw : '',
     password: '',
-    address: '',
-    academic_degree: ''
   };
 };
 
-const closeModal = () => {
-  isModalOpen.value = false;
-  clearDataModal();
-};
-
-const calculateAge = () => {
-  if (!teacherData.value.birth_date) return;
-
-  const birthDate = new Date(teacherData.value.birth_date);
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDifference = today.getMonth() - birthDate.getMonth();
-
-  if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
-
-  teacherData.value.age = age;
-};
-
-
-const submitToCreate = async () => {
+const loadProfile = async () => {
   try {
-    calculateAge();
-    await TeacherService.createItem(teacherData.value);
-    listTeacherService();
-    closeModal();
-    Swal.fire({
-      icon: 'success',
-      title: 'Registro exitoso',
-      text: 'Docente registrado con éxito.',
-    });
-  } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al Guardar',
-        text: error.response.data.message[0],
-      });
-    } else {
-      console.log("error:" + error);
-    }
+    const response = await TeacherService.getItem();
+    teacherData.value = mapProfileRow(response.data.data);
+  } catch {
+    toastError('No se pudo cargar el perfil');
   }
 };
 
 const submitToEdit = async () => {
-  teacherData.value.id = idItemSelected.value;
   try {
-    calculateAge();
-    await TeacherService.updateItem(teacherData.value);
-    listTeacherService();
-    closeModal();
-    Swal.fire({
-      icon: 'success',
-      title: 'Actualización exitosa',
-      text: 'Docente actualizado con éxito.',
-    });
-  } catch (error) {
-    if (error.response && error.response.data && error.response.data.message) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al Guardar',
-        text: error.response.data.message[0],
-      });
-    } else {
-      console.log("error:" + error);
+    if (!teacherData.value) {
+      return;
     }
+    const data = {
+      address: teacherData.value.address,
+    };
+    if (teacherData.value.password) {
+      data.password = teacherData.value.password;
+    }
+    await TeacherService.updateItem(data);
+    toastSuccess('Datos actualizados correctamente');
+    teacherData.value.password = '';
+  } catch {
+    toastError('Error al actualizar');
   }
 };
 
-const deleteItem = async (id) => {
-  try {
-    const confirmResult = await Swal.fire({
-      icon: 'question',
-      iconColor: '#E55353',
-      title: 'Eliminar Docente',
-      text: '¿Estás seguro que desea eliminar este docente?',
-      confirmButtonText: 'Eliminar',
-      confirmButtonColor: '#E55353',
-      showCancelButton: true,
-      cancelButtonText: 'Cancelar',
-      cancelButtonColor: '#39F',
-      reverseButtons: true,
-    });
-    if (confirmResult.isConfirmed) {
-      await TeacherService.deleteItem(id);
-      listTeacherService();
-      Swal.fire({
-        icon: 'success',
-        title: 'Docente eliminado',
-        text: 'El docente ha sido eliminado exitosamente.',
-      });
-    }
-  } catch (error) {
-    console.error(error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Ocurrió un error al eliminar el Docente. Por favor, inténtalo de nuevo.',
-    });
-  }
-};
-
-watch(searchData, (newVal) => {
-  listTeacherService(newVal);
-});
+onMounted(loadProfile);
 </script>
 
-<style>
-.input-group-text {
-  background-color: #f0f0f0;
-  border-left: none;
-  font-weight: bold;
+<style scoped>
+.info-box {
+  padding: 0.85rem 1rem;
+  background: var(--cui-body-bg, #fff);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
 }
 
-.form-control {
-  border-right: none;
+.info-box label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cui-secondary-color, #6b7280);
+  margin-bottom: 0.25rem;
 }
 
-.input-group {
-  display: flex;
-  align-items: center;
-}
-
-.input-group .form-control {
-  border-radius: 0.25rem 0 0 0.25rem;
-}
-
-.input-group .input-group-text {
-  border-radius: 0 0.25rem 0.25rem 0;
+.info-box p {
+  margin: 0;
+  font-weight: 600;
+  color: var(--cui-body-color, #212631);
 }
 </style>

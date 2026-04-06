@@ -3,7 +3,10 @@
         <CCol>
             <CCard class="shadow-sm border-0">
                 <CCardHeader class="bg-white border-bottom py-3">
-                    <div class="d-flex justify-content-between align-items-center">
+
+                    <!-- Header -->
+                    <div
+                        class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
 
                         <h5 class="fw-bold text-primary mb-0">
                             <i class="fas fa-chart-line me-2"></i>
@@ -11,89 +14,75 @@
                         </h5>
 
                         <div class="d-flex align-items-center">
-                            <span class="me-2 text-success fw-semibold ">
+                            <span class="me-2 text-success fw-semibold">
                                 Actualizado hasta hoy
                             </span>
                             <span
-                                style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;"></span>
+                                style="width:10px;height:10px;border-radius:50%;background:#2eb85c;display:inline-block;">
+                            </span>
                         </div>
+
                     </div>
                 </CCardHeader>
-            </CCard>
-        </CCol>
-    </CRow>
-    <CRow class="mb-2">
-        <CCol>
-            <CCard class="shadow-sm border-0">
+                <CCardBody class="pt-0 pb-3 px-3">
+                    <!-- Filtros -->
+                    <div class="mt-3">
+                        <CRow class="g-2 align-items-stretch">
 
-                <CCardBody>
-                    <CRow class="g-2 align-items-center flex-md-nowrap">
+                            <!-- Buscar -->
+                            <CCol xs="12" md="4">
+                                <CFormInput placeholder="Buscar por apellido..." v-model="search"
+                                    @keyup.enter="fetchAlumnos(1)" class="h-100" />
+                            </CCol>
 
-                        <!-- Buscar -->
-                        <CCol xs="12" md="4">
-                            <CFormInput placeholder="Buscar por apellido..." v-model="search"
-                                @keyup.enter="fetchAlumnos(1)" />
-                        </CCol>
+                            <!-- Grado -->
+                            <CCol xs="6" md="2">
+                                <CFormSelect v-model="selectedGrade" class="h-100">
+                                    <option value="">Grado</option>
+                                    <option v-for="g in grados" :key="g" :value="g">
+                                        {{ g }}
+                                    </option>
+                                </CFormSelect>
+                            </CCol>
 
-                        <!-- Grado -->
-                        <CCol xs="6" md="2">
-                            <CFormSelect v-model="selectedGrade">
-                                <option value="">Grado</option>
-                                <option v-for="g in grados" :key="g" :value="g">
-                                    {{ g }}
-                                </option>
-                            </CFormSelect>
-                        </CCol>
+                            <!-- Sección -->
+                            <CCol xs="6" md="2">
+                                <CFormSelect v-model="selectedSection" class="h-100">
+                                    <option value="">Sección</option>
+                                    <option v-for="s in secciones" :key="s" :value="s">
+                                        {{ s }}
+                                    </option>
+                                </CFormSelect>
+                            </CCol>
 
-                        <!-- Sección -->
-                        <CCol xs="6" md="2">
-                            <CFormSelect v-model="selectedSection">
-                                <option value="">Sección</option>
-                                <option v-for="s in secciones" :key="s" :value="s">
-                                    {{ s }}
-                                </option>
-                            </CFormSelect>
-                        </CCol>
+                            <!-- Botones -->
+                            <CCol xs="12" md="4">
+                                <div class="d-flex flex-column flex-md-row gap-2 h-100">
+                                    <CButton color="primary" class="flex-fill" @click="fetchAlumnos(1)">
+                                        Buscar
+                                    </CButton>
 
-                        <!-- Botones -->
-                        <CCol xs="12" md="3" class="d-flex gap-2">
-                            <CButton color="primary" class="flex-fill" @click="fetchAlumnos(1)">
-                                Buscar
-                            </CButton>
+                                    <CButton color="secondary" variant="outline" class="flex-fill" @click="limpiar">
+                                        Limpiar
+                                    </CButton>
+                                </div>
+                            </CCol>
 
-                            <CButton color="secondary" variant="outline" class="flex-fill" @click="limpiar">
-                                Limpiar
-                            </CButton>
-                        </CCol>
+                        </CRow>
+                    </div>
 
-                    </CRow>
                 </CCardBody>
             </CCard>
         </CCol>
     </CRow>
+
     <CRow class="mb-4">
         <CCol>
             <CCard class="shadow-sm border-0">
-                <CCardHeader class="bg-white border-bottom py-2">
-                    <div class="d-flex justify-content-between align-items-center">
 
-                        <h5 class="fw-bold  text-primary mb-0">
-                            <i class="fas fa-chart-bar me-2"></i>
-                            Seguimiento por aula
-                        </h5>
-
-                        <div class="d-flex align-items-center">
-                            <CButton color="success" class="text-white" @click="descargarExcel">
-                                Descargar Excel
-                            </CButton>
-                        </div>
-
-                    </div>
-                </CCardHeader>
-                <CCardBody>
+                <CCardBody class="p-0">
                     <div class="modern-table-shell">
                     <CTable hover responsive align="middle" class="mb-0 text-center">
-
                         <CTableHead class="modern-table-header text-center">
                             <CTableRow>
                                 <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
@@ -125,14 +114,17 @@
                                     <CTableDataCell class="text-center">{{ alumno.section }}
                                     </CTableDataCell>
                                     <CTableDataCell>
-                                        <CBadge color="success" class="px-3 py-1 fs-6">{{ alumno.total_asistencias }}
+                                        <CBadge color="success" class="px-3 py-1 fs-6">{{ alumno.total_asistencias
+                                        }}
                                         </CBadge>
                                     </CTableDataCell>
                                     <CTableDataCell>
-                                        <CBadge color="warning" class="px-3 py-1 fs-6">{{ alumno.total_tardanzas }}</CBadge>
+                                        <CBadge color="warning" class="px-3 py-1 fs-6">{{ alumno.total_tardanzas }}
+                                        </CBadge>
                                     </CTableDataCell>
                                     <CTableDataCell>
-                                        <CBadge color="danger" class="px-3 py-1 fs-6">{{ alumno.total_faltas }}</CBadge>
+                                        <CBadge color="danger" class="px-3 py-1 fs-6">{{ alumno.total_faltas }}
+                                        </CBadge>
                                     </CTableDataCell>
 
                                     <CTableDataCell class="text-center">
@@ -156,7 +148,7 @@
                     </CTable>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">
+                    <div class="d-flex justify-content-between align-items-center mt-4 p-2 px-3">
                         <CButton color="primary" variant="outline" :disabled="!previousPage"
                             @click="fetchAlumnos(currentPage - 1)" class="d-flex align-items-center gap-2">
                             <i class="fas fa-chevron-left"></i>
@@ -242,7 +234,7 @@ const verDashboard = (alumno) => {
     router.push(`/assistances/admin/dashboard-alumno/${alumno.id}`)
 }
 
-const descargarExcel = async() => {
+const descargarExcel = async () => {
     const alumnosReport = ref([])
     const params = {
         search: search.value,
@@ -252,20 +244,20 @@ const descargarExcel = async() => {
     const resp = await AssistanceService.listarAlumnosExportExcel(params)
     alumnosReport.value = resp.data
 
-  exportarExcel({
-    fileName: 'reporte_alumnos.xlsx',
-    sheetName: 'reporte',
-    data: alumnosReport.value,
-    columns: [
-      { header: 'Apellidos', key: 'apellidos', width: 20 },
-      { header: 'Nombres', key: 'nombres', width: 15 },
-      { header: 'Grado', key: 'grade', width: 15 },
-      { header: 'Seccion', key: 'section', width: 15 },
-      { header: 'Asistencias', key: 'total_asistencias', width: 15 },
-      { header: 'Tardanzas', key: 'total_tardanzas', width: 15 },
-      { header: 'Faltas', key: 'total_faltas', width: 15 }
-    ]
-  })
+    exportarExcel({
+        fileName: 'reporte_alumnos.xlsx',
+        sheetName: 'reporte',
+        data: alumnosReport.value,
+        columns: [
+            { header: 'Apellidos', key: 'apellidos', width: 20 },
+            { header: 'Nombres', key: 'nombres', width: 15 },
+            { header: 'Grado', key: 'grade', width: 15 },
+            { header: 'Seccion', key: 'section', width: 15 },
+            { header: 'Asistencias', key: 'total_asistencias', width: 15 },
+            { header: 'Tardanzas', key: 'total_tardanzas', width: 15 },
+            { header: 'Faltas', key: 'total_faltas', width: 15 }
+        ]
+    })
 }
 
 onMounted(() => {

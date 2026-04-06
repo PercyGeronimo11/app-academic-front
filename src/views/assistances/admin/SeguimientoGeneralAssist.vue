@@ -5,7 +5,7 @@
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardBody
-            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center py-2 px-4">
+            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center py-3 px-4">
 
             <!-- Título -->
             <div class="mb-2 mb-md-0">
@@ -85,7 +85,7 @@
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <CCardHeader class="bg-white border-bottom py-2">
+          <!-- <CCardHeader class="bg-white border-bottom py-2">
             <div class="d-flex justify-content-between align-items-center">
 
               <h5 class="fw-bold text-primary mb-0">
@@ -99,7 +99,7 @@
                 </span>
               </div>
             </div>
-          </CCardHeader>
+          </CCardHeader> -->
 
           <!-- BODY -->
           <CCardBody class="p-0">

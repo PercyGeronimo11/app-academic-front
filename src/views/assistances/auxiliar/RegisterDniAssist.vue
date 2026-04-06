@@ -30,7 +30,7 @@
 
             <!-- Grado -->
             <CCol xs="6" md="2">
-              <CFormSelect v-model="selectedGrade" >
+              <CFormSelect v-model="selectedGrade">
                 <option value="">Grado</option>
                 <option v-for="g in grados" :key="g" :value="g">
                   {{ g }}
@@ -40,7 +40,7 @@
 
             <!-- Sección -->
             <CCol xs="6" md="2">
-              <CFormSelect v-model="selectedSection" >
+              <CFormSelect v-model="selectedSection">
                 <option value="">Sección</option>
                 <option v-for="s in secciones" :key="s" :value="s">
                   {{ s }}
@@ -68,59 +68,61 @@
   <CRow class="mb-4">
     <CCol>
       <CCard class="shadow-sm border-0">
-        <CCardBody>
-          <CTable hover responsive align="middle" class="mb-0 ">
+        <CCardBody class="p-0">
+          <div class="modern-table-shell">
+            <CTable hover responsive align="middle" class="mb-0 text-center">
 
-            <CTableHead color="dark">
-              <CTableRow>
-                <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-                <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
-                <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
-                <CTableHeaderCell class="text-center">Grado </CTableHeaderCell>
-                <CTableHeaderCell class="text-center"> Sección</CTableHeaderCell>
-                <CTableHeaderCell class="text-center"> Asistencia</CTableHeaderCell>
-                <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-
-            <CTableBody>
-              <template v-if="!alumnos.length">
+              <CTableHead class="modern-table-header text-center">
                 <CTableRow>
-                  <CTableDataCell colspan="7" class="list-empty-message py-4">
-                    No hay registros para mostrar.
-                  </CTableDataCell>
+                  <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Grado </CTableHeaderCell>
+                  <CTableHeaderCell class="text-center"> Sección</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center"> Asistencia</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
                 </CTableRow>
-              </template>
-              <template v-else>
-                <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
-                  <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
-                  <CTableDataCell class="fw-semibold text-left">{{ alumno.apellidos }}</CTableDataCell>
-                  <CTableDataCell class="text-left">{{ alumno.nombres }}</CTableDataCell>
-                  <CTableDataCell class="text-center">{{ alumno.grade }}° </CTableDataCell>
-                  <CTableDataCell class="text-center"> {{ alumno.section }} </CTableDataCell>
+              </CTableHead>
 
-                  <CTableDataCell class="text-center">
-                    <CBadge :color="colorEstado(alumno.asistencia_estado)" class="px-3 py-2">
-                      {{ textoEstado(alumno.asistencia_estado) }}
-                    </CBadge>
-                  </CTableDataCell>
+              <CTableBody>
+                <template v-if="!alumnos.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="7" class="list-empty-message py-4">
+                      No hay registros para mostrar.
+                    </CTableDataCell>
+                  </CTableRow>
+                </template>
+                <template v-else>
+                  <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
+                    <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
+                    <CTableDataCell class="fw-semibold text-left">{{ alumno.apellidos }}</CTableDataCell>
+                    <CTableDataCell class="text-left">{{ alumno.nombres }}</CTableDataCell>
+                    <CTableDataCell class="text-center">{{ alumno.grade }}° </CTableDataCell>
+                    <CTableDataCell class="text-center"> {{ alumno.section }} </CTableDataCell>
 
-                  <CTableDataCell class="text-center">
-                    <i class="fas fa-user-check"
-                      :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'" :style="{
-                        cursor: alumno.asistencia_estado === 'F' ? 'pointer' : 'not-allowed',
-                        fontSize: '16px',
-                        opacity: alumno.asistencia_estado === 'F' ? 1 : 0.5
-                      }" @click="abrirModalAsistencia(alumno)"></i>
+                    <CTableDataCell class="text-center">
+                      <CBadge :color="colorEstado(alumno.asistencia_estado)" class="px-3 py-2">
+                        {{ textoEstado(alumno.asistencia_estado) }}
+                      </CBadge>
+                    </CTableDataCell>
 
-                  </CTableDataCell>
-                </CTableRow>
-              </template>
-            </CTableBody>
+                    <CTableDataCell class="text-center">
+                      <i class="fas fa-user-check"
+                        :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'" :style="{
+                          cursor: alumno.asistencia_estado === 'F' ? 'pointer' : 'not-allowed',
+                          fontSize: '16px',
+                          opacity: alumno.asistencia_estado === 'F' ? 1 : 0.5
+                        }" @click="abrirModalAsistencia(alumno)"></i>
 
-          </CTable>
+                    </CTableDataCell>
+                  </CTableRow>
+                </template>
+              </CTableBody>
 
-          <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">
+            </CTable>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mt-4 p-2 px-3">
             <CButton color="primary" variant="outline" :disabled="!previousPage" @click="fetchAlumnos(currentPage - 1)"
               class="d-flex align-items-center gap-2">
               <i class="fas fa-chevron-left"></i>
@@ -211,13 +213,11 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import AssistanceService from '@/services/AssistanceService'
 import { textoEstado, colorEstado } from '@/utils/utils'
-import { toastSuccess } from '../../../utils/alerts'
+import { toastError, toastSuccess } from '../../../utils/alerts'
+import Swal from 'sweetalert2'
 
-
-const router = useRouter()
 
 const alumnos = ref([])
 const search = ref('')
@@ -260,7 +260,6 @@ const fetchAlumnos = async (page = 1) => {
 }
 
 
-import Swal from 'sweetalert2'
 
 const abrirModalAsistencia = async (alumno) => {
 
@@ -302,12 +301,8 @@ const registrarAsistencia = async (alumno) => {
     fetchAlumnos(currentPage.value)
 
   } catch (error) {
-
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudo registrar la asistencia'
-    })
+    const mensaje = error.response?.data?.mensaje || 'Error al registrar asistencia'
+    toastError(mensaje)
 
   }
 
@@ -327,59 +322,6 @@ onMounted(() => {
 })
 </script>
 
-<!-- 
-<script setup>
-import { ref, onBeforeUnmount } from 'vue'
-import { BrowserQRCodeReader } from '@zxing/browser'
-import AssistanceService from "@/services/AssistanceService";
-import Swal from 'sweetalert2'
+<style scoped>
 
-const dniDetectado = ref('')
-const scanning = ref(false)
-let codeReader = null
-let stream = null
-let selectedDeviceId = null
-let decodeControl = null
-
-const videoRef = ref(null);
-
-
-// === Función para iniciar la cámara y escaneo ===
-async function empezarScan() {
-  if (scanning.value) return
-  scanning.value = true
-
-  try {
-   await registrarAsistencia(dni)
-
-  } catch (error) {
-    console.error('❌ Error al iniciar cámara:', error)
-    Swal.fire('Error', 'No se pudo iniciar la cámara.', 'error')
-    scanning.value = false
-  }
-}
-
-async function registrarAsistencia(dni) {
-  try {
-    const response = await AssistanceService.registrarAsistenciaAuxiliar(dni)
-    Swal.fire({
-      icon: 'success',
-      title: 'Asistencia registrada',
-      text: `Usuario con DNI ${dni} registrado correctamente.`,
-      confirmButtonText: 'Aceptar'
-    })
-  } catch (error) {
-    console.error('❌ Error al registrar asistencia:', error)
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudo registrar la asistencia.',
-      confirmButtonText: 'Aceptar'
-    })
-  }
-}
-
-
-</script> -->
-
-<style scoped></style>
+</style>

@@ -1,36 +1,70 @@
 <template>
-  <div>
-    <CardComponent title="Lista de Docentes" style="margin: 20px 10px;">
-      <TramiteListShell>
-        <template #toolbar>
-          <div class="box-tools">
-            <CRow class="mb-3">
-              <CCol>
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <div class="mb-3">
+              <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
+                <i class="fas fa-chalkboard-teacher me-2"></i>
+                Lista de docentes
+              </h4>
+            </div>
+            <CRow class="g-2 align-items-end">
+              <CCol xs="12" md>
                 <CInputGroup>
-                  <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-                    aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-                  <CButton type="button" color="primary" id="button-addon2" @click="listAdministrativeService(searchData)">Buscar</CButton>
+                  <CFormInput
+                    v-model="searchData"
+                    placeholder="Buscar por apellido, nombre o DNI"
+                    aria-label="Buscar por apellido, nombre o DNI"
+                    aria-describedby="button-addon2"
+                  />
+                  <CButton
+                    type="button"
+                    color="primary"
+                    id="button-addon2"
+                    @click="listAdministrativeService(searchData)"
+                  >
+                    Buscar
+                  </CButton>
                 </CInputGroup>
               </CCol>
-              <CCol></CCol>
-              <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+              <CCol xs="12" md="auto" class="d-flex justify-content-md-end">
+                <CButton color="info" class="text-white" @click="openCreateModal()">Nuevo</CButton>
               </CCol>
             </CRow>
-          </div>
-        </template>
-      <ElegantCrudList :columns="listColumns" :data="teachers">
-        <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-                <CIcon :content="cilPencil" size="lg"></CIcon>
-              </CButton>
-              <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-                <CIcon :content="cilTrash" size="lg"></CIcon>
-              </CButton>
-        </template>
-      </ElegantCrudList>
-      </TramiteListShell>
-    </CardComponent>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="list-with-pagination-wrap">
+              <ElegantCrudList
+                :columns="listColumns"
+                :data="teachers"
+                empty-message="No hay docentes para mostrar."
+                empty-hint="Prueba otra búsqueda o usa «Nuevo» para registrar un docente."
+                empty-icon="👨‍🏫"
+              >
+              <template #actions="{ item }">
+                <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+                  <CIcon :content="cilPencil" size="lg"></CIcon>
+                </CButton>
+                <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+                  <CIcon :content="cilTrash" size="lg"></CIcon>
+                </CButton>
+              </template>
+            </ElegantCrudList>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
 
     <!-- Modal para Crear/Editar Profesor -->
     <CModal :visible="isModalOpen" scrollable size="lg" @close="() => { isModalOpen = false }"
@@ -111,16 +145,13 @@
         </CButton>
       </CModalFooter>
     </CModal>
-  </div>
 </template>
 
 <script setup>
 import TeacherService from '@/services/TeacherService'
 import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
-import CardComponent from '@/components/cruds/CardComponent.vue';
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
-import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
 
 const teachers = ref([]);
@@ -171,8 +202,15 @@ const openCreateModal = () => {
 
 const openEditModal = async (id) => {
   const response = await TeacherService.getItem(id);
-  idItemSelected.value = response.data.data.id;
-  teacherData.value = { ...response.data.data };
+  const row = { ...response.data.data };
+  idItemSelected.value = row.id;
+  const emailRaw = row.user?.email ?? '';
+  delete row.user;
+  teacherData.value = {
+    ...row,
+    email: typeof emailRaw === 'string' ? emailRaw.replace('@ierp.edu.pe', '') : '',
+    password: '',
+  };
   isEditMode.value = true;
   isModalOpen.value = true;
 };

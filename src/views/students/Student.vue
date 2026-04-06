@@ -1,10 +1,17 @@
 <template>
-  <div>
-    <CardComponent title="Lista de Alumnos" style="margin: 20px 10px;">
-      <TramiteListShell>
-        <template #toolbar>
-          <div class="box-tools">
-            <CRow class="mb-3 g-2 align-items-end">
+  <CContainer fluid class="px-2 px-md-3">
+    <!-- Tarjeta: título y filtros -->
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <div class="mb-3">
+              <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
+                <i class="fas fa-users me-2"></i>
+                Lista de alumnos
+              </h4>
+            </div>
+            <CRow class="g-2 align-items-end">
               <CCol xs="12" md="6" lg="3">
                 <CFormInput
                   v-model="searchData"
@@ -69,57 +76,75 @@
                 </CButton>
               </CCol>
             </CRow>
-          </div>
-        </template>
-        <ElegantCrudList :columns="listColumns" :data="alumnos">
-          <template #actions="{ item }">
-            <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.user_id)">
-              <CIcon :content="cilPencil" size="lg"></CIcon>
-            </CButton>
-            <CButton color="danger" class="text-white" @click.stop="deleteItem(item.user_id)">
-              <CIcon :content="cilTrash" size="lg"></CIcon>
-            </CButton>
-          </template>
-        </ElegantCrudList>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-        <div
-          v-if="meta.total > 0"
-          class="d-flex flex-wrap justify-content-between align-items-center gap-2 mt-3 px-1"
-        >
-          <small class="text-body-secondary">
-            Mostrando {{ rangeStart }}–{{ rangeEnd }} de {{ meta.total }}
-          </small>
-          <CPagination class="mb-0 flex-wrap" aria-label="Paginación de estudiantes">
-            <CPaginationItem
-              href="#"
-              :disabled="meta.current_page <= 1"
-              aria-label="Anterior"
-              @click.prevent="goPage(meta.current_page - 1)"
-            >
-              ‹
-            </CPaginationItem>
-            <CPaginationItem
-              v-for="p in visiblePages"
-              :key="p"
-              href="#"
-              :active="p === meta.current_page"
-              @click.prevent="goPage(p)"
-            >
-              {{ p }}
-            </CPaginationItem>
-            <CPaginationItem
-              href="#"
-              :disabled="meta.current_page >= meta.last_page"
-              aria-label="Siguiente"
-              @click.prevent="goPage(meta.current_page + 1)"
-            >
-              ›
-            </CPaginationItem>
-          </CPagination>
-        </div>
-      </TramiteListShell>
-    </CardComponent>
-  </div>
+    <!-- Tarjeta: tabla y paginación -->
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="list-with-pagination-wrap">
+              <ElegantCrudList
+                :columns="listColumns"
+                :data="alumnos"
+                empty-message="No hay estudiantes que coincidan con la búsqueda o los filtros."
+                empty-hint="Ajusta los criterios, limpia los filtros o registra un nuevo estudiante."
+                empty-icon="👥"
+              >
+                <template #actions="{ item }">
+                  <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.user_id)">
+                    <CIcon :content="cilPencil" size="lg"></CIcon>
+                  </CButton>
+                  <CButton color="danger" class="text-white" @click.stop="deleteItem(item.user_id)">
+                    <CIcon :content="cilTrash" size="lg"></CIcon>
+                  </CButton>
+                </template>
+              </ElegantCrudList>
+
+              <div
+                v-if="meta.total > 0"
+                class="modern-list-pagination-bar d-flex flex-wrap justify-content-between align-items-center gap-2"
+              >
+              <small class="text-body-secondary">
+                Mostrando {{ rangeStart }}–{{ rangeEnd }} de {{ meta.total }}
+              </small>
+              <CPagination class="mb-0 flex-wrap" aria-label="Paginación de estudiantes">
+                <CPaginationItem
+                  href="#"
+                  :disabled="meta.current_page <= 1"
+                  aria-label="Anterior"
+                  @click.prevent="goPage(meta.current_page - 1)"
+                >
+                  ‹
+                </CPaginationItem>
+                <CPaginationItem
+                  v-for="p in visiblePages"
+                  :key="p"
+                  href="#"
+                  :active="p === meta.current_page"
+                  @click.prevent="goPage(p)"
+                >
+                  {{ p }}
+                </CPaginationItem>
+                <CPaginationItem
+                  href="#"
+                  :disabled="meta.current_page >= meta.last_page"
+                  aria-label="Siguiente"
+                  @click.prevent="goPage(meta.current_page + 1)"
+                >
+                  ›
+                </CPaginationItem>
+              </CPagination>
+              </div>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
 
   <ImportStudents v-model:isOpenModal="isOpenModalImportStudents" @updateData="onImportFinished" />
 </template>
@@ -131,9 +156,7 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted, computed } from 'vue';
 import Swal from 'sweetalert2'
 import ImportStudents from './ImportStudents.vue';
-import CardComponent from '@/components/cruds/CardComponent.vue';
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
-import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
 
 const isOpenModalImportStudents = ref(false);

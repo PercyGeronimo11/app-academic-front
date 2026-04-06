@@ -13,11 +13,11 @@ export default {
   },
   
   async getItem(id) {
-    return await axios.get(`${API_URL}/teacher/get`,{
-      params: {
-        id: id
-      },
-    });
+    const config = {};
+    if (id != null && id !== '') {
+      config.params = { id };
+    }
+    return await axios.get(`${API_URL}/teacher/get`, config);
   },
 
   async createItem(data) {
