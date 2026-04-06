@@ -187,20 +187,13 @@ export default [
     roles: ['ESTUDIANTE'],
   },
 
-  //MESA_PARTES
-  {
-    component: 'CNavItem',
-    name: 'Solicitudes de Permiso',
-    to: '/mesa-futs',
-    icon: 'cil-options',
-    roles: ['MESA_PARTES'],
-  },
+  //SECRETARIA
   {
     component: 'CNavItem',
     name: 'Trámites (Mesa)',
     to: '/mesa-tramites',
     icon: 'cil-file',
-    roles: ['MESA_PARTES'],
+    roles: ['SECRETARIA'],
   },
   {
     component: 'CNavItem',
