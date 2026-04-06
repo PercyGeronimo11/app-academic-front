@@ -104,6 +104,14 @@ export default [
     icon: 'cil-notes',
     roles: ['AUXILIAR'],
   },
+  {
+    component: 'CNavItem',
+    name: 'Mis Trámites',
+    to: '/myPaperworks',
+    icon: 'cil-file',
+    roles: ['ESTUDIANTE'],
+  },
+
 
 
   {
@@ -200,43 +208,6 @@ export default [
     ],
   },
 
-  {
-    component: 'CNavItem',
-    name: 'Mis Trámites',
-    to: '/myPaperworks',
-    icon: 'cil-file',
-    roles: ['ESTUDIANTE'],
-  },
-
-  //MESA_PARTES
-  {
-    component: 'CNavItem',
-    name: 'Solicitudes de Permiso',
-    to: '/mesa-futs',
-    icon: 'cil-options',
-    roles: ['MESA_PARTES'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Trámites (Mesa)',
-    to: '/mesa-tramites',
-    icon: 'cil-file',
-    roles: ['MESA_PARTES'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Trámites (Administración)',
-    to: '/admin-tramites',
-    icon: 'cil-file',
-    roles: ['DIRECCION'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Permisos derivados',
-    to: '/auxiliar-tramites',
-    icon: 'cil-notes',
-    roles: ['AUXILIAR'],
-  },
 
 
   // ---------------------------------- PLANTILLA -------------------------
