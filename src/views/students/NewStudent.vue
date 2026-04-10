@@ -8,9 +8,14 @@
         <CCardBody>
           <CForm @submit.prevent="submitToCreate()">
             <CContainer>
-              <CFormLabel><strong>Datos del Estudiante: </strong> </CFormLabel>
-              <CRow class="mb-4">
-                <CCol>
+              <p class="text-body-secondary small mb-3 mb-md-4">
+                Complete los datos del estudiante. Los apartados marcados como opcionales pueden dejarse en blanco.
+              </p>
+
+              <!-- Identificación -->
+              <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Identificación</h6>
+              <CRow class="g-3 mb-4">
+                <CCol xs="12" md="4">
                   <CFormInput
                     v-model="alumnoData.dni"
                     label="DNI"
@@ -18,15 +23,28 @@
                     required
                   />
                 </CCol>
-                <CCol>
+                <CCol xs="12" md="4">
+                  <CFormInput
+                    v-model="alumnoData.student_code"
+                    label="Código de estudiante"
+                    placeholder="Opcional — matrícula o código interno"
+                    maxlength="14"
+                  />
+                </CCol>
+              </CRow>
+
+              <!-- Nombre completo -->
+              <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Nombre completo</h6>
+              <CRow class="g-3 mb-4">
+                <CCol xs="12" md="4">
                   <CFormInput
                     v-model="alumnoData.name"
                     label="Nombres"
-                    placeholder="Nombre"
+                    placeholder="Nombres"
                     required
                   />
                 </CCol>
-                <CCol>
+                <CCol xs="12" md="4">
                   <CFormInput
                     v-model="alumnoData.surname_father"
                     label="Apellido paterno"
@@ -34,7 +52,7 @@
                     required
                   />
                 </CCol>
-                <CCol>
+                <CCol xs="12" md="4">
                   <CFormInput
                     v-model="alumnoData.surname_mother"
                     label="Apellido materno"
@@ -43,28 +61,55 @@
                   />
                 </CCol>
               </CRow>
-              <CRow class="mb-4">
-                <CCol md="3">
+
+              <!-- Grado y datos personales -->
+              <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Grado y datos personales</h6>
+              <CRow class="g-3 mb-4">
+                <CCol xs="12" sm="6" md="3">
                   <CFormSelect
                     v-model="selectedGrade"
                     label="Grado"
                     required
                   >
-                    <option disabled value="">Grado</option>
+                    <option disabled value="">Seleccione</option>
                     <option v-for="g in GRADES" :key="g" :value="g">{{ g }}</option>
                   </CFormSelect>
                 </CCol>
-                <CCol md="3">
+                <CCol xs="12" sm="6" md="3">
                   <CFormSelect
                     v-model="selectedSection"
                     label="Sección"
                     required
                   >
-                    <option disabled value="">Sección</option>
+                    <option disabled value="">Seleccione</option>
                     <option v-for="s in SECTIONS" :key="s" :value="s">{{ s }}</option>
                   </CFormSelect>
                 </CCol>
-                <CCol md="6">
+                <CCol xs="12" sm="6" md="3">
+                  <CFormInput
+                    v-model="alumnoData.birth_date"
+                    label="Fecha de nacimiento"
+                    type="date"
+                    required
+                  />
+                </CCol>
+                <CCol xs="12" sm="6" md="3">
+                  <CFormSelect
+                    v-model="alumnoData.sex"
+                    label="Sexo"
+                    aria-label="Sexo del estudiante"
+                    required
+                  >
+                    <option value="M">Masculino</option>
+                    <option value="F">Femenino</option>
+                  </CFormSelect>
+                </CCol>
+              </CRow>
+
+              <!-- Acceso al sistema -->
+              <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Acceso al sistema</h6>
+              <CRow class="g-3 mb-2">
+                <CCol xs="12" md="7">
                   <CFormLabel for="email-local">Correo institucional (generado)</CFormLabel>
                   <div class="input-group">
                     <input
@@ -77,11 +122,11 @@
                     />
                     <span class="input-group-text">@ierp.edu.pe</span>
                   </div>
-                  <small class="text-body-secondary">
+                  <small class="text-body-secondary d-block mt-1">
                     Primera letra del nombre, apellido paterno completo y primera letra del apellido materno.
                   </small>
                 </CCol>
-                <CCol md="6">
+                <CCol xs="12" md="5">
                   <CFormInput
                     v-model="alumnoData.password"
                     label="Contraseña"
@@ -91,60 +136,46 @@
                   />
                 </CCol>
               </CRow>
-              <CRow class="mb-3">
-                <CCol>
+
+              <!-- Domicilio -->
+              <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3 mt-4">Domicilio</h6>
+              <CRow class="g-3 mb-4">
+                <CCol xs="12">
                   <CFormInput
                     v-model="alumnoData.address"
-                    label="Dirección (opcional)"
-                    placeholder="Dirección"
+                    label="Dirección"
+                    placeholder="Opcional"
                   />
-                </CCol>
-                <CCol>
-                  <CFormInput
-                    v-model="alumnoData.birth_date"
-                    label="Fecha de nacimiento"
-                    type="date"
-                    required
-                  />
-                </CCol>
-                <CCol>
-                  <CFormSelect
-                    v-model="alumnoData.sex"
-                    label="Sexo"
-                    aria-label="Sexo del estudiante"
-                    required
-                  >
-                    <option value="M">Masculino</option>
-                    <option value="F">Femenino</option>
-                  </CFormSelect>
                 </CCol>
               </CRow>
-              <CRow class="mb-4">
-                <CCol :xs="12">
-                  <CFormLabel><strong>Datos del apoderado</strong> <span class="text-body-secondary fw-normal">(opcional)</span></CFormLabel>
-                </CCol>
-                <CCol>
+
+              <!-- Apoderado -->
+              <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">
+                Datos del apoderado <span class="text-body-secondary fw-normal small">(opcional)</span>
+              </h6>
+              <CRow class="g-3 mb-4">
+                <CCol xs="12" md="6" lg="3">
                   <CFormInput
                     v-model="alumnoData.representative_dni"
-                    label="DNI"
-                    placeholder="DNI del apoderado"
+                    label="DNI del apoderado"
+                    placeholder="DNI"
                   />
                 </CCol>
-                <CCol>
+                <CCol xs="12" md="6" lg="3">
                   <CFormInput
                     v-model="alumnoData.representative_name"
                     label="Nombre completo"
                     placeholder="Nombre del apoderado"
                   />
                 </CCol>
-                <CCol>
+                <CCol xs="12" md="6" lg="3">
                   <CFormInput
                     v-model="alumnoData.representative_phone"
                     label="Teléfono"
                     placeholder="Teléfono"
                   />
                 </CCol>
-                <CCol>
+                <CCol xs="12" md="6" lg="3">
                   <CFormInput
                     v-model="alumnoData.representative_relationship"
                     label="Parentesco"
@@ -152,15 +183,15 @@
                   />
                 </CCol>
               </CRow>
-              <CRow class="mt-3 justify-content-end">
-                <CCol>
-                  <router-link to="/students" class="CButton" color="info text-white">
-                    <CButton color="secondary">Cancelar</CButton>
+              <CRow class="mt-4 pt-3 border-top justify-content-between align-items-center g-2">
+                <CCol xs="12" sm="auto">
+                  <router-link to="/students">
+                    <CButton color="secondary" variant="outline">Cancelar</CButton>
                   </router-link>
                 </CCol>
-                <CCol>
-                  <CButton class="mx-5" color="primary" type="submit">
-                    Registrar
+                <CCol xs="12" sm="auto" class="text-sm-end">
+                  <CButton color="primary" type="submit">
+                    Registrar estudiante
                   </CButton>
                 </CCol>
               </CRow>
@@ -186,10 +217,11 @@ const gradeSections = ref([]);
 const GRADES = ["1", "2", "3", "4", "5"];
 const SECTIONS = ["A", "B", "C", "D"];
 
-const selectedGrade = ref("");
-const selectedSection = ref("");
+const selectedGrade = ref("1");
+const selectedSection = ref("A");
 
 const alumnoData = ref({
+  student_code: "",
   name: "",
   surname_father: "",
   surname_mother: "",

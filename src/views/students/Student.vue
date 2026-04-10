@@ -95,10 +95,10 @@
                 empty-icon="👥"
               >
                 <template #actions="{ item }">
-                  <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.user_id)">
+                  <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.id)">
                     <CIcon :content="cilPencil" size="lg"></CIcon>
                   </CButton>
-                  <CButton color="danger" class="text-white" @click.stop="deleteItem(item.user_id)">
+                  <CButton color="danger" class="text-white" @click.stop="deleteItem(item.id)">
                     <CIcon :content="cilTrash" size="lg"></CIcon>
                   </CButton>
                 </template>

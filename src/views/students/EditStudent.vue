@@ -16,54 +16,62 @@
                 </CCardHeader>
 
                 <CCardBody>
-                  <CRow class="mb-3">
-                    <CCol xs="12" md="3">
+                  <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Identificación</h6>
+                  <CRow class="g-3 mb-4">
+                    <CCol xs="12" md="4">
                       <CFormInput v-model="alumnoData.dni" label="DNI" required />
                     </CCol>
+                    <CCol xs="12" md="4">
+                      <CFormInput
+                        v-model="alumnoData.student_code"
+                        label="Código de estudiante"
+                        placeholder="Opcional"
+                        maxlength="14"
+                      />
+                    </CCol>
+                  </CRow>
 
-                    <CCol xs="12" md="3">
+                  <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Nombre completo</h6>
+                  <CRow class="g-3 mb-4">
+                    <CCol xs="12" md="4">
                       <CFormInput v-model="alumnoData.name" label="Nombres" required />
                     </CCol>
-
-                    <CCol xs="12" md="3">
+                    <CCol xs="12" md="4">
                       <CFormInput v-model="alumnoData.surname_father" label="Apellido paterno" required />
                     </CCol>
-
-                    <CCol xs="12" md="3">
+                    <CCol xs="12" md="4">
                       <CFormInput v-model="alumnoData.surname_mother" label="Apellido materno" required />
                     </CCol>
                   </CRow>
 
-                  <CRow class="mb-3">
-                    <CCol xs="12" md="6">
+                  <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Grado y datos personales</h6>
+                  <CRow class="g-3 mb-4 align-items-end">
+                    <CCol xs="12" sm="6" md="2">
                       <CFormInput v-model="alumnoData.grade_section.grade" label="Grado" disabled />
                     </CCol>
-
-                    <CCol xs="12" md="6">
+                    <CCol xs="12" sm="6" md="2">
                       <CFormInput v-model="alumnoData.grade_section.section" label="Sección" disabled />
                     </CCol>
-
-                    <CCol xs="12" md="3">
+                    <CCol xs="12" sm="6" md="3">
                       <CFormInput v-model="alumnoData.birth_date" type="date" label="Fecha de nacimiento" required />
                     </CCol>
-
-                    <CCol xs="12" md="3">
+                    <CCol xs="12" sm="6" md="3">
                       <CFormSelect v-model="alumnoData.sex" label="Sexo" required>
                         <option value="M">Masculino</option>
                         <option value="F">Femenino</option>
                       </CFormSelect>
                     </CCol>
-
-                    <CCol class="d-flex align-items-end">
-                      <CButton color="primary" @click="obtenerQrCode()">
+                    <CCol xs="12" md="2" class="d-flex align-items-end pb-1">
+                      <CButton color="info" class="text-white w-100" @click="obtenerQrCode()">
                         Ver QR
                       </CButton>
                     </CCol>
                   </CRow>
 
-                  <CRow>
-                    <CCol>
-                      <CFormInput v-model="alumnoData.address" label="Dirección (opcional)" />
+                  <h6 class="text-primary fw-semibold border-bottom pb-2 mb-3">Domicilio</h6>
+                  <CRow class="g-3">
+                    <CCol xs="12">
+                      <CFormInput v-model="alumnoData.address" label="Dirección" placeholder="Opcional" />
                     </CCol>
                   </CRow>
                 </CCardBody>
@@ -129,16 +137,15 @@
               </CCard>
 
               <!-- BOTONES -->
-              <CRow class="mt-3 mx-5">
-                <CCol>
+              <CRow class="mt-4 pt-3 border-top justify-content-between align-items-center g-2">
+                <CCol xs="12" sm="auto">
                   <router-link to="/students">
-                    <CButton color="secondary">Regresar</CButton>
+                    <CButton color="secondary" variant="outline">Regresar</CButton>
                   </router-link>
                 </CCol>
-
-                <CCol class="text-end">
+                <CCol xs="12" sm="auto" class="text-sm-end">
                   <CButton color="primary" type="submit">
-                    Actualizar
+                    Guardar cambios
                   </CButton>
                 </CCol>
               </CRow>
@@ -183,6 +190,7 @@ const URL_DJANGO_MEDIA = import.meta.env.VITE_URL_DJANGO_MEDIA;
 const router = useRouter();
 const studentId = ref("");
 const alumnoData = ref({
+  student_code: "",
   name: "",
   surname_father: "",
   surname_mother: "",
@@ -309,7 +317,16 @@ const submitToEdit = async () => {
 
 const obtenerQrCode = async () => {
   try {
-    const response = await StudentService.getPathImageQrCode(studentId.value);
+    const idForQr = alumnoData.value.user_id;
+    if (idForQr == null || idForQr === '') {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin usuario asociado',
+        text: 'No hay usuario vinculado para obtener el código QR.',
+      });
+      return;
+    }
+    const response = await StudentService.getPathImageQrCode(idForQr);
     qrImage.value = `${URL_DJANGO_MEDIA}/${response.data.qr_code}`;
     console.log("QR obtenido:", qrImage.value);
     showQRModal.value = true;
