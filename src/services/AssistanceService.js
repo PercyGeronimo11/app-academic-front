@@ -11,9 +11,9 @@ export default {
   // },
 
   // Para ADMIN
-  getResumenDiario() {
-    return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-totales/`);
-  },
+  // getResumenDiario() {
+  //   return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-totales/`);
+  // },
 
   getAsistenciaBySeccion(params) {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-by-seccion/`, {params});

@@ -54,12 +54,12 @@
             <div v-if="scanning" class="scanner-line"></div>
           </div>
 
-          <!-- DNI detectado -->
-          <div v-if="dniDetectado" class="mt-3">
+          <!-- Código de estudiante detectado -->
+          <div v-if="codeStudentDetectado" class="mt-3">
 
             <CBadge color="info" class="px-3 py-2 fs-6">
               <i class="fas fa-id-card me-2"></i>
-              DNI detectado: {{ dniDetectado }}
+              Alumno detectado: {{ codeStudentDetectado }}
             </CBadge>
 
           </div>
@@ -139,7 +139,7 @@ import { toastSuccess,toastError } from '@/utils/alerts'
 const { fechaHora } = useFechaHora()
 
 
-const dniDetectado = ref(null)
+const codeStudentDetectado = ref(null)
 const scanning = ref(false)
 let codeReader = null
 let stream = null
@@ -234,11 +234,11 @@ async function empezarScan() {
     // Mantener la lógica original de detección continua
     decodeControl = codeReader.decodeFromVideoDevice(selectedDeviceId, videoRef.value, async (result, err) => {
       if (result) {
-        const dni = result.text.trim()
-        if (dni !== dniDetectado.value) {
-          dniDetectado.value = dni
-          console.log('✅ DNI detectado:', dni)
-          await registrarAsistencia(dni)
+        const code_student = result.text.trim()
+        if (code_student !== codeStudentDetectado.value) {
+          codeStudentDetectado.value = code_student
+          console.log('✅ Código de estudiante detectado:', code_student)
+          await registrarAsistencia(code_student)
         }
       }
 
@@ -276,18 +276,18 @@ function apagarCamara() {
   }
 
   scanning.value = false
-  dniDetectado.value = null
-  console.log('🔹 DNI detectado reseteado');
+  codeStudentDetectado.value = null
+  console.log('🔹 Código de estudiante detectado reseteado');
 }
 
 // === Función para registrar asistencia ===
-async function registrarAsistencia(dni) {
+async function registrarAsistencia(code_student) {
   try {
-    await AssistanceService.VAuxiliar_registrarAsistencia(dni)
-    toastSuccess(`Asistencia registrada para DNI: ${dni}`)
+    await AssistanceService.VAuxiliar_registrarAsistencia(code_student)
+    toastSuccess(`Asistencia registrada`)
   } catch (error) {
     console.error('❌ Error al registrar asistencia:', error)
-    toastError(`No se pudo registrar la asistencia para DNI: ${dni}`)
+    toastError(`No se pudo registrar la asistencia para código de estudiante: ${code_student}`)
   }
 }
 

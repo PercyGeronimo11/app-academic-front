@@ -2,7 +2,10 @@
 export const  textoEstado = (estado) => {
 
     if (estado === 'A') return 'Asistió'
-    if (estado === 'T') return 'Tardanza'
+    if (estado === 'TL') return 'Tardanza Leve'
+    if (estado === 'TM') return 'Tardanza Moderada'
+    if (estado === 'TG') return 'Tardanza Grave'
+    if (estado === 'TE') return 'Tardanza Extrema'
     if (estado === 'F') return 'Faltó'
 
     return 'Sin registro'
@@ -11,7 +14,10 @@ export const  textoEstado = (estado) => {
 export const colorEstado = (estado) => {
 
     if (estado === 'A') return 'success'
-    if (estado === 'T') return 'warning'
+    if (estado === 'TL') return 'bg-orange-1 text-white  px-3 py-1 fs-6'
+    if (estado === 'TM') return 'bg-orange-2 text-white  px-3 py-1 fs-6'
+    if (estado === 'TG') return 'bg-orange-3 text-white  px-3 py-1 fs-6'
+    if (estado === 'TE') return 'bg-orange-4 text-white  px-3 py-1 fs-6'
     if (estado === 'F') return 'danger'
 
     return 'secondary'
@@ -58,4 +64,21 @@ export const getFirstName = (fullName) => {
 
     return parts[0] ?? null;
 }
+
+
+
+
+export const getAttendanceClass = (type) => {
+  const classes = {
+    asistencia: 'bg-success text-white  px-3 py-1 fs-6',
+    tard_leve: 'bg-orange-1 text-white  px-3 py-1 fs-6',
+    tard_moderado: 'bg-orange-2 text-white  px-3 py-1 fs-6',
+    tard_grave: 'bg-orange-3 text-white  px-3 py-1 fs-6',
+    tard_extremo: 'bg-orange-4 text-white  px-3 py-1 fs-6',
+    faltas: 'bg-danger text-white  px-3 py-1 fs-6'
+  }
+
+  return classes[type] || 'bg-secondary text-white'
+}
+
 

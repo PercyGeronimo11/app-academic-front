@@ -11,7 +11,7 @@
             <div class="mb-2 mb-md-0">
               <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
                 <i class="fas fa-chart-line me-2"></i>
-                Seguimiento diario
+                Seguimiento diario por aula
               </h4>
             </div>
 
@@ -32,7 +32,7 @@
       <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-primary shadow">
           <CCardBody>
-            <div class="fs-6 fw-semibold">Total Registros</div>
+            <div class="fs-6 fw-semibold">Total Alumnos</div>
             <div class="fs-4 fw-semibold">
               {{ data.total_registros }} <span class="fs-6 fw-normal opacity-75">
                 ({{ porcentaje(data.total_registros) }}%)
@@ -45,9 +45,9 @@
       <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-success shadow">
           <CCardBody>
-            <div class="fs-6 fw-semibold">Total Asistencias</div>
+            <div class="fs-6 fw-semibold">Asistencias</div>
             <div class="fs-4 fw-semibold">
-              {{ data.total_presentes }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_presentes)
+              {{ data.t_asistencias }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_asistencias)
               }}%)</span>
             </div>
           </CCardBody>
@@ -56,11 +56,44 @@
 
       <!-- Tardanzas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard class="text-white bg-warning shadow">
+        <CCard :class="getAttendanceClass('tard_leve')">
           <CCardBody>
-            <div class="fs-6 fw-semibold">Total Tardanzas</div>
+            <div class="fs-6 fw-semibold">Tardanzas Leves</div>
             <div class="fs-4 fw-semibold">
-              {{ data.total_tardanzas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_tardanzas)
+              {{ data.t_tard_leve }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_leve)
+              }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+            <CCol sm="6" lg="3" class="mb-3">
+        <CCard :class="getAttendanceClass('tard_moderado')">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Tardanza Moderado</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.t_tard_moderado }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_moderado)
+              }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+            <CCol sm="6" lg="3" class="mb-3">
+        <CCard :class="getAttendanceClass('tard_grave')">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Tardanzas Grave</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.t_tard_grave }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_grave)
+              }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+            <CCol sm="6" lg="3" class="mb-3">
+        <CCard :class="getAttendanceClass('tard_extremo')">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Tardanzas Extremo</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.t_tard_extremo }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_extremo)
               }}%)</span>
             </div>
           </CCardBody>
@@ -69,11 +102,11 @@
 
       <!-- Faltas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard class="text-white bg-danger shadow">
+        <CCard :class="getAttendanceClass('faltas')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
-              {{ data.total_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_faltas)
+              {{ data.t_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_faltas)
               }}%)</span>
             </div>
           </CCardBody>
@@ -85,83 +118,84 @@
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <!-- <CCardHeader class="bg-white border-bottom py-2">
-            <div class="d-flex justify-content-between align-items-center">
-
-              <h5 class="fw-bold text-primary mb-0">
-                <i class="fas fa-chart-bar me-1"></i>
-                Seguimiento por aula
-              </h5>
-
-              <div class="d-flex align-items-center">
-                <span class="me-2 text-success fw-semibold ">
-                  En seguimiento <i class="fas fa-eye me-2"></i>
-                </span>
-              </div>
-            </div>
-          </CCardHeader> -->
-
-          <!-- BODY -->
           <CCardBody class="p-0">
             <div class="modern-table-shell">
-            <CTable hover responsive align="middle" class="mb-0 text-center">
-              <CTableHead class="modern-table-header text-center">
-                <CTableRow>
-                  <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Total</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Asistencias</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Tardanzas</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Faltas</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-
-              <!-- CUERPO -->
-              <CTableBody>
-                <template v-if="!secciones.length">
+              <CTable hover responsive align="middle" class="mb-0 text-center">
+                <CTableHead class="modern-table-header text-center">
                   <CTableRow>
-                    <CTableDataCell colspan="6" class="list-empty-message py-4">
-                      No hay registros para mostrar.
-                    </CTableDataCell>
+                    <CTableHeaderCell class="text-center">Aula</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Total</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Puntual</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Leve</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Moderada</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Grave</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Extrema</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center ">Faltas</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center ">Acciones</CTableHeaderCell>
                   </CTableRow>
-                </template>
-                <template v-else>
-                  <CTableRow v-for="item in secciones" :key="item.id">
+                </CTableHead>
 
-                    <CTableDataCell class="fw-semibold text-center">
-                      {{ item.grado }}° {{ item.seccion }}
-                    </CTableDataCell>
+                <!-- CUERPO -->
+                <CTableBody>
+                  <template v-if="!secciones.length">
+                    <CTableRow>
+                      <CTableDataCell colspan="6" class="list-empty-message py-4">
+                        No hay registros para mostrar.
+                      </CTableDataCell>
+                    </CTableRow>
+                  </template>
+                  <template v-else>
+                    <CTableRow v-for="item in secciones" :key="item.id">
 
-                    <CTableDataCell>
-                      <CBadge color="primary" class="px-3 py-1 fs-6">
-                        {{ item.total }}
-                      </CBadge>
-                    </CTableDataCell>
+                      <CTableDataCell class="fw-semibold text-center">
+                        {{ item.grado }}° {{ item.seccion }}
+                      </CTableDataCell>
 
-                    <CTableDataCell>
-                      <CBadge color="success" class="px-3 py-1 fs-6">
-                        {{ item.asistencias }}
-                      </CBadge>
-                    </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge color="primary" class="px-3 py-1 fs-6">
+                          {{ item.total }}
+                        </CBadge>
+                      </CTableDataCell>
 
-                    <CTableDataCell>
-                      <CBadge color="warning" class="px-3 py-1 fs-6">
-                        {{ item.tardanzas }}
-                      </CBadge>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge color="danger" class="px-3 py-1 fs-6">
-                        {{ item.faltas }}
-                      </CBadge>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
-                        @click="verDetalle(item)"></i>
-                    </CTableDataCell>
-                  </CTableRow>
-                </template>
-              </CTableBody>
-            </CTable>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('asistencia')">
+                          {{ item.t_asistencias }}
+                        </CBadge>
+                      </CTableDataCell>
+
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_leve')">
+                          {{ item.t_tard_leve }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_moderado')">
+                          {{ item.t_tard_moderado }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_grave')">
+                          {{ item.t_tard_grave }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_extremo')">
+                          {{ item.t_tard_extremo }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('faltas')">
+                          {{ item.t_faltas }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
+                          @click="verDetalle(item)"></i>
+                      </CTableDataCell>
+                    </CTableRow>
+                  </template>
+                </CTableBody>
+              </CTable>
             </div>
           </CCardBody>
         </CCard>
@@ -174,17 +208,21 @@
 import { ref, onMounted } from 'vue'
 import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
-import { CCard } from '@coreui/vue'
+import { CCard, CTableDataCell } from '@coreui/vue'
 import { useFechaHora } from '@/composables/useFechaHora'
+import { getAttendanceClass } from '@/utils/utils'
 
 const { fechaHora } = useFechaHora()
 const secciones = ref([])
 const router = useRouter()
 const data = ref({
   total_registros: 0,
-  total_presentes: 0,
-  total_tardanzas: 0,
-  total_faltas: 0
+  t_asistencias: 0,
+  t_tard_leve: 0,
+  t_tard_moderado: 0,
+  t_tard_grave: 0,
+  t_tard_extremo: 0,
+  t_faltas: 0
 })
 
 
@@ -217,3 +255,24 @@ onMounted(() => {
 })
 
 </script>
+<style scoped>
+.bg-orange-1 {
+  background-color: #eed306; 
+}
+
+.bg-orange-2 {
+  background-color: #ffb300;
+}
+
+.bg-orange-3 {
+  background-color: #fd841a;
+}
+
+.bg-orange-4 {
+  background-color: #fa6736;
+}
+.wrap-text {
+  white-space: normal !important;  /* permite salto */
+  line-height: 1.2;
+}
+</style>

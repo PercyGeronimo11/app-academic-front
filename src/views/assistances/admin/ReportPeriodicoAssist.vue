@@ -4,16 +4,25 @@
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <CCardBody class="py-3 px-4">
-            <CRow class="align-items-center">
-              <CCol md="8">
-                <h4 class="fw-bold text-primary mb-3">
-                  <i class="fas fa-chart-line me-2"></i>
-                  Reporte de asistencias
-                </h4>
 
-                <div class="d-flex flex-wrap align-items-center gap-2">
-                  <CFormSelect v-model="filtros.tipo" @change="onChangeTipo" style="width: 160px;">
+          <!-- 🔹 HEADER -->
+          <CCardHeader class="bg-white border-bottom py-3">
+            <h5 class="fw-bold text-primary mb-0">
+              <i class="fas fa-chart-line me-2"></i>
+              Reporte de asistencias
+            </h5>
+          </CCardHeader>
+
+          <CCardBody class="py-3 px-3 px-md-4">
+
+            <CRow class="gy-3 align-items-center">
+
+              <!-- 🔍 Filtros -->
+
+              <CCol xs="12" md="8">
+                <div class="d-flex flex-column flex-md-row gap-2">
+
+                  <CFormSelect v-model="filtros.tipo" @change="onChangeTipo" class="w-100 w-md-auto">
                     <option value="diario">Diario</option>
                     <option value="semanal">Semanal</option>
                     <option value="mensual">Mensual</option>
@@ -21,31 +30,47 @@
 
                   <!-- Fecha -->
                   <CFormInput v-if="filtros.tipo === 'diario' || filtros.tipo === 'semanal'" type="date"
-                    v-model="filtros.fecha" style="width: 150px;" />
+                    v-model="filtros.fecha" class="w-100 w-md-auto" />
 
                   <!-- Mes -->
-                  <CFormSelect v-if="filtros.tipo === 'mensual'" v-model="filtros.mes" style="width: 150px;">
+                  <CFormSelect v-if="filtros.tipo === 'mensual'" v-model="filtros.mes" class="w-100 w-md-auto">
                     <option v-for="mes in meses" :key="mes.value" :value="mes.value">
                       {{ mes.label }}
                     </option>
                   </CFormSelect>
 
-                  <!-- Botón -->
-                  <CButton color="primary" @click="consultarReporte">
+                  <!-- Botón consultar -->
+                  <CButton color="primary" @click="consultarReporte" class="w-100 w-md-auto">
                     <i class="fas fa-search me-1"></i> Consultar
                   </CButton>
 
                 </div>
               </CCol>
 
-              <CCol md="4" class="text-md-end mt-3 mt-md-0">
-                <CBadge color="dark" class="px-3 py-2 fs-6">
-                  <div class="my-1"> 📅 Desde : {{ data.fecha_inicio }}</div>
-                  <div class="my-1">📅 Hasta : {{ data.fecha_fin }}</div>
-                </CBadge>
+              <!-- 📊 Info + acciones -->
+              <CCol xs="12" md="4">
+                <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2">
+
+                  <!-- Rango de fechas -->
+                  <CBadge class="text-dark border px-3 py-2 text-center text-md-start">
+                    <small>
+                      📅 {{ formatDate(data.fecha_inicio) }} — {{ formatDate(data.fecha_fin) }}
+                    </small>
+                  </CBadge>
+
+                  <!-- Descargar Excel -->
+                  <CButton color="success" class="text-white w-100 w-md-auto" @click="descargarExcel">
+                    <i class="fas fa-file-excel me-1"></i>
+                    Descargar
+                  </CButton>
+
+                </div>
               </CCol>
+
             </CRow>
+
           </CCardBody>
+
         </CCard>
       </CCol>
     </CRow>
@@ -66,12 +91,12 @@
       </CCol>
 
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard class="text-white bg-success shadow">
+        <CCard :class="getAttendanceClass('asistencia')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Asistencias</div>
             <div class="fs-4 fw-semibold">
-              {{ data.total_presentes }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_presentes)
-              }}%)</span>
+              {{ data.t_asistencias }} <span class="fs-6 fw-normal opacity-75">
+                ({{ porcentaje(data.t_asistencias) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -79,12 +104,45 @@
 
       <!-- Tardanzas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard class="text-white bg-warning shadow">
+        <CCard :class="getAttendanceClass('tard_leve')">
           <CCardBody>
-            <div class="fs-6 fw-semibold">Total Tardanzas</div>
+            <div class="fs-6 fw-semibold">Tardanzas Leves</div>
             <div class="fs-4 fw-semibold">
-              {{ data.total_tardanzas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_tardanzas)
-              }}%)</span>
+              {{ data.t_tard_leve }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_leve)
+                }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+      <CCol sm="6" lg="3" class="mb-3">
+        <CCard :class="getAttendanceClass('tard_moderado')">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Tardanzas Moderadas</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.t_tard_moderado }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_moderado)
+                }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+      <CCol sm="6" lg="3" class="mb-3">
+        <CCard :class="getAttendanceClass('tard_grave')">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Tardanzas Grave</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.t_tard_grave }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_grave)
+                }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+      <CCol sm="6" lg="3" class="mb-3">
+        <CCard :class="getAttendanceClass('tard_extremo')">
+          <CCardBody>
+            <div class="fs-6 fw-semibold">Tardanzas Extrema</div>
+            <div class="fs-4 fw-semibold">
+              {{ data.t_tard_extremo }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_extremo)
+                }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -92,12 +150,12 @@
 
       <!-- Faltas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard class="text-white bg-danger shadow">
+        <CCard :class="getAttendanceClass('faltas')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
-              {{ data.total_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.total_faltas)
-              }}%)</span>
+              {{ data.t_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_faltas)
+                }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -108,84 +166,88 @@
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <CCardHeader class="bg-white border-bottom py-2">
-            <div class="d-flex justify-content-between align-items-center">
-              <h5 class="fw-bold  text-primary mb-0">
-                <i class="fas fa-chart-bar me-2"></i>
-                Seguimiento por aula
-              </h5>
-              <div class="d-flex align-items-center">
-                <CButton color="success" class="text-white" @click="descargarExcel">
-                  Descargar Excel
-                </CButton>
-              </div>
-            </div>
-          </CCardHeader>
 
-          <!-- BODY -->
           <CCardBody class="p-0">
 
             <div class="modern-table-shell">
-            <CTable hover responsive align="middle" class="mb-0 text-center">
+              <CTable hover responsive align="middle" class="mb-0 text-center">
 
-              <!-- CABECERA -->
-              <CTableHead class="modern-table-header text-center">
-                <CTableRow>
-                  <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Total</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Asistencias</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Tardanzas</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Faltas</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
-
-              <!-- CUERPO -->
-              <CTableBody>
-                <template v-if="!secciones.length">
+                <!-- CABECERA -->
+                <CTableHead class="modern-table-header text-center">
                   <CTableRow>
-                    <CTableDataCell colspan="6" class="list-empty-message py-4">
-                      No hay registros para mostrar.
-                    </CTableDataCell>
+                    <CTableHeaderCell class="text-center">Aula</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Total</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Puntual</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Leve</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Moderada</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Grave</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center wrap-text">Tardanza Extrema</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center ">Faltas</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center ">Acciones</CTableHeaderCell>
                   </CTableRow>
-                </template>
-                <template v-else>
-                  <CTableRow v-for="item in secciones" :key="item.id">
+                </CTableHead>
 
-                    <CTableDataCell class="fw-semibold text-center">
-                      {{ item.grado }}° {{ item.seccion }}
-                    </CTableDataCell>
+                <!-- CUERPO -->
+                <CTableBody>
+                  <template v-if="!secciones.length">
+                    <CTableRow>
+                      <CTableDataCell colspan="6" class="list-empty-message py-4">
+                        No hay registros para mostrar.
+                      </CTableDataCell>
+                    </CTableRow>
+                  </template>
+                  <template v-else>
+                    <CTableRow v-for="item in secciones" :key="item.id">
 
-                    <CTableDataCell>
-                      <CBadge color="primary" class="px-3 py-1 fs-6">
-                        {{ item.total }}
-                      </CBadge>
-                    </CTableDataCell>
+                      <CTableDataCell class="fw-semibold text-center">
+                        {{ item.grado }}° {{ item.seccion }}
+                      </CTableDataCell>
 
-                    <CTableDataCell>
-                      <CBadge color="success" class="px-3 py-1 fs-6">
-                        {{ item.asistencias }}
-                      </CBadge>
-                    </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge color="primary" class="px-3 py-1 fs-6">
+                          {{ item.total }}
+                        </CBadge>
+                      </CTableDataCell>
 
-                    <CTableDataCell>
-                      <CBadge color="warning" class="px-3 py-1 fs-6">
-                        {{ item.tardanzas }}
-                      </CBadge>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge color="danger" class="px-3 py-1 fs-6">
-                        {{ item.faltas }}
-                      </CBadge>
-                    </CTableDataCell>
-                    <CTableDataCell>
-                      <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
-                        @click="verDetalle(item)"></i>
-                    </CTableDataCell>
-                  </CTableRow>
-                </template>
-              </CTableBody>
-            </CTable>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('asistencia')">
+                          {{ item.t_asistencias }}
+                        </CBadge>
+                      </CTableDataCell>
+
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_leve')">
+                          {{ item.t_tard_leve }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_moderado')">
+                          {{ item.t_tard_moderado }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_grave')">
+                          {{ item.t_tard_grave }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('tard_extremo')">
+                          {{ item.t_tard_extremo }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <CBadge :class="getAttendanceClass('faltas')">
+                          {{ item.t_faltas }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell>
+                        <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
+                          @click="verDetalle(item)"></i>
+                      </CTableDataCell>
+                    </CTableRow>
+                  </template>
+                </CTableBody>
+              </CTable>
             </div>
           </CCardBody>
         </CCard>
@@ -218,8 +280,10 @@ import ChartDataLabels from 'chartjs-plugin-datalabels'
 import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
 import { CCard, CCardBody, CCol, CRow } from '@coreui/vue'
-import { meses } from '../../../utils/utils'
-import { exportarExcel } from '../../../utils/exportExcel'
+import { meses } from '@/utils/utils'
+import { formatDate } from '@/utils/time'
+import { exportarExcel } from '@/utils/exportExcel'
+import { getAttendanceClass } from '@/utils/utils'
 
 const router = useRouter()
 const secciones = ref([])
@@ -239,8 +303,11 @@ const filtros = ref({
 })
 
 const asistenciasArr = ref([])
-const tardanzasArr = ref([])
-const faltasArr = ref([])
+const list_tard_leve = ref([])
+const list_tard_moderado = ref([])
+const list_tard_grave = ref([])
+const list_tard_extremo = ref([])
+const list_faltas = ref([])
 const labelsArr = ref([])
 
 
@@ -250,20 +317,38 @@ const chartData = computed(() => ({
     {
       label: 'Asistencias',
       data: asistenciasArr.value,
-      backgroundColor: '#2eb85c',
-      barThickness: 10
+      backgroundColor: getAttendanceClass('tard_moderado'),
+      barThickness: 7
     },
     {
-      label: 'Tardanzas',
-      data: tardanzasArr.value,
+      label: 'Tardanza Leve',
+      data: list_tard_leve.value,
       backgroundColor: '#f9b115',
-      barThickness: 10
+      barThickness: 7
+    },
+    {
+      label: 'Tardanza Moderado',
+      data: list_tard_moderado.value,
+      backgroundColor: '#f9b115',
+      barThickness: 7
+    },
+    {
+      label: 'Tardanza Grave',
+      data: list_tard_grave.value,
+      backgroundColor: '#f9b115',
+      barThickness: 7
+    },
+    {
+      label: 'Tardanza Extremo',
+      data: list_tard_extremo.value,
+      backgroundColor: '#f9b115',
+      barThickness: 7
     },
     {
       label: 'Faltas',
-      data: faltasArr.value,
-      backgroundColor: '#e55353',
-      barThickness: 10
+      data: list_faltas.value,
+      backgroundColor: getAttendanceClass('tard_moderado'),
+      barThickness: 7
     }
   ]
 }))
@@ -292,20 +377,25 @@ const consultarReporte = () => {
 
     // limpiar arrays
     asistenciasArr.value = []
-    tardanzasArr.value = []
-    faltasArr.value = []
+    list_tard_leve.value = []
+    list_tard_moderado.value = []
+    list_tard_grave.value = []
+    list_tard_extremo.value = []
+    list_faltas.value = []
     labelsArr.value = []
 
     // llenar arrays ordenadamente
 
-    asistenciasArr.value = lista.map(item => item.asistencias)
-    tardanzasArr.value = lista.map(item => item.tardanzas)
-    faltasArr.value = lista.map(item => item.faltas)
+    asistenciasArr.value = lista.map(item => item.t_asistencias)
+    list_tard_leve.value = lista.map(item => item.t_tard_leve)
+    list_tard_moderado.value = lista.map(item => item.t_tard_moderado)
+    list_tard_grave.value = lista.map(item => item.t_tard_grave)
+    list_tard_extremo.value = lista.map(item => item.t_tard_extremo)
+    list_faltas.value = lista.map(item => item.t_faltas)
     labelsArr.value = lista.map(item => `${item.grado}-${item.seccion}°`)
   })
   console.log('total asistencias:', asistenciasArr.value)
-  console.log('total tardanzas:', tardanzasArr.value)
-  console.log('total faltas:', faltasArr.value)
+  console.log('total faltas:', list_faltas.value)
 }
 
 const onChangeTipo = () => {
@@ -365,3 +455,27 @@ onMounted(() => {
 })
 
 </script>
+
+<style scoped>
+.bg-orange-1 {
+  background-color: #eed306;
+}
+
+.bg-orange-2 {
+  background-color: #ffb300;
+}
+
+.bg-orange-3 {
+  background-color: #fd841a;
+}
+
+.bg-orange-4 {
+  background-color: #fa6736;
+}
+
+.wrap-text {
+  white-space: normal !important;
+  /* permite salto */
+  line-height: 1.2;
+}
+</style>
