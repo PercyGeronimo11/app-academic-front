@@ -84,8 +84,7 @@ const listDashboard = async () => {
   dashboard.value = {
     ...response.data.data,
     roles: roles.map(item => ({
-      ...item,
-      name: item.name === 'MESA_PARTES' ? 'MESA DE PARTES' : item.name
+      ...item
     }))
   }
 }

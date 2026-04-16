@@ -1,6 +1,6 @@
 <template>
   <div class="courses-wrapper">
-    <img src="../../../public/img/solider_main.png" alt="">
+    <img src="../../../public/img/personal_colegio.png" alt="">
   </div>
 </template>
 
