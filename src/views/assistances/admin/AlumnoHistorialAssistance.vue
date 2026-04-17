@@ -64,7 +64,10 @@
                 <CFormSelect v-model="filters.estado">
                   <option value="">Todos</option>
                   <option value="A">Asistió</option>
-                  <option value="T">Tardanza</option>
+                  <option value="T">Tardanza Leve</option>
+                  <option value="TM">Tardanza Moderada</option>
+                  <option value="TG">Tardanza Grave</option>
+                  <option value="TE">Tardanza Extrema</option>
                   <option value="F">Falta</option>
                 </CFormSelect>
               </CCol>
@@ -113,7 +116,7 @@
                       </CTableDataCell>
                     <CTableDataCell class="text-center fw-medium">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
                     <CTableDataCell class="text-center">
-                      <CBadge :color="colorEstado(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
+                      <CBadge :class="colorEstado(item.estado)" shape="rounded-pill">
                         {{ textoEstado(item.estado) }}
                       </CBadge>
                     </CTableDataCell>
@@ -156,7 +159,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AssistanceService from '../../../services/AssistanceService'
 import { CBadge } from '@coreui/vue'
-import { textoEstado, colorEstado } from '../../../utils/utils'
+import { textoEstado, colorEstado, ESTADOS_ASISTENCIA } from '../../../utils/utils'
 import { formatDate, formatTime } from '../../../utils/time'
 const route = useRoute()
 const router = useRouter()
@@ -233,3 +236,32 @@ onMounted(() => {
   fetchAsistencias()
 })
 </script>
+
+
+<style scoped>
+.bg-orange-1 {
+  background-color: #eed306;
+}
+
+.bg-orange-2 {
+  background-color: #ffb300;
+}
+
+.bg-orange-3 {
+  background-color: #fd841a;
+}
+
+.bg-orange-4 {
+  background-color: #fa6736;
+}
+
+.wrap-text {
+  white-space: normal !important;
+  /* permite salto */
+  line-height: 1.2;
+}
+</style>
+
+
+
+

@@ -56,7 +56,8 @@
                                 <CTableHead class="modern-table-header text-center">
                                     <CTableRow>
                                         <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-                                        <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
+                                        <CTableHeaderCell class="text-center">Apell. Paterno</CTableHeaderCell>
+                                        <CTableHeaderCell class="text-center">Apell. Materno</CTableHeaderCell>
                                         <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
                                         <CTableHeaderCell class="text-center">Asistencia</CTableHeaderCell>
                                         <CTableHeaderCell class="text-center">Hora</CTableHeaderCell>
@@ -75,11 +76,11 @@
                                         <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
 
                                             <CTableDataCell class="fw-semibold">{{ index + 1 }}</CTableDataCell>
-                                            <CTableDataCell class="fw-semibold text-dark">{{ alumno.apellidos }}
-                                            </CTableDataCell>
+                                            <CTableDataCell class="fw-semibold">{{ alumno.surname_father }}</CTableDataCell>
+                                            <CTableDataCell class="fw-semibold">{{ alumno.surname_mother }}</CTableDataCell>
                                             <CTableDataCell>{{ alumno.nombre }}</CTableDataCell>
                                             <CTableDataCell>
-                                                <CBadge :color="colorEstado(alumno.estado)" class="px-3 py-2">
+                                                <CBadge :class="colorEstado(alumno.estado)">
                                                     {{ textoEstado(alumno.estado) }}
                                                 </CBadge>
                                             </CTableDataCell>

@@ -91,7 +91,7 @@
       </CCol>
 
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('asistencia')">
+        <CCard :class="colorEstado('A')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Asistencias</div>
             <div class="fs-4 fw-semibold">
@@ -104,7 +104,7 @@
 
       <!-- Tardanzas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_leve')">
+        <CCard :class="colorEstado('TL')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanzas Leves</div>
             <div class="fs-4 fw-semibold">
@@ -115,7 +115,7 @@
         </CCard>
       </CCol>
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_moderado')">
+        <CCard :class="colorEstado('TM')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanzas Moderadas</div>
             <div class="fs-4 fw-semibold">
@@ -126,7 +126,7 @@
         </CCard>
       </CCol>
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_grave')">
+        <CCard :class="colorEstado('TG')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanzas Grave</div>
             <div class="fs-4 fw-semibold">
@@ -137,7 +137,7 @@
         </CCard>
       </CCol>
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_extremo')">
+        <CCard :class="colorEstado('TE')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanzas Extrema</div>
             <div class="fs-4 fw-semibold">
@@ -150,7 +150,7 @@
 
       <!-- Faltas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('faltas')">
+        <CCard :class="colorEstado('F')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
@@ -210,33 +210,33 @@
                       </CTableDataCell>
 
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('asistencia')">
+                        <CBadge :class="colorEstado('A')">
                           {{ item.t_asistencias }}
                         </CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_leve')">
+                        <CBadge :class="colorEstado('TL')">
                           {{ item.t_tard_leve }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_moderado')">
+                        <CBadge :class="colorEstado('TM')">
                           {{ item.t_tard_moderado }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_grave')">
+                        <CBadge :class="colorEstado('TG')">
                           {{ item.t_tard_grave }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_extremo')">
+                        <CBadge :class="colorEstado('TE')">
                           {{ item.t_tard_extremo }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('faltas')">
+                        <CBadge :class="colorEstado('F')">
                           {{ item.t_faltas }}
                         </CBadge>
                       </CTableDataCell>
@@ -280,10 +280,11 @@ import ChartDataLabels from 'chartjs-plugin-datalabels'
 import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
 import { CCard, CCardBody, CCol, CRow } from '@coreui/vue'
-import { meses } from '@/utils/utils'
+import { meses, colorEstado, colorFijoEstado, ESTADOS_ASISTENCIA } from '@/utils/utils'
 import { formatDate } from '@/utils/time'
 import { exportarExcel } from '@/utils/exportExcel'
-import { getAttendanceClass } from '@/utils/utils'
+import { textoEstado } from '../../../utils/utils'
+
 
 const router = useRouter()
 const secciones = ref([])
@@ -315,39 +316,39 @@ const chartData = computed(() => ({
   labels: labelsArr.value,
   datasets: [
     {
-      label: 'Asistencias',
+      label: textoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
       data: asistenciasArr.value,
-      backgroundColor: getAttendanceClass('tard_moderado'),
+      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
       barThickness: 7
     },
     {
-      label: 'Tardanza Leve',
+      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
       data: list_tard_leve.value,
-      backgroundColor: '#f9b115',
+      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
       barThickness: 7
     },
     {
-      label: 'Tardanza Moderado',
+      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
       data: list_tard_moderado.value,
-      backgroundColor: '#f9b115',
+      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
       barThickness: 7
     },
     {
-      label: 'Tardanza Grave',
+      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
       data: list_tard_grave.value,
-      backgroundColor: '#f9b115',
+      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
       barThickness: 7
     },
     {
-      label: 'Tardanza Extremo',
+      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
       data: list_tard_extremo.value,
-      backgroundColor: '#f9b115',
+      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
       barThickness: 7
     },
     {
-      label: 'Faltas',
+      label: textoEstado(ESTADOS_ASISTENCIA.FALTA),
       data: list_faltas.value,
-      backgroundColor: getAttendanceClass('tard_moderado'),
+      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.FALTA),
       barThickness: 7
     }
   ]
@@ -479,3 +480,6 @@ onMounted(() => {
   line-height: 1.2;
 }
 </style>
+
+
+

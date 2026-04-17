@@ -101,7 +101,7 @@
                     <CTableDataCell class="text-center"> {{ alumno.section }} </CTableDataCell>
 
                     <CTableDataCell class="text-center">
-                      <CBadge :color="colorEstado(alumno.asistencia_estado)" class="px-3 py-2">
+                      <CBadge :class="colorEstado(alumno.asistencia_estado)">
                         {{ textoEstado(alumno.asistencia_estado) }}
                       </CBadge>
                     </CTableDataCell>
@@ -324,4 +324,23 @@ onMounted(() => {
 
 <style scoped>
 
+.bg-orange-1 {
+  background-color: #eed306; 
+}
+
+.bg-orange-2 {
+  background-color: #ffb300;
+}
+
+.bg-orange-3 {
+  background-color: #fd841a;
+}
+
+.bg-orange-4 {
+  background-color: #fa6736;
+}
+.wrap-text {
+  white-space: normal !important;  /* permite salto */
+  line-height: 1.2;
+}
 </style>

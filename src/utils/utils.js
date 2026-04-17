@@ -1,27 +1,51 @@
 
-export const  textoEstado = (estado) => {
-
-    if (estado === 'A') return 'Asistió'
-    if (estado === 'TL') return 'Tardanza Leve'
-    if (estado === 'TM') return 'Tardanza Moderada'
-    if (estado === 'TG') return 'Tardanza Grave'
-    if (estado === 'TE') return 'Tardanza Extrema'
-    if (estado === 'F') return 'Faltó'
-
-    return 'Sin registro'
+export const ESTADOS_ASISTENCIA = {
+  ASISTENCIA: 'A',
+  TARDANZA_LEVE: 'TL',
+  TARDANZA_MODERADA: 'TM',
+  TARDANZA_GRAVE: 'TG',
+  TARDANZA_EXTREMA: 'TE',
+  FALTA: 'F',
 }
 
-export const colorEstado = (estado) => {
+export const textoEstado = (estado) => {
 
-    if (estado === 'A') return 'success'
-    if (estado === 'TL') return 'bg-orange-1 text-white  px-3 py-1 fs-6'
-    if (estado === 'TM') return 'bg-orange-2 text-white  px-3 py-1 fs-6'
-    if (estado === 'TG') return 'bg-orange-3 text-white  px-3 py-1 fs-6'
-    if (estado === 'TE') return 'bg-orange-4 text-white  px-3 py-1 fs-6'
-    if (estado === 'F') return 'danger'
+  if (estado === ESTADOS_ASISTENCIA.ASISTENCIA) return 'Asistió'
+  if (estado === ESTADOS_ASISTENCIA.TARDANZA_LEVE) return 'Tardanza Leve'
+  if (estado === ESTADOS_ASISTENCIA.TARDANZA_MODERADA) return 'Tardanza Moderada'
+  if (estado === ESTADOS_ASISTENCIA.TARDANZA_GRAVE) return 'Tardanza Grave'
+  if (estado === ESTADOS_ASISTENCIA.TARDANZA_EXTREMA) return 'Tardanza Extrema'
+  if (estado === ESTADOS_ASISTENCIA.FALTA) return 'Faltó'
 
-    return 'secondary'
+  return 'Sin registro'
 }
+
+export const colorEstado = (type) => {
+  const classes = {
+    [ESTADOS_ASISTENCIA.ASISTENCIA]: 'bg-success text-white  px-3 py-1 fs-6',
+    [ESTADOS_ASISTENCIA.TARDANZA_LEVE]: 'bg-orange-1 text-white  px-3 py-1 fs-6',
+    [ESTADOS_ASISTENCIA.TARDANZA_MODERADA]: 'bg-orange-2 text-white  px-3 py-1 fs-6',
+    [ESTADOS_ASISTENCIA.TARDANZA_GRAVE]: 'bg-orange-3 text-white  px-3 py-1 fs-6',
+    [ESTADOS_ASISTENCIA.TARDANZA_EXTREMA]: 'bg-orange-4 text-white  px-3 py-1 fs-6',
+    [ESTADOS_ASISTENCIA.FALTA]: 'bg-danger text-white  px-3 py-1 fs-6'
+  }
+
+  return classes[type] || 'bg-secondary text-white'
+}
+
+
+export const colorFijoEstado = (type) => {
+  const colors = {
+    [ESTADOS_ASISTENCIA.ASISTENCIA]: '#28a745',
+    [ESTADOS_ASISTENCIA.TARDANZA_LEVE]: '#eed306',
+    [ESTADOS_ASISTENCIA.TARDANZA_MODERADA]: '#ffb300',
+    [ESTADOS_ASISTENCIA.TARDANZA_GRAVE]: '#fd841a',
+    [ESTADOS_ASISTENCIA.TARDANZA_EXTREMA]: '#fa6736',
+    [ESTADOS_ASISTENCIA.FALTA]: '#dc3545'
+  }
+  return colors[type] || '#6c757d'
+}
+
 
 export const meses = [
   { value: 1, label: 'Enero' },
@@ -40,45 +64,31 @@ export const meses = [
 
 
 export const gradoTexto = (grado) => {
-    const grados = {
-        1: 'Primero',
-        2: 'Segundo',
-        3: 'Tercero',
-        4: 'Cuarto',
-        5: 'Quinto'
-    }
-    return grados[grado] || grado
+  const grados = {
+    1: 'Primero',
+    2: 'Segundo',
+    3: 'Tercero',
+    4: 'Cuarto',
+    5: 'Quinto'
+  }
+  return grados[grado] || grado
 }
 
 
 export const getFirstName = (fullName) => {
-    if (!fullName) {
-        return null;
-    }
-
-    // Limpiar espacios extras
-    fullName = fullName.trim().replace(/\s+/g, ' ');
-
-    // Separar por espacios
-    const parts = fullName.split(' ');
-
-    return parts[0] ?? null;
-}
-
-
-
-
-export const getAttendanceClass = (type) => {
-  const classes = {
-    asistencia: 'bg-success text-white  px-3 py-1 fs-6',
-    tard_leve: 'bg-orange-1 text-white  px-3 py-1 fs-6',
-    tard_moderado: 'bg-orange-2 text-white  px-3 py-1 fs-6',
-    tard_grave: 'bg-orange-3 text-white  px-3 py-1 fs-6',
-    tard_extremo: 'bg-orange-4 text-white  px-3 py-1 fs-6',
-    faltas: 'bg-danger text-white  px-3 py-1 fs-6'
+  if (!fullName) {
+    return null;
   }
 
-  return classes[type] || 'bg-secondary text-white'
+  // Limpiar espacios extras
+  fullName = fullName.trim().replace(/\s+/g, ' ');
+
+  // Separar por espacios
+  const parts = fullName.split(' ');
+
+  return parts[0] ?? null;
 }
+
+
 
 

@@ -86,12 +86,16 @@
                         <CTableHead class="modern-table-header text-center">
                             <CTableRow>
                                 <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center">Apellido Paterno</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center">Apellido Materno</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Grado</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center"> Asistencias</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center"> Tardanzas</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center"> Tard. Leve</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center"> Tard. Moderada</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center"> Tard. Grave</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center"> Tard. Extrema</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center"> Faltas</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
                             </CTableRow>
@@ -107,23 +111,35 @@
                             <template v-else>
                                 <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
                                     <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
-                                    <CTableDataCell class="fw-semibold">{{ alumno.apellidos }}</CTableDataCell>
+                                    <CTableDataCell class="fw-semibold">{{ alumno.surname_father }}</CTableDataCell>
+                                    <CTableDataCell class="fw-semibold">{{ alumno.surname_mother }}</CTableDataCell>
                                     <CTableDataCell>{{ alumno.nombres }}</CTableDataCell>
                                     <CTableDataCell class="text-center">{{ alumno.grade }}°
                                     </CTableDataCell>
                                     <CTableDataCell class="text-center">{{ alumno.section }}
                                     </CTableDataCell>
                                     <CTableDataCell>
-                                        <CBadge color="success" class="px-3 py-1 fs-6">{{ alumno.total_asistencias
-                                        }}
+                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.ASISTENCIA)>{{ alumno.t_asistencias }}
                                         </CBadge>
                                     </CTableDataCell>
                                     <CTableDataCell>
-                                        <CBadge color="warning" class="px-3 py-1 fs-6">{{ alumno.total_tardanzas }}
+                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE)>{{ alumno.t_tardanza_leve }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                      <CTableDataCell>
+                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA)>{{ alumno.t_tardanza_moderada }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                      <CTableDataCell>
+                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE)>{{ alumno.t_tardanza_grave }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                      <CTableDataCell>
+                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA)>{{ alumno.t_tardanza_extrema }}
                                         </CBadge>
                                     </CTableDataCell>
                                     <CTableDataCell>
-                                        <CBadge color="danger" class="px-3 py-1 fs-6">{{ alumno.total_faltas }}
+                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.FALTA)>{{ alumno.t_faltas }}
                                         </CBadge>
                                     </CTableDataCell>
 
@@ -180,6 +196,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import AssistanceService from '@/services/AssistanceService'
 import { exportarExcel } from '@/utils/exportExcel'
+import { colorEstado, ESTADOS_ASISTENCIA } from '@/utils/utils'
 
 const router = useRouter()
 
@@ -264,3 +281,26 @@ onMounted(() => {
     fetchAlumnos()
 })
 </script>
+
+<style scoped>
+
+.bg-orange-1 {
+  background-color: #eed306; 
+}
+
+.bg-orange-2 {
+  background-color: #ffb300;
+}
+
+.bg-orange-3 {
+  background-color: #fd841a;
+}
+
+.bg-orange-4 {
+  background-color: #fa6736;
+}
+.wrap-text {
+  white-space: normal !important;  /* permite salto */
+  line-height: 1.2;
+}
+</style>

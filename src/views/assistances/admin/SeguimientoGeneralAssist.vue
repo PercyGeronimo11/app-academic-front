@@ -56,7 +56,7 @@
 
       <!-- Tardanzas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_leve')">
+        <CCard :class="colorEstado('TL')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanzas Leves</div>
             <div class="fs-4 fw-semibold">
@@ -67,7 +67,7 @@
         </CCard>
       </CCol>
             <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_moderado')">
+        <CCard :class="colorEstado('TM')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanza Moderado</div>
             <div class="fs-4 fw-semibold">
@@ -78,7 +78,7 @@
         </CCard>
       </CCol>
             <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_grave')">
+        <CCard :class="colorEstado('TG')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanzas Grave</div>
             <div class="fs-4 fw-semibold">
@@ -89,7 +89,7 @@
         </CCard>
       </CCol>
             <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('tard_extremo')">
+        <CCard :class="colorEstado('TE')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Tardanzas Extremo</div>
             <div class="fs-4 fw-semibold">
@@ -102,7 +102,7 @@
 
       <!-- Faltas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="getAttendanceClass('faltas')">
+        <CCard :class="colorEstado('F')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
@@ -158,33 +158,33 @@
                       </CTableDataCell>
 
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('asistencia')">
+                        <CBadge :class="colorEstado('A')">
                           {{ item.t_asistencias }}
                         </CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_leve')">
+                        <CBadge :class="colorEstado('TL')">
                           {{ item.t_tard_leve }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_moderado')">
+                        <CBadge :class="colorEstado('TM')">
                           {{ item.t_tard_moderado }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_grave')">
+                        <CBadge :class="colorEstado('TG')">
                           {{ item.t_tard_grave }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('tard_extremo')">
+                        <CBadge :class="colorEstado('TE')">
                           {{ item.t_tard_extremo }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell>
-                        <CBadge :class="getAttendanceClass('faltas')">
+                        <CBadge :class="colorEstado('F')">
                           {{ item.t_faltas }}
                         </CBadge>
                       </CTableDataCell>
@@ -210,7 +210,7 @@ import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
 import { CCard, CTableDataCell } from '@coreui/vue'
 import { useFechaHora } from '@/composables/useFechaHora'
-import { getAttendanceClass } from '@/utils/utils'
+import { colorEstado } from '@/utils/utils'
 
 const { fechaHora } = useFechaHora()
 const secciones = ref([])
