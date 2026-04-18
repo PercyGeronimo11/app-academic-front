@@ -144,11 +144,13 @@ const idAlumno = route.params.id
 
 const data = ref({
   total_registros: 0,
-  total_asistencias: 0,
-  total_tardanzas: 0,
-  total_faltas: 0,
+  t_asistencias: 0,
+  t_tard_leve: 0,
+  t_tard_moderada: 0,
+  t_tard_grave: 0,
+  t_tard_extrema: 0,
+  t_faltas: 0,
 })
-
 const list_asistencias = ref([])
 const list_tard_leve = ref([])
 const list_tard_moderada = ref([])

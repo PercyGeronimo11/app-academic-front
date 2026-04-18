@@ -234,11 +234,11 @@ async function empezarScan() {
     // Mantener la lógica original de detección continua
     decodeControl = codeReader.decodeFromVideoDevice(selectedDeviceId, videoRef.value, async (result, err) => {
       if (result) {
-        const code_student = result.text.trim()
-        if (code_student !== codeStudentDetectado.value) {
-          codeStudentDetectado.value = code_student
-          console.log('✅ Código de estudiante detectado:', code_student)
-          await registrarAsistencia(code_student)
+        const student_code = result.text.trim()
+        if (student_code !== codeStudentDetectado.value) {
+          codeStudentDetectado.value = student_code
+          console.log('✅ Código de estudiante detectado:', student_code)
+          await registrarAsistencia(student_code)
         }
       }
 
@@ -281,13 +281,13 @@ function apagarCamara() {
 }
 
 // === Función para registrar asistencia ===
-async function registrarAsistencia(code_student) {
+async function registrarAsistencia(student_code) {
   try {
-    await AssistanceService.VAuxiliar_registrarAsistencia(code_student)
+    await AssistanceService.VAuxiliar_registrarAsistencia(student_code)
     toastSuccess(`Asistencia registrada`)
   } catch (error) {
     console.error('❌ Error al registrar asistencia:', error)
-    toastError(`No se pudo registrar la asistencia para código de estudiante: ${code_student}`)
+    toastError(`No se pudo registrar la asistencia para código de estudiante: ${student_code}`)
   }
 }
 

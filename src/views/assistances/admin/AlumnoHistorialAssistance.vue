@@ -98,7 +98,7 @@
                 <CTableRow>
                   <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
                   <CTableHeaderCell class="text-center">Hora</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Asistencia</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
 

@@ -51,7 +51,10 @@
                 <CFormSelect v-model="filters.estado">
                   <option value="">Todos</option>
                   <option value="A">Asistió</option>
-                  <option value="T">Tardanza</option>
+                  <option value="T">Tardanza Leve</option>
+                  <option value="TM">Tardanza Moderada</option>
+                  <option value="TG">Tardanza Grave</option>
+                  <option value="TE">Tardanza Extrema</option>
                   <option value="F">Falta</option>
                 </CFormSelect>
               </CCol>
@@ -86,7 +89,7 @@
                 <CTableRow>
                   <CTableHeaderCell>Fecha</CTableHeaderCell>
                   <CTableHeaderCell>Hora</CTableHeaderCell>
-                  <CTableHeaderCell>Asistencia</CTableHeaderCell>
+                  <CTableHeaderCell>Estado</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
 
@@ -102,11 +105,10 @@
                   <CTableRow v-for="(item, index) in asistencias" :key="index">
                     <CTableDataCell>{{ formatDate(item.fecha_hora) }}</CTableDataCell>
                     <CTableDataCell>{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
-                    <CTableDataCell>
-                      <CBadge :color="colorEstado(item.estado)" class="px-3 py-1 fw-semibold" shape="rounded-pill">
+                    <CTableDataCell class="text-center">
+                      <CBadge :class="colorEstado(item.estado)" shape="rounded-pill">
                         {{ textoEstado(item.estado) }}
                       </CBadge>
-
                     </CTableDataCell>
                   </CTableRow>
                 </template>
@@ -212,3 +214,30 @@ onMounted(() => {
   fetchAsistencias()
 })
 </script>
+
+
+<style scoped>
+.bg-orange-1 {
+  background-color: #eed306;
+}
+
+.bg-orange-2 {
+  background-color: #ffb300;
+}
+
+.bg-orange-3 {
+  background-color: #fd841a;
+}
+
+.bg-orange-4 {
+  background-color: #fa6736;
+}
+
+.wrap-text {
+  white-space: normal !important;
+  /* permite salto */
+  line-height: 1.2;
+}
+</style>
+
+

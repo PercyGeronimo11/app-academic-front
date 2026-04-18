@@ -294,7 +294,7 @@ const registrarAsistencia = async (alumno) => {
 
   try {
 
-    await AssistanceService.VAuxiliar_registrarAsistencia(alumno.dni)
+    await AssistanceService.VAuxiliar_registrarAsistencia(alumno.student_code)
 
     toastSuccess(`Se registró la asistencia de ${alumno.nombres}`)
 

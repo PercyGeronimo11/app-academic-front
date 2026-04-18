@@ -66,9 +66,9 @@ export default {
 
 
   // Para el auxiliar
-  VAuxiliar_registrarAsistencia(dni) {
+  VAuxiliar_registrarAsistencia(student_code) {
     return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/register-assist/`, {
-      dni: dni
+      student_code: student_code
     }
     );
   },
