@@ -183,7 +183,6 @@
                     <CTableHeaderCell class="text-center wrap-text">Tardanza Grave</CTableHeaderCell>
                     <CTableHeaderCell class="text-center wrap-text">Tardanza Extrema</CTableHeaderCell>
                     <CTableHeaderCell class="text-center ">Faltas</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center ">Acciones</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
 
@@ -239,10 +238,6 @@
                         <CBadge :class="colorEstado('F')">
                           {{ item.t_faltas }}
                         </CBadge>
-                      </CTableDataCell>
-                      <CTableDataCell>
-                        <i class="fas fa-eye text-primary" style="cursor:pointer; font-size:16px"
-                          @click="verDetalle(item)"></i>
                       </CTableDataCell>
                     </CTableRow>
                   </template>
