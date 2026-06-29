@@ -21,6 +21,10 @@ export default {
     });
   },
 
+  async getProfile() {
+    return await axios.get(`${API_URL}/student/getProfile`);
+  },
+
   async createItem(data) {
     return await axios.post(`${API_URL}/student/create`, data);
   },
