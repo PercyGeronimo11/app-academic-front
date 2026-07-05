@@ -129,6 +129,17 @@ const routes = [
         component: () => import('@/views/chatbot/ChatBot.vue'),
       },
 
+      {
+        path: '/prediccion/dashboard',
+        name: 'PrediccionDashboard',
+        component: () => import('@/views/prediccion/AcademicRiskDashboardView.vue'),
+      },
+      {
+        path: '/prediccion/academic-risk',
+        name: 'PrediccionAcademicRisk',
+        component: () => import('@/views/prediccion/AcademicRiskView.vue'),
+      },
+
       //Para profesor
       {
         path: '/mainAreaTeacher',
@@ -212,7 +223,7 @@ const routes = [
 
 
       /* {
-        path: '/class/grade/:course_class_id/:unit_id',
+        path: '/class/grade/:course_class_id/:bimester_id',
         name: 'StudentScores',
         component: () => import('@/views/reports/reportScore.vue'),
       },

@@ -39,8 +39,8 @@ export default {
     return await axios.post(`${API_URL}/task/score`, data);
   },
 
-  async scoresGetByUnit(data) {
-    return await axios.get(`${API_URL}/task/getbyUnit`, {
+  async scoresGetByBimester(data) {
+    return await axios.get(`${API_URL}/task/getbyBimester`, {
       params: data,
     });
   },
