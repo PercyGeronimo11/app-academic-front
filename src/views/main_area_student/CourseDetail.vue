@@ -51,7 +51,7 @@
     <!-- listTaskAndMaterial Section -->
     <div v-for="(unit, index) in listTaskAndMaterial" :key="index">
       <h2 @click="toggleUnitVisibility(index)" class="unit-title">
-        Unidad {{ index + 1 }}
+        Bimestre {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
 
@@ -113,7 +113,7 @@ const fetchListTasks = async () => {
   try {
     const response = await TaskService.getItemsByStudentAndClass(course_class_id);
     response.data.data.forEach((task) => {
-      const unitIndex = task.unit_id - 1; 
+      const unitIndex = task.bimester_id - 1; 
       if (listTaskAndMaterial.value[unitIndex]) {
         task.type = "TAREA"; 
         listTaskAndMaterial.value[unitIndex].items.push(task);
@@ -129,7 +129,7 @@ const fetchListMaterials = async () => {
   try {
     const response = await MaterialService.getItems(course_class_id);
     response.data.data.forEach((material) => {
-      const unitIndex = material.unit_id - 1;
+      const unitIndex = material.bimester_id - 1;
       if (listTaskAndMaterial.value[unitIndex]) {
         material.type = "MATERIAL"; 
         listTaskAndMaterial.value[unitIndex].items.push(material);

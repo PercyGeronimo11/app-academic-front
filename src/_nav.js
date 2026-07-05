@@ -24,6 +24,26 @@ export default [
   },
   {
     component: 'CNavGroup',
+    name: 'Alerta Temprana',
+    icon: cilChartLine,
+    roles: ['DIRECCION'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Dashboard',
+        icon: cilChart,
+        to: '/prediccion/dashboard',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Riesgo Académico',
+        icon: cilGraph,
+        to: '/prediccion/academic-risk',
+      },
+    ],
+  },
+  {
+    component: 'CNavGroup',
     name: 'ASISTENCIAS',
     icon: cilCalendar,
     roles: ['DIRECCION', 'AUXILIAR'],
