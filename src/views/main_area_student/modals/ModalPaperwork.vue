@@ -4,6 +4,7 @@
         scrollable
         size="xl"
         alignment="center"
+        backdrop="static"
         @close="closeModal"
     >
         <CModalHeader>
@@ -19,11 +20,30 @@
                     <!-- DATOS PRINCIPALES -->
                     <CRow class="mb-3">
                         <CCol md="4">
-                            <CFormInput v-model="form.subject" label="Asunto" required />
+                            <CFormSelect
+                                v-model="form.subject"
+                                label="Asunto"
+                                required
+                            >
+                                <option disabled value="">Seleccione un asunto</option>
+                                <option
+                                    v-if="form.subject && !subjectOptions.includes(form.subject)"
+                                    :value="form.subject"
+                                >
+                                    {{ form.subject }}
+                                </option>
+                                <option
+                                    v-for="option in subjectOptions"
+                                    :key="option"
+                                    :value="option"
+                                >
+                                    {{ option }}
+                                </option>
+                            </CFormSelect>
                         </CCol>
 
                         <CCol md="4">
-                            <CFormInput v-model="form.recipient" label="Destinatario" required />
+                            <CFormInput v-model="form.recipient" label="Destinatario" required disabled />
                         </CCol>
                     </CRow>
 
@@ -35,6 +55,24 @@
                                 label="Motivo"
                                 rows="3"
                                 required
+                            />
+                        </CCol>
+                    </CRow>
+
+                    <!-- DATOS DEL APODERADO -->
+                    <CRow class="mb-3">
+                        <CCol md="8">
+                            <CFormInput
+                                :model-value="displayGuardianValue(guardianData.address)"
+                                label="Dirección del apoderado"
+                                readonly
+                            />
+                        </CCol>
+                        <CCol md="4">
+                            <CFormInput
+                                :model-value="displayGuardianValue(guardianData.phone)"
+                                label="Teléfono del apoderado"
+                                readonly
                             />
                         </CCol>
                     </CRow>
@@ -66,38 +104,16 @@
                         </CCol>
                     </CRow>
 
-                    <!-- LISTA DE ARCHIVOS -->
-                    <CRow v-if="files.length > 0">
-                        <CCol>
-                            <ul class="list-group">
-                                <li 
-                                    v-for="(file, index) in files"
-                                    :key="index"
-                                    class="list-group-item d-flex justify-content-between align-items-center"
-                                >
-                                    {{ file.name }}
-                                    <button 
-                                        type="button"
-                                        class="btn btn-sm btn-danger"
-                                        @click="removeFile(index)"
-                                    >
-                                        X
-                                    </button>
-                                </li>
-                            </ul>
-                        </CCol>
-                    </CRow>
-
                 </CContainer>
             </CForm>
         </CModalBody>
 
         <CModalFooter>
-            <CButton color="secondary" @click="closeModal">
+            <CButton type="button" color="secondary" @click="closeModal">
                 Cancelar
             </CButton>
 
-            <CButton color="primary" @click="savePaperwork">
+            <CButton type="button" color="primary" @click="savePaperwork">
                 {{ isEditMode ? 'Actualizar Trámite' : 'Guardar Trámite' }}
             </CButton>
         </CModalFooter>
@@ -108,6 +124,7 @@
 import { ref, watch, computed } from 'vue';
 import Swal from 'sweetalert2';
 import FileDropzone from '@/components/forms/FileDropzone.vue';
+import StudentService from '@/services/StudentService';
 
 const emit = defineEmits([
   'update:isOpenModal',
@@ -131,13 +148,67 @@ const props = defineProps({
 --------------------------*/
 const isEditMode = computed(() => !!props.paperwork);
 
+const subjectOptions = [
+  'Solicitud de permiso de inasistencia',
+  'Solicitud de retiro anticipado',
+  'Solicitud de constancia de estudios',
+  'Solicitud de certificado de estudios',
+  'Solicitud de copia de libreta de notas',
+];
+
+const isShowingAlert = ref(false);
+
+const guardianData = ref({
+  address: '',
+  phone: '',
+});
+
+const displayGuardianValue = (value) => value?.trim() || 'No registrado';
+
+const hasGuardianContactInfo = () =>
+  !!guardianData.value.address?.trim() && !!guardianData.value.phone?.trim();
+
+const loadGuardianData = async () => {
+  try {
+    const response = await StudentService.getProfile();
+    const student = response.data?.data;
+
+    guardianData.value = {
+      address: student?.address?.trim() || '',
+      phone: student?.representative_phone?.trim() || '',
+    };
+  } catch {
+    guardianData.value = { address: '', phone: '' };
+  }
+};
+
+const showGuardianInfoAlert = () => {
+  const missingFields = [];
+  if (!guardianData.value.address?.trim()) {
+    missingFields.push('dirección del apoderado');
+  }
+  if (!guardianData.value.phone?.trim()) {
+    missingFields.push('teléfono del apoderado');
+  }
+
+  isShowingAlert.value = true;
+  Swal.fire({
+    icon: 'warning',
+    title: 'Actualice su información',
+    html: `No puede registrar la solicitud hasta completar su perfil.<br><br>Actualice: <strong>${missingFields.join('</strong> y <strong>')}</strong>.`,
+    confirmButtonText: 'Entendido',
+  }).finally(() => {
+    isShowingAlert.value = false;
+  });
+};
+
 /* -------------------------
    FORMULARIO
 --------------------------*/
 const getEmptyForm = () => ({
   id: null,
   subject: '',
-  recipient: '',
+  recipient: 'Director(a) de la I.E.',
   reason: '',
   signature: '',
 });
@@ -169,17 +240,38 @@ watch(
   { immediate: true }
 );
 
+watch(
+  () => props.isOpenModal,
+  async (open) => {
+    if (open) {
+      await loadGuardianData();
+      if (!hasGuardianContactInfo()) {
+        showGuardianInfoAlert();
+      }
+    }
+  }
+);
+
 /* -------------------------
    GUARDAR
 --------------------------*/
-const savePaperwork = () => {
-
-  if (!form.value.subject || !form.value.recipient) {
+const savePaperwork = async () => {
+  if (!form.value.subject || !form.value.recipient || !form.value.reason?.trim()) {
+    isShowingAlert.value = true;
     Swal.fire({
       icon: 'warning',
       title: 'Campos obligatorios',
-      text: 'Complete los campos requeridos.'
+      text: 'Complete los campos requeridos.',
+    }).finally(() => {
+      isShowingAlert.value = false;
     });
+    return;
+  }
+
+  await loadGuardianData();
+
+  if (!hasGuardianContactInfo()) {
+    showGuardianInfoAlert();
     return;
   }
 
@@ -214,6 +306,7 @@ const handleSignature = (event) => {
    CERRAR
 --------------------------*/
 const closeModal = () => {
+  if (isShowingAlert.value) return;
   emit('update:isOpenModal', false);
 };
 </script>
