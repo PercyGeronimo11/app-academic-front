@@ -12,12 +12,6 @@
             Fecha
           </CTableHeaderCell>
           <CTableHeaderCell class="bg-body-secondary text-center">
-            Hora Inicio
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Hora Fin
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
             Estado
           </CTableHeaderCell>
         </CTableRow>
@@ -25,21 +19,15 @@
       <CTableBody>
         <template v-if="!assistances.length">
           <CTableRow>
-            <CTableDataCell colspan="4" class="list-empty-message py-4">
+            <CTableDataCell colspan="2" class="list-empty-message py-4">
               No hay registros para mostrar.
             </CTableDataCell>
           </CTableRow>
         </template>
         <template v-else>
-          <CTableRow v-for="assistance in assistances" :key="assistance.id">
+          <CTableRow v-for="assistance in assistances" :key="assistance.date_assistance">
             <CTableDataCell>
               <div class="text-center">{{ assistance.date_assistance }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ assistance.hour_start }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ assistance.hour_end }}</div>
             </CTableDataCell>
             <CTableDataCell>
               <div class="text-center">

@@ -125,7 +125,7 @@ const saveAssignments = async () => {
 
   // Filtrar solo las asignaciones donde se seleccionó un profesor
   const validAssignments = assignments.filter(
-    (assignment) => assignment.professorId !== ""
+    (assignment) => assignment.teacher_id !== '' && assignment.teacher_id != null
   );
 
   if (validAssignments.length > 0) {

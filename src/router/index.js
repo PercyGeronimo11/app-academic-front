@@ -137,19 +137,9 @@ const routes = [
       },
 
       {
-        path: '/teacher/:courseClass/horary',
-        name: 'Horario',
-        component: () => import('@/views/main_area_teacher/Horary.vue'),
-      },
-      {
-        path: '/teacher/:courseClass/assistance-students/:date',
+        path: '/teacher/:courseClass/assistance',
         name: 'Toma de asistencias',
         component: () => import('@/views/main_area_teacher/AssistanceStudents.vue'),
-      },
-      {
-        path: '/teacher/:courseClass/assistance-dates',
-        name: 'Lista de asistencias',
-        component: () => import('@/views/main_area_teacher/AssistanceDates.vue'),
       },
       {
         path: '/teacher/:courseClass/detalle',

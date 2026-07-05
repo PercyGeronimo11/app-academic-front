@@ -34,15 +34,7 @@
             <CCard class="mb-4 p-3 card-custom card_attendence">
               <div class="section-header">
                 <router-link
-                  :to="`/teacher/${course_class_id}/horary`"
-                  class="no-underline"
-                >
-                  <strong class="button-attendance">Crear un horario</strong>
-                </router-link>
-              </div>
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/assistance-dates`"
+                  :to="`/teacher/${course_class_id}/assistance`"
                   class="no-underline"
                 >
                   <strong class="button-attendance">Tomar asistencia</strong>

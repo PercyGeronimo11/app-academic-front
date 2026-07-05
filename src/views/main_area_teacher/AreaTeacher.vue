@@ -3,8 +3,9 @@
     <div v-if="courses.length" class="courses-container">
       <CourseCard
         v-for="(course, index) in courses"
-        :key="index"
+        :key="course.url ?? index"
         :title="course.title"
+        :subtitle="course.subtitle"
         :image="course.image"
         :url="course.url"
       />
@@ -15,12 +16,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted } from "vue";
 import CourseCard from "@/components/CourseCard.vue";
 import CourseClassService from "../../services/CourseClassService";
 
 const courses = ref([]);
 
+const formatGradeSection = (grade, section) => {
+  if (!grade && !section) return '';
+  if (grade && section) return `Grado ${grade} — Sección ${section}`;
+  if (grade) return `Grado ${grade}`;
+  return `Sección ${section}`;
+};
 
 // Función para obtener los cursos del API
 const listItems = async () => {
@@ -31,8 +38,9 @@ const listItems = async () => {
     
     courses.value = courseData.map((course) => ({
       title: course.course_name,
+      subtitle: formatGradeSection(course.grade, course.section),
       image: null,
-      url: `/teacher/${course.course_class_id}/detalle`, 
+      url: `/teacher/${course.course_class_id}/detalle`,
     }));
 
     console.log(courses.value); 
