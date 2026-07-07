@@ -26,7 +26,7 @@ export default [
     component: 'CNavGroup',
     name: 'Alerta Temprana',
     icon: cilChartLine,
-    roles: ['DIRECCION'],
+    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'ESTUDIANTE'],
     items: [
       {
         component: 'CNavItem',
