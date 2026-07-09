@@ -43,6 +43,13 @@ export default [
     ],
   },
   {
+    component: 'CNavItem',
+    name: 'Notificaciones',
+    to: '/push-notifications/historial',
+    icon: 'cil-bell',
+    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'ESTUDIANTE'],
+  },
+  {
     component: 'CNavGroup',
     name: 'ASISTENCIAS',
     icon: cilCalendar,

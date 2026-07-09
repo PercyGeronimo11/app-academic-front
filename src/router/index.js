@@ -124,6 +124,11 @@ const routes = [
       },
 
       {
+        path: '/asistente-inteligente',
+        name: 'AsistenteInteligente',
+        component: () => import('@/views/asistente/AsistenteInteligenteView.vue'),
+      },
+      {
         path: '/chatbot',
         name: 'Chatbot',
         component: () => import('@/views/chatbot/ChatBot.vue'),
@@ -553,6 +558,11 @@ const routes = [
           //   component: () => import('@/components/icons/Flags.vue'),
           // },
         ],
+      },
+      {
+        path: '/push-notifications/historial',
+        name: 'HistorialNotificaciones',
+        component: () => import('@/views/push-notifications/NotificationHistoryView.vue'),
       },
       {
         path: '/notifications',

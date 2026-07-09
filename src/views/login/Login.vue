@@ -52,6 +52,7 @@
 
 <script>
 import AuthService from "@/services/AuthService";
+import { ensureStudentPushRegistration } from "@/composables/usePushNotifications";
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
 import { getPeruTime } from "@/utils/time";
@@ -88,6 +89,10 @@ export default {
           else route = "/dashboard";
 
           this.$router.push(route);
+
+          if (role === "ESTUDIANTE") {
+            ensureStudentPushRegistration();
+          }
 
           Swal.fire({
             toast: true,
