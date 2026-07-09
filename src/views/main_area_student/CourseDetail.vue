@@ -23,23 +23,32 @@
         </CRow>
         <CRow>
           <CCol :xs="12">
-            <CCard class="mb-4 p-3 card-custom">
+            <CCard class="mb-4 p-3 card-custom card_attendence">
               <div class="section-header">
                 <router-link
                   :to="`/student/courseClass/${course_class_id}/assistance`"
-                  class="no-underline"
+                  class="course-quick-link course-quick-link--attendance"
                 >
-                  <strong>Ver asistencias</strong>
+                  <i class="fas fa-clipboard-check"></i>
+                  Ver asistencias
                 </router-link>
               </div>
-            </CCard>
-            <CCard class="mb-4 p-3 card-custom">
               <div class="section-header">
                 <router-link
                   :to="`/student/courseClass/${course_class_id}/scores`"
-                  class="no-underline"
+                  class="course-quick-link course-quick-link--grades"
                 >
-                  <strong>Ver Notas</strong>
+                  <i class="fas fa-chart-bar"></i>
+                  Ver notas del curso
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link
+                  to="/my-report-card"
+                  class="course-quick-link course-quick-link--import"
+                >
+                  <i class="fas fa-book-open"></i>
+                  Mi libreta de notas
                 </router-link>
               </div>
             </CCard>

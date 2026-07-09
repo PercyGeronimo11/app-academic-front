@@ -5,6 +5,9 @@
         <img src="/img/logo_rp.png" alt="Logo" class="login-logo mb-3" />
         <h3 class="fw-bold text-primary mb-1">I.E. RICARDO PALMA 80010</h3>
         <p class="text-muted">Acceda a su cuenta</p>
+        <div v-if="sessionExpired" class="alert alert-warning py-2 small mb-0" role="alert">
+          Su sesión expiró. Inicie sesión nuevamente.
+        </div>
       </div>
 
       <CForm @submit.prevent="handleLogin">
@@ -61,8 +64,12 @@ export default {
     return {
       email: "",
       password: "",
-      loadingLogin: false
+      loadingLogin: false,
+      sessionExpired: false,
     };
+  },
+  mounted() {
+    this.sessionExpired = this.$route.query.sessionExpired === '1';
   },
   methods: {
     async handleLogin() {

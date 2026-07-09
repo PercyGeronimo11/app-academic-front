@@ -94,6 +94,13 @@ export default [
     icon: 'cil-options',
     roles: ['DIRECCION',],
   },
+  {
+    component: 'CNavItem',
+    name: 'Comunicados oficiales',
+    to: '/announcements/publish',
+    icon: 'cil-notes',
+    roles: ['DIRECCION'],
+  },
 
   // TRAMITES VIRTUALES
   {
@@ -189,6 +196,13 @@ export default [
     icon: 'cil-notes',
     roles: ['PROFESOR'],
   },
+  {
+    component: 'CNavItem',
+    name: 'Comunicados oficiales',
+    to: '/announcements/publish',
+    icon: 'cil-notes',
+    roles: ['PROFESOR'],
+  },
 
 
   //   Para Estudiante
@@ -197,6 +211,28 @@ export default [
     name: 'Mis Cursos',
     to: '/mainAreaStudent',
     icon: 'cil-options',
+    roles: ['ESTUDIANTE'],
+  },
+
+  {
+    component: 'CNavItem',
+    name: 'Notificaciones',
+    to: '/my-notifications',
+    icon: 'cil-bell',
+    roles: ['ESTUDIANTE'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Comunicados oficiales',
+    to: '/my-announcements',
+    icon: 'cil-notes',
+    roles: ['ESTUDIANTE'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Libreta de notas',
+    to: '/my-report-card',
+    icon: 'cil-notes',
     roles: ['ESTUDIANTE'],
   },
 

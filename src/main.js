@@ -5,6 +5,7 @@ import OpenChmPlugin from './open-chm';
 
 import App from './App.vue'
 import router from './router'
+import { clearSession, isJwtUnauthorized } from '@/utils/session'
 
 import CoreuiVue from '@coreui/vue'
 import CIcon from '@coreui/icons-vue'
@@ -32,15 +33,27 @@ axios.interceptors.request.use((config) => {
     return Promise.reject(error);
 });
 
+let redirectingToLogin = false;
+
+function redirectToLogin() {
+    if (redirectingToLogin) return;
+    redirectingToLogin = true;
+    clearSession();
+    if (router.currentRoute.value.name !== 'Login') {
+        router.replace({ name: 'Login', query: { sessionExpired: '1' } }).finally(() => {
+            redirectingToLogin = false;
+        });
+    } else {
+        redirectingToLogin = false;
+    }
+}
+
 axios.interceptors.response.use(
-    (response) => {
-        return response;
-    },
+    (response) => response,
     (error) => {
-        if (error.response.status == 401 && error.response.data.message == 'Token is Expired') {
-            localStorage.clear('access_token');
-            router.push('/');
-        } else {
+        if (isJwtUnauthorized(error)) {
+            redirectToLogin();
+        } else if (error.response) {
             console.error('Error de API:', error);
         }
         return Promise.reject(error);

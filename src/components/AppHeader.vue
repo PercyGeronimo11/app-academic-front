@@ -4,6 +4,7 @@ import { useColorModes } from '@coreui/vue'
 
 import AppBreadcrumb from '@/components/AppBreadcrumb.vue'
 import AppHeaderDropdownAccnt from '@/components/AppHeaderDropdownAccnt.vue'
+import AppNotificationBell from '@/components/AppNotificationBell.vue'
 import { useSidebarStore } from '@/stores/sidebar.js'
 
 const headerClassNames = ref('mb-4 p-0')
@@ -39,15 +40,7 @@ onMounted(() => {
         </CNavItem>
       </CHeaderNav> -->
       <CHeaderNav class="ms-auto">
-        <CNavItem>
-          
-        </CNavItem>
-        <CNavItem>
-          
-        </CNavItem>
-        <CNavItem>
-          
-        </CNavItem>
+        <AppNotificationBell />
       </CHeaderNav>
       <CHeaderNav>
         
