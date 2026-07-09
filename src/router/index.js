@@ -119,12 +119,6 @@ const routes = [
         component: () => import('@/views/administratives/MainGradeSection.vue'),
       },
       {
-        path: '/assingNotes/:course_id/:id',
-        name: 'AssingNotes',
-        component: () => import('@/views/assign_notes/AssignNotes.vue'),
-      },
-
-      {
         path: '/asistente-inteligente',
         name: 'AsistenteInteligente',
         component: () => import('@/views/asistente/AsistenteInteligenteView.vue'),

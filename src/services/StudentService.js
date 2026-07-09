@@ -68,20 +68,6 @@ export default {
     });
   },
 
-  async getitemsByCourse(data) {
-    return await axios.get(`${API_URL}/student/byCourse`, {
-      params: data
-    });
-  },
-
-  async getScoresByStudentAndClass(course_class_id) {
-    return await axios.get(`${API_URL}/task/list/byStudentAndClass`, {
-      params: {
-        course_class_id:course_class_id
-      }
-    });
-  },
-
   async importStudents(data) {
     return await axios.post(`${API_URL}/student/register-excel`, data, {
       timeout: 0,
