@@ -9,10 +9,18 @@
       />
     </div>
 
-    <div v-if="filteredCourses.length" class="courses-container">
+    <div v-if="loading" class="text-center text-body-secondary py-4">
+      Cargando cursos...
+    </div>
+
+    <div v-else-if="loadError" class="alert alert-danger">
+      {{ loadError }}
+    </div>
+
+    <div v-else-if="filteredCourses.length" class="courses-container">
       <CourseCard
-        v-for="(course, index) in filteredCourses"
-        :key="index"
+        v-for="course in filteredCourses"
+        :key="course.id"
         :title="course.title"
         :image="course.image"
         :url="course.url"
@@ -24,51 +32,55 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
-import CourseCard from "@/components/CourseCard.vue";
-import StudentService from "@/services/StudentService";
+import { ref, onMounted, computed } from 'vue';
+import CourseCard from '@/components/CourseCard.vue';
+import StudentService from '@/services/StudentService';
 
-// Definición de reactivas
-const searchQuery = ref("");
-const selectedCategory = ref("");
+const searchQuery = ref('');
 const courses = ref([]);
+const loading = ref(false);
+const loadError = ref('');
 
-// Computed para filtrar cursos
 const filteredCourses = computed(() =>
-  courses.value.filter((course) => {
-    const matchesCategory =
-      !selectedCategory.value || course.category === selectedCategory.value;
-    const matchesSearch = course.title
-      .toLowerCase()
-      .includes(searchQuery.value.toLowerCase());
-    return matchesCategory && matchesSearch;
-  })
+  courses.value.filter((course) =>
+    course.title.toLowerCase().includes(searchQuery.value.toLowerCase())
+  )
 );
 
-// Función para obtener los cursos del API
 const listItems = async () => {
+  loading.value = true;
+  loadError.value = '';
+  courses.value = [];
+
   try {
-    const data = { idPeriod: 1 };
-    const response = await StudentService.getCourse(data);
-    const courseData = response.data.data;
-    console.log(response.data.data);
-    
+    const response = await StudentService.getCourse({});
+    const body = response?.data;
 
-    // Mapea los cursos al formato necesario para las tarjetas
-    courses.value = courseData.map((course) => ({
-      title: course.name,
-      image: null,
-      url: `/student/courseClass/${course.id}/detalle`, 
-      category: "Ciencias",
-    }));
+    if (!body?.success) {
+      loadError.value = body?.message || 'No se pudieron cargar los cursos.';
+      return;
+    }
 
-    console.log(courses.value); 
+    const courseData = Array.isArray(body.data) ? body.data : [];
+
+    courses.value = courseData
+      .filter((course) => course?.id && course?.name)
+      .map((course) => ({
+        id: course.id,
+        title: course.name,
+        image: null,
+        url: `/student/courseClass/${course.id}/detalle`,
+      }));
   } catch (error) {
-    console.error("Error al obtener los cursos:", error);
+    console.error('Error al obtener los cursos:', error);
+    loadError.value =
+      error.response?.data?.message ||
+      'Error al cargar los cursos. Verifique su sesión de estudiante.';
+  } finally {
+    loading.value = false;
   }
 };
 
-// Llama a la función para obtener los datos cuando el componente se monta
 onMounted(listItems);
 </script>
 
@@ -92,12 +104,6 @@ onMounted(listItems);
   margin-bottom: 10px;
 }
 
-.category-filter {
-  width: 25%;
-  padding: 10px;
-  font-size: 1rem;
-}
-
 .courses-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -108,10 +114,6 @@ onMounted(listItems);
 
 @media (max-width: 480px) {
   .search-bar {
-    width: 100%;
-  }
-
-  .category-filter {
     width: 100%;
   }
 

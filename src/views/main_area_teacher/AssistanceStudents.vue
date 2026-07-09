@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 assistance-page">
+  <div class="module-page assistance-page">
     <Transition name="save-feedback">
       <div v-if="saveFeedback.visible" class="save-feedback" aria-live="polite">
         <i class="fas fa-check"></i>
@@ -7,10 +7,14 @@
       </div>
     </Transition>
 
-    <h2 class="text-2xl font-semibold mb-4">Tomar asistencia</h2>
+    <ModulePageHeader
+      icon="fas fa-clipboard-check"
+      title="Tomar asistencia"
+      subtitle="Los cambios se guardan automáticamente al modificar el estado de cada alumno."
+    />
 
-    <CRow class="g-3 align-items-end mb-4">
-      <CCol xs="12" md="4">
+    <div class="module-filter-bar">
+      <div style="max-width: 280px">
         <CFormLabel for="assistance-date">Fecha</CFormLabel>
         <CFormInput
           id="assistance-date"
@@ -18,75 +22,72 @@
           type="date"
           @change="fetchAssistances"
         />
-      </CCol>
-    </CRow>
-
-    <div v-if="loadError" class="alert alert-danger mb-3" role="alert">
-      {{ loadError }}
+      </div>
     </div>
 
-    <div v-if="loading" class="text-center text-body-secondary py-4">
-      Cargando alumnos...
+    <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
+
+    <div v-if="loading" class="module-loading">
+      <i class="fas fa-spinner fa-spin"></i> Cargando alumnos...
     </div>
 
-    <div v-else-if="assistances.length > 0">
-      <CTable class="border border-gray-200 rounded-lg shadow-lg" hover responsive>
-        <CTableHead>
-          <CTableRow>
-            <CTableHeaderCell class="text-center font-semibold">#</CTableHeaderCell>
-            <CTableHeaderCell class="text-center font-semibold">Alumno</CTableHeaderCell>
-            <CTableHeaderCell class="text-center font-semibold">Origen</CTableHeaderCell>
-            <CTableHeaderCell class="text-center font-semibold">Estado</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          <CTableRow
-            v-for="(assistance, index) in assistances"
-            :key="assistance.student_id ?? assistance.id"
-          >
-            <CTableDataCell class="text-center">{{ index + 1 }}</CTableDataCell>
-            <CTableDataCell class="text-start">
-              {{ assistance.student_name }}
-            </CTableDataCell>
-            <CTableDataCell class="text-center">
-              <CBadge :color="sourceBadgeColor(assistance.source)">
-                {{ sourceLabel(assistance.source) }}
-              </CBadge>
-            </CTableDataCell>
-            <CTableDataCell class="text-center">
-              <select
-                class="form-select"
-                :value="assistance.status"
-                :disabled="isSavingStudent(assistance.student_id)"
-                @change="updateStatus(index, $event.target.value)"
-              >
-                <option
-                  v-for="option in statusOptions"
-                  :key="option.value"
-                  :value="option.value"
+    <template v-else-if="assistances.length > 0">
+      <div class="modern-table-shell">
+        <CTable class="mb-0" hover responsive>
+          <CTableHead class="modern-table-header">
+            <CTableRow>
+              <CTableHeaderCell class="text-center">#</CTableHeaderCell>
+              <CTableHeaderCell>Alumno</CTableHeaderCell>
+              <CTableHeaderCell class="text-center">Origen</CTableHeaderCell>
+              <CTableHeaderCell class="text-center" style="min-width: 200px">Estado</CTableHeaderCell>
+            </CTableRow>
+          </CTableHead>
+          <CTableBody>
+            <CTableRow
+              v-for="(assistance, index) in assistances"
+              :key="assistance.student_id ?? assistance.id"
+            >
+              <CTableDataCell class="text-center">{{ index + 1 }}</CTableDataCell>
+              <CTableDataCell class="fw-medium">{{ assistance.student_name }}</CTableDataCell>
+              <CTableDataCell class="text-center">
+                <CBadge :color="sourceBadgeColor(assistance.source)">
+                  {{ sourceLabel(assistance.source) }}
+                </CBadge>
+              </CTableDataCell>
+              <CTableDataCell class="text-center">
+                <select
+                  class="form-select form-select-sm"
+                  :value="assistance.status"
+                  :disabled="isSavingStudent(assistance.student_id)"
+                  @change="updateStatus(index, $event.target.value)"
                 >
-                  {{ option.label }}
-                </option>
-              </select>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-      </CTable>
-
-      <div class="mt-4 flex justify-end">
-        <CButton type="button" color="secondary" @click="goToBack">
-          Retroceder
-        </CButton>
+                  <option
+                    v-for="option in statusOptions"
+                    :key="option.value"
+                    :value="option.value"
+                  >
+                    {{ option.label }}
+                  </option>
+                </select>
+              </CTableDataCell>
+            </CTableRow>
+          </CTableBody>
+        </CTable>
       </div>
 
-      <p class="text-body-secondary small mt-3 mb-0">
-        Los cambios se guardan al modificar el estado de cada alumno.
-      </p>
-    </div>
+      <div class="d-flex justify-content-end mt-4">
+        <CButton type="button" color="secondary" variant="ghost" @click="goToBack">
+          <i class="fas fa-arrow-left me-2"></i>Retroceder
+        </CButton>
+      </div>
+    </template>
 
-    <div v-else class="text-center text-body-secondary py-4">
-      No hay alumnos en este curso para la fecha seleccionada.
-    </div>
+    <EmptyState
+      v-else
+      icon="📋"
+      title="Sin alumnos para esta fecha"
+      hint="Seleccione otra fecha o verifique que el curso tenga estudiantes matriculados."
+    />
   </div>
 </template>
 
@@ -94,6 +95,8 @@
 import { ref, onMounted } from 'vue';
 import AssistanceService from '../../services/AssistanceService';
 import { useRoute, useRouter } from 'vue-router';
+import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
+import EmptyState from '@/components/academic/EmptyState.vue';
 
 const route = useRoute();
 const router = useRouter();

@@ -2,6 +2,7 @@ import { h, resolveComponent } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import DefaultLayout from '@/layouts/DefaultLayout'
+import { clearSession, hasValidSession } from '@/utils/session'
 
 const routes = [
   {
@@ -158,6 +159,21 @@ const routes = [
         component: () => import('@/views/main_area_teacher/AssistanceStudents.vue'),
       },
       {
+        path: '/teacher/:courseClass/conduct',
+        name: 'Incidentes de conducta',
+        component: () => import('@/views/main_area_teacher/ConductStudents.vue'),
+      },
+      {
+        path: '/teacher/:courseClass/grades',
+        name: 'Notas por competencia',
+        component: () => import('@/views/grades/CourseGradesView.vue'),
+      },
+      {
+        path: '/teacher/:courseClass/grades/import',
+        name: 'Importar notas SIAGIE',
+        component: () => import('@/views/grades/ImportSiagieGrades.vue'),
+      },
+      {
         path: '/teacher/:courseClass/detalle',
         name: 'Detalle del curso',
         component: () => import('@/views/main_area_teacher/CourseDetail.vue'),
@@ -179,11 +195,31 @@ const routes = [
         name: 'Asistencias del alumno',
         component: () => import('@/views/main_area_student/AssistanceView.vue'),
       },
-      /* {
+      {
+        path: '/my-notifications',
+        name: 'Mis notificaciones',
+        component: () => import('@/views/main_area_student/MyNotifications.vue'),
+      },
+      {
+        path: '/my-announcements',
+        name: 'Comunicados oficiales',
+        component: () => import('@/views/announcements/MyAnnouncements.vue'),
+      },
+      {
+        path: '/announcements/publish',
+        name: 'Publicar comunicados',
+        component: () => import('@/views/announcements/AnnouncementPublish.vue'),
+      },
+      {
         path: '/student/courseClass/:courseClass/scores',
         name: 'Notas del alumno',
-        component: () => import('@/views/main_area_student/ScoreView.vue'),
-      }, */
+        component: () => import('@/views/grades/CourseGradesView.vue'),
+      },
+      {
+        path: '/my-report-card',
+        name: 'Libreta de notas',
+        component: () => import('@/views/grades/ReportCard.vue'),
+      },
       {
         path: '/myPaperworks',
         name: 'Trámites del Estudiante',
@@ -647,15 +683,24 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = !!localStorage.getItem('access_token');
+  const authenticated = hasValidSession();
 
-  if (to.name !== 'Login' && !isAuthenticated && isAuthenticated != "undefined") {
-    next({ name: 'Login' }); // Redirige al login si no está autenticado
-  } else if (to.name === 'Login' && isAuthenticated) {
-    next({ path: '/dashboard' }); // Redirige al dashboard si está autenticado e intenta ir al login
-  } else {
-    next(); // Permite la navegación
+  if (to.name === 'Login') {
+    if (authenticated) {
+      next({ path: '/dashboard' });
+    } else {
+      next();
+    }
+    return;
   }
+
+  if (!authenticated) {
+    clearSession();
+    next({ name: 'Login' });
+    return;
+  }
+
+  next();
 });
 
 export default router

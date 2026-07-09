@@ -1,66 +1,69 @@
 <template>
-<div>
-    <div class="mb-2">
-      <h1>Lista de Alumnos de {{ gradeName }} {{ sectionName }}</h1>
-      <CRow class="mb-3">
-        <CCol>
-          <CInputGroup>
-            <CFormInput v-model="searchData" placeholder="Buscar por apellido, nombre o DNI"
-              aria-label="Buscar por apellido, nombre o DNI" aria-describedby="button-addon2" />
-            <CButton type="button" color="primary" id="button-addon2">Buscar</CButton>
-          </CInputGroup>
-        </CCol>
-        <CCol></CCol>
-        <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <CButton type="button" color="info" class="text-white" @click="openTeachersModal">
-            Ver profesores
+  <div class="module-page classroom-detail">
+    <ModulePageHeader
+      icon="fas fa-users"
+      :title="`Aula ${gradeName} ${sectionName}`"
+      subtitle="Listado de alumnos, profesores asignados e importación de notas SIAGIE."
+    >
+      <template #actions>
+        <CButton color="success" class="text-white" @click="openImportModal">
+          <i class="fas fa-file-excel me-2"></i>Importar notas SIAGIE
+        </CButton>
+        <CButton color="light" variant="outline" class="text-white border-white" @click="openTeachersModal">
+          <i class="fas fa-chalkboard-teacher me-2"></i>Ver profesores
+        </CButton>
+      </template>
+    </ModulePageHeader>
+
+    <div class="module-card mb-4">
+      <div class="module-card__body">
+        <CInputGroup>
+          <CFormInput
+            v-model="searchData"
+            placeholder="Buscar por apellido, nombre o DNI"
+            aria-label="Buscar por apellido, nombre o DNI"
+          />
+          <CButton type="button" color="primary">
+            <i class="fas fa-search me-1"></i>Buscar
           </CButton>
-        </CCol>
-      </CRow>
+        </CInputGroup>
+      </div>
     </div>
-    <CTable align="middle" class="mb-0 border" hover responsive>
-      <CTableHead class="text-nowrap">
-        <CTableRow>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            #
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            Nombres y apellidos
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            DNI
-          </CTableHeaderCell>
-          <CTableHeaderCell class="bg-body-secondary text-center">
-            N° celular
-          </CTableHeaderCell>
-        </CTableRow>
-      </CTableHead>
-      <CTableBody>
-        <template v-if="!listStudents.length">
+
+    <div class="modern-table-shell">
+      <CTable align="middle" class="mb-0" hover responsive>
+        <CTableHead class="modern-table-header">
           <CTableRow>
-            <CTableDataCell colspan="4" class="list-empty-message py-4">
-              No hay registros para mostrar.
-            </CTableDataCell>
+            <CTableHeaderCell class="text-center">#</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">Nombres y apellidos</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">DNI</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">N° celular</CTableHeaderCell>
           </CTableRow>
-        </template>
-        <template v-else>
-          <CTableRow v-for="item in listStudents" :key="item.id ?? item.dni">
-            <CTableDataCell>
-              <div class="text-center">{{ item.id }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ item.name }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ item.dni }}</div>
-            </CTableDataCell>
-            <CTableDataCell>
-              <div class="text-center">{{ item.representative_phone }}</div>
-            </CTableDataCell>
-          </CTableRow>
-        </template>
-      </CTableBody>
-    </CTable>
+        </CTableHead>
+        <CTableBody>
+          <template v-if="!listStudents.length">
+            <CTableRow>
+              <CTableDataCell colspan="4" class="table-empty-cell">
+                <EmptyState
+                  icon="👥"
+                  title="Sin alumnos registrados"
+                  hint="No hay estudiantes en esta aula todavía."
+                  compact
+                />
+              </CTableDataCell>
+            </CTableRow>
+          </template>
+          <template v-else>
+            <CTableRow v-for="item in listStudents" :key="item.id ?? item.dni">
+              <CTableDataCell class="text-center">{{ item.id }}</CTableDataCell>
+              <CTableDataCell class="text-center fw-medium">{{ item.name }}</CTableDataCell>
+              <CTableDataCell class="text-center">{{ item.dni }}</CTableDataCell>
+              <CTableDataCell class="text-center">{{ item.representative_phone || '—' }}</CTableDataCell>
+            </CTableRow>
+          </template>
+        </CTableBody>
+      </CTable>
+    </div>
 
     <CModal
       :visible="isTeachersModalOpen"
@@ -70,18 +73,19 @@
       backdrop="static"
       @close="closeTeachersModal"
     >
-      <CModalHeader>
+      <CModalHeader class="border-0 pb-0">
         <CModalTitle>
+          <i class="fas fa-chalkboard-teacher text-primary me-2"></i>
           Profesores del aula {{ gradeName }} {{ sectionName }}
         </CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <div v-if="loadingTeachers" class="text-center py-4 text-body-secondary">
-          Cargando profesores...
+        <div v-if="loadingTeachers" class="module-loading py-4">
+          <i class="fas fa-spinner fa-spin"></i> Cargando profesores...
         </div>
-        <div v-else class="table-responsive border rounded">
-          <CTable hover align="middle" class="mb-0">
-            <CTableHead class="table-light">
+        <div v-else class="modern-table-shell">
+          <CTable hover align="middle" class="mb-0" responsive>
+            <CTableHead class="modern-table-header">
               <CTableRow>
                 <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
                 <CTableHeaderCell class="text-center">Curso</CTableHeaderCell>
@@ -90,8 +94,13 @@
             </CTableHead>
             <CTableBody>
               <CTableRow v-if="!classroomTeachers.length">
-                <CTableDataCell colspan="3" class="text-center text-body-secondary py-4">
-                  No hay cursos o profesores asignados en esta aula.
+                <CTableDataCell colspan="3" class="table-empty-cell">
+                  <EmptyState
+                    icon="📚"
+                    title="Sin cursos asignados"
+                    hint="No hay profesores vinculados a esta aula."
+                    compact
+                  />
                 </CTableDataCell>
               </CTableRow>
               <CTableRow
@@ -99,7 +108,7 @@
                 :key="item.course_class_id"
               >
                 <CTableDataCell class="text-center">{{ index + 1 }}</CTableDataCell>
-                <CTableDataCell class="text-center">{{ item.course_name }}</CTableDataCell>
+                <CTableDataCell class="text-center fw-medium">{{ item.course_name }}</CTableDataCell>
                 <CTableDataCell class="text-center">
                   {{ item.teacher_name || 'Sin asignar' }}
                 </CTableDataCell>
@@ -109,11 +118,18 @@
         </div>
       </CModalBody>
       <CModalFooter>
-        <CButton type="button" color="secondary" @click="closeTeachersModal">
+        <CButton type="button" color="secondary" variant="ghost" @click="closeTeachersModal">
           Cerrar
         </CButton>
       </CModalFooter>
     </CModal>
+
+    <ImportSiagieGradesModal
+      :visible="isImportModalOpen"
+      :grade-section-id="Number(idGradeSection)"
+      @close="closeImportModal"
+      @imported="closeImportModal"
+    />
   </div>
 </template>
 
@@ -122,6 +138,9 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import StudentService from '@/services/StudentService';
 import CourseClassService from '@/services/CourseClassService';
+import ImportSiagieGradesModal from '@/views/grades/ImportSiagieGradesModal.vue';
+import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
+import EmptyState from '@/components/academic/EmptyState.vue';
 
 const route = useRoute();
 
@@ -132,6 +151,7 @@ const idGradeSection = route.params.id;
 const listStudents = ref([]);
 const searchData = ref('');
 const isTeachersModalOpen = ref(false);
+const isImportModalOpen = ref(false);
 const classroomTeachers = ref([]);
 const loadingTeachers = ref(false);
 
@@ -163,6 +183,14 @@ const openTeachersModal = async () => {
 
 const closeTeachersModal = () => {
   isTeachersModalOpen.value = false;
+};
+
+const openImportModal = () => {
+  isImportModalOpen.value = true;
+};
+
+const closeImportModal = () => {
+  isImportModalOpen.value = false;
 };
 
 onMounted(() => {

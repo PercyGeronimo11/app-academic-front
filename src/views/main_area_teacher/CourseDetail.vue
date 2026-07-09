@@ -35,9 +35,37 @@
               <div class="section-header">
                 <router-link
                   :to="`/teacher/${course_class_id}/assistance`"
-                  class="no-underline"
+                  class="course-quick-link course-quick-link--attendance"
                 >
-                  <strong class="button-attendance">Tomar asistencia</strong>
+                  <i class="fas fa-clipboard-check"></i>
+                  Tomar asistencia
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link
+                  :to="`/teacher/${course_class_id}/conduct`"
+                  class="course-quick-link course-quick-link--conduct"
+                >
+                  <i class="fas fa-exclamation-triangle"></i>
+                  Incidentes de conducta
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link
+                  :to="`/teacher/${course_class_id}/grades`"
+                  class="course-quick-link course-quick-link--grades"
+                >
+                  <i class="fas fa-chart-bar"></i>
+                  Notas por competencia
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link
+                  :to="`/teacher/${course_class_id}/grades/import`"
+                  class="course-quick-link course-quick-link--import"
+                >
+                  <i class="fas fa-file-excel"></i>
+                  Importar notas SIAGIE
                 </router-link>
               </div>
             </CCard>
@@ -529,6 +557,22 @@ i {
   padding: 4px 8px;
   border-radius: 5px;
   margin: 20px auto; 
+}
+
+.button-conduct{
+  background: #b45309;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  margin: 20px auto;
+}
+
+.button-conduct:hover{
+  background: #92400e;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  margin: 20px auto;
 }
 
 .card_attendence div{
