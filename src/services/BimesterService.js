@@ -12,4 +12,12 @@ export default {
   async getItem(id) {
     return axios.get(`${API_URL}/bimester/get/${id}`)
   },
+
+  async close(id) {
+    return axios.patch(`${API_URL}/bimester/${id}/close`)
+  },
+
+  async reopen(id) {
+    return axios.patch(`${API_URL}/bimester/${id}/reopen`)
+  },
 }

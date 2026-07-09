@@ -34,9 +34,14 @@
                   {{ item.name }}
                 </option>
               </CFormSelect>
+              <div v-if="store.selectedBimester && !store.scope.isStudentView" class="mt-2">
+                <CBadge :color="store.isSelectedBimesterOpen ? 'success' : 'secondary'">
+                  {{ store.isSelectedBimesterOpen ? 'Abierto' : 'Cerrado' }}
+                </CBadge>
+              </div>
             </CCol>
 
-            <CCol xs="12" md="6" lg="3">
+            <CCol v-if="!store.scope.isStudentView" xs="12" md="6" lg="3">
               <CFormLabel>Aula</CFormLabel>
               <CFormSelect
                 :model-value="store.filters.gradeSectionId"
@@ -49,7 +54,7 @@
               </CFormSelect>
             </CCol>
 
-            <CCol xs="12" md="6" lg="3">
+            <CCol v-if="!store.scope.isStudentView" xs="12" md="6" lg="3">
               <CFormLabel>Alumno (opcional)</CFormLabel>
               <CFormSelect
                 :model-value="store.filters.studentId || ''"
@@ -63,7 +68,40 @@
               </CFormSelect>
             </CCol>
 
-            <CCol xs="12" class="d-flex justify-content-end">
+            <CCol v-if="store.scope.isStudentView" xs="12" md="6" lg="6">
+              <CFormLabel>Consulta personal</CFormLabel>
+              <p class="text-body-secondary mb-0 small">
+                Visualizando únicamente su predicción de riesgo académico.
+              </p>
+            </CCol>
+
+            <CCol
+              v-if="!store.scope.isStudentView && (store.scope.canCloseBimester || store.scope.canReopenBimester)"
+              xs="12"
+              class="d-flex flex-wrap gap-2"
+            >
+              <CButton
+                v-if="store.scope.canCloseBimester && store.isSelectedBimesterOpen"
+                color="warning"
+                class="text-dark"
+                :disabled="store.loading || store.updating || !store.selectedBimester"
+                @click="$emit('close-bimester')"
+              >
+                <i class="fas fa-lock me-2"></i>
+                Cerrar bimestre
+              </CButton>
+              <CButton
+                v-if="store.scope.canReopenBimester && !store.isSelectedBimesterOpen"
+                color="secondary"
+                :disabled="store.loading || store.updating || !store.selectedBimester"
+                @click="$emit('reopen-bimester')"
+              >
+                <i class="fas fa-lock-open me-2"></i>
+                Reabrir bimestre
+              </CButton>
+            </CCol>
+
+            <CCol v-if="store.canUpdate" xs="12" class="d-flex justify-content-end">
               <CButton
                 color="primary"
                 class="px-4"
@@ -84,7 +122,7 @@
 <script setup>
 import { useAcademicRiskStore } from '@/stores/academicRisk'
 
-defineEmits(['update-predictions'])
+defineEmits(['update-predictions', 'close-bimester', 'reopen-bimester'])
 
 const store = useAcademicRiskStore()
 

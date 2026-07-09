@@ -13,9 +13,13 @@
       </CCol>
     </CRow>
 
-    <AcademicRiskFilters @update-predictions="confirmUpdate" />
+    <AcademicRiskFilters
+      @update-predictions="confirmUpdate"
+      @close-bimester="confirmCloseBimester"
+      @reopen-bimester="confirmReopenBimester"
+    />
 
-    <AcademicRiskSummary :summary="store.summary" />
+    <AcademicRiskSummary v-if="!store.scope.isStudentView" :summary="store.summary" />
 
     <AcademicRiskTable
       :rows="store.filteredRows"
@@ -56,10 +60,35 @@ import { toastError, toastSuccess } from '@/utils/alerts'
 
 const store = useAcademicRiskStore()
 
+const buildMissingFieldsHtml = (missingFields = []) => {
+  if (!missingFields.length) return ''
+  const items = missingFields.map((field) => `<li>${field}</li>`).join('')
+  return `<p class="mb-2">Información faltante:</p><ul class="text-start mb-0">${items}</ul>`
+}
+
+const showPredictionError = (err) => {
+  const payload = err.validationPayload || err.response?.data || {}
+  const missingFields = payload.missing_fields || []
+  const message = payload.message || store.error || 'No se pudieron actualizar las predicciones.'
+
+  if (missingFields.length) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Datos incompletos',
+      html: `<p>${message}</p>${buildMissingFieldsHtml(missingFields)}`,
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#321fdb',
+    })
+    return
+  }
+
+  toastError(message)
+}
+
 const confirmUpdate = async () => {
   const result = await Swal.fire({
     title: '¿Desea actualizar las predicciones?',
-    html: 'Se ejecutará nuevamente el modelo de Machine Learning para el bimestre seleccionado.<br><br>Puede tardar algunos segundos.',
+    html: 'Se ejecutará el modelo de Machine Learning para el bimestre seleccionado.<br><br>El bimestre debe estar cerrado y todos los datos deben estar completos.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Actualizar',
@@ -74,7 +103,51 @@ const confirmUpdate = async () => {
     await store.updatePredictions()
     toastSuccess('Predicciones actualizadas correctamente.')
   } catch (err) {
-    toastError(store.error || 'No se pudieron actualizar las predicciones.')
+    showPredictionError(err)
+  }
+}
+
+const confirmCloseBimester = async () => {
+  const result = await Swal.fire({
+    title: '¿Cerrar bimestre?',
+    html: 'Al cerrar el bimestre, las competencias, faltas, tardanzas, conducta y perfil social quedarán bloqueadas para edición.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Cerrar bimestre',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#f9b115',
+    cancelButtonColor: '#9da5b1',
+  })
+
+  if (!result.isConfirmed) return
+
+  try {
+    await store.closeBimester()
+    toastSuccess('Bimestre cerrado correctamente.')
+  } catch (err) {
+    toastError(err.response?.data?.message || 'No se pudo cerrar el bimestre.')
+  }
+}
+
+const confirmReopenBimester = async () => {
+  const result = await Swal.fire({
+    title: '¿Reabrir bimestre?',
+    html: 'Las variables académicas volverán a ser editables para este bimestre.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'Reabrir',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#321fdb',
+    cancelButtonColor: '#9da5b1',
+  })
+
+  if (!result.isConfirmed) return
+
+  try {
+    await store.reopenBimester()
+    toastSuccess('Bimestre reabierto correctamente.')
+  } catch (err) {
+    toastError(err.response?.data?.message || 'No se pudo reabrir el bimestre.')
   }
 }
 

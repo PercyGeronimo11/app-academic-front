@@ -1,10 +1,9 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 
+import AcademicRiskService from '@/services/AcademicRiskService'
 import BimesterService from '@/services/BimesterService'
-import GradeSectionService from '@/services/GradeSectionService'
 import MLService from '@/services/MLService'
-import StudentService from '@/services/StudentService'
 import {
   PREDICTION_STATUS,
   RISK_LEVELS,
@@ -58,6 +57,14 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const selectedRow = ref(null)
   const error = ref(null)
   const connectionError = ref(false)
+  const scope = ref({
+    role: null,
+    unrestricted: false,
+    canUpdatePredictions: false,
+    canCloseBimester: false,
+    canReopenBimester: false,
+    isStudentView: false,
+  })
 
   const filteredRows = computed(() => {
     if (!filters.value.studentId) return rows.value
@@ -65,7 +72,8 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   })
 
   const canUpdate = computed(() => (
-    Boolean(filters.value.schoolYear)
+    scope.value.canUpdatePredictions
+    && Boolean(filters.value.schoolYear)
     && Boolean(filters.value.bimester)
     && Boolean(filters.value.gradeSectionId)
     && !updating.value
@@ -74,6 +82,16 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const selectedGradeSection = computed(() => (
     gradeSections.value.find((item) => item.id === filters.value.gradeSectionId) || null
   ))
+
+  const selectedBimester = computed(() => (
+    bimesters.value.find((item) => item.number === filters.value.bimester) || null
+  ))
+
+  const isSelectedBimesterOpen = computed(() => {
+    const bimester = selectedBimester.value
+    if (!bimester) return true
+    return bimester.status === true || bimester.status === 1
+  })
 
   const resetSummary = () => {
     summary.value = { ...EMPTY_SUMMARY }
@@ -125,8 +143,24 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     }
   }
 
+  const loadScope = async () => {
+    const response = await AcademicRiskService.getScope(filters.value.schoolYear)
+    const data = response.data?.data ?? {}
+    scope.value = {
+      role: data.role ?? null,
+      unrestricted: Boolean(data.unrestricted),
+      canUpdatePredictions: Boolean(data.can_generate_predictions ?? data.can_update_predictions),
+      canCloseBimester: Boolean(data.can_close_bimester),
+      canReopenBimester: Boolean(data.can_reopen_bimester),
+      isStudentView: data.role === 'ESTUDIANTE',
+    }
+  }
+
   const loadGradeSections = async () => {
-    const response = await GradeSectionService.getGradeSections()
+    const params = filters.value.schoolYear
+      ? { school_year: filters.value.schoolYear }
+      : {}
+    const response = await AcademicRiskService.getGradeSections(params)
     gradeSections.value = extractLaravelData(response).map((item) => ({
       id: item.id,
       label: `${item.grade_name || item.grade}° ${item.section_name || item.section}`,
@@ -144,7 +178,13 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       students.value = []
       return
     }
-    const response = await StudentService.getItemsByGradeAndSection(filters.value.gradeSectionId)
+    const params = filters.value.schoolYear
+      ? { school_year: filters.value.schoolYear }
+      : {}
+    const response = await AcademicRiskService.getStudents(
+      filters.value.gradeSectionId,
+      params,
+    )
     students.value = extractLaravelData(response)
       .filter((student) => student.status !== false && student.status !== 0)
       .map((student) => ({
@@ -156,6 +196,10 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
     if (filters.value.studentId && !students.value.some((item) => item.id === filters.value.studentId)) {
       filters.value.studentId = null
+    }
+
+    if (scope.value.isStudentView && students.value.length === 1) {
+      filters.value.studentId = students.value[0].id
     }
   }
 
@@ -216,6 +260,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
     try {
       await loadSchoolYears()
+      await loadScope()
       await Promise.all([loadBimesters(), loadGradeSections()])
       await loadStudents()
       await buildRows()
@@ -239,7 +284,9 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     error.value = null
 
     try {
+      await loadScope()
       await loadBimesters()
+      await loadGradeSections()
       await loadStudents()
       await buildRows()
     } catch (err) {
@@ -308,7 +355,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     connectionError.value = false
 
     try {
-      const response = await MLService.updatePredictions({
+      const response = await AcademicRiskService.updatePredictions({
         school_year: filters.value.schoolYear,
         bimester: filters.value.bimester,
         grade_section_id: filters.value.gradeSectionId,
@@ -318,14 +365,34 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       return response.data
     } catch (err) {
       if (!err.response) connectionError.value = true
-      const message = err.response?.data?.error
-        || err.response?.data?.message
+      const data = err.response?.data ?? {}
+      const message = data.message
+        || data.error
         || 'No se pudieron actualizar las predicciones.'
       error.value = message
+      err.validationPayload = data
       throw err
     } finally {
       updating.value = false
     }
+  }
+
+  const closeBimester = async () => {
+    const bimester = selectedBimester.value
+    if (!bimester?.id) return null
+
+    const response = await BimesterService.close(bimester.id)
+    await loadBimesters()
+    return response.data
+  }
+
+  const reopenBimester = async () => {
+    const bimester = selectedBimester.value
+    if (!bimester?.id) return null
+
+    const response = await BimesterService.reopen(bimester.id)
+    await loadBimesters()
+    return response.data
   }
 
   const openDetail = (row) => {
@@ -353,8 +420,11 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     selectedRow,
     error,
     connectionError,
+    scope,
     canUpdate,
     selectedGradeSection,
+    selectedBimester,
+    isSelectedBimesterOpen,
     initializeFilters,
     onSchoolYearChange,
     onBimesterChange,
@@ -362,6 +432,8 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     onStudentChange,
     refreshRows,
     updatePredictions,
+    closeBimester,
+    reopenBimester,
     openDetail,
     closeDetail,
   }
