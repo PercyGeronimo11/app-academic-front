@@ -6,15 +6,6 @@ const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 const token = localStorage.getItem('access_token');
 
 export default {
-  // getResumenSemanal() {
-  //   return axios.get(`${API_URL_DJANGO}/assistances/resumen-semanal/`);
-  // },
-
-  // Para ADMIN
-  // getResumenDiario() {
-  //   return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-totales/`);
-  // },
-
   getAsistenciaBySeccion(params) {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-by-seccion/`, {params});
   },

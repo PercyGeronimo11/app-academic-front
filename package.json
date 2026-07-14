@@ -30,6 +30,8 @@
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "firebase": "^12.15.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
     "marked": "^14.1.3",
     "pinia": "^2.1.7",
     "simplebar-vue": "^2.3.5",

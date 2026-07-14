@@ -15,13 +15,13 @@ export default [
   },
 
   // DIRECCION O ADMINISTRATIVO
-  {
+/*   {
     component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
     icon: cilChatBubble,
     roles: ['DIRECCION',],
-  },
+  }, */
   {
     component: 'CNavGroup',
     name: 'Alerta Temprana',
@@ -89,18 +89,12 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Aulas',
+    name: 'NOTAS',
     to: '/classroom/list',
     icon: cilStar,
     roles: ['DIRECCION',],
   },
-  {
-    component: 'CNavItem',
-    name: 'Cursos',
-    to: '/courses',
-    icon: 'cil-options',
-    roles: ['DIRECCION',],
-  },
+
   {
     component: 'CNavItem',
     name: 'Comunicados oficiales',
@@ -119,7 +113,7 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Trámites (En proceso)',
+    name: 'Trámites virtuales',
     to: '/admin-tramites',
     icon: 'cil-file',
     roles: ['DIRECCION'],
@@ -167,7 +161,13 @@ export default [
     icon: 'cil-people',
     roles: ['DIRECCION'],
   },
-
+  {
+    component: 'CNavItem',
+    name: 'Cursos',
+    to: '/courses',
+    icon: 'cil-options',
+    roles: ['DIRECCION',],
+  },
 
 
   /* {

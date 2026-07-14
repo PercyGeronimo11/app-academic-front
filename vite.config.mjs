@@ -26,6 +26,11 @@ export default defineConfig(() => {
     ],
     base: '/',
     css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: ['legacy-js-api', 'import'],
+        },
+      },
       postcss: {
         plugins: [
           autoprefixer({}), // add options if needed
