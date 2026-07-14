@@ -51,12 +51,22 @@
                 empty-icon="👨‍🏫"
               >
               <template #actions="{ item }">
-                <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-                  <CIcon :content="cilPencil" size="lg"></CIcon>
-                </CButton>
-                <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-                  <CIcon :content="cilTrash" size="lg"></CIcon>
-                </CButton>
+                <div class="d-flex justify-content-center gap-2 flex-wrap">
+                  <CButton
+                    color="success"
+                    class="text-white"
+                    title="Asignar aulas y cursos"
+                    @click="openClassroomsModal(item)"
+                  >
+                    <CIcon :content="cilLayers" size="lg" />
+                  </CButton>
+                  <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+                    <CIcon :content="cilPencil" size="lg"></CIcon>
+                  </CButton>
+                  <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+                    <CIcon :content="cilTrash" size="lg"></CIcon>
+                  </CButton>
+                </div>
               </template>
             </ElegantCrudList>
             </div>
@@ -145,6 +155,11 @@
         </CButton>
       </CModalFooter>
     </CModal>
+
+    <ModalTeacherClassrooms
+      v-model:isOpenModal="isClassroomsModalOpen"
+      :teacher="selectedTeacherForClassrooms"
+    />
 </template>
 
 <script setup>
@@ -152,10 +167,13 @@ import TeacherService from '@/services/TeacherService'
 import { ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
-import { cilPencil, cilTrash } from '@coreui/icons';
+import ModalTeacherClassrooms from './modals/ModalTeacherClassrooms.vue';
+import { cilPencil, cilTrash, cilLayers } from '@coreui/icons';
 
 const teachers = ref([]);
 const isModalOpen = ref(false);
+const isClassroomsModalOpen = ref(false);
+const selectedTeacherForClassrooms = ref(null);
 const isEditMode = ref(false);
 var idItemSelected = ref(0);
 var searchData = ref('');
@@ -198,6 +216,11 @@ const listTeacherService = async (data) => {
 const openCreateModal = () => {
   isEditMode.value = false;
   isModalOpen.value = true;
+};
+
+const openClassroomsModal = (teacher) => {
+  selectedTeacherForClassrooms.value = teacher;
+  isClassroomsModalOpen.value = true;
 };
 
 const openEditModal = async (id) => {

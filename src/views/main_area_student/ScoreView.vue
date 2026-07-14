@@ -17,7 +17,7 @@
               N°
             </CTableHeaderCell>
             <CTableHeaderCell class="bg-body-secondary text-center">
-              Unidad
+              Bimestre
             </CTableHeaderCell>
             <CTableHeaderCell class="bg-body-secondary text-center">
               Tarea
@@ -41,7 +41,7 @@
                 <div class="text-center">{{ index+1 }}</div>
               </CTableDataCell>
               <CTableDataCell>
-                <div class="text-center">{{ score.unit_id }}</div>
+                <div class="text-center">{{ score.bimester_id }}</div>
               </CTableDataCell>
               <CTableDataCell>
                 <div class="text-center">{{ score.title }}</div>
@@ -79,8 +79,8 @@
       if (response && response.data && response.data.data) {
         console.log(response.data.data);
         
-        // Ordenar los scores por unit_id
-        scores.value = response.data.data.sort((a, b) => a.unit_id - b.unit_id);
+        // Ordenar los scores por bimester_id
+        scores.value = response.data.data.sort((a, b) => a.bimester_id - b.bimester_id);
       } else {
         console.error("Unexpected response structure:", response);
       }
@@ -103,11 +103,11 @@
     // Agrega la tabla al PDF
     doc.setFontSize(12);
     doc.autoTable({
-      head: [['N°', 'Tarea', 'Unidad', 'Calificación']],
+      head: [['N°', 'Tarea', 'Bimestre', 'Calificación']],
       body: scores.value.map((score, index) => [
         index + 1,
         score.title,
-        score.unit_id,
+        score.bimester_id,
         // Si score.score está vacío, muestra "---", de lo contrario muestra score.score
         score.score ? score.score : '---' 
       ])

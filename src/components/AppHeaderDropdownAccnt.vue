@@ -48,6 +48,7 @@ import authService from "@/services/AuthService";
 import avatar from "@/assets/images/avatars/8.jpg";
 import { CDropdown, CDropdownToggle, CDropdownMenu, CDropdownItem, CDropdownDivider } from "@coreui/vue";
 import { getFirstName } from "@/utils/utils";
+import { clearSession, getStoredUser } from "@/utils/session";
 
 const router = useRouter();
 const userData = ref({
@@ -62,18 +63,12 @@ const userData = ref({
 
 const handleLogout = async () => {
   try {
-    const response = await authService.logoutService();
-    if ((response.data.success = 200)) {
-      localStorage.removeItem("acces_token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("tiempoLogin");
-      console.log("Logout exitoso:", response);
-      router.push("/login");
-    } else {
-      console.error("Error en el logout:", response.message);
-    }
+    await authService.logoutService();
   } catch (error) {
     console.error("Error en la solicitud de logout:", error);
+  } finally {
+    clearSession();
+    router.replace({ name: "Login" });
   }
 };
 
@@ -89,16 +84,18 @@ const goToProfile = () => {
 };
 
 onMounted(() => {
-  const user = JSON.parse(localStorage.getItem("user"));
-  if (user) {
-    userData.value.name = user.name;
-    userData.value.surname_father = user.surname_father;
-    userData.value.surname_mother = user.surname_mother;
-    userData.value.role_user = user.role;
-    userData.value.email_user = user.email;
-  } else {
-    console.warn("No se encontró información del usuario en localStorage");
+  const user = getStoredUser();
+  if (!user) {
+    clearSession();
+    router.replace({ name: "Login" });
+    return;
   }
+
+  userData.value.name = user.name ?? "";
+  userData.value.surname_father = user.surname_father ?? "";
+  userData.value.surname_mother = user.surname_mother ?? "";
+  userData.value.role_user = user.role ?? "";
+  userData.value.email_user = user.email ?? "";
 });
 </script>
 <style>

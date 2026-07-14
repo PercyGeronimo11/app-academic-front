@@ -72,7 +72,7 @@ const route = useRoute();
 const router = useRouter();
 
 const course_class_id = ref(Number(route.params.course_class_id) || 0);
-const unit_id = ref(Number(route.params.unit_id) || 0);
+const bimester_id = ref(Number(route.params.bimester_id) || 0);
 
 const students = ref([]);
 const dataCourse = ref(null);
@@ -96,13 +96,13 @@ const getDataCourse = async () => {
 
 // Función para obtener datos de la API
 const fetchData = async () => {
-  if (course_class_id.value && unit_id.value) {
+  if (course_class_id.value && bimester_id.value) {
     try {
       const dataInput = {
         course_class_id: course_class_id.value,
-        unit_id: unit_id.value,
+        bimester_id: bimester_id.value,
       };
-      const response = await TaskService.scoresGetByUnit(dataInput);
+      const response = await TaskService.scoresGetByBimester(dataInput);
 
       if (response.data.success) {
         students.value = response.data.data;
@@ -125,7 +125,7 @@ const fetchData = async () => {
       console.error("Error al cargar los datos:", error);
     }
   } else {
-    console.warn("Parámetros course_class_id o unit_id no están definidos.");
+    console.warn("Parámetros course_class_id o bimester_id no están definidos.");
   }
 };
 

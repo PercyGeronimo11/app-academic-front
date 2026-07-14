@@ -13,6 +13,11 @@ export default {
   async saveAssignmentTeachers(data) {
     return await axios.post(`${API_URL}/course-class/assignment-teachers`, data);
   },
+  async listCoursesByTeacherId(teacherId) {
+    return await axios.get(`${API_URL}/course-class/list-by-teacher`, {
+      params: { teacher_id: teacherId },
+    });
+  },
   async listCoursesByIdGrade(idGrade) {
     return await axios.get(`${API_URL}/course-class/get-by-grade`,{
       params:{
@@ -22,9 +27,6 @@ export default {
   },
   async listCoursesByTeacher() {
     return await axios.get(`${API_URL}/course-class/get-by-teacher`);
-  },
-  async createHorary(data) {
-    return await axios.post(`${API_URL}/course-class/horary`, data);
   },
 
   async getCourseClass(id) {

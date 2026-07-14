@@ -23,23 +23,32 @@
         </CRow>
         <CRow>
           <CCol :xs="12">
-            <CCard class="mb-4 p-3 card-custom">
+            <CCard class="mb-4 p-3 card-custom card_attendence">
               <div class="section-header">
                 <router-link
                   :to="`/student/courseClass/${course_class_id}/assistance`"
-                  class="no-underline"
+                  class="course-quick-link course-quick-link--attendance"
                 >
-                  <strong>Ver asistencias</strong>
+                  <i class="fas fa-clipboard-check"></i>
+                  Ver asistencias
                 </router-link>
               </div>
-            </CCard>
-            <CCard class="mb-4 p-3 card-custom">
               <div class="section-header">
                 <router-link
                   :to="`/student/courseClass/${course_class_id}/scores`"
-                  class="no-underline"
+                  class="course-quick-link course-quick-link--grades"
                 >
-                  <strong>Ver Notas</strong>
+                  <i class="fas fa-chart-bar"></i>
+                  Ver notas del curso
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link
+                  to="/my-report-card"
+                  class="course-quick-link course-quick-link--import"
+                >
+                  <i class="fas fa-book-open"></i>
+                  Mi libreta de notas
                 </router-link>
               </div>
             </CCard>
@@ -51,7 +60,7 @@
     <!-- listTaskAndMaterial Section -->
     <div v-for="(unit, index) in listTaskAndMaterial" :key="index">
       <h2 @click="toggleUnitVisibility(index)" class="unit-title">
-        Unidad {{ index + 1 }}
+        Bimestre {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
 
@@ -113,7 +122,7 @@ const fetchListTasks = async () => {
   try {
     const response = await TaskService.getItemsByStudentAndClass(course_class_id);
     response.data.data.forEach((task) => {
-      const unitIndex = task.unit_id - 1; 
+      const unitIndex = task.bimester_id - 1; 
       if (listTaskAndMaterial.value[unitIndex]) {
         task.type = "TAREA"; 
         listTaskAndMaterial.value[unitIndex].items.push(task);
@@ -129,7 +138,7 @@ const fetchListMaterials = async () => {
   try {
     const response = await MaterialService.getItems(course_class_id);
     response.data.data.forEach((material) => {
-      const unitIndex = material.unit_id - 1;
+      const unitIndex = material.bimester_id - 1;
       if (listTaskAndMaterial.value[unitIndex]) {
         material.type = "MATERIAL"; 
         listTaskAndMaterial.value[unitIndex].items.push(material);

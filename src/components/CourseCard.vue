@@ -8,6 +8,7 @@
     </div>
     <div class="card-content">
       <h3 class="card-title">{{ title }}</h3>
+      <p v-if="subtitle" class="card-subtitle">{{ subtitle }}</p>
     </div>
   </a>
 </template>
@@ -28,6 +29,10 @@ const props = defineProps({
   url: {
     type: String,
     required: true,
+  },
+  subtitle: {
+    type: String,
+    default: '',
   },
 });
 
@@ -117,5 +122,11 @@ const solidColor = computed(() => {
   font-weight: 600;
   color: #374151;
   margin: 0;
+}
+
+.card-subtitle {
+  font-size: 0.95rem;
+  color: #6b7280;
+  margin: 0.35rem 0 0;
 }
 </style>

@@ -11,8 +11,8 @@ export default {
     return await axios.get(`${API_URL}/section/list`,{});
   },
 
-  async getGradeSections() {
-    return await axios.get(`${API_URL}/grade-section/list`,{});
+  async getGradeSections(params = {}) {
+    return await axios.get(`${API_URL}/grade-section/list`, { params });
   },
 
   async getGradeSection(id) {

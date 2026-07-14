@@ -1,4 +1,5 @@
 import axios from "axios";
+import { clearSession, getStoredUser } from "@/utils/session";
 
 const API_URL = import.meta.env.VITE_API_URL;
 
@@ -6,8 +7,12 @@ export default {
   loginService(credentials) {
     return axios.post(`${API_URL}/auth/login`, credentials)
       .then(response => {
-        localStorage.setItem('access_token', response.data.data.access_token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        const { access_token: accessToken, user } = response.data.data ?? {};
+        if (!accessToken || !user) {
+          throw new Error('Respuesta de login incompleta');
+        }
+        localStorage.setItem('access_token', accessToken);
+        localStorage.setItem('user', JSON.stringify(user));
         return response.data;
       })
       .catch(error => {
@@ -30,8 +35,7 @@ export default {
       }
     })
       .then(response => {
-        localStorage.removeItem('access_token');
-        localStorage.removeItem('user');
+        clearSession();
         return response.data;
       })
       .catch(error => {
@@ -47,7 +51,6 @@ export default {
   },
 
   getUserDataService() {
-    const user = localStorage.getItem('user');
-    return user ? JSON.parse(user) : null;
+    return getStoredUser();
   }
 };

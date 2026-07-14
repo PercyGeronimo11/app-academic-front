@@ -1,13 +1,36 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import { VitePWA } from 'vite-plugin-pwa'
 import path from 'node:path'
 import autoprefixer from 'autoprefixer'
 
 export default defineConfig(() => {
   return {
-    plugins: [vue()],
+    plugins: [
+      vue(),
+      VitePWA({
+        registerType: 'autoUpdate',
+        injectRegister: false,
+        includeAssets: [
+          'android-icon-192x192.png',
+          'android-icon-96x96.png',
+          'firebase-messaging-sw.js',
+          'firebase-config.js',
+        ],
+        manifest: false,
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          navigateFallback: '/index.html',
+        },
+      }),
+    ],
     base: '/',
     css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: ['legacy-js-api', 'import'],
+        },
+      },
       postcss: {
         plugins: [
           autoprefixer({}), // add options if needed

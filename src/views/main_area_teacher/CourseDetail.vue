@@ -34,18 +34,38 @@
             <CCard class="mb-4 p-3 card-custom card_attendence">
               <div class="section-header">
                 <router-link
-                  :to="`/teacher/${course_class_id}/horary`"
-                  class="no-underline"
+                  :to="`/teacher/${course_class_id}/assistance`"
+                  class="course-quick-link course-quick-link--attendance"
                 >
-                  <strong class="button-attendance">Crear un horario</strong>
+                  <i class="fas fa-clipboard-check"></i>
+                  Tomar asistencia
                 </router-link>
               </div>
               <div class="section-header">
                 <router-link
-                  :to="`/teacher/${course_class_id}/assistance-dates`"
-                  class="no-underline"
+                  :to="`/teacher/${course_class_id}/conduct`"
+                  class="course-quick-link course-quick-link--conduct"
                 >
-                  <strong class="button-attendance">Tomar asistencia</strong>
+                  <i class="fas fa-exclamation-triangle"></i>
+                  Incidentes de conducta
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link
+                  :to="`/teacher/${course_class_id}/grades`"
+                  class="course-quick-link course-quick-link--grades"
+                >
+                  <i class="fas fa-chart-bar"></i>
+                  Notas por competencia
+                </router-link>
+              </div>
+              <div class="section-header">
+                <router-link
+                  :to="`/teacher/${course_class_id}/grades/import`"
+                  class="course-quick-link course-quick-link--import"
+                >
+                  <i class="fas fa-file-excel"></i>
+                  Importar notas SIAGIE
                 </router-link>
               </div>
             </CCard>
@@ -54,9 +74,9 @@
       </div>
     </div>
 
-    <div v-for="(unit, index) in units" :key="index">
+    <div v-for="(unit, index) in bimesters" :key="index">
       <h2 @click="toggleUnitVisibility(index)" class="unit-title">
-        Unidad {{ index + 1 }}
+        Bimestre {{ index + 1 }}
         <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
       </h2>
 
@@ -132,17 +152,17 @@
                 <CFormInput type="date" id="due_date" v-model="formData.due_date" />
               </CCol>
               <CCol>
-                <CFormLabel for="unit_id">Unidad</CFormLabel>
+                <CFormLabel for="bimester_id">Bimestre</CFormLabel>
                 <CFormSelect
-                  id="unit_id"
+                  id="bimester_id"
                   aria-label="Floating label select example"
-                  v-model="formData.unit_id"
+                  v-model="formData.bimester_id"
                 >
                   <option value="0">Seleccione una unidad</option>
-                  <option value="1">Unidad 1</option>
-                  <option value="2">Unidad 2</option>
-                  <option value="3">Unidad 3</option>
-                  <option value="4">Unidad 4</option>
+                  <option value="1">Bimestre 1</option>
+                  <option value="2">Bimestre 2</option>
+                  <option value="3">Bimestre 3</option>
+                  <option value="4">Bimestre 4</option>
                 </CFormSelect>
               </CCol>
             </CRow>
@@ -183,17 +203,17 @@
             </CRow>
             <CRow class="mb-3">
               <CCol>
-                <CFormLabel for="unit_id">Unidad</CFormLabel>
+                <CFormLabel for="bimester_id">Bimestre</CFormLabel>
                 <CFormSelect
-                  id="unit_id"
+                  id="bimester_id"
                   aria-label="Floating label select example"
-                  v-model="materialData.unit_id"
+                  v-model="materialData.bimester_id"
                 >
                   <option value="">Seleccione una unidad</option>
-                  <option value="1">Unidad 1</option>
-                  <option value="2">Unidad 2</option>
-                  <option value="3">Unidad 3</option>
-                  <option value="4">Unidad 4</option>
+                  <option value="1">Bimestre 1</option>
+                  <option value="2">Bimestre 2</option>
+                  <option value="3">Bimestre 3</option>
+                  <option value="4">Bimestre 4</option>
                 </CFormSelect>
               </CCol>
             </CRow>
@@ -247,14 +267,14 @@ const isModalOpenMaterial = ref(false);
 
 const materialData = ref({
   title: "",
-  unit_id: "",
+  bimester_id: "",
   course_class_id: course_class_id,
   period_id: 1,
 });
 const listMaterials = ref([]);
 const pdfFile = ref(null);
 
-const units = ref([
+const bimesters = ref([
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
   { isVisible: false, items: [] },
@@ -270,7 +290,7 @@ var formData = ref({
   title: "",
   description: "",
   due_date: "",
-  unit_id: "",
+  bimester_id: "",
   course_class_id: "",
   period_id: 1,
 });
@@ -297,7 +317,7 @@ const getPeruvianDate = () => {
 };
 
 function toggleUnitVisibility(index) {
-  units.value[index].isVisible = !units.value[index].isVisible;
+  bimesters.value[index].isVisible = !bimesters.value[index].isVisible;
 }
 
 function toggleGeneralVisibility() {
@@ -336,16 +356,16 @@ const getCourseClassData = async () => {
 const fetchListTasks = async () => {
   const response = await TaskService.getItems(course_class_id);
   taskData.value = response.data.data;
-  units.value = [
+  bimesters.value = [
     { isVisible: false, items: [] },
     { isVisible: false, items: [] },
     { isVisible: false, items: [] },
     { isVisible: false, items: [] },
   ];
   response.data.data.forEach((task) => {
-    const unitIndex = task.unit_id - 1;
+    const unitIndex = task.bimester_id - 1;
     task.type = "TAREA";
-    units.value[unitIndex].items.push(task);
+    bimesters.value[unitIndex].items.push(task);
   });
 };
 const fetchListMaterials = async () => {
@@ -354,13 +374,13 @@ const fetchListMaterials = async () => {
     listMaterials.value = response.data.data;
 
     listMaterials.value.forEach((material) => {
-      const unitIndex = material.unit_id - 1; // Ajusta el índice (si unit_id empieza en 1)
-      if (units.value[unitIndex]) {
+      const unitIndex = material.bimester_id - 1; // Ajusta el índice (si bimester_id empieza en 1)
+      if (bimesters.value[unitIndex]) {
         material.type = "MATERIAL";
-        units.value[unitIndex].items.push(material);
+        bimesters.value[unitIndex].items.push(material);
       }
     });
-    console.log("listaaa: ", units.value);
+    console.log("listaaa: ", bimesters.value);
   } catch (error) {
     console.error("Error al obtener los materiales:", error);
   }
@@ -371,7 +391,7 @@ const clearFormDataTask = () => {
     title: "",
     description: "",
     due_date: "",
-    unit_id: "",
+    bimester_id: "",
     course_class_id: "",
     period_id: 1,
   });
@@ -407,7 +427,7 @@ const submitToCreate = async () => {
 };
 
 const submitToCreateMaterial = async () => {
-  if (!materialData.value.title || !materialData.value.unit_id) {
+  if (!materialData.value.title || !materialData.value.bimester_id) {
     alert("Por favor, completa todos los campos obligatorios.");
     return;
   }
@@ -419,7 +439,7 @@ const submitToCreateMaterial = async () => {
 
   const formData = new FormData();
   formData.append("title", materialData.value.title);
-  formData.append("unit_id", materialData.value.unit_id);
+  formData.append("bimester_id", materialData.value.bimester_id);
   formData.append("course_class_id", materialData.value.course_class_id);
   formData.append("period_id", materialData.value.period_id);
   formData.append("pdf", pdfFile.value);
@@ -437,7 +457,7 @@ const submitToCreateMaterial = async () => {
 const deleteTask = async (id) => {
   try {
     await TaskService.deleteItem(id);
-    for (const unit of units.value) {
+    for (const unit of bimesters.value) {
       const index = unit.items.findIndex((item) => item.id === id);
       if (index !== -1) {
         unit.items.splice(index, 1);
@@ -467,14 +487,14 @@ const generateReportScore = (course_class_id, idUnit) => {
     name: "StudentScores",
     params: {
       course_class_id: course_class_id,
-      unit_id: idUnit,
+      bimester_id: idUnit,
     },
   });
 };
 
 const validateForm = () => {
-  const { title, due_date, unit_id } = formData.value;
-  return title && due_date && unit_id;
+  const { title, due_date, bimester_id } = formData.value;
+  return title && due_date && bimester_id;
 };
 
 const ReportAssistence = async () => {
@@ -537,6 +557,22 @@ i {
   padding: 4px 8px;
   border-radius: 5px;
   margin: 20px auto; 
+}
+
+.button-conduct{
+  background: #b45309;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  margin: 20px auto;
+}
+
+.button-conduct:hover{
+  background: #92400e;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  margin: 20px auto;
 }
 
 .card_attendence div{

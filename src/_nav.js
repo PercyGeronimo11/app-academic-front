@@ -15,12 +15,39 @@ export default [
   },
 
   // DIRECCION O ADMINISTRATIVO
-  {
+/*   {
     component: 'CNavItem',
     name: 'Chatbot',
     to: '/chatbot',
     icon: cilChatBubble,
     roles: ['DIRECCION',],
+  }, */
+  {
+    component: 'CNavGroup',
+    name: 'Alerta Temprana',
+    icon: cilChartLine,
+    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'ESTUDIANTE'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Dashboard',
+        icon: cilChart,
+        to: '/prediccion/dashboard',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Riesgo Académico',
+        icon: cilGraph,
+        to: '/prediccion/academic-risk',
+      },
+    ],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Notificaciones',
+    to: '/push-notifications/historial',
+    icon: 'cil-bell',
+    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'ESTUDIANTE'],
   },
   {
     component: 'CNavGroup',
@@ -62,37 +89,31 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Aulas',
+    name: 'NOTAS',
     to: '/classroom/list',
     icon: cilStar,
     roles: ['DIRECCION',],
   },
+
   {
     component: 'CNavItem',
-    name: 'Cursos',
-    to: '/courses',
-    icon: 'cil-options',
-    roles: ['DIRECCION',],
+    name: 'Comunicados oficiales',
+    to: '/announcements/publish',
+    icon: 'cil-notes',
+    roles: ['DIRECCION'],
   },
 
   // TRAMITES VIRTUALES
   {
     component: 'CNavItem',
-    name: 'Solicitudes de Permiso',
-    to: '/mesa-futs',
-    icon: 'cil-options',
-    roles: ['MESA_PARTES'],
-  },
-  {
-    component: 'CNavItem',
     name: 'Trámites (Mesa)',
     to: '/mesa-tramites',
     icon: 'cil-file',
-    roles: ['MESA_PARTES'],
+    roles: ['SECRETARIA'],
   },
   {
     component: 'CNavItem',
-    name: 'Trámites (En proceso)',
+    name: 'Trámites virtuales',
     to: '/admin-tramites',
     icon: 'cil-file',
     roles: ['DIRECCION'],
@@ -140,7 +161,13 @@ export default [
     icon: 'cil-people',
     roles: ['DIRECCION'],
   },
-
+  {
+    component: 'CNavItem',
+    name: 'Cursos',
+    to: '/courses',
+    icon: 'cil-options',
+    roles: ['DIRECCION',],
+  },
 
 
   /* {
@@ -176,6 +203,13 @@ export default [
     icon: 'cil-notes',
     roles: ['PROFESOR'],
   },
+  {
+    component: 'CNavItem',
+    name: 'Comunicados oficiales',
+    to: '/announcements/publish',
+    icon: 'cil-notes',
+    roles: ['PROFESOR'],
+  },
 
 
   //   Para Estudiante
@@ -184,6 +218,28 @@ export default [
     name: 'Mis Cursos',
     to: '/mainAreaStudent',
     icon: 'cil-options',
+    roles: ['ESTUDIANTE'],
+  },
+
+  {
+    component: 'CNavItem',
+    name: 'Notificaciones',
+    to: '/my-notifications',
+    icon: 'cil-bell',
+    roles: ['ESTUDIANTE'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Comunicados oficiales',
+    to: '/my-announcements',
+    icon: 'cil-notes',
+    roles: ['ESTUDIANTE'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Libreta de notas',
+    to: '/my-report-card',
+    icon: 'cil-notes',
     roles: ['ESTUDIANTE'],
   },
 
