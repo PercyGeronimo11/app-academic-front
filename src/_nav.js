@@ -103,6 +103,13 @@ export default [
   },
   {
     component: 'CNavItem',
+    name: 'Configuraciones',
+    to: '/settings/general',
+    icon: 'cil-settings',
+    roles: ['DIRECCION'],
+  },
+  {
+    component: 'CNavItem',
     name: 'Comunicados oficiales',
     to: '/announcements/publish',
     icon: 'cil-notes',
@@ -209,6 +216,13 @@ export default [
     to: '/announcements/publish',
     icon: 'cil-notes',
     roles: ['PROFESOR'],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Ver comunicados',
+    to: '/my-announcements',
+    icon: 'cil-bell',
+    roles: ['PROFESOR', 'AUXILIAR', 'SECRETARIA', 'DIRECCION'],
   },
 
 

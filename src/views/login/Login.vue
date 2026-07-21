@@ -86,6 +86,7 @@ export default {
         const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
         localStorage.setItem("r_key", encryptedRol);
         console.log('Respuesa de login', response);
+        sessionStorage.removeItem('announcements_general_shown');
         
         if (response.success) {
           let route = "/";

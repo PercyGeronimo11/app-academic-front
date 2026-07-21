@@ -31,6 +31,19 @@ export default defineConfig(() => {
           autoprefixer({}), // add options if needed
         ],
       },
+      preprocessorOptions: {
+        // CoreUI aún usa @import; silenciamos deprecaciones hasta migrar a @use
+        scss: {
+          api: 'modern',
+          silenceDeprecations: ['legacy-js-api', 'import'],
+          quietDeps: true,
+        },
+        sass: {
+          api: 'modern',
+          silenceDeprecations: ['legacy-js-api', 'import'],
+          quietDeps: true,
+        },
+      },
     },
     resolve: {
       alias: [

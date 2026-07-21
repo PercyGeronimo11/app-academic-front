@@ -1,158 +1,222 @@
 <template>
-  <div class="course-section">
-    <h1 class="course-title">Curso de {{ courseClassData.course_name }}</h1>
-    <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence">
-      <b>Reporte general de asistencia</b>
-    </CButton>
-    <div>
-      <h2 @click="toggleGeneralVisibility" class="general-title">
-        General
-        <i :class="isvisibleGeneral ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
-      </h2>
-      <div v-if="isvisibleGeneral">
-        <CRow>
-          <CCol :xs="12">
-            <CCard class="mb-4 p-3 card-custom">
-              <div class="section-header">
-                <a href=""><strong>Descripción general</strong></a>
-              </div>
-              <div class="section-content">
-                <p>En el curso aprenderás de la mejor manera</p>
-              </div>
-            </CCard>
-          </CCol>
-        </CRow>
-        <CRow>
-          <CCol :xs="12">
-            <CCard class="mb-4 p-3 card-custom card_attendence">
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/assistance`"
-                  class="course-quick-link course-quick-link--attendance"
-                >
-                  <i class="fas fa-clipboard-check"></i>
-                  Tomar asistencia
-                </router-link>
-              </div>
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/conduct`"
-                  class="course-quick-link course-quick-link--conduct"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  Incidentes de conducta
-                </router-link>
-              </div>
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/grades`"
-                  class="course-quick-link course-quick-link--grades"
-                >
-                  <i class="fas fa-chart-bar"></i>
-                  Notas por competencia
-                </router-link>
-              </div>
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/grades/import`"
-                  class="course-quick-link course-quick-link--import"
-                >
-                  <i class="fas fa-file-excel"></i>
-                  Importar notas SIAGIE
-                </router-link>
-              </div>
-            </CCard>
-          </CCol>
-        </CRow>
+  <div class="course-detail">
+    <header class="course-header">
+      <p class="course-eyebrow">Aula virtual</p>
+      <h1 class="course-title">{{ courseClassData.course_name || 'Curso' }}</h1>
+      <p v-if="courseSubtitle" class="course-subtitle">{{ courseSubtitle }}</p>
+    </header>
+
+    <section class="options-section">
+      <h2 class="section-heading">Opciones del curso</h2>
+      <div class="options-grid">
+        <router-link
+          v-for="option in teacherOptions"
+          :key="option.to"
+          :to="option.to"
+          class="option-card"
+          :class="`option-card--${option.tone}`"
+        >
+          <div class="option-card__icon" aria-hidden="true">
+            <i :class="option.icon"></i>
+          </div>
+          <div class="option-card__body">
+            <h3 class="option-card__title">{{ option.title }}</h3>
+            <p class="option-card__desc">{{ option.description }}</p>
+          </div>
+        </router-link>
       </div>
-    </div>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import CryptoJS from "crypto-js";
-import { useRoute, useRouter } from "vue-router";
-import CourseClassService from "@/services/CourseClassService";
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import CourseClassService from '@/services/CourseClassService'
 
-const route = useRoute();
-const router = useRouter();
-
-const role_key = localStorage.getItem("r_key") || "guest";
-const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
-const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(
-  CryptoJS.enc.Utf8
-);
-
-const course_class_id = Number(route.params.courseClass);
-const isvisibleGeneral = ref(false);
+const route = useRoute()
+const course_class_id = Number(route.params.courseClass)
 
 const courseClassData = ref({
-  course_name: "",
-  teacher_name: "",
-});
+  course_name: '',
+  teacher_name: '',
+  grade: null,
+  section: null,
+})
 
-onMounted(() => {
-  getCourseClassData();
-});
+const courseSubtitle = computed(() => {
+  const { grade, section } = courseClassData.value
+  if (grade && section) return `Grado ${grade} — Sección ${section}`
+  if (grade) return `Grado ${grade}`
+  if (section) return `Sección ${section}`
+  return ''
+})
 
-function toggleGeneralVisibility() {
-  isvisibleGeneral.value = !isvisibleGeneral.value;
-}
+const teacherOptions = computed(() => [
+  {
+    title: 'Tomar asistencia',
+    description: 'Registrar presentes, faltas y tardanzas del día.',
+    to: `/teacher/${course_class_id}/assistance`,
+    icon: 'fas fa-clipboard-check',
+    tone: 'attendance',
+  },
+  {
+    title: 'Incidentes de conducta',
+    description: 'Documentar y revisar incidencias del aula.',
+    to: `/teacher/${course_class_id}/conduct`,
+    icon: 'fas fa-exclamation-triangle',
+    tone: 'conduct',
+  },
+  {
+    title: 'Notas por competencia',
+    description: 'Consultar niveles de logro (AD, A, B, C).',
+    to: `/teacher/${course_class_id}/grades`,
+    icon: 'fas fa-chart-bar',
+    tone: 'grades',
+  },
+  {
+    title: 'Importar notas SIAGIE',
+    description: 'Cargar calificaciones desde el Excel oficial.',
+    to: `/teacher/${course_class_id}/grades/import`,
+    icon: 'fas fa-file-excel',
+    tone: 'import',
+  },
+])
 
-const ConfirmRole = () => {
-  return decryptedRole == "Profesor";
-};
-
-const getCourseClassData = async () => {
+onMounted(async () => {
   try {
-    const response = await CourseClassService.getCourseClass(course_class_id);
-    courseClassData.value = response.data.data;
+    const response = await CourseClassService.getCourseClass(course_class_id)
+    courseClassData.value = response.data?.data || courseClassData.value
   } catch (error) {
-    console.error("Error al cargar datos del curso:", error);
+    console.error('Error al cargar datos del curso:', error)
   }
-};
-
-const ReportAssistence = async () => {
-  router.push({
-    name: "StudentAssistence",
-    params: {
-      course_class_id: course_class_id,
-    },
-  });
-};
+})
 </script>
 
 <style scoped>
-.course-title {
-  color: #034285;
+.course-detail {
+  padding: 1rem 0 2rem;
+}
+
+.course-header {
   text-align: center;
-  margin-bottom: 1.5em;
-  transition: color 0.3s;
+  margin-bottom: 2rem;
 }
 
-.general-title {
-  cursor: pointer;
-  color: #0056b3;
+.course-eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.course-title {
+  margin: 0.35rem 0 0.25rem;
+  color: #034285;
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  font-weight: 700;
+}
+
+.course-subtitle {
+  margin: 0;
+  color: #64748b;
+}
+
+.section-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 1rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.option-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 1.2em;
-  margin-top: 1em;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
-  transition: color 0.3s;
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 170px;
+  padding: 1.25rem;
+  border-radius: 14px;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
-.general-title:hover {
-  color: #004094;
+.option-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  text-decoration: none;
 }
 
-i {
-  margin-left: 10px;
+.option-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  color: #fff;
 }
 
-.card_attendence div {
-  margin: 10px 0px;
+.option-card__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.option-card__desc {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+.option-card--attendance {
+  border-color: #bfdbfe;
+}
+.option-card--attendance .option-card__icon {
+  background: #2563eb;
+}
+.option-card--attendance:hover {
+  border-color: #93c5fd;
+}
+
+.option-card--conduct {
+  border-color: #fde68a;
+}
+.option-card--conduct .option-card__icon {
+  background: #d97706;
+}
+.option-card--conduct:hover {
+  border-color: #fcd34d;
+}
+
+.option-card--grades {
+  border-color: #bbf7d0;
+}
+.option-card--grades .option-card__icon {
+  background: #059669;
+}
+.option-card--grades:hover {
+  border-color: #86efac;
+}
+
+.option-card--import {
+  border-color: #c7d2fe;
+}
+.option-card--import .option-card__icon {
+  background: #4f46e5;
+}
+.option-card--import:hover {
+  border-color: #a5b4fc;
 }
 </style>

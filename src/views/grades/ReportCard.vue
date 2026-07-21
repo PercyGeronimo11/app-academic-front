@@ -15,8 +15,12 @@
     <div class="module-filter-bar">
       <div style="max-width: 280px">
         <CFormLabel for="bimester">Bimestre</CFormLabel>
-        <CFormSelect id="bimester" v-model="selectedBimesterId" @change="loadReportCard">
-          <option v-for="item in bimesters" :key="item.id" :value="item.id">
+        <CFormSelect
+          id="bimester"
+          :model-value="selectedBimesterId"
+          @update:model-value="onBimesterChange"
+        >
+          <option v-for="item in bimesters" :key="item.id" :value="Number(item.id)">
             {{ item.name }} ({{ item.year }})
           </option>
         </CFormSelect>
@@ -58,7 +62,7 @@
                 <CTableDataCell class="text-center">
                   <ScoreLevelBadge :score="item.score" />
                 </CTableDataCell>
-                <CTableDataCell class="small">{{ item.observations || '—' }}</CTableDataCell>
+                <CTableDataCell class="small">{{ item.description || item.observations || '—' }}</CTableDataCell>
               </CTableRow>
             </CTableBody>
           </CTable>
@@ -97,8 +101,13 @@ const loadBimesters = async () => {
   const response = await CompetencyScoreService.listBimesters();
   bimesters.value = response.data?.data || [];
   if (bimesters.value.length && !selectedBimesterId.value) {
-    selectedBimesterId.value = bimesters.value[bimesters.value.length - 1].id;
+    selectedBimesterId.value = Number(bimesters.value[0].id);
   }
+};
+
+const onBimesterChange = async (value) => {
+  selectedBimesterId.value = value != null && value !== '' ? Number(value) : null;
+  await loadReportCard();
 };
 
 const loadReportCard = async () => {
@@ -110,9 +119,6 @@ const loadReportCard = async () => {
       const data = response.data.data;
       studentInfo.value = data.student;
       courses.value = data.courses || [];
-      if (data.bimester?.id) {
-        selectedBimesterId.value = data.bimester.id;
-      }
     } else {
       loadError.value = response.data.message || 'No se pudo cargar la libreta.';
     }
@@ -125,7 +131,9 @@ const loadReportCard = async () => {
 
 const generatePDF = () => {
   const doc = new jsPDF();
-  const bimester = bimesters.value.find((b) => b.id === selectedBimesterId.value);
+  const bimester = bimesters.value.find(
+    (b) => Number(b.id) === Number(selectedBimesterId.value)
+  );
   doc.setFontSize(16);
   doc.text('Libreta de notas', 14, 15);
   doc.setFontSize(11);
@@ -143,7 +151,7 @@ const generatePDF = () => {
       body: course.competencies.map((item) => [
         `${item.competency_number || item.competency_code} - ${item.competency_name}`,
         item.score || '—',
-        item.observations || '—',
+        item.description || item.observations || '—',
       ]),
       margin: { left: 14, right: 14 },
     });

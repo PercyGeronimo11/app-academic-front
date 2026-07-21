@@ -58,6 +58,11 @@ const routes = [
         component: () => import('@/views/course/Course.vue'),
       },
       {
+        path: '/settings/general',
+        name: 'generalSettings',
+        component: () => import('@/views/settings/GeneralSettings.vue'),
+      },
+      {
         path: '/assignStudents',
         name: 'Asignar estudiantes',
         component: () => import('@/views/assign_students/AssignStudent.vue'),

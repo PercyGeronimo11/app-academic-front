@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { CContainer } from '@coreui/vue'
 import AppFooter from '@/components/AppFooter.vue'
@@ -15,6 +15,7 @@ onMounted(() => {
   ensureStudentPushRegistration()
 })
 import AppNotificationBanner from '@/components/AppNotificationBanner.vue'
+import AnnouncementLoginModal from '@/components/announcements/AnnouncementLoginModal.vue'
 import { useUserNotifications } from '@/composables/useUserNotifications'
 import { hasValidSession } from '@/utils/session'
 
@@ -44,5 +45,6 @@ onUnmounted(stopPolling)
       <AppFooter />
     </div>
     <AssistantFab v-if="showFab" />
+    <AnnouncementLoginModal />
   </div>
 </template>

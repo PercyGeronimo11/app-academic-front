@@ -697,13 +697,25 @@ body {
 .course-quick-link--import { background: #6366f1; }
 
 .announcement-detail-body {
-  white-space: pre-wrap;
   line-height: 1.65;
   padding: 1rem;
   border-radius: 10px;
   background: #f8fafc;
   border: 1px solid #e8edf3;
   color: #334155;
+}
+
+.announcement-detail-body :where(p) {
+  margin-bottom: 0.65rem;
+}
+
+.announcement-detail-body :where(ul, ol) {
+  padding-left: 1.25rem;
+  margin-bottom: 0.65rem;
+}
+
+.announcement-detail-body :where(a) {
+  color: #0d6efd;
 }
 
 [data-coreui-theme='dark'] .module-card,
