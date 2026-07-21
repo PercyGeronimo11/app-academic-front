@@ -15,8 +15,6 @@
 
     <AcademicRiskFilters
       @update-predictions="confirmUpdate"
-      @close-bimester="confirmCloseBimester"
-      @reopen-bimester="confirmReopenBimester"
     />
 
     <AcademicRiskSummary v-if="!store.scope.isStudentView" :summary="store.summary" />
@@ -26,7 +24,12 @@
       :loading="store.loading"
       :error="store.error"
       :connection-error="store.connectionError"
+      :can-predict="store.canPredictIndividual"
+      :predicting-student-id="store.predictingStudentId"
+      :predict-disabled="store.updating"
       @view-detail="store.openDetail"
+      @predict-student="confirmPredictStudent"
+      @go-to-profile="goToStudentProfile"
     />
 
     <AcademicRiskDrawer
@@ -36,11 +39,19 @@
       @close="store.closeDetail"
     />
 
-    <div v-if="store.updating" class="academic-risk-overlay">
+    <div v-if="store.updating || store.predictingStudentId" class="academic-risk-overlay">
       <div class="academic-risk-overlay__content">
         <CSpinner color="light" class="mb-3" />
-        <h5 class="text-white mb-2">Generando predicciones...</h5>
-        <p class="text-white-50 mb-3">El modelo de Machine Learning está procesando el aula seleccionada.</p>
+        <h5 class="text-white mb-2">
+          {{ store.predictingStudentId ? 'Generando predicción...' : 'Generando predicciones...' }}
+        </h5>
+        <p class="text-white-50 mb-3">
+          {{
+            store.predictingStudentId
+              ? 'El modelo de Machine Learning está procesando al alumno seleccionado.'
+              : 'El modelo de Machine Learning está procesando el aula seleccionada.'
+          }}
+        </p>
         <CProgress animated :value="100" color="light" class="academic-risk-overlay__progress" />
       </div>
     </div>
@@ -49,6 +60,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
 
 import AcademicRiskDrawer from '@/components/academic-risk/AcademicRiskDrawer.vue'
@@ -59,6 +71,14 @@ import { useAcademicRiskStore } from '@/stores/academicRisk'
 import { toastError, toastSuccess } from '@/utils/alerts'
 
 const store = useAcademicRiskStore()
+const router = useRouter()
+const route = useRoute()
+
+const goToStudentProfile = (rowOrId) => {
+  const studentId = typeof rowOrId === 'object' ? rowOrId?.studentId : rowOrId
+  if (!studentId) return
+  router.push(`/edit-student/${studentId}`)
+}
 
 const buildMissingFieldsHtml = (missingFields = []) => {
   if (!missingFields.length) return ''
@@ -66,16 +86,43 @@ const buildMissingFieldsHtml = (missingFields = []) => {
   return `<p class="mb-2">Información faltante:</p><ul class="text-start mb-0">${items}</ul>`
 }
 
-const showPredictionError = (err) => {
+const buildSkippedStudentsHtml = (skippedStudents = []) => {
+  if (!skippedStudents.length) return ''
+  const items = skippedStudents.map((name) => `<li>${name}</li>`).join('')
+  return `<p class="mb-2 mt-3">No se pudo calcular la predicción de:</p><ul class="text-start mb-0">${items}</ul>`
+}
+
+const showPredictionError = async (err, studentId = null) => {
   const payload = err.validationPayload || err.response?.data || {}
   const missingFields = payload.missing_fields || []
+  const skippedStudents = payload.skipped_students || []
   const message = payload.message || store.error || 'No se pudieron actualizar las predicciones.'
+  const targetStudentId = studentId || payload.student_id || null
 
   if (missingFields.length) {
-    Swal.fire({
+    const result = await Swal.fire({
       icon: 'warning',
       title: 'Datos incompletos',
       html: `<p>${message}</p>${buildMissingFieldsHtml(missingFields)}`,
+      showCancelButton: Boolean(targetStudentId),
+      confirmButtonText: 'Entendido',
+      cancelButtonText: 'Ir a completar información',
+      confirmButtonColor: '#321fdb',
+      cancelButtonColor: '#39f',
+      reverseButtons: true,
+    })
+
+    if (result.dismiss === Swal.DismissReason.cancel && targetStudentId) {
+      goToStudentProfile(targetStudentId)
+    }
+    return
+  }
+
+  if (skippedStudents.length) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Predicción incompleta',
+      html: `<p>${message}</p>${buildSkippedStudentsHtml(skippedStudents)}`,
       confirmButtonText: 'Entendido',
       confirmButtonColor: '#321fdb',
     })
@@ -85,10 +132,28 @@ const showPredictionError = (err) => {
   toastError(message)
 }
 
+const showBatchResult = (payload = {}) => {
+  const processed = Number(payload.students_processed ?? 0)
+  const skippedStudents = payload.skipped_students || []
+
+  if (!skippedStudents.length) {
+    toastSuccess(payload.message || 'Predicciones actualizadas correctamente.')
+    return
+  }
+
+  Swal.fire({
+    icon: processed > 0 ? 'success' : 'warning',
+    title: processed > 0 ? 'Predicciones actualizadas' : 'Sin predicciones generadas',
+    html: `<p>${payload.message || `Se actualizaron ${processed} predicciones.`}</p>${buildSkippedStudentsHtml(skippedStudents)}`,
+    confirmButtonText: 'Entendido',
+    confirmButtonColor: '#321fdb',
+  })
+}
+
 const confirmUpdate = async () => {
   const result = await Swal.fire({
     title: '¿Desea actualizar las predicciones?',
-    html: 'Se ejecutará el modelo de Machine Learning para el bimestre seleccionado.<br><br>El bimestre debe estar cerrado y todos los datos deben estar completos.',
+    html: 'Se ejecutará el modelo de Machine Learning para el aula y bimestre seleccionados.<br><br>Se calculará solo para alumnos con datos ML completos; el resto se listará al final.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Actualizar',
@@ -100,42 +165,20 @@ const confirmUpdate = async () => {
   if (!result.isConfirmed) return
 
   try {
-    await store.updatePredictions()
-    toastSuccess('Predicciones actualizadas correctamente.')
+    const payload = await store.updatePredictions()
+    showBatchResult(payload)
   } catch (err) {
     showPredictionError(err)
   }
 }
 
-const confirmCloseBimester = async () => {
+const confirmPredictStudent = async (row) => {
   const result = await Swal.fire({
-    title: '¿Cerrar bimestre?',
-    html: 'Al cerrar el bimestre, las competencias, faltas, tardanzas, conducta y perfil social quedarán bloqueadas para edición.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Cerrar bimestre',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#f9b115',
-    cancelButtonColor: '#9da5b1',
-  })
-
-  if (!result.isConfirmed) return
-
-  try {
-    await store.closeBimester()
-    toastSuccess('Bimestre cerrado correctamente.')
-  } catch (err) {
-    toastError(err.response?.data?.message || 'No se pudo cerrar el bimestre.')
-  }
-}
-
-const confirmReopenBimester = async () => {
-  const result = await Swal.fire({
-    title: '¿Reabrir bimestre?',
-    html: 'Las variables académicas volverán a ser editables para este bimestre.',
+    title: '¿Calcular predicción individual?',
+    html: `Se ejecutará el modelo para <strong>${row.fullName}</strong>.<br><br>El alumno debe tener completos los datos ML.`,
     icon: 'question',
     showCancelButton: true,
-    confirmButtonText: 'Reabrir',
+    confirmButtonText: 'Calcular',
     cancelButtonText: 'Cancelar',
     confirmButtonColor: '#321fdb',
     cancelButtonColor: '#9da5b1',
@@ -144,14 +187,23 @@ const confirmReopenBimester = async () => {
   if (!result.isConfirmed) return
 
   try {
-    await store.reopenBimester()
-    toastSuccess('Bimestre reabierto correctamente.')
+    await store.predictStudent(row.studentId)
+    toastSuccess(`Predicción actualizada para ${row.fullName}.`)
   } catch (err) {
-    toastError(err.response?.data?.message || 'No se pudo reabrir el bimestre.')
+    showPredictionError(err, row.studentId)
   }
 }
 
 onMounted(() => {
+  if (route.query.school_year) {
+    store.filters.schoolYear = Number(route.query.school_year)
+  }
+  if (route.query.bimester) {
+    store.filters.bimester = Number(route.query.bimester)
+  }
+  if (route.query.grade_section_id) {
+    store.filters.gradeSectionId = Number(route.query.grade_section_id)
+  }
   store.initializeFilters()
 })
 </script>

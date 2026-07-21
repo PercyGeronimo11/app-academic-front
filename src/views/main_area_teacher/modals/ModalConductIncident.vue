@@ -85,9 +85,11 @@ const incidentTypes = [
 ];
 
 const severities = [
-  { value: 'leve', label: 'Leve' },
-  { value: 'grave', label: 'Grave' },
-  { value: 'muy_grave', label: 'Muy grave' },
+  { value: 'leve', label: '1. Leve' },
+  { value: 'moderado', label: '2. Moderado' },
+  { value: 'grave', label: '3. Grave' },
+  { value: 'muy_grave', label: '4. Muy grave' },
+  { value: 'critico', label: '5. Crítico' },
 ];
 
 const getToday = () => new Date().toISOString().slice(0, 10);

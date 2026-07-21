@@ -36,6 +36,12 @@ export default [
       },
       {
         component: 'CNavItem',
+        name: 'Riesgo por aula',
+        icon: cilList,
+        to: '/prediccion/aulas',
+      },
+      {
+        component: 'CNavItem',
         name: 'Riesgo Académico',
         icon: cilGraph,
         to: '/prediccion/academic-risk',

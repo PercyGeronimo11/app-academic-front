@@ -10,4 +10,14 @@ export default {
   getPredictionsByStudent(studentId) {
     return axios.get(`${API_URL}/ml/predictions/student/${studentId}/`)
   },
+
+  getPredictionsByClassroom({ gradeSectionId, schoolYear, bimester }) {
+    return axios.get(`${API_URL}/ml/predictions/by-classroom/`, {
+      params: {
+        grade_section_id: gradeSectionId,
+        school_year: schoolYear,
+        bimester,
+      },
+    })
+  },
 }

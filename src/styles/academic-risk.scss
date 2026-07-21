@@ -2,6 +2,78 @@
   position: relative;
 }
 
+/* ===== Filtros (una sola fila, responsivo) ===== */
+.academic-risk-filters__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.academic-risk-filters__field {
+  flex: 1 1 200px;
+  min-width: 170px;
+}
+
+.academic-risk-filters__field--info {
+  flex: 2 1 260px;
+}
+
+.academic-risk-filters__label {
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.academic-risk-filters__label-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.academic-risk-filters__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+@media (max-width: 767.98px) {
+  .academic-risk-filters__field {
+    flex: 1 1 100%;
+  }
+
+  .academic-risk-filters__actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .academic-risk-filters__actions .btn {
+    flex: 1 1 100%;
+  }
+}
+
+/* ===== Summary (niveles de riesgo) ===== */
+.academic-risk-summary__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .academic-risk-summary__grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* ===== Contador de la tabla ===== */
+.academic-risk-table__count {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.4rem 0.85rem;
+}
+
 .academic-risk-overlay {
   position: fixed;
   inset: 0;
@@ -138,4 +210,380 @@
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid #e9ecef;
+}
+
+/* ===== Dashboard / Aulas ===== */
+.risk-hero-card {
+  background:
+    radial-gradient(circle at top right, rgba(50, 31, 219, 0.12), transparent 42%),
+    linear-gradient(135deg, #ffffff 0%, #f5f7ff 100%);
+  border: 1px solid rgba(50, 31, 219, 0.08) !important;
+}
+
+.risk-hero-card--classrooms {
+  background:
+    radial-gradient(circle at top right, rgba(253, 126, 20, 0.14), transparent 42%),
+    linear-gradient(135deg, #ffffff 0%, #fff8f1 100%);
+}
+
+.risk-hero-card__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #321fdb;
+  margin: 0;
+}
+
+.risk-kpi {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  min-height: 118px;
+  padding: 1.1rem 1.15rem;
+  border-radius: 1rem;
+  color: #fff;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.risk-kpi__icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.8rem;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.18);
+  flex-shrink: 0;
+}
+
+.risk-kpi__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  opacity: 0.92;
+}
+
+.risk-kpi__value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.risk-kpi__value--sm {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.risk-kpi__hint {
+  font-size: 0.78rem;
+  opacity: 0.85;
+}
+
+.risk-kpi--indigo {
+  background: linear-gradient(135deg, #321fdb, #4f46e5);
+}
+
+.risk-kpi--slate {
+  background: linear-gradient(135deg, #475569, #64748b);
+}
+
+.risk-kpi--alert {
+  background: linear-gradient(135deg, #dc3545, #fd7e14);
+}
+
+.risk-kpi--time {
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+}
+
+.risk-dist {
+  border-radius: 0.9rem;
+  padding: 0.85rem 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-height: 78px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.risk-dist__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.risk-dist__value {
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.risk-dist--very-low {
+  background: #d8f5e4;
+  color: #146c36;
+}
+
+.risk-dist--low {
+  background: #e7f8ee;
+  color: #1b7a3f;
+}
+
+.risk-dist--medium {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.risk-dist--high {
+  background: #ffe5d0;
+  color: #c35a00;
+}
+
+.risk-dist--critical {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.risk-alert-list,
+.risk-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 1rem;
+}
+
+.risk-alert-item,
+.risk-rank-item {
+  width: 100%;
+  border: 1px solid #e9ecef;
+  background: #fff;
+  border-radius: 0.85rem;
+  padding: 0.85rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: left;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.risk-alert-item:hover,
+.risk-rank-item:hover {
+  border-color: #c5d0ff;
+  box-shadow: 0 8px 18px rgba(50, 31, 219, 0.08);
+  transform: translateY(-1px);
+}
+
+.risk-alert-item__main,
+.risk-rank-item__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.risk-alert-item__main span,
+.risk-rank-item__left .small {
+  color: #6c757d;
+  font-size: 0.8rem;
+}
+
+.risk-rank-item__left {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.risk-rank-item__rank {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: #eef1ff;
+  color: #321fdb;
+  font-weight: 800;
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.risk-rank-item__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.risk-empty {
+  color: #6c757d;
+  font-size: 0.92rem;
+  padding: 0.75rem 0;
+}
+
+.risk-empty--panel {
+  border: 1px dashed #ced4da;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  background: #f8f9fa;
+}
+
+.semaphore-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.semaphore {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.semaphore::before {
+  content: '';
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.semaphore--very-low {
+  background: #cfeeda;
+  color: #0f5132;
+}
+
+.semaphore--low {
+  background: #d1f7df;
+  color: #1b7a3f;
+}
+
+.semaphore--medium {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.semaphore--high {
+  background: #ffe5d0;
+  color: #c35a00;
+}
+
+.semaphore--critical {
+  background: #f8d7da;
+  color: #842029;
+}
+
+.semaphore--unknown {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.classroom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.classroom-card {
+  background: #fff;
+  border-radius: 1.1rem;
+  padding: 1.1rem 1.15rem;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.classroom-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: #adb5bd;
+}
+
+.classroom-card--level-1::before { background: #0f5132; }
+.classroom-card--level-2::before { background: #2eb85c; }
+.classroom-card--level-3::before { background: #f9b115; }
+.classroom-card--level-4::before { background: #fd7e14; }
+.classroom-card--level-5::before { background: #e55353; }
+
+.classroom-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.classroom-card__rank {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #321fdb;
+  margin-bottom: 0.15rem;
+}
+
+.classroom-card__title {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.classroom-card__metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+}
+
+.classroom-card__metrics div {
+  background: #f8f9fa;
+  border-radius: 0.75rem;
+  padding: 0.55rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.classroom-card__metrics span {
+  font-size: 0.72rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.classroom-card__metrics strong {
+  font-size: 1rem;
+}
+
+.classroom-card__bars {
+  display: flex;
+  height: 0.55rem;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #edf2f7;
+}
+
+.classroom-card__bar.is-very-low { background: #0f5132; }
+.classroom-card__bar.is-low { background: #2eb85c; }
+.classroom-card__bar.is-medium { background: #f9b115; }
+.classroom-card__bar.is-high { background: #fd7e14; }
+.classroom-card__bar.is-critical { background: #e55353; }
+
+.classroom-card__footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 576px) {
+  .risk-kpi__value {
+    font-size: 1.4rem;
+  }
+
+  .risk-rank-item,
+  .risk-alert-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

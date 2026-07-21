@@ -10,7 +10,6 @@ import {
 } from '@/types/academicRisk'
 import {
   buildStudentFullName,
-  getModelCodeByBimester,
 } from '@/utils/academicRisk'
 
 const EMPTY_SUMMARY = {
@@ -24,12 +23,6 @@ const EMPTY_SUMMARY = {
 }
 
 const extractLaravelData = (response) => response?.data?.data ?? []
-
-const resolvePredictionForBimester = (predictions, bimester) => {
-  const modelCode = getModelCodeByBimester(bimester)
-  if (!Array.isArray(predictions) || !modelCode) return null
-  return predictions.find((item) => item.prediction_model === modelCode) || null
-}
 
 const buildRowStatus = (prediction) => {
   if (!prediction) return PREDICTION_STATUS.PENDING
@@ -53,6 +46,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
   const loading = ref(false)
   const updating = ref(false)
+  const predictingStudentId = ref(null)
   const drawerVisible = ref(false)
   const selectedRow = ref(null)
   const error = ref(null)
@@ -61,8 +55,6 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     role: null,
     unrestricted: false,
     canUpdatePredictions: false,
-    canCloseBimester: false,
-    canReopenBimester: false,
     isStudentView: false,
   })
 
@@ -77,6 +69,14 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     && Boolean(filters.value.bimester)
     && Boolean(filters.value.gradeSectionId)
     && !updating.value
+    && !predictingStudentId.value
+  ))
+
+  const canPredictIndividual = computed(() => (
+    scope.value.canUpdatePredictions
+    && Boolean(filters.value.schoolYear)
+    && Boolean(filters.value.bimester)
+    && !updating.value
   ))
 
   const selectedGradeSection = computed(() => (
@@ -86,12 +86,6 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const selectedBimester = computed(() => (
     bimesters.value.find((item) => item.number === filters.value.bimester) || null
   ))
-
-  const isSelectedBimesterOpen = computed(() => {
-    const bimester = selectedBimester.value
-    if (!bimester) return true
-    return bimester.status === true || bimester.status === 1
-  })
 
   const resetSummary = () => {
     summary.value = { ...EMPTY_SUMMARY }
@@ -150,8 +144,6 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       role: data.role ?? null,
       unrestricted: Boolean(data.unrestricted),
       canUpdatePredictions: Boolean(data.can_generate_predictions ?? data.can_update_predictions),
-      canCloseBimester: Boolean(data.can_close_bimester),
-      canReopenBimester: Boolean(data.can_reopen_bimester),
       isStudentView: data.role === 'ESTUDIANTE',
     }
   }
@@ -222,17 +214,22 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       return
     }
 
-    const builtRows = await Promise.all(studentItems.map(async (student) => {
-      const base = student.raw
-      let prediction = null
+    let predictionsByStudent = {}
+    try {
+      const response = await MLService.getPredictionsByClassroom({
+        gradeSectionId: filters.value.gradeSectionId,
+        schoolYear: filters.value.schoolYear,
+        bimester: filters.value.bimester,
+      })
+      predictionsByStudent = response.data?.predictions_by_student || {}
+    } catch {
+      predictionsByStudent = {}
+    }
 
-      try {
-        const response = await MLService.getPredictionsByStudent(student.id)
-        prediction = resolvePredictionForBimester(response.data, filters.value.bimester)
-      } catch {
-        prediction = null
-      }
-
+    const builtRows = studentItems.map((student) => {
+      const prediction = predictionsByStudent[String(student.id)]
+        || predictionsByStudent[student.id]
+        || null
       const status = buildRowStatus(prediction)
 
       return {
@@ -247,7 +244,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
         lastUpdated: prediction?.prediction_date ?? null,
         prediction,
       }
-    }))
+    })
 
     rows.value = builtRows
     computeSummary(filteredRows.value)
@@ -351,7 +348,6 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
   const updatePredictions = async () => {
     updating.value = true
-    error.value = null
     connectionError.value = false
 
     try {
@@ -366,33 +362,36 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     } catch (err) {
       if (!err.response) connectionError.value = true
       const data = err.response?.data ?? {}
-      const message = data.message
-        || data.error
-        || 'No se pudieron actualizar las predicciones.'
-      error.value = message
       err.validationPayload = data
+      // No asignar error de tabla: el modal/toast muestra el detalle y la lista debe permanecer.
       throw err
     } finally {
       updating.value = false
     }
   }
 
-  const closeBimester = async () => {
-    const bimester = selectedBimester.value
-    if (!bimester?.id) return null
+  const predictStudent = async (studentId) => {
+    predictingStudentId.value = studentId
+    connectionError.value = false
 
-    const response = await BimesterService.close(bimester.id)
-    await loadBimesters()
-    return response.data
-  }
+    try {
+      const response = await AcademicRiskService.predictStudent({
+        school_year: filters.value.schoolYear,
+        bimester: filters.value.bimester,
+        student_id: studentId,
+      })
 
-  const reopenBimester = async () => {
-    const bimester = selectedBimester.value
-    if (!bimester?.id) return null
-
-    const response = await BimesterService.reopen(bimester.id)
-    await loadBimesters()
-    return response.data
+      await buildRows()
+      return response.data
+    } catch (err) {
+      if (!err.response) connectionError.value = true
+      const data = err.response?.data ?? {}
+      err.validationPayload = data
+      // No asignar error de tabla: Swal muestra faltantes y la lista permanece visible.
+      throw err
+    } finally {
+      predictingStudentId.value = null
+    }
   }
 
   const openDetail = (row) => {
@@ -416,15 +415,16 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     summary,
     loading,
     updating,
+    predictingStudentId,
     drawerVisible,
     selectedRow,
     error,
     connectionError,
     scope,
     canUpdate,
+    canPredictIndividual,
     selectedGradeSection,
     selectedBimester,
-    isSelectedBimesterOpen,
     initializeFilters,
     onSchoolYearChange,
     onBimesterChange,
@@ -432,8 +432,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     onStudentChange,
     refreshRows,
     updatePredictions,
-    closeBimester,
-    reopenBimester,
+    predictStudent,
     openDetail,
     closeDetail,
   }

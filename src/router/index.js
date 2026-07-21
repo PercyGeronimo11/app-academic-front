@@ -141,6 +141,11 @@ const routes = [
         component: () => import('@/views/prediccion/AcademicRiskDashboardView.vue'),
       },
       {
+        path: '/prediccion/aulas',
+        name: 'PrediccionAulas',
+        component: () => import('@/views/prediccion/AcademicRiskClassroomsView.vue'),
+      },
+      {
         path: '/prediccion/academic-risk',
         name: 'PrediccionAcademicRisk',
         component: () => import('@/views/prediccion/AcademicRiskView.vue'),

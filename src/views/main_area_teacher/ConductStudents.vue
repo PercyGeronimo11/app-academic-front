@@ -140,15 +140,17 @@ const typeLabels = {
 
 const severityLabels = {
   leve: 'Leve',
+  moderado: 'Moderado',
   grave: 'Grave',
   muy_grave: 'Muy grave',
+  critico: 'Crítico',
 };
 
 const typeLabel = (v) => typeLabels[v] || v;
 const severityLabel = (v) => severityLabels[v] || v;
 const severityBadgeClass = (v) => {
-  if (v === 'muy_grave') return 'priority-badge--urgente';
-  if (v === 'grave') return 'priority-badge--importante';
+  if (v === 'critico' || v === 'muy_grave') return 'priority-badge--urgente';
+  if (v === 'grave' || v === 'moderado') return 'priority-badge--importante';
   return 'priority-badge--normal';
 };
 

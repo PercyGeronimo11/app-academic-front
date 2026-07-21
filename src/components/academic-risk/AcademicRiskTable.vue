@@ -2,11 +2,21 @@
   <CRow class="mb-4">
     <CCol>
       <CCard class="shadow-sm border-0">
-        <CCardHeader class="bg-white border-bottom py-3">
+        <CCardHeader
+          class="bg-white border-bottom py-3 d-flex flex-wrap justify-content-between align-items-center gap-2"
+        >
           <h5 class="fw-bold text-primary mb-0">
             <i class="fas fa-table me-2 text-primary"></i>
             Resultados de predicción
           </h5>
+          <CBadge
+            v-if="!loading && !error && !connectionError"
+            color="primary"
+            shape="rounded-pill"
+            class="academic-risk-table__count"
+          >
+            {{ rows.length }} {{ rows.length === 1 ? 'alumno' : 'alumnos' }}
+          </CBadge>
         </CCardHeader>
 
         <CCardBody class="p-0">
@@ -67,15 +77,44 @@
                   </CTableDataCell>
                   <CTableDataCell>{{ formatDateTime(row.lastUpdated) }}</CTableDataCell>
                   <CTableDataCell>
-                    <CButton
-                      color="primary"
-                      variant="outline"
-                      size="sm"
-                      :disabled="!row.prediction"
-                      @click="$emit('view-detail', row)"
-                    >
-                      Ver detalle
-                    </CButton>
+                    <div class="d-flex justify-content-center align-items-center gap-2 flex-wrap">
+                      <CButton
+                        v-if="canPredict"
+                        color="info"
+                        variant="outline"
+                        size="sm"
+                        class="academic-risk-predict-btn"
+                        :disabled="predictDisabled || predictingStudentId === row.studentId"
+                        :title="'Calcular predicción individual'"
+                        @click="$emit('predict-student', row)"
+                      >
+                        <CSpinner
+                          v-if="predictingStudentId === row.studentId"
+                          component="span"
+                          size="sm"
+                          aria-hidden="true"
+                        />
+                        <i v-else class="fas fa-brain"></i>
+                      </CButton>
+                      <CButton
+                        color="secondary"
+                        variant="outline"
+                        size="sm"
+                        title="Ir a perfil"
+                        @click="$emit('go-to-profile', row)"
+                      >
+                        Ir a perfil
+                      </CButton>
+                      <CButton
+                        color="primary"
+                        variant="outline"
+                        size="sm"
+                        :disabled="!row.prediction"
+                        @click="$emit('view-detail', row)"
+                      >
+                        Ver detalle
+                      </CButton>
+                    </div>
                   </CTableDataCell>
                 </CTableRow>
               </CTableBody>
@@ -113,7 +152,19 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  canPredict: {
+    type: Boolean,
+    default: false,
+  },
+  predictingStudentId: {
+    type: [Number, String],
+    default: null,
+  },
+  predictDisabled: {
+    type: Boolean,
+    default: false,
+  },
 })
 
-defineEmits(['view-detail'])
+defineEmits(['view-detail', 'predict-student', 'go-to-profile'])
 </script>

@@ -122,3 +122,19 @@ export const buildStudentFullName = (student) => {
   const parts = [student?.surname_father, student?.surname_mother, student?.name || student?.nombres]
   return parts.filter(Boolean).join(' ').trim()
 }
+
+export const getSemaphoreClass = (level) => {
+  const classes = {
+    1: 'semaphore semaphore--very-low',
+    2: 'semaphore semaphore--low',
+    3: 'semaphore semaphore--medium',
+    4: 'semaphore semaphore--high',
+    5: 'semaphore semaphore--critical',
+  }
+  return classes[level] || 'semaphore semaphore--unknown'
+}
+
+export const formatPercent = (value) => {
+  if (value == null || Number.isNaN(Number(value))) return '—'
+  return `${Number(value).toFixed(1)} %`
+}

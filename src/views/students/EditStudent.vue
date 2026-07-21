@@ -76,6 +76,57 @@
                   </CRow>
                 </CCardBody>
               </CCard>
+
+              <!-- ================= INFORMACIÓN SOCIAL (ML) ================= -->
+              <CCard class="mb-4">
+                <CCardHeader class="bg-dark text-white">
+                  <strong>Información social para predicción</strong>
+                </CCardHeader>
+                <CCardBody>
+                  <p class="small text-body-secondary mb-3">
+                    Estos datos alimentan el modelo de riesgo académico. Puede aplicar el mismo valor a los 4 bimestres
+                    o editar un bimestre específico.
+                  </p>
+                  <CRow class="g-3 mb-3">
+                    <CCol xs="12" md="4">
+                      <CFormSelect v-model="socialForm.bimester_id" label="Bimestre">
+                        <option
+                          v-for="item in socialProfiles"
+                          :key="item.bimester_id"
+                          :value="String(item.bimester_id)"
+                        >
+                          {{ item.bimester_name || `Bimestre ${item.bimester_number}` }}
+                          {{ item.filled ? '' : ' (sin completar)' }}
+                        </option>
+                      </CFormSelect>
+                    </CCol>
+                    <CCol xs="12" md="4">
+                      <CFormSelect v-model="socialForm.works" label="¿El estudiante trabaja?" required>
+                        <option value="">Seleccione</option>
+                        <option value="false">No</option>
+                        <option value="true">Sí</option>
+                      </CFormSelect>
+                    </CCol>
+                    <CCol xs="12" md="4">
+                      <CFormSelect v-model="socialForm.family_situation" label="Situación familiar" required>
+                        <option value="">Seleccione</option>
+                        <option value="PADRES">Vive con ambos padres</option>
+                        <option value="MADRE">Vive con la madre</option>
+                        <option value="PADRE">Vive con el padre</option>
+                        <option value="ABUELOS">Vive con abuelos</option>
+                        <option value="TIOS">Vive con tíos</option>
+                        <option value="OTROS">Otros</option>
+                      </CFormSelect>
+                    </CCol>
+                  </CRow>
+                  <CFormCheck
+                    id="apply-social-all"
+                    v-model="socialForm.apply_to_all"
+                    label="Aplicar estos datos a los 4 bimestres"
+                  />
+                </CCardBody>
+              </CCard>
+
               <!-- ================= DATOS DEL APODERADO ================= -->
               <CCard class="mb-4">
                 <CCardHeader class="bg-dark text-white">
@@ -139,9 +190,9 @@
               <!-- BOTONES -->
               <CRow class="mt-4 pt-3 border-top justify-content-between align-items-center g-2">
                 <CCol xs="12" sm="auto">
-                  <router-link to="/students">
-                    <CButton color="secondary" variant="outline">Regresar</CButton>
-                  </router-link>
+                  <CButton color="secondary" variant="outline" type="button" @click="goBack">
+                    Regresar
+                  </CButton>
                 </CCol>
                 <CCol xs="12" sm="auto" class="text-sm-end">
                   <CButton color="primary" type="submit">
@@ -181,13 +232,14 @@
 
 import StudentService from "@/services/StudentService";
 import { useRoute, useRouter } from "vue-router";
-import { ref, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import Swal from "sweetalert2";
 import { CCard, CCardBody, CCardHeader } from "@coreui/vue";
 const URL_DJANGO_MEDIA = import.meta.env.VITE_URL_DJANGO_MEDIA;
 
 
 const router = useRouter();
+const route = useRoute();
 const studentId = ref("");
 const alumnoData = ref({
   student_code: "",
@@ -215,8 +267,56 @@ const alumnoData = ref({
   },
   password: ""
 });
+const socialProfiles = ref([]);
+const socialForm = ref({
+  bimester_id: "",
+  works: "",
+  family_situation: "",
+  apply_to_all: true,
+});
 const showQRModal = ref(false)
 const qrImage = ref('https://es.wikipedia.org/wiki/C%C3%B3digo_QR')
+
+const syncSocialFormFromProfiles = () => {
+  if (!socialProfiles.value.length) return;
+  const selectedId = socialForm.value.bimester_id
+    || String(socialProfiles.value[0].bimester_id);
+  const current = socialProfiles.value.find(
+    (item) => String(item.bimester_id) === String(selectedId)
+  ) || socialProfiles.value[0];
+
+  socialForm.value.bimester_id = String(current.bimester_id);
+  socialForm.value.works = current.works === null || current.works === undefined
+    ? ""
+    : String(Boolean(current.works));
+  socialForm.value.family_situation = current.family_situation || "";
+  const anyFilled = socialProfiles.value.some((item) => item.filled);
+  if (!anyFilled) {
+    socialForm.value.apply_to_all = true;
+  }
+};
+
+watch(
+  () => socialForm.value.bimester_id,
+  () => {
+    const current = socialProfiles.value.find(
+      (item) => String(item.bimester_id) === String(socialForm.value.bimester_id)
+    );
+    if (!current) return;
+    socialForm.value.works = current.works === null || current.works === undefined
+      ? ""
+      : String(Boolean(current.works));
+    socialForm.value.family_situation = current.family_situation || "";
+  }
+);
+
+const goBack = () => {
+  if (window.history.length > 1) {
+    router.back();
+    return;
+  }
+  router.push("/students");
+};
 
 const downloadQR = async () => {
   const response = await fetch(qrImage.value)
@@ -257,6 +357,10 @@ const getDataStudent = async (id) => {
     if (alumnoData.value.sex !== "M" && alumnoData.value.sex !== "F") {
       alumnoData.value.sex = "M";
     }
+    socialProfiles.value = Array.isArray(alumnoData.value.social_profiles)
+      ? alumnoData.value.social_profiles
+      : [];
+    syncSocialFormFromProfiles();
   } catch (error) {
     if (error.response && error.response.data && error.response.data.message) {
       Swal.fire({
@@ -292,16 +396,45 @@ const submitToEdit = async () => {
     Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Seleccione el sexo." });
     return;
   }
+  if (socialForm.value.works === "" || socialForm.value.works === null) {
+    if (socialProfiles.value.length) {
+      Swal.fire({
+        icon: "warning",
+        title: "Datos incompletos",
+        text: "Indique si el estudiante trabaja o no.",
+      });
+      return;
+    }
+  }
+  if (!socialForm.value.family_situation && socialProfiles.value.length) {
+    Swal.fire({
+      icon: "warning",
+      title: "Datos incompletos",
+      text: "Seleccione la situación familiar.",
+    });
+    return;
+  }
   try {
     calculateAge();
-    await StudentService.updateItem(alumnoData.value);
+    const payload = {
+      ...alumnoData.value,
+    };
+    if (socialProfiles.value.length && socialForm.value.works !== "" && socialForm.value.family_situation) {
+      payload.social_profile = {
+        bimester_id: Number(socialForm.value.bimester_id),
+        works: socialForm.value.works === "true",
+        family_situation: socialForm.value.family_situation,
+        apply_to_all: Boolean(socialForm.value.apply_to_all),
+      };
+    }
+    await StudentService.updateItem(payload);
     await Swal.fire({
       icon: "success",
       title: "Estudiante actualizado",
       text: "Los cambios se guardaron correctamente.",
       confirmButtonText: "Aceptar",
     });
-    router.push("/students");
+    goBack();
   } catch (error) {
     if (error.response && error.response.data && error.response.data.message) {
       Swal.fire({
@@ -344,7 +477,6 @@ const obtenerQrCode = async () => {
 };
 
 onMounted(() => {
-  const route = useRoute();
   studentId.value = route.params.id;
   getDataStudent(studentId.value);
 });
