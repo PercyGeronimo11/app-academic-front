@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, onUnmounted } from 'vue'
+import { onMounted, onUnmounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { CContainer } from '@coreui/vue'
 import AppFooter from '@/components/AppFooter.vue'
@@ -8,11 +8,18 @@ import AppNotificationBanner from '@/components/AppNotificationBanner.vue'
 import AppSidebar from '@/components/AppSidebar.vue'
 import AssistantFab from '@/components/asistente/AssistantFab.vue'
 import { ensureStudentPushRegistration } from '@/composables/usePushNotifications'
-import { useUserNotifications } from '@/composables/useUserNotifications'
-import { hasValidSession } from '@/utils/session'
 
 const route = useRoute()
 const showFab = computed(() => route.name !== 'AsistenteInteligente')
+
+onMounted(() => {
+  ensureStudentPushRegistration()
+})
+
+import AnnouncementLoginModal from '@/components/announcements/AnnouncementLoginModal.vue'
+import { useUserNotifications } from '@/composables/useUserNotifications'
+import { hasValidSession } from '@/utils/session'
+
 const { startPolling, stopPolling, requestBrowserPermission } = useUserNotifications()
 
 onMounted(() => {
@@ -41,5 +48,6 @@ onUnmounted(stopPolling)
       <AppFooter />
     </div>
     <AssistantFab v-if="showFab" />
+    <AnnouncementLoginModal />
   </div>
 </template>

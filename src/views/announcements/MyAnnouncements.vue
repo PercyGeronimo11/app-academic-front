@@ -3,7 +3,7 @@
     <ModulePageHeader
       icon="fas fa-bullhorn"
       title="Comunicados oficiales"
-      subtitle="Información institucional publicada para su grado."
+      subtitle="Comunicados generales y avisos dirigidos a su grado, vigentes hoy."
     />
 
     <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
@@ -15,8 +15,8 @@
     <EmptyState
       v-else-if="!announcements.length"
       icon="📢"
-      title="No hay comunicados"
-      hint="Cuando la institución publique un comunicado para su grado, aparecerá aquí."
+      title="No hay comunicados vigentes"
+      hint="Cuando haya comunicados activos en su intervalo de fechas, aparecerán aquí."
     />
 
     <div v-else class="inbox-list">
@@ -33,13 +33,15 @@
         <div class="inbox-item__content">
           <div class="inbox-item__title-row">
             <span class="inbox-item__title">{{ item.title }}</span>
+            <span v-if="item.is_general" class="scope-badge">General</span>
             <span class="priority-badge" :class="`priority-badge--${item.priority}`">
               {{ priorityLabel(item.priority) }}
             </span>
           </div>
           <div class="inbox-item__excerpt">{{ item.excerpt }}</div>
           <div class="inbox-item__meta">
-            <i class="far fa-clock me-1"></i>{{ item.published_at }}
+            <i class="far fa-calendar-alt me-1"></i>
+            {{ formatRange(item.starts_at, item.ends_at) }}
             <span v-if="item.publisher_name"> · {{ item.publisher_name }}</span>
           </div>
         </div>
@@ -53,15 +55,18 @@
       </CModalHeader>
       <CModalBody v-if="selectedItem">
         <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+          <span v-if="selectedItem.is_general" class="scope-badge">General</span>
           <span class="priority-badge" :class="`priority-badge--${selectedItem.priority}`">
             {{ priorityLabel(selectedItem.priority) }}
           </span>
-          <span class="text-body-secondary small">{{ selectedItem.published_at }}</span>
+          <span class="text-body-secondary small">
+            {{ formatRange(selectedItem.starts_at, selectedItem.ends_at) }}
+          </span>
         </div>
         <p v-if="selectedItem.publisher_name" class="text-body-secondary small mb-3">
           <i class="fas fa-user me-1"></i>Publicado por: {{ selectedItem.publisher_name }}
         </p>
-        <div class="announcement-detail-body">{{ selectedItem.body }}</div>
+        <div class="announcement-detail-body" v-html="selectedItem.body"></div>
       </CModalBody>
       <CModalFooter>
         <CButton color="secondary" @click="closeDetail">Cerrar</CButton>
@@ -71,86 +76,104 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import OfficialAnnouncementService from '@/services/OfficialAnnouncementService';
-import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
-import EmptyState from '@/components/academic/EmptyState.vue';
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
+import ModulePageHeader from '@/components/academic/ModulePageHeader.vue'
+import EmptyState from '@/components/academic/EmptyState.vue'
 
-const route = useRoute();
+const route = useRoute()
 
-const announcements = ref([]);
-const loading = ref(true);
-const loadError = ref('');
-const detailVisible = ref(false);
-const selectedItem = ref(null);
+const announcements = ref([])
+const loading = ref(true)
+const loadError = ref('')
+const detailVisible = ref(false)
+const selectedItem = ref(null)
 
 const priorityLabels = {
   normal: 'Normal',
   importante: 'Importante',
   urgente: 'Urgente',
-};
+}
 
-const priorityLabel = (value) => priorityLabels[value] || value;
+const priorityLabel = (value) => priorityLabels[value] || value
+
+const formatRange = (start, end) => {
+  if (!start && !end) return '—'
+  if (start && end) return `${start} → ${end}`
+  return start || end
+}
 
 const loadAnnouncements = async () => {
-  loading.value = true;
-  loadError.value = '';
+  loading.value = true
+  loadError.value = ''
   try {
-    const response = await OfficialAnnouncementService.listMine();
+    const response = await OfficialAnnouncementService.listInbox()
     if (response.data.success) {
-      announcements.value = response.data.data || [];
+      announcements.value = response.data.data || []
     } else {
-      loadError.value = response.data.message || 'No se pudieron cargar los comunicados.';
+      loadError.value = response.data.message || 'No se pudieron cargar los comunicados.'
     }
   } catch (error) {
-    loadError.value = error.response?.data?.message || 'Error al cargar comunicados.';
+    loadError.value = error.response?.data?.message || 'Error al cargar comunicados.'
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-};
+}
 
 const openAnnouncement = async (item) => {
   try {
-    const response = await OfficialAnnouncementService.getMine(item.id);
+    const response = await OfficialAnnouncementService.getInboxItem(item.id)
     if (response.data.success) {
-      selectedItem.value = response.data.data;
-      detailVisible.value = true;
-      item.is_read = true;
+      selectedItem.value = response.data.data
+      detailVisible.value = true
+      item.is_read = true
     }
   } catch (error) {
-    loadError.value = error.response?.data?.message || 'No se pudo abrir el comunicado.';
+    loadError.value = error.response?.data?.message || 'No se pudo abrir el comunicado.'
   }
-};
+}
 
 const closeDetail = () => {
-  detailVisible.value = false;
-  selectedItem.value = null;
-};
+  detailVisible.value = false
+  selectedItem.value = null
+}
 
 const openFromQuery = async () => {
-  const id = Number(route.query.id);
-  if (!id) return;
+  const id = Number(route.query.id)
+  if (!id) return
 
-  const existing = announcements.value.find((item) => item.id === id);
+  const existing = announcements.value.find((item) => item.id === id)
   if (existing) {
-    await openAnnouncement(existing);
-    return;
+    await openAnnouncement(existing)
+    return
   }
 
   try {
-    const response = await OfficialAnnouncementService.getMine(id);
+    const response = await OfficialAnnouncementService.getInboxItem(id)
     if (response.data.success) {
-      selectedItem.value = response.data.data;
-      detailVisible.value = true;
+      selectedItem.value = response.data.data
+      detailVisible.value = true
     }
   } catch {
     // ignore invalid deep link
   }
-};
+}
 
 onMounted(async () => {
-  await loadAnnouncements();
-  await openFromQuery();
-});
+  await loadAnnouncements()
+  await openFromQuery()
+})
 </script>
+
+<style scoped>
+.scope-badge {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+</style>

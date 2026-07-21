@@ -13,6 +13,10 @@ export default {
     return axios.get(`${API_URL}/bimester/get/${id}`)
   },
 
+  async updateItem(data) {
+    return axios.put(`${API_URL}/bimester/update`, data)
+  },
+
   async close(id) {
     return axios.patch(`${API_URL}/bimester/${id}/close`)
   },

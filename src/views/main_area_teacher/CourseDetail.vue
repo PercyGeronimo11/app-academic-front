@@ -1,581 +1,222 @@
 <template>
-  <div class="course-section">
-    <h1 class="course-title">Curso de {{ courseClassData.course_name }}</h1>
-    <CDropdown class="mb-3 me-2" v-if="ConfirmRole()">
-      <CDropdownToggle color="primary">CREAR NUEVO(A)</CDropdownToggle>
-      <CDropdownMenu>
-        <CDropdownItem href="#" @click="openModal(true)">Tarea</CDropdownItem>
-        <CDropdownItem href="#" @click="openModalMaterial(true)">Material</CDropdownItem>
-      </CDropdownMenu>
-    </CDropdown>
-    <CButton class="mb-3" color="warning" v-if="ConfirmRole()" @click="ReportAssistence">
-      <b>Reporte general de asistencia</b>
-    </CButton>
-    <div>
-      <h2 @click="toggleGeneralVisibility" class="general-title">
-        General
-        <i :class="isvisibleGeneral ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
-      </h2>
-      <div v-if="isvisibleGeneral">
-        <CRow>
-          <CCol :xs="12">
-            <CCard class="mb-4 p-3 card-custom">
-              <div class="section-header">
-                <a href=""><strong>Descripción general</strong></a>
-              </div>
-              <div class="section-content">
-                <p>En el curso aprenderás de la mejor manera</p>
-              </div>
-            </CCard>
-          </CCol>
-        </CRow>
-        <CRow>
-          <CCol :xs="12">
-            <CCard class="mb-4 p-3 card-custom card_attendence">
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/assistance`"
-                  class="course-quick-link course-quick-link--attendance"
-                >
-                  <i class="fas fa-clipboard-check"></i>
-                  Tomar asistencia
-                </router-link>
-              </div>
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/conduct`"
-                  class="course-quick-link course-quick-link--conduct"
-                >
-                  <i class="fas fa-exclamation-triangle"></i>
-                  Incidentes de conducta
-                </router-link>
-              </div>
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/grades`"
-                  class="course-quick-link course-quick-link--grades"
-                >
-                  <i class="fas fa-chart-bar"></i>
-                  Notas por competencia
-                </router-link>
-              </div>
-              <div class="section-header">
-                <router-link
-                  :to="`/teacher/${course_class_id}/grades/import`"
-                  class="course-quick-link course-quick-link--import"
-                >
-                  <i class="fas fa-file-excel"></i>
-                  Importar notas SIAGIE
-                </router-link>
-              </div>
-            </CCard>
-          </CCol>
-        </CRow>
+  <div class="course-detail">
+    <header class="course-header">
+      <p class="course-eyebrow">Aula virtual</p>
+      <h1 class="course-title">{{ courseClassData.course_name || 'Curso' }}</h1>
+      <p v-if="courseSubtitle" class="course-subtitle">{{ courseSubtitle }}</p>
+    </header>
+
+    <section class="options-section">
+      <h2 class="section-heading">Opciones del curso</h2>
+      <div class="options-grid">
+        <router-link
+          v-for="option in teacherOptions"
+          :key="option.to"
+          :to="option.to"
+          class="option-card"
+          :class="`option-card--${option.tone}`"
+        >
+          <div class="option-card__icon" aria-hidden="true">
+            <i :class="option.icon"></i>
+          </div>
+          <div class="option-card__body">
+            <h3 class="option-card__title">{{ option.title }}</h3>
+            <p class="option-card__desc">{{ option.description }}</p>
+          </div>
+        </router-link>
       </div>
-    </div>
-
-    <div v-for="(unit, index) in bimesters" :key="index">
-      <h2 @click="toggleUnitVisibility(index)" class="unit-title">
-        Bimestre {{ index + 1 }}
-        <i :class="unit.isVisible ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
-      </h2>
-
-      <CButton
-        class="mb-3 text-white btn-report"
-        color="info"
-        @click="generateReportScore(course_class_id, index + 1)"
-        v-if="ConfirmRole() && unit.isVisible"
-      >
-        <b>Reporte de notas</b>
-      </CButton>
-
-      <CRow v-if="unit && unit.isVisible" class="mb-3">
-        <div v-for="item in unit.items" :key="item.id">
-          <!-- Mostrar solo si el tipo es 'TAREA' -->
-          <TaskDetail
-            v-if="item.type === 'TAREA'"
-            :title="'TAREA: ' + item.title"
-            :description="item.description"
-            :id="item.id"
-            @delete="deleteTask(item.id)"
-            @score="scoreTask(item.id)"
-          />
-          <!-- Mostrar solo si el tipo es 'MATERIAL' -->
-          <MaterialDetail
-            v-if="item.type === 'MATERIAL' && item.path_file"
-            :title="item.title"
-            :path-file="item.path_file"
-          />
-        </div>
-      </CRow>
-    </div>
-
-    <!-- Modal para crear nueva tarea -->
-    <CModal
-      :visible="isModalOpen"
-      scrollable
-      size="lg"
-      @close="openModal(false)"
-      aria-labelledby="LiveDemoExampleLabel"
-      alignment="center"
-    >
-      <CModalHeader>
-        <CModalTitle id="LiveDemoExampleLabel">Nueva tarea</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <CForm>
-          <CContainer>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormLabel for="title">Título *</CFormLabel>
-                <CFormInput
-                  type="text"
-                  id="title"
-                  v-model="formData.title"
-                  placeholder="Escriba el título"
-                />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormLabel for="description">Descripción *</CFormLabel>
-                <CFormTextarea
-                  id="description"
-                  rows="3"
-                  v-model="formData.description"
-                ></CFormTextarea>
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormLabel for="due_date">Fecha de entrega</CFormLabel>
-                <CFormInput type="date" id="due_date" v-model="formData.due_date" />
-              </CCol>
-              <CCol>
-                <CFormLabel for="bimester_id">Bimestre</CFormLabel>
-                <CFormSelect
-                  id="bimester_id"
-                  aria-label="Floating label select example"
-                  v-model="formData.bimester_id"
-                >
-                  <option value="0">Seleccione una unidad</option>
-                  <option value="1">Bimestre 1</option>
-                  <option value="2">Bimestre 2</option>
-                  <option value="3">Bimestre 3</option>
-                  <option value="4">Bimestre 4</option>
-                </CFormSelect>
-              </CCol>
-            </CRow>
-          </CContainer>
-        </CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" @click="openModal(false)">Cancelar</CButton>
-        <CButton color="primary" @click="submitToCreate()">Registrar</CButton>
-      </CModalFooter>
-    </CModal>
-
-    <!-- Modal para subir un material -->
-    <CModal
-      :visible="isModalOpenMaterial"
-      scrollable
-      size="lg"
-      @close="openModal(false)"
-      aria-labelledby="LiveDemoExampleLabel"
-      alignment="center"
-    >
-      <CModalHeader>
-        <CModalTitle id="LiveDemoExampleLabel">Nuevo material educativo</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <CForm>
-          <CContainer>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormLabel for="title">Título</CFormLabel>
-                <CFormInput
-                  type="text"
-                  id="title"
-                  v-model="materialData.title"
-                  placeholder="Escriba el título"
-                />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormLabel for="bimester_id">Bimestre</CFormLabel>
-                <CFormSelect
-                  id="bimester_id"
-                  aria-label="Floating label select example"
-                  v-model="materialData.bimester_id"
-                >
-                  <option value="">Seleccione una unidad</option>
-                  <option value="1">Bimestre 1</option>
-                  <option value="2">Bimestre 2</option>
-                  <option value="3">Bimestre 3</option>
-                  <option value="4">Bimestre 4</option>
-                </CFormSelect>
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormLabel for="file">Archivo PDF</CFormLabel>
-                <input
-                  type="file"
-                  accept="application/pdf"
-                  id="file"
-                  @change="handleFileChange"
-                />
-              </CCol>
-            </CRow>
-          </CContainer>
-        </CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" @click="openModalMaterial(false)">Cancelar</CButton>
-        <CButton color="primary" @click="submitToCreateMaterial">Guardar</CButton>
-      </CModalFooter>
-    </CModal>
+    </section>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import MaterialDetail from "./MaterialDetail.vue";
-import TaskDetail from "./TaskDetail.vue";
-import CryptoJS from "crypto-js";
-import { useRoute, useRouter } from "vue-router";
-import Swal from "sweetalert2";
-import TaskService from "@/services/TaskService";
-import MaterialService from "@/services/MaterialService";
-import CourseClassService from "@/services/CourseClassService";
+import { ref, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
+import CourseClassService from '@/services/CourseClassService'
 
-const route = useRoute();
-const router = useRouter();
-
-const role_key = localStorage.getItem("r_key") || "guest";
-const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
-const decryptedRole = CryptoJS.AES.decrypt(role_key, secretKey).toString(
-  CryptoJS.enc.Utf8
-);
-
-const course_class_id = Number(route.params.courseClass);
-const isvisibleGeneral = ref(false);
-const taskData = ref([]);
-const isModalOpen = ref(false);
-const isModalOpenMaterial = ref(false);
-
-const materialData = ref({
-  title: "",
-  bimester_id: "",
-  course_class_id: course_class_id,
-  period_id: 1,
-});
-const listMaterials = ref([]);
-const pdfFile = ref(null);
-
-const bimesters = ref([
-  { isVisible: false, items: [] },
-  { isVisible: false, items: [] },
-  { isVisible: false, items: [] },
-  { isVisible: false, items: [] },
-]);
+const route = useRoute()
+const course_class_id = Number(route.params.courseClass)
 
 const courseClassData = ref({
-  course_name: "",
-  teacher_name: "",
-});
+  course_name: '',
+  teacher_name: '',
+  grade: null,
+  section: null,
+})
 
-var formData = ref({
-  title: "",
-  description: "",
-  due_date: "",
-  bimester_id: "",
-  course_class_id: "",
-  period_id: 1,
-});
+const courseSubtitle = computed(() => {
+  const { grade, section } = courseClassData.value
+  if (grade && section) return `Grado ${grade} — Sección ${section}`
+  if (grade) return `Grado ${grade}`
+  if (section) return `Sección ${section}`
+  return ''
+})
 
-var assistenceData = ref([]);
+const teacherOptions = computed(() => [
+  {
+    title: 'Tomar asistencia',
+    description: 'Registrar presentes, faltas y tardanzas del día.',
+    to: `/teacher/${course_class_id}/assistance`,
+    icon: 'fas fa-clipboard-check',
+    tone: 'attendance',
+  },
+  {
+    title: 'Incidentes de conducta',
+    description: 'Documentar y revisar incidencias del aula.',
+    to: `/teacher/${course_class_id}/conduct`,
+    icon: 'fas fa-exclamation-triangle',
+    tone: 'conduct',
+  },
+  {
+    title: 'Notas por competencia',
+    description: 'Consultar niveles de logro (AD, A, B, C).',
+    to: `/teacher/${course_class_id}/grades`,
+    icon: 'fas fa-chart-bar',
+    tone: 'grades',
+  },
+  {
+    title: 'Importar notas SIAGIE',
+    description: 'Cargar calificaciones desde el Excel oficial.',
+    to: `/teacher/${course_class_id}/grades/import`,
+    icon: 'fas fa-file-excel',
+    tone: 'import',
+  },
+])
 
-var assistenceData = ref([]);
-
-// --------------------------------METODOS--------------------------
-onMounted(() => {
-  getCourseClassData();
-  formData.value.due_date = getPeruvianDate();
-  fetchListTasks();
-  fetchListMaterials();
-
-});
-
-const getPeruvianDate = () => {
-  const date = new Date();
-  const offset = date.getTimezoneOffset() / 60;
-  const peruOffset = -5;
-  date.setHours(date.getHours() - offset + peruOffset);
-  return date.toISOString().split("T")[0];
-};
-
-function toggleUnitVisibility(index) {
-  bimesters.value[index].isVisible = !bimesters.value[index].isVisible;
-}
-
-function toggleGeneralVisibility() {
-  isvisibleGeneral.value = !isvisibleGeneral.value;
-}
-
-const ConfirmRole = () => {
-  return decryptedRole == "Profesor";
-};
-
-const openModal = (decision) => {
-  if(!decision){
-    clearFormDataTask();
-  }
-  isModalOpen.value = decision;
-};
-
-const openModalMaterial = (decision) => {
-  isModalOpenMaterial.value = decision;
-};
-
-const handleFileChange = (event) => {
-  pdfFile.value = event.target.files[0];
-};
-
-const getCourseClassData = async () => {
+onMounted(async () => {
   try {
-    const response = await CourseClassService.getCourseClass(course_class_id);
-    courseClassData.value = response.data.data;
-    console.log("dataaa:", courseClassData);
+    const response = await CourseClassService.getCourseClass(course_class_id)
+    courseClassData.value = response.data?.data || courseClassData.value
   } catch (error) {
-    console.error("Error al cargar datos del curso:", error);
+    console.error('Error al cargar datos del curso:', error)
   }
-};
-
-const fetchListTasks = async () => {
-  const response = await TaskService.getItems(course_class_id);
-  taskData.value = response.data.data;
-  bimesters.value = [
-    { isVisible: false, items: [] },
-    { isVisible: false, items: [] },
-    { isVisible: false, items: [] },
-    { isVisible: false, items: [] },
-  ];
-  response.data.data.forEach((task) => {
-    const unitIndex = task.bimester_id - 1;
-    task.type = "TAREA";
-    bimesters.value[unitIndex].items.push(task);
-  });
-};
-const fetchListMaterials = async () => {
-  try {
-    const response = await MaterialService.getItems(course_class_id);
-    listMaterials.value = response.data.data;
-
-    listMaterials.value.forEach((material) => {
-      const unitIndex = material.bimester_id - 1; // Ajusta el índice (si bimester_id empieza en 1)
-      if (bimesters.value[unitIndex]) {
-        material.type = "MATERIAL";
-        bimesters.value[unitIndex].items.push(material);
-      }
-    });
-    console.log("listaaa: ", bimesters.value);
-  } catch (error) {
-    console.error("Error al obtener los materiales:", error);
-  }
-};
-
-const clearFormDataTask = () => {
-  formData = ref({
-    title: "",
-    description: "",
-    due_date: "",
-    bimester_id: "",
-    course_class_id: "",
-    period_id: 1,
-  });
-}
-
-const submitToCreate = async () => {
-  formData.value.course_class_id = course_class_id;
-  if (validateForm()) {
-    try {
-      await TaskService.createItem(formData.value);
-      openModal(false);
-      fetchListTasks();
-      Swal.fire({
-        icon: "success",
-        title: "Registro exitoso",
-        text: "Tarea registrada con éxito.",
-      });
-      clearFormDataTask();
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error al Guardar",
-        text: error.response?.data?.message || "Error desconocido",
-      });
-    }
-  } else {
-    Swal.fire({
-      icon: "warning",
-      title: "Error",
-      text: "Complete todos los campos obligatorios.",
-    });
-  }
-};
-
-const submitToCreateMaterial = async () => {
-  if (!materialData.value.title || !materialData.value.bimester_id) {
-    alert("Por favor, completa todos los campos obligatorios.");
-    return;
-  }
-
-  if (!pdfFile.value) {
-    alert("Selecciona un archivo PDF antes de guardar.");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("title", materialData.value.title);
-  formData.append("bimester_id", materialData.value.bimester_id);
-  formData.append("course_class_id", materialData.value.course_class_id);
-  formData.append("period_id", materialData.value.period_id);
-  formData.append("pdf", pdfFile.value);
-
-  try {
-    const response = await MaterialService.createItem(formData);
-    alert("Material educativo creado con éxito.");
-    closeModal();
-  } catch (error) {
-    console.error("Error al guardar el material:", error);
-    alert("Hubo un error al guardar el material.");
-  }
-};
-
-const deleteTask = async (id) => {
-  try {
-    await TaskService.deleteItem(id);
-    for (const unit of bimesters.value) {
-      const index = unit.items.findIndex((item) => item.id === id);
-      if (index !== -1) {
-        unit.items.splice(index, 1);
-        break;
-      }
-    }
-    Swal.fire({
-      icon: "success",
-      title: "Eliminación exitosa",
-      text: "Tarea eliminada con éxito.",
-    });
-  } catch (error) {
-    Swal.fire({
-      icon: "error",
-      title: "Error al Eliminar",
-      text: error.response?.data?.message || "Error desconocido",
-    });
-  }
-};
-
-const scoreTask = (id) => {
-  router.push(`/assingNotes/${course_class_id}/${id}`);
-};
-
-const generateReportScore = (course_class_id, idUnit) => {
-  router.push({
-    name: "StudentScores",
-    params: {
-      course_class_id: course_class_id,
-      bimester_id: idUnit,
-    },
-  });
-};
-
-const validateForm = () => {
-  const { title, due_date, bimester_id } = formData.value;
-  return title && due_date && bimester_id;
-};
-
-const ReportAssistence = async () => {
-  router.push({
-    name: "StudentAssistence",
-    params: {
-      course_class_id: course_class_id,
-    },
-  });
-};
+})
 </script>
 
 <style scoped>
-.course-title {
-  color: #034285;
+.course-detail {
+  padding: 1rem 0 2rem;
+}
+
+.course-header {
   text-align: center;
-  margin-bottom: 1.5em;
-  transition: color 0.3s;
+  margin-bottom: 2rem;
 }
 
-.unit-title,
-.general-title {
-  cursor: pointer;
-  color: #0056b3;
+.course-eyebrow {
+  margin: 0;
+  font-size: 0.85rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+
+.course-title {
+  margin: 0.35rem 0 0.25rem;
+  color: #034285;
+  font-size: clamp(1.6rem, 2.5vw, 2rem);
+  font-weight: 700;
+}
+
+.course-subtitle {
+  margin: 0;
+  color: #64748b;
+}
+
+.section-heading {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 1rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.option-card {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 1.2em;
-  margin-top: 1em;
-  border-bottom: 2px solid #ddd;
-  padding-bottom: 5px;
-  transition: color 0.3s;
-}
-
-.unit-title:hover,
-.general-title:hover {
-  color: #004094;
-}
-
-i {
-  margin-left: 10px;
-}
-
-.no-underline {
+  flex-direction: column;
+  gap: 1rem;
+  min-height: 170px;
+  padding: 1.25rem;
+  border-radius: 14px;
   text-decoration: none;
-  color: inherit;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 
-.button-attendance{
-  background: #0756be;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 5px;
-  margin: 20px auto;
+.option-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  text-decoration: none;
 }
 
-.button-attendance:hover{
-  background: #053575;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 5px;
-  margin: 20px auto; 
+.option-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-size: 1.2rem;
+  color: #fff;
 }
 
-.button-conduct{
-  background: #b45309;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 5px;
-  margin: 20px auto;
+.option-card__title {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-.button-conduct:hover{
-  background: #92400e;
-  color: white;
-  padding: 4px 8px;
-  border-radius: 5px;
-  margin: 20px auto;
+.option-card__desc {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #64748b;
 }
 
-.card_attendence div{
-  margin: 10px 0px;
+.option-card--attendance {
+  border-color: #bfdbfe;
+}
+.option-card--attendance .option-card__icon {
+  background: #2563eb;
+}
+.option-card--attendance:hover {
+  border-color: #93c5fd;
+}
+
+.option-card--conduct {
+  border-color: #fde68a;
+}
+.option-card--conduct .option-card__icon {
+  background: #d97706;
+}
+.option-card--conduct:hover {
+  border-color: #fcd34d;
+}
+
+.option-card--grades {
+  border-color: #bbf7d0;
+}
+.option-card--grades .option-card__icon {
+  background: #059669;
+}
+.option-card--grades:hover {
+  border-color: #86efac;
+}
+
+.option-card--import {
+  border-color: #c7d2fe;
+}
+.option-card--import .option-card__icon {
+  background: #4f46e5;
+}
+.option-card--import:hover {
+  border-color: #a5b4fc;
 }
 </style>

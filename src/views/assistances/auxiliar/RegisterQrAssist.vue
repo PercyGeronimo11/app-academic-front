@@ -3,29 +3,23 @@
     <CCol>
       <CCard class="shadow-sm border-0">
         <CCardHeader class="bg-white border-bottom py-3 px-3 px-md-4">
-
           <div
-            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-
-            <!-- Título -->
+            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2"
+          >
             <h5 class="fw-bold text-primary mb-0 d-flex align-items-center">
-              <i class="fas fa-chart-line me-2"></i>
+              <i class="fas fa-qrcode me-2"></i>
               Registrar asistencias por QR
             </h5>
-
-            <!-- Fecha -->
             <div class="w-30 w-md-auto">
               <CBadge color="dark" class="px-3 py-2 fs-6 w-100 w-md-auto text-center">
-                📅 {{ fechaHora }}
+                {{ fechaHora }}
               </CBadge>
             </div>
           </div>
-
         </CCardHeader>
       </CCard>
     </CCol>
   </CRow>
-
 
   <CRow class="mb-3">
     <CCol>
@@ -35,44 +29,43 @@
             <i class="fas fa-qrcode me-2"></i>
             Escáner de Asistencia
           </div>
-
           <CBadge color="success" v-if="scanning">
             <i class="fas fa-circle me-1"></i> Activo
           </CBadge>
-
-          <CBadge color="danger" v-else>
-            Inactivo
-          </CBadge>
+          <CBadge color="danger" v-else>Inactivo</CBadge>
         </CCardHeader>
 
         <CCardBody class="text-center">
-
-          <!-- Video scanner -->
           <div class="scanner-wrapper mb-3">
-            <video ref="videoRef" class="scanner-video"></video>
-
+            <video ref="videoRef" class="scanner-video" playsinline muted></video>
             <div v-if="scanning" class="scanner-line"></div>
           </div>
 
-          <!-- Código de estudiante detectado -->
-          <div v-if="codeStudentDetectado" class="mt-3">
-
+          <div v-if="lastResult" class="mt-3">
+            <CBadge :color="lastResult.ok ? 'success' : 'warning'" class="px-3 py-2 fs-6 text-wrap">
+              {{ lastResult.text }}
+            </CBadge>
+          </div>
+          <div v-else-if="codeStudentDetectado" class="mt-3">
             <CBadge color="info" class="px-3 py-2 fs-6">
               <i class="fas fa-id-card me-2"></i>
-              Alumno detectado: {{ codeStudentDetectado }}
+              Código: {{ codeStudentDetectado }}
             </CBadge>
-
           </div>
 
-          <!-- Botones -->
-          <div class="d-flex justify-content-center gap-3 mt-4">
-
-            <CButton color="primary" size="md" @click="empezarScan" :disabled="scanning">
+          <div class="d-flex flex-column flex-sm-row justify-content-center gap-2 gap-sm-3 mt-4">
+            <CButton color="primary" size="md" class="w-100 w-sm-auto" @click="empezarScan" :disabled="scanning">
               <i class="fas fa-camera me-2"></i>
               Iniciar escaneo
             </CButton>
-
-            <CButton color="danger" size="md" variant="outline" @click="apagarCamara" :disabled="!scanning">
+            <CButton
+              color="danger"
+              size="md"
+              variant="outline"
+              class="w-100 w-sm-auto"
+              @click="apagarCamara"
+              :disabled="!scanning"
+            >
               <i class="fas fa-power-off me-2"></i>
               Apagar cámara
             </CButton>
@@ -82,45 +75,30 @@
     </CCol>
   </CRow>
 
-
   <CRow class="mb-3">
     <CCol>
       <CCard class="shadow-sm border-0">
         <CCardBody class="bg-white py-3 px-3 px-md-4">
-
-          <div
-            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-            <div class="d-flex flex-column flex-sm-row gap-3 gap-md-4 w-100">
-              <div class="flex-fill p-2 rounded bg-light">
-                <div class="text-muted small">Total alumnos</div>
-                <div class="fw-bold fs-5 d-flex align-items-center">
-                  <i class="fas fa-users text-primary me-2"></i>
-                  {{ totalAlumnos }}
-                </div>
+          <div class="d-flex flex-column flex-sm-row gap-3 gap-md-4 w-100">
+            <div class="flex-fill p-2 rounded bg-light">
+              <div class="text-muted small">Total alumnos</div>
+              <div class="fw-bold fs-5 d-flex align-items-center">
+                <i class="fas fa-users text-primary me-2"></i>
+                {{ totalAlumnos }}
               </div>
-              <div class="flex-fill p-2 rounded bg-light">
-                <div class="text-muted small">Asistencias generadas</div>
-                <div class="fw-bold fs-5 d-flex align-items-center">
-                  <i class="fas fa-calendar-check text-success me-2"></i>
-                  {{ asistenciasHoy }}
-                </div>
-              </div>
-
             </div>
-
-            <!-- Botón -->
-            <CButton :color="asistenciasCompletas ? 'success' : 'primary'" size="lg" class="w-100 w-md-auto shadow-sm"
-              @click="generarAsistencias" :disabled="asistenciasCompletas">
-              <i :class="asistenciasCompletas
-                ? 'fas fa-check-circle me-2'
-                : 'fas fa-play-circle me-2'"></i>
-
-              {{ asistenciasCompletas ? 'Asistencias generadas' : 'Generar Asistencias' }}
-            </CButton>
-
+            <div class="flex-fill p-2 rounded bg-light">
+              <div class="text-muted small">Registros del día</div>
+              <div class="fw-bold fs-5 d-flex align-items-center">
+                <i class="fas fa-calendar-check text-success me-2"></i>
+                {{ asistenciasHoy }}
+              </div>
+            </div>
           </div>
-
-
+          <p class="text-body-secondary small mb-0 mt-3">
+            Las filas del día (estado F) se crean a medianoche con
+            <code>python manage.py create_assistances</code>. No hay botón de generación en pantalla.
+          </p>
         </CCardBody>
       </CCard>
     </CCol>
@@ -128,79 +106,46 @@
 </template>
 
 <script setup>
-import { ref, onBeforeUnmount, computed, onMounted } from 'vue'
+import { ref, onBeforeUnmount, onMounted } from 'vue'
 import { BrowserQRCodeReader } from '@zxing/browser'
-import AssistanceService from "@/services/AssistanceService";
-import Swal from 'sweetalert2'
-import { CCardBody } from '@coreui/vue';
+import AssistanceService from '@/services/AssistanceService'
 import { useFechaHora } from '@/composables/useFechaHora'
-import { toastSuccess,toastError } from '@/utils/alerts'
+import { toastSuccess, toastError } from '@/utils/alerts'
 
 const { fechaHora } = useFechaHora()
 
-
 const codeStudentDetectado = ref(null)
+const lastResult = ref(null)
 const scanning = ref(false)
+const registering = ref(false)
 let codeReader = null
 let stream = null
 let selectedDeviceId = null
 let decodeControl = null
+let lastScanAt = 0
+const SCAN_COOLDOWN_MS = 2500
 
 const asistenciasHoy = ref(0)
 const totalAlumnos = ref(0)
-
+const videoRef = ref(null)
 
 const loadTotalAsistencias = async () => {
-
   try {
     const res = await AssistanceService.VAuxiliar_totalesAsistencias()
-
     asistenciasHoy.value = res.data.asistencias_hoy
     totalAlumnos.value = res.data.total_alumnos
-
   } catch (error) {
-    console.log('Error al cargar totales de asistencias:', error);
-
+    console.log('Error al cargar totales de asistencias:', error)
   }
-
 }
-
-const generarAsistencias = async () => {
-
-  const result = await Swal.fire({
-    title: "Generar asistencias",
-    text: "Se crearán asistencias en estado F para todos los alumnos",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Generar"
-  })
-
-  if (!result.isConfirmed) return
-
-  try {
-
-    const res = await AssistanceService.VAuxiliar_generarAsistencias()
-
-    asistenciasHoy.value = res.data.asistencias_hoy
-    totalAlumnos.value = res.data.total_alumnos
-    toastSuccess(`${asistenciasHoy.value} Asistencias generadas correctamente `)
-
-  } catch (error) {
-    toastError('Error al generar asistencias')
-  }
-
-}
-
-
-const videoRef = ref(null);
 
 async function empezarScan() {
   if (scanning.value) return
   scanning.value = true
+  lastResult.value = null
 
   try {
     codeReader = new BrowserQRCodeReader()
-    const videoElement = document.getElementById('video')
     const devices = await BrowserQRCodeReader.listVideoInputDevices()
 
     if (devices.length === 0) {
@@ -209,101 +154,106 @@ async function empezarScan() {
       return
     }
 
-    let backCamera = devices.find(d =>
-      d.label.toLowerCase().includes("back") ||
-      d.label.toLowerCase().includes("environment")
-    )
+    let backCamera = devices.find((d) => {
+      const label = (d.label || '').toLowerCase()
+      return label.includes('back') || label.includes('environment') || label.includes('trasera')
+    })
 
-    // Si no hay etiqueta, usar la segunda cámara
     if (!backCamera && devices.length > 1) {
       backCamera = devices[1]
     }
 
     selectedDeviceId = backCamera ? backCamera.deviceId : devices[0].deviceId
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: { deviceId: selectedDeviceId },
-      // video: { facingMode: 'environment' }
-    })
+    const constraints = {
+      video: selectedDeviceId
+        ? { deviceId: { exact: selectedDeviceId }, facingMode: { ideal: 'environment' } }
+        : { facingMode: { ideal: 'environment' } },
+    }
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(constraints)
+    } catch {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      })
+    }
+
     videoRef.value.srcObject = stream
     await videoRef.value.play()
 
-    // videoElement.srcObject = stream
-    // videoElement.play()
-
-    // Mantener la lógica original de detección continua
     decodeControl = codeReader.decodeFromVideoDevice(selectedDeviceId, videoRef.value, async (result, err) => {
       if (result) {
         const student_code = result.text.trim()
-        if (student_code !== codeStudentDetectado.value) {
-          codeStudentDetectado.value = student_code
-          console.log('✅ Código de estudiante detectado:', student_code)
-          await registrarAsistencia(student_code)
+        const now = Date.now()
+        if (registering.value) return
+        if (student_code === codeStudentDetectado.value && now - lastScanAt < SCAN_COOLDOWN_MS) {
+          return
         }
+        codeStudentDetectado.value = student_code
+        lastScanAt = now
+        await registrarAsistencia(student_code)
+        return
       }
 
-      else if (err && !err.name.startsWith('NotFoundException') && !err.name.startsWith('ChecksumException')) {
-        // Solo mostrar errores realmente inesperados
-        console.error('❌ Error durante el escaneo:', err)
+      if (err && !err.name?.startsWith('NotFoundException') && !err.name?.startsWith('ChecksumException')) {
+        console.error('Error durante el escaneo:', err)
       }
-
     })
   } catch (error) {
-    console.error('❌ Error al iniciar cámara:', error)
-    toastError('No se pudo iniciar la cámara')
+    console.error('Error al iniciar cámara:', error)
+    toastError('No se pudo iniciar la cámara. Use HTTPS o permita el acceso.')
     scanning.value = false
   }
 }
 
-// === Función para apagar la cámara ===
 function apagarCamara() {
   if (decodeControl && typeof decodeControl.stop === 'function') {
     decodeControl.stop()
     decodeControl = null
-    console.log('🔹 Escaneo detenido')
   }
 
   if (stream) {
-    stream.getTracks().forEach(track => track.stop())
+    stream.getTracks().forEach((track) => track.stop())
     stream = null
-    console.log('🔹 Cámara detenida y stream liberado');
   }
 
-  const videoElement = document.getElementById('video')
-  if (videoElement) {
-    videoElement.srcObject = null
-    videoElement.style.backgroundColor = 'black'
+  if (videoRef.value) {
+    videoRef.value.srcObject = null
   }
 
   scanning.value = false
   codeStudentDetectado.value = null
-  console.log('🔹 Código de estudiante detectado reseteado');
 }
 
-// === Función para registrar asistencia ===
 async function registrarAsistencia(student_code) {
+  registering.value = true
   try {
-    await AssistanceService.VAuxiliar_registrarAsistencia(student_code)
-    toastSuccess(`Asistencia registrada`)
+    const res = await AssistanceService.VAuxiliar_registrarAsistencia(student_code)
+    const mensaje = res.data?.mensaje || 'Asistencia registrada'
+    const estado = res.data?.estado ? ` (${res.data.estado})` : ''
+    lastResult.value = { ok: true, text: `${mensaje}${estado}` }
+    toastSuccess(`${mensaje}${estado}`)
+    await loadTotalAsistencias()
   } catch (error) {
-    console.error('❌ Error al registrar asistencia:', error)
-    toastError(`No se pudo registrar la asistencia para código de estudiante: ${student_code}`)
+    const mensaje =
+      error.response?.data?.mensaje ||
+      error.response?.data?.error ||
+      `No se pudo registrar: ${student_code}`
+    lastResult.value = { ok: false, text: mensaje }
+    toastError(mensaje)
+  } finally {
+    registering.value = false
   }
 }
 
-const asistenciasCompletas = computed(() => {
-  return asistenciasHoy.value >= totalAlumnos.value && totalAlumnos.value > 0
-})
-
 onBeforeUnmount(() => {
   apagarCamara()
-
 })
 
 onMounted(() => {
   loadTotalAsistencias()
 })
-
 </script>
 
 <style scoped>
@@ -313,15 +263,16 @@ onMounted(() => {
   overflow: hidden;
   border: 2px dashed #dcdcdc;
   background: #000;
+  max-width: 520px;
+  margin: 0 auto;
 }
 
 .scanner-video {
   width: 100%;
-  height: 340px;
+  height: min(55vh, 420px);
   object-fit: cover;
 }
 
-/* línea animada de escaneo */
 .scanner-line {
   position: absolute;
   width: 100%;
@@ -333,15 +284,19 @@ onMounted(() => {
 
 @keyframes scanMove {
   0% {
-    top: 0
+    top: 0;
   }
-
   50% {
-    top: 95%
+    top: 95%;
   }
-
   100% {
-    top: 0
+    top: 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .scanner-video {
+    height: min(50vh, 360px);
   }
 }
 </style>

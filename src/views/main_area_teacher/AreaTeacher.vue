@@ -39,7 +39,7 @@ const listItems = async () => {
     courses.value = courseData.map((course) => ({
       title: course.course_name,
       subtitle: formatGradeSection(course.grade, course.section),
-      image: null,
+      image: course.course_image || null,
       url: `/teacher/${course.course_class_id}/detalle`,
     }));
 

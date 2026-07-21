@@ -56,22 +56,16 @@ export default {
   },
 
 
-  // Para el auxiliar
+  // Para el auxiliar / dirección / secretaría (JWT vía interceptor axios)
   VAuxiliar_registrarAsistencia(student_code) {
     return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/register-assist/`, {
-      student_code: student_code
-    }
-    );
+      student_code,
+    })
   },
 
-  VAuxiliar_generarAsistencias(dni) {
-    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/generar-assist/`);
+  VAuxiliar_totalesAsistencias() {
+    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/total-asistencias/`)
   },
-
-  VAuxiliar_totalesAsistencias(dni) {
-    return axios.post(`${API_URL_DJANGO}/assistances/auxiliar/total-asistencias/`);
-  },
-
 
   getVAuxiliar_listarAlumnos: (params) => {
     return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/listar-alumnos/`, { params })

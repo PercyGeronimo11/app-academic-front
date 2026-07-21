@@ -46,7 +46,7 @@
             @change="onFileChange"
           />
           <p class="upload-zone__hint mb-0">
-            Acepta el Excel completo de SIAGIE o una sola hoja del curso. Los alumnos se vinculan por código de estudiante (columna «Cód. Estudiante»).
+            Se toma solo la primera hoja del Excel como notas de este curso (sin importar el nombre de la hoja). Los alumnos se vinculan por código de estudiante (columna «Cód. Estudiante»).
           </p>
         </div>
 
@@ -90,6 +90,7 @@
                 <CTableHeaderCell>Curso</CTableHeaderCell>
                 <CTableHeaderCell class="text-center">Competencias</CTableHeaderCell>
                 <CTableHeaderCell class="text-center">Alumnos</CTableHeaderCell>
+                <CTableHeaderCell class="text-center">Calificativos</CTableHeaderCell>
                 <CTableHeaderCell>Coincide</CTableHeaderCell>
               </CTableRow>
             </CTableHead>
@@ -99,6 +100,7 @@
                 <CTableDataCell>{{ sheet.course_name }}</CTableDataCell>
                 <CTableDataCell class="text-center">{{ sheet.competency_count }}</CTableDataCell>
                 <CTableDataCell class="text-center">{{ sheet.student_count }}</CTableDataCell>
+                <CTableDataCell class="text-center">{{ sheet.score_count ?? 0 }}</CTableDataCell>
                 <CTableDataCell>
                   <span
                     class="status-badge"
@@ -143,6 +145,37 @@
             </CTable>
           </div>
         </div>
+
+        <div v-if="activeSampleScores.length" class="mt-4">
+          <h4 class="module-section-title mb-2">Muestra de calificativos y conclusiones</h4>
+          <div class="modern-table-shell">
+            <CTable hover responsive class="mb-0">
+              <CTableHead class="modern-table-header">
+                <CTableRow>
+                  <CTableHeaderCell>Alumno</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Comp.</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">NL</CTableHeaderCell>
+                  <CTableHeaderCell>Conclusión descriptiva</CTableHeaderCell>
+                </CTableRow>
+              </CTableHead>
+              <CTableBody>
+                <template v-for="sample in activeSampleScores" :key="sample.student_code">
+                  <CTableRow v-for="(score, idx) in sample.scores" :key="`${sample.student_code}-${score.competency_number}`">
+                    <CTableDataCell v-if="idx === 0" :rowspan="sample.scores.length">
+                      <div class="fw-semibold">{{ sample.full_name }}</div>
+                      <div class="small text-body-secondary">{{ sample.student_code }}</div>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center fw-semibold">{{ score.competency_number }}</CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span class="status-badge status-badge--publicado">{{ score.score }}</span>
+                    </CTableDataCell>
+                    <CTableDataCell class="small">{{ score.description || '—' }}</CTableDataCell>
+                  </CTableRow>
+                </template>
+              </CTableBody>
+            </CTable>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -150,18 +183,24 @@
       <h3 class="module-section-title mb-3">Resultado de importación</h3>
       <ul class="import-result-card__stats">
         <li class="import-result-card__stat">
-          <strong>{{ importResult.imported_scores }}</strong>
-          <span>Notas registradas</span>
+          <strong>{{ importResult.students_processed }}</strong>
+          <span>Alumnos actualizados</span>
         </li>
         <li class="import-result-card__stat">
-          <strong>{{ importResult.students_processed }}</strong>
-          <span>Alumnos procesados</span>
+          <strong>{{ importResult.imported_scores }}</strong>
+          <span>Calificativos guardados</span>
         </li>
         <li class="import-result-card__stat">
           <strong>{{ importResult.bimester_name }}</strong>
           <span>Bimestre</span>
         </li>
       </ul>
+      <p v-if="importResult.classroom" class="small text-body-secondary mt-2 mb-0">
+        Aula del curso: <strong>{{ importResult.classroom }}</strong>
+        <span v-if="importResult.students_in_file != null">
+          · Alumnos en el Excel: {{ importResult.students_in_file }}
+        </span>
+      </p>
       <div v-if="importResult.unmapped_competencies?.length" class="mt-3">
         <p class="text-warning mb-2 fw-semibold small">Competencias del Excel sin vincular</p>
         <p class="small mb-0">
@@ -169,8 +208,10 @@
         </p>
       </div>
       <div v-if="importResult.skipped_students?.length" class="mt-3">
-        <p class="text-warning mb-2 fw-semibold small">Alumnos omitidos</p>
-        <ul class="small mb-0 ps-3">
+        <p class="text-warning mb-2 fw-semibold small">
+          Alumnos omitidos ({{ importResult.skipped_students.length }})
+        </p>
+        <ul class="small mb-0 ps-3" style="max-height: 180px; overflow: auto">
           <li v-for="item in importResult.skipped_students" :key="item.student_code || item.full_name">
             {{ item.full_name }} (cód. {{ item.student_code }}) — {{ item.reason }}
           </li>
@@ -204,15 +245,18 @@ const loadError = ref('');
 const successMessage = ref('');
 
 const selectedBimesterLabel = computed(() => {
-  const item = bimesters.value.find((b) => b.id === selectedBimesterId.value);
+  const item = bimesters.value.find((b) => Number(b.id) === Number(selectedBimesterId.value));
   return item ? `${item.name} (${item.year})` : '';
 });
 
-const activeCompetencyMappings = computed(() => {
+const activePreviewSheet = computed(() => {
   const sheets = preview.value?.sheets ?? [];
-  const matched = sheets.find((sheet) => sheet.matches_course) || sheets[0];
-  return matched?.competency_mappings ?? [];
+  return sheets.find((sheet) => sheet.matches_course) || sheets[0] || null;
 });
+
+const activeCompetencyMappings = computed(() => activePreviewSheet.value?.competency_mappings ?? []);
+
+const activeSampleScores = computed(() => activePreviewSheet.value?.sample_scores ?? []);
 
 const onFileChange = (event) => {
   file.value = event.target.files?.[0] || null;
@@ -235,7 +279,7 @@ const loadBimesters = async () => {
   try {
     const response = await CompetencyScoreService.listBimesters();
     bimesters.value = response.data?.data ?? [];
-    selectedBimesterId.value = bimesters.value[0]?.id ?? null;
+    selectedBimesterId.value = bimesters.value[0] ? Number(bimesters.value[0].id) : null;
   } catch {
     bimesters.value = [];
   }
@@ -276,6 +320,7 @@ const importFile = async () => {
   importing.value = true;
   loadError.value = '';
   successMessage.value = '';
+  importResult.value = null;
   try {
     const response = await CompetencyScoreService.importSiagieForCourseClass(
       file.value,
@@ -289,9 +334,11 @@ const importFile = async () => {
       file.value = null;
     } else {
       loadError.value = response.data.message || 'No se pudo importar el archivo.';
+      importResult.value = response.data.data || null;
     }
   } catch (error) {
     loadError.value = error.response?.data?.message || 'Error al importar notas.';
+    importResult.value = error.response?.data?.data || null;
   } finally {
     importing.value = false;
   }

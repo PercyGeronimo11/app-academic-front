@@ -18,8 +18,12 @@
     <div class="module-filter-bar">
       <div class="flex-grow-1" style="max-width: 280px">
         <CFormLabel for="bimester">Bimestre</CFormLabel>
-        <CFormSelect id="bimester" v-model="selectedBimesterId" @change="loadGrades">
-          <option v-for="item in bimesters" :key="item.id" :value="item.id">
+        <CFormSelect
+          id="bimester"
+          :model-value="selectedBimesterId"
+          @update:model-value="onBimesterChange"
+        >
+          <option v-for="item in bimesters" :key="item.id" :value="Number(item.id)">
             {{ item.name }} ({{ item.year }})
           </option>
         </CFormSelect>
@@ -70,8 +74,11 @@
               class="text-center"
             >
               <ScoreLevelBadge :score="competency.score" />
-              <div v-if="competency.observations" class="small text-body-secondary mt-1 obs-text">
-                {{ competency.observations }}
+              <div
+                v-if="competency.description || competency.observations"
+                class="small text-body-secondary mt-1 obs-text"
+              >
+                {{ competency.description || competency.observations }}
               </div>
             </CTableDataCell>
           </CTableRow>
@@ -107,8 +114,13 @@ const loadBimesters = async () => {
   const response = await CompetencyScoreService.listBimesters();
   bimesters.value = response.data?.data || [];
   if (bimesters.value.length && !selectedBimesterId.value) {
-    selectedBimesterId.value = bimesters.value[bimesters.value.length - 1].id;
+    selectedBimesterId.value = Number(bimesters.value[0].id);
   }
+};
+
+const onBimesterChange = async (value) => {
+  selectedBimesterId.value = value != null && value !== '' ? Number(value) : null;
+  await loadGrades();
 };
 
 const loadGrades = async () => {
@@ -124,9 +136,6 @@ const loadGrades = async () => {
       courseName.value = data.course_name;
       competencies.value = data.competencies || [];
       students.value = data.students || [];
-      if (data.bimester?.id) {
-        selectedBimesterId.value = data.bimester.id;
-      }
     } else {
       loadError.value = response.data.message || 'No se pudieron cargar las notas.';
     }

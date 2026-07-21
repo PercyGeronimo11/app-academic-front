@@ -68,7 +68,7 @@ const listItems = async () => {
       .map((course) => ({
         id: course.id,
         title: course.name,
-        image: null,
+        image: course.image || null,
         url: `/student/courseClass/${course.id}/detalle`,
       }));
   } catch (error) {

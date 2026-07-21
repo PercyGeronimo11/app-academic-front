@@ -34,4 +34,20 @@ export default {
   markRead(id) {
     return axios.patch(`${API_URL}/official-announcements/mine/${id}/read`);
   },
+
+  listInbox() {
+    return axios.get(`${API_URL}/official-announcements/inbox`);
+  },
+
+  getInboxItem(id) {
+    return axios.get(`${API_URL}/official-announcements/inbox/${id}`);
+  },
+
+  markInboxRead(id) {
+    return axios.patch(`${API_URL}/official-announcements/inbox/${id}/read`);
+  },
+
+  listUnreadGeneral() {
+    return axios.get(`${API_URL}/official-announcements/unread-general`);
+  },
 };

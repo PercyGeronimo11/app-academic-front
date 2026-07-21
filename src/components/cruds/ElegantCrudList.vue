@@ -44,6 +44,13 @@
             :item="item"
           />
 
+          <!-- Slot personalizado por columna (prioridad sobre renderizados especiales) -->
+          <slot
+            v-else-if="$slots[column.key]"
+            :name="column.key"
+            :item="item"
+          />
+
           <!-- Checkbox -->
           <input
             v-else-if="column.key === 'checkbox' && props.selectable"

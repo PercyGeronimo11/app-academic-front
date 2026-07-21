@@ -26,15 +26,23 @@ export default defineConfig(() => {
     ],
     base: '/',
     css: {
-      preprocessorOptions: {
-        scss: {
-          silenceDeprecations: ['legacy-js-api', 'import'],
-        },
-      },
       postcss: {
         plugins: [
-          autoprefixer({}), // add options if needed
+          autoprefixer({}),
         ],
+      },
+      // CoreUI aún usa @import; silenciamos deprecaciones hasta migrar a @use
+      preprocessorOptions: {
+        scss: {
+          api: 'modern',
+          silenceDeprecations: ['legacy-js-api', 'import'],
+          quietDeps: true,
+        },
+        sass: {
+          api: 'modern',
+          silenceDeprecations: ['legacy-js-api', 'import'],
+          quietDeps: true,
+        },
       },
     },
     resolve: {
