@@ -95,10 +95,6 @@
               </div>
             </div>
           </div>
-          <p class="text-body-secondary small mb-0 mt-3">
-            Las filas del día (estado F) se crean a medianoche con
-            <code>python manage.py create_assistances</code>. No hay botón de generación en pantalla.
-          </p>
         </CCardBody>
       </CCard>
     </CCol>

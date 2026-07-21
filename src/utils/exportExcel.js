@@ -1,34 +1,8 @@
 import ExcelJS from 'exceljs'
 import { saveAs } from 'file-saver'
 
-export const exportarExcel = async ({
-    data = [],
-    columns = [],
-    fileName = 'reporte.xlsx',
-    sheetName = 'Hoja1'
-}) => {
-
-    const workbook = new ExcelJS.Workbook()
-    const worksheet = workbook.addWorksheet(sheetName)
-
-    // 🔹 columnas dinámicas
-    worksheet.columns = [
-        {
-            header: 'N°',
-            key: '__index',
-            width: 10
-        },
-        ...columns.map(col => ({
-            header: col.header,
-            key: col.key,
-            width: col.width || 20
-        }))
-    ]
-
-
-
-    // 🔹 estilo cabecera
-    worksheet.getRow(1).eachCell(cell => {
+const applyHeaderStyle = (row) => {
+    row.eachCell(cell => {
         cell.font = { bold: true, color: { argb: 'FFFFFF' } }
         cell.fill = {
             type: 'pattern',
@@ -43,37 +17,106 @@ export const exportarExcel = async ({
             right: { style: 'thin' }
         }
     })
+}
 
-    // 🔹 data dinámica
+const applyBodyStyle = (row) => {
+    row.eachCell(cell => {
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
+        cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+        }
+    })
+}
+
+export const exportarExcel = async ({
+    data = [],
+    columns = [],
+    fileName = 'reporte.xlsx',
+    sheetName = 'Hoja1',
+    title = null,
+    metaRows = [],
+    summaryRow = null
+}) => {
+
+    const workbook = new ExcelJS.Workbook()
+    const worksheet = workbook.addWorksheet(sheetName)
+
+    let currentRow = 1
+
+    if (title) {
+        const titleRow = worksheet.addRow([title])
+        worksheet.mergeCells(currentRow, 1, currentRow, columns.length + 1)
+        titleRow.getCell(1).font = { bold: true, size: 14 }
+        titleRow.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' }
+        currentRow += 1
+    }
+
+    metaRows.forEach((metaRow) => {
+        const row = worksheet.addRow(metaRow)
+        row.getCell(1).font = { bold: true }
+        row.eachCell(cell => {
+            cell.alignment = { vertical: 'middle', horizontal: 'left' }
+        })
+        currentRow += 1
+    })
+
+    if (title || metaRows.length) {
+        worksheet.addRow([])
+        currentRow += 1
+    }
+
+    const headerValues = [
+        'N°',
+        ...columns.map(col => col.header)
+    ]
+    const headerRow = worksheet.addRow(headerValues)
+    applyHeaderStyle(headerRow)
+    currentRow += 1
+
+    worksheet.columns = [
+        { key: '__index', width: 8 },
+        ...columns.map(col => ({
+            key: col.key,
+            width: col.width || 20
+        }))
+    ]
+
     data.forEach((item, index) => {
-        const row = {
-            __index: index + 1 // 👈 numeración
+        const rowValues = {
+            __index: index + 1
         }
 
         columns.forEach(col => {
-            // si tiene formatter lo usa
-            row[col.key] = col.formatter
+            rowValues[col.key] = col.formatter
                 ? col.formatter(item)
                 : item[col.key]
         })
 
-        worksheet.addRow(row)
+        const row = worksheet.addRow(rowValues)
+        applyBodyStyle(row)
+        currentRow += 1
     })
 
-    // 🔹 estilos generales
-    worksheet.eachRow((row, rowNumber) => {
-        if (rowNumber > 1) {
-            row.eachCell(cell => {
-                cell.alignment = { vertical: 'middle', horizontal: 'center' }
-                cell.border = {
-                    top: { style: 'thin' },
-                    left: { style: 'thin' },
-                    bottom: { style: 'thin' },
-                    right: { style: 'thin' }
-                }
-            })
+    if (summaryRow) {
+        worksheet.addRow([])
+        currentRow += 1
+
+        const summaryValues = {
+            __index: ''
         }
-    })
+        columns.forEach(col => {
+            summaryValues[col.key] = summaryRow[col.key] ?? ''
+        })
+
+        const row = worksheet.addRow(summaryValues)
+        row.eachCell(cell => {
+            cell.font = { bold: true }
+        })
+        applyBodyStyle(row)
+    }
 
     // 🔹 exportar
     const buffer = await workbook.xlsx.writeBuffer()

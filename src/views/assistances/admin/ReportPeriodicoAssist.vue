@@ -279,6 +279,7 @@ import { meses, colorEstado, colorFijoEstado, ESTADOS_ASISTENCIA } from '@/utils
 import { formatDate } from '@/utils/time'
 import { exportarExcel } from '@/utils/exportExcel'
 import { textoEstado } from '../../../utils/utils'
+import Swal from 'sweetalert2'
 
 
 const router = useRouter()
@@ -403,23 +404,102 @@ const verDetalle = (item) => {
 }
 
 
+const tipoReporteLabel = {
+  diario: 'Diario',
+  semanal: 'Semanal',
+  mensual: 'Mensual'
+}
+
+const pct = (valor, total) => {
+  if (!total) return '0.0%'
+  return `${((valor / total) * 100).toFixed(1)}%`
+}
+
 const descargarExcel = () => {
+  if (!secciones.value.length) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Sin datos',
+      text: 'Consulte un reporte con resultados antes de descargar el Excel.'
+    })
+    return
+  }
+
+  const tipo = filtros.value.tipo
+  const total = data.value.total_registros || 0
+
   exportarExcel({
-    fileName: 'reporte_asistencia.xlsx',
-    sheetName: 'Asistencia',
+    fileName: `reporte_asistencias_${tipo}_${data.value.fecha_inicio}_${data.value.fecha_fin}.xlsx`,
+    sheetName: 'Reporte por aula',
+    title: 'Reporte de asistencias',
+    metaRows: [
+      ['Tipo de reporte', tipoReporteLabel[tipo] || tipo],
+      ['Fecha inicio', formatDate(data.value.fecha_inicio)],
+      ['Fecha fin', formatDate(data.value.fecha_fin)],
+      ['Total registros', total],
+      ['Asistencias (A)', `${data.value.t_asistencias} (${pct(data.value.t_asistencias, total)})`],
+      ['Tardanza leve (TL)', `${data.value.t_tard_leve} (${pct(data.value.t_tard_leve, total)})`],
+      ['Tardanza moderada (TM)', `${data.value.t_tard_moderado} (${pct(data.value.t_tard_moderado, total)})`],
+      ['Tardanza grave (TG)', `${data.value.t_tard_grave} (${pct(data.value.t_tard_grave, total)})`],
+      ['Tardanza extrema (TE)', `${data.value.t_tard_extremo} (${pct(data.value.t_tard_extremo, total)})`],
+      ['Faltas (F)', `${data.value.t_faltas} (${pct(data.value.t_faltas, total)})`]
+    ],
     data: secciones.value,
     columns: [
       {
-        header: 'Sección',
-        key: 'seccion',
-        width: 20,
+        header: 'Aula',
+        key: 'aula',
+        width: 14,
         formatter: (item) => `${item.grado}° ${item.seccion}`
       },
-      { header: 'Total', key: 'total', width: 15 },
-      { header: 'Asistencias', key: 'asistencias', width: 15 },
-      { header: 'Tardanzas', key: 'tardanzas', width: 15 },
-      { header: 'Faltas', key: 'faltas', width: 15 }
-    ]
+      { header: 'Total', key: 'total', width: 10 },
+      {
+        header: 'Puntual (A)',
+        key: 't_asistencias',
+        width: 12,
+        formatter: (item) => `${item.t_asistencias} (${pct(item.t_asistencias, item.total)})`
+      },
+      {
+        header: 'Tardanza leve (TL)',
+        key: 't_tard_leve',
+        width: 16,
+        formatter: (item) => `${item.t_tard_leve} (${pct(item.t_tard_leve, item.total)})`
+      },
+      {
+        header: 'Tardanza moderada (TM)',
+        key: 't_tard_moderado',
+        width: 18,
+        formatter: (item) => `${item.t_tard_moderado} (${pct(item.t_tard_moderado, item.total)})`
+      },
+      {
+        header: 'Tardanza grave (TG)',
+        key: 't_tard_grave',
+        width: 16,
+        formatter: (item) => `${item.t_tard_grave} (${pct(item.t_tard_grave, item.total)})`
+      },
+      {
+        header: 'Tardanza extrema (TE)',
+        key: 't_tard_extremo',
+        width: 18,
+        formatter: (item) => `${item.t_tard_extremo} (${pct(item.t_tard_extremo, item.total)})`
+      },
+      {
+        header: 'Faltas (F)',
+        key: 't_faltas',
+        width: 12,
+        formatter: (item) => `${item.t_faltas} (${pct(item.t_faltas, item.total)})`
+      }
+    ],
+    summaryRow: {
+      aula: 'TOTAL GENERAL',
+      total: total,
+      t_asistencias: `${data.value.t_asistencias} (${pct(data.value.t_asistencias, total)})`,
+      t_tard_leve: `${data.value.t_tard_leve} (${pct(data.value.t_tard_leve, total)})`,
+      t_tard_moderado: `${data.value.t_tard_moderado} (${pct(data.value.t_tard_moderado, total)})`,
+      t_tard_grave: `${data.value.t_tard_grave} (${pct(data.value.t_tard_grave, total)})`,
+      t_tard_extremo: `${data.value.t_tard_extremo} (${pct(data.value.t_tard_extremo, total)})`,
+      t_faltas: `${data.value.t_faltas} (${pct(data.value.t_faltas, total)})`
+    }
   })
 }
 
