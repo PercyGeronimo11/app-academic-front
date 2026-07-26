@@ -79,10 +79,24 @@
               <small class="text-body-secondary">Debe incluir el año (4 dígitos).</small>
             </CCol>
             <CCol md="4">
-              <CFormInput v-model="periodForm.start_time" type="date" label="Fecha de inicio" required />
+              <CFormInput
+                v-model="periodForm.start_time"
+                type="text"
+                inputmode="numeric"
+                placeholder="dd/mm/aaaa"
+                label="Fecha de inicio"
+                required
+              />
             </CCol>
             <CCol md="4">
-              <CFormInput v-model="periodForm.end_time" type="date" label="Fecha de fin" required />
+              <CFormInput
+                v-model="periodForm.end_time"
+                type="text"
+                inputmode="numeric"
+                placeholder="dd/mm/aaaa"
+                label="Fecha de fin"
+                required
+              />
             </CCol>
           </CRow>
           <CRow>
@@ -132,10 +146,24 @@
           </CRow>
           <CRow>
             <CCol md="6">
-              <CFormInput v-model="bimesterForm.start_date" type="date" label="Fecha de inicio" required />
+              <CFormInput
+                v-model="bimesterForm.start_date"
+                type="text"
+                inputmode="numeric"
+                placeholder="dd/mm/aaaa"
+                label="Fecha de inicio"
+                required
+              />
             </CCol>
             <CCol md="6">
-              <CFormInput v-model="bimesterForm.end_date" type="date" label="Fecha de fin" required />
+              <CFormInput
+                v-model="bimesterForm.end_date"
+                type="text"
+                inputmode="numeric"
+                placeholder="dd/mm/aaaa"
+                label="Fecha de fin"
+                required
+              />
             </CCol>
           </CRow>
           <p class="mt-3 mb-0 text-body-secondary small">
@@ -159,6 +187,7 @@ import CardComponent from '@/components/cruds/CardComponent.vue'
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue'
 import PeriodService from '@/services/PeriodService'
 import BimesterService from '@/services/BimesterService'
+import { formatDate, toIsoDate } from '@/utils/time'
 
 const periods = ref([])
 const bimesters = ref([])
@@ -199,9 +228,17 @@ const bimesterColumns = [
   { key: 'actions', label: 'Opciones' },
 ]
 
-const formatDate = (value) => {
-  if (!value) return ''
-  return String(value).slice(0, 10)
+const displayDate = (value) => {
+  const formatted = formatDate(value)
+  return formatted === '-' ? '' : formatted
+}
+
+const assertDisplayDate = (value, label) => {
+  const iso = toIsoDate(value)
+  if (!iso || !/^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+    throw new Error(`${label} debe tener el formato dd/mm/aaaa.`)
+  }
+  return iso
 }
 
 const loadPeriods = async () => {
@@ -209,8 +246,8 @@ const loadPeriods = async () => {
   const list = response.data?.data || []
   periods.value = list.map((p) => ({
     ...p,
-    start_time: formatDate(p.start_time),
-    end_time: formatDate(p.end_time),
+    start_time: displayDate(p.start_time),
+    end_time: displayDate(p.end_time),
   }))
 
   if (!selectedYear.value && periods.value.length) {
@@ -234,18 +271,19 @@ const loadBimesters = async () => {
   const list = response.data?.data || []
   bimesters.value = list.map((b) => ({
     ...b,
-    start_date: formatDate(b.start_date),
-    end_date: formatDate(b.end_date),
+    start_date: displayDate(b.start_date),
+    end_date: displayDate(b.end_date),
   }))
 }
 
 const openCreatePeriod = () => {
   periodEditMode.value = false
+  const year = new Date().getFullYear()
   periodForm.value = {
     id: null,
-    name: String(new Date().getFullYear()),
-    start_time: `${new Date().getFullYear()}-03-01`,
-    end_time: `${new Date().getFullYear()}-12-15`,
+    name: String(year),
+    start_time: displayDate(`${year}-03-01`),
+    end_time: displayDate(`${year}-12-15`),
     status: true,
   }
   periodModalOpen.value = true
@@ -256,8 +294,8 @@ const openEditPeriod = (item) => {
   periodForm.value = {
     id: item.id,
     name: item.name,
-    start_time: formatDate(item.start_time),
-    end_time: formatDate(item.end_time),
+    start_time: displayDate(item.start_time),
+    end_time: displayDate(item.end_time),
     status: !!item.status,
   }
   periodModalOpen.value = true
@@ -269,7 +307,11 @@ const closePeriodModal = () => {
 
 const submitPeriod = async () => {
   try {
-    const payload = { ...periodForm.value }
+    const payload = {
+      ...periodForm.value,
+      start_time: assertDisplayDate(periodForm.value.start_time, 'La fecha de inicio'),
+      end_time: assertDisplayDate(periodForm.value.end_time, 'La fecha de fin'),
+    }
     if (periodEditMode.value) {
       await PeriodService.updateItem(payload)
     } else {
@@ -288,6 +330,7 @@ const submitPeriod = async () => {
     const message =
       error.response?.data?.message ||
       Object.values(error.response?.data?.errors || {})?.[0]?.[0] ||
+      error.message ||
       'No se pudo guardar el periodo.'
     Swal.fire({
       icon: 'error',
@@ -337,8 +380,8 @@ const openEditBimester = (item) => {
     id: item.id,
     number: item.number,
     name: item.name,
-    start_date: formatDate(item.start_date),
-    end_date: formatDate(item.end_date),
+    start_date: displayDate(item.start_date),
+    end_date: displayDate(item.end_date),
   }
   bimesterModalOpen.value = true
 }
@@ -352,8 +395,8 @@ const submitBimester = async () => {
     await BimesterService.updateItem({
       id: bimesterForm.value.id,
       name: bimesterForm.value.name,
-      start_date: bimesterForm.value.start_date,
-      end_date: bimesterForm.value.end_date,
+      start_date: assertDisplayDate(bimesterForm.value.start_date, 'La fecha de inicio'),
+      end_date: assertDisplayDate(bimesterForm.value.end_date, 'La fecha de fin'),
     })
     closeBimesterModal()
     await loadBimesters()
@@ -366,6 +409,7 @@ const submitBimester = async () => {
     const message =
       error.response?.data?.message ||
       Object.values(error.response?.data?.errors || {})?.[0]?.[0] ||
+      error.message ||
       'No se pudo actualizar el bimestre.'
     Swal.fire({
       icon: 'error',
