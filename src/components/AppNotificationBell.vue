@@ -10,12 +10,9 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
 import { useUserNotifications } from '@/composables/useUserNotifications';
 
-const { unreadCount, refreshCount } = useUserNotifications();
-
-onMounted(refreshCount);
+const { unreadCount } = useUserNotifications();
 </script>
 
 <style scoped>

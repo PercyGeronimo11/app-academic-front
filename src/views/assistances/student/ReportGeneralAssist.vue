@@ -5,26 +5,58 @@
         <CCard class="shadow-sm border-0">
           <CCardBody
             class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center py-2 px-3 px-md-4 gap-2">
-
-            <!-- Título -->
             <div class="text-center">
               <h5 class="fw-bold text-primary mb-0">
                 Reporte total de asistencias
               </h5>
             </div>
 
-            <!-- Botón / Acción -->
-            <CButton class="bg-dark w-30 w-md-auto shadow-sm" @click="verDetalle(alumno)">
+            <CButton class="bg-dark w-30 w-md-auto shadow-sm" @click="verDetalle()">
               <i class="fas fa-eye text-white"></i>
               <span class="text-white fw-semibold"> Ver detalle</span>
             </CButton>
-
           </CCardBody>
         </CCard>
       </CCol>
     </CRow>
 
- <CRow class="mb-2">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-3 px-md-4">
+            <CRow class="g-2 align-items-end">
+              <CCol xs="12" md="6">
+                <label class="form-label fw-semibold mb-1">Periodo</label>
+                <CFormSelect
+                  :model-value="periodId"
+                  :disabled="loadingFilters"
+                  @update:modelValue="onPeriodSelected"
+                >
+                  <option v-for="p in periods" :key="p.id" :value="p.id">
+                    {{ p.name }}{{ p.status ? ' (activo)' : '' }}
+                  </option>
+                </CFormSelect>
+              </CCol>
+              <CCol xs="12" md="6">
+                <label class="form-label fw-semibold mb-1">Bimestre</label>
+                <CFormSelect
+                  :model-value="bimesterId"
+                  :disabled="loadingFilters || !periodId"
+                  @update:modelValue="onBimesterSelected"
+                >
+                  <option value="">Todo el periodo</option>
+                  <option v-for="b in bimesters" :key="b.id" :value="b.id">
+                    {{ b.name || `Bimestre ${b.number}` }}
+                  </option>
+                </CFormSelect>
+              </CCol>
+            </CRow>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+
+    <CRow class="mb-2">
       <CCol sm="6" lg="3" class="mb-3">
         <CCard class="text-white bg-primary shadow">
           <CCardBody>
@@ -50,7 +82,6 @@
         </CCard>
       </CCol>
 
-      <!-- Tardanzas -->
       <CCol sm="6" lg="3" class="mb-3">
         <CCard :class="colorEstado('TL')">
           <CCardBody>
@@ -96,7 +127,6 @@
         </CCard>
       </CCol>
 
-      <!-- Faltas -->
       <CCol sm="6" lg="3" class="mb-3">
         <CCard :class="colorEstado('F')">
           <CCardBody>
@@ -109,28 +139,25 @@
         </CCard>
       </CCol>
     </CRow>
-   
 
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardBody>
             <h5 class="fw-bold text-secondary mb-4 ms-4 text-center">
-              Distribución de asistencias por mes
+              {{ chartTitle }}
             </h5>
 
-            <div class="rp-scroll-x">
-              <div class="rp-chart rp-chart--wide rp-chart--tall">
-                <CChartBar :data="chartData" :options="options" :plugins="plugins" />
+            <div style="overflow-x: auto;">
+              <div :style="{ minWidth: chartMinWidth, height: '420px' }">
+                <CChartBar :data="chartData" :options="chartOptions" :plugins="plugins" />
               </div>
             </div>
-
           </CCardBody>
         </CCard>
       </CCol>
     </CRow>
   </CContainer>
-
 </template>
 
 <script setup>
@@ -139,11 +166,32 @@ import AssistanceService from '../../../services/AssistanceService'
 import { CChartBar } from '@coreui/vue-chartjs'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useRouter } from 'vue-router'
-import { CButton, CCard, CCardBody } from '@coreui/vue'
-import { colorEstado, textoEstado, ESTADOS_ASISTENCIA, colorFijoEstado } from '@/utils/utils'
+import { CButton, CCard, CCardBody, CFormSelect } from '@coreui/vue'
+import { colorEstado } from '@/utils/utils'
+import { useAssistancePeriodFilters } from '@/composables/useAssistancePeriodFilters'
+import { useAssistanceDashboardChart } from '@/composables/useAssistanceDashboardChart'
 
 const router = useRouter()
-// Simulación de respuesta de API
+
+const {
+  periods,
+  bimesters,
+  periodId,
+  bimesterId,
+  loadingFilters,
+  queryParams,
+  loadFilters,
+  onPeriodChange,
+} = useAssistancePeriodFilters()
+
+const {
+  chart,
+  chartTitle,
+  chartData,
+  chartOptions,
+  applyChartFromPayload,
+} = useAssistanceDashboardChart()
+
 const data = ref({
   total_registros: 0,
   t_asistencias: 0,
@@ -154,85 +202,33 @@ const data = ref({
   t_faltas: 0,
 })
 
-const list_asistencias = ref([])
-const list_tard_leve = ref([])
-const list_tard_moderada = ref([])
-const list_tard_grave = ref([])
-const list_tard_extrema = ref([])
-const list_faltas = ref([])
+const chartMinWidth = computed(() => {
+  const n = chart.value.labels?.length || 4
+  return `${Math.max(480, n * 120)}px`
+})
 
-
-const chartData = computed(() => ({
-  labels: ['Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
-  datasets: [
- {
-      label: textoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
-      data: list_asistencias.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
-      data: list_tard_leve.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
-      data: list_tard_moderada.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
-      data: list_tard_grave.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
-      data: list_tard_extrema.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.FALTA),
-      data: list_faltas.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.FALTA),
-      barThickness: 7
-    }
-  ]
-}))
-
-const options = {
-  responsive: true,
-
-  plugins: {
-    legend: {
-      position: 'top'
-    }
-  },
-
-  scales: {
-    y: {
-      beginAtZero: true
-    }
-  }
+const applyResponse = (payload) => {
+  data.value = payload
+  applyChartFromPayload(payload)
 }
 
-// Simular llamada API
 const cargarReporte = async () => {
-  const response = await AssistanceService.getReporteGeneralAlumno()
-  data.value = response.data
-  list_asistencias.value = response.data.asistencias
-  list_tard_leve.value = response.data.tardanzas_leve
-  list_tard_moderada.value = response.data.tardanzas_moderada
-  list_tard_grave.value = response.data.tardanzas_grave
-  list_tard_extrema.value = response.data.tardanzas_extrema
-  list_faltas.value = response.data.faltas
+  const response = await AssistanceService.getReporteGeneralAlumno(queryParams.value)
+  applyResponse(response.data)
 }
 
-// calcular porcentaje
+/** Actualiza el valor ANTES de consultar (evita race de v-model + @change). */
+const onPeriodSelected = async (value) => {
+  periodId.value = value
+  await onPeriodChange()
+  await cargarReporte()
+}
+
+const onBimesterSelected = async (value) => {
+  bimesterId.value = value === null || value === undefined ? '' : value
+  await cargarReporte()
+}
+
 const porcentaje = (valor) => {
   if (!data.value.total_registros) return 0
   return ((valor / data.value.total_registros) * 100).toFixed(1)
@@ -244,7 +240,31 @@ const verDetalle = () => {
   router.push(`/assistances/alumno/reporte-detallado`)
 }
 
-onMounted(() => {
-  cargarReporte()
+onMounted(async () => {
+  await loadFilters()
+  await cargarReporte()
 })
 </script>
+
+<style scoped>
+.bg-orange-1 {
+  background-color: #eed306;
+}
+
+.bg-orange-2 {
+  background-color: #ffb300;
+}
+
+.bg-orange-3 {
+  background-color: #fd841a;
+}
+
+.bg-orange-4 {
+  background-color: #fa6736;
+}
+
+.wrap-text {
+  white-space: normal !important;
+  line-height: 1.2;
+}
+</style>

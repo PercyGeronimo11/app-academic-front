@@ -81,86 +81,114 @@
             <CCard class="shadow-sm border-0">
 
                 <CCardBody class="p-0">
-                    <div class="modern-table-shell">
-                    <CTable hover responsive align="middle" class="mb-0 text-center">
-                        <CTableHead class="modern-table-header text-center">
+                    <div class="modern-table-shell assist-table-tight">
+                    <CTable hover align="middle" class="mb-0">
+                        <CTableHead class="modern-table-header">
                             <CTableRow>
-                                <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Apellido Paterno</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Apellido Materno</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Grado</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center"> Asistencias</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center"> Tard. Leve</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center"> Tard. Moderada</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center"> Tard. Grave</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center"> Tard. Extrema</CTableHeaderCell>
-                                <CTableHeaderCell class="text-center"> Faltas</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-none d-lg-table-cell" style="width: 3rem">N°</CTableHeaderCell>
+                                <CTableHeaderCell class="d-none d-lg-table-cell">Apellido Paterno</CTableHeaderCell>
+                                <CTableHeaderCell class="d-none d-lg-table-cell">Apellido Materno</CTableHeaderCell>
+                                <CTableHeaderCell class="d-none d-lg-table-cell">Nombres</CTableHeaderCell>
+                                <CTableHeaderCell class="d-lg-none text-start">Alumno</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-none d-md-table-cell">Grado</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-none d-md-table-cell">Sección</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-md-none">Aula</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center">Asist.</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-none d-xl-table-cell">Tard. Leve</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-none d-xl-table-cell">Tard. Moderada</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-none d-xl-table-cell">Tard. Grave</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-none d-xl-table-cell">Tard. Extrema</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center d-xl-none">Tard.</CTableHeaderCell>
+                                <CTableHeaderCell class="text-center">Faltas</CTableHeaderCell>
                                 <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
                             <template v-if="!alumnos.length">
                                 <CTableRow>
-                                    <CTableDataCell colspan="9" class="list-empty-message py-4">
+                                    <CTableDataCell colspan="14" class="list-empty-message py-4">
                                         No hay registros para mostrar.
                                     </CTableDataCell>
                                 </CTableRow>
                             </template>
                             <template v-else>
                                 <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
-                                    <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
-                                    <CTableDataCell class="fw-semibold">{{ alumno.surname_father }}</CTableDataCell>
-                                    <CTableDataCell class="fw-semibold">{{ alumno.surname_mother }}</CTableDataCell>
-                                    <CTableDataCell>{{ alumno.nombres }}</CTableDataCell>
-                                    <CTableDataCell class="text-center">{{ alumno.grade }}°
+                                    <CTableDataCell class="text-center d-none d-lg-table-cell">
+                                        {{ (currentPage - 1) * pageSize + index + 1 }}
                                     </CTableDataCell>
-                                    <CTableDataCell class="text-center">{{ alumno.section }}
+                                    <CTableDataCell class="fw-semibold d-none d-lg-table-cell text-start">
+                                        {{ alumno.surname_father }}
                                     </CTableDataCell>
-                                    <CTableDataCell>
-                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.ASISTENCIA)>{{ alumno.t_asistencias }}
-                                        </CBadge>
+                                    <CTableDataCell class="fw-semibold d-none d-lg-table-cell text-start">
+                                        {{ alumno.surname_mother }}
                                     </CTableDataCell>
-                                    <CTableDataCell>
-                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE)>{{ alumno.t_tardanza_leve }}
-                                        </CBadge>
+                                    <CTableDataCell class="d-none d-lg-table-cell text-start">
+                                        {{ alumno.nombres }}
                                     </CTableDataCell>
-                                      <CTableDataCell>
-                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA)>{{ alumno.t_tardanza_moderada }}
-                                        </CBadge>
+
+                                    <CTableDataCell class="d-lg-none">
+                                        <div class="assist-name-stack">
+                                            <span class="assist-name-surnames">
+                                                {{ alumno.surname_father }} {{ alumno.surname_mother }}
+                                            </span>
+                                            <span class="assist-name-given">{{ alumno.nombres }}</span>
+                                        </div>
                                     </CTableDataCell>
-                                      <CTableDataCell>
-                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE)>{{ alumno.t_tardanza_grave }}
-                                        </CBadge>
-                                    </CTableDataCell>
-                                      <CTableDataCell>
-                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA)>{{ alumno.t_tardanza_extrema }}
-                                        </CBadge>
-                                    </CTableDataCell>
-                                    <CTableDataCell>
-                                        <CBadge :class = colorEstado(ESTADOS_ASISTENCIA.FALTA)>{{ alumno.t_faltas }}
-                                        </CBadge>
+
+                                    <CTableDataCell class="text-center d-none d-md-table-cell">{{ alumno.grade }}°</CTableDataCell>
+                                    <CTableDataCell class="text-center d-none d-md-table-cell">{{ alumno.section }}</CTableDataCell>
+                                    <CTableDataCell class="text-center d-md-none fw-semibold">
+                                        {{ alumno.grade }}° {{ alumno.section }}
                                     </CTableDataCell>
 
                                     <CTableDataCell class="text-center">
-                                        <i class="fas fa-eye text-primary mx-2" style="cursor:pointer; font-size:16px"
-                                            v-c-tooltip="{
-                                                content: 'Ver detalle',
-                                                placement: 'top'
-                                            }" @click="verDetalle(alumno)"></i>
+                                        <CBadge :class="colorEstado(ESTADOS_ASISTENCIA.ASISTENCIA)" class="assist-badge-sm">
+                                            {{ alumno.t_asistencias }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center d-none d-xl-table-cell">
+                                        <CBadge :class="colorEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE)" class="assist-badge-sm">
+                                            {{ alumno.t_tardanza_leve }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center d-none d-xl-table-cell">
+                                        <CBadge :class="colorEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA)" class="assist-badge-sm">
+                                            {{ alumno.t_tardanza_moderada }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center d-none d-xl-table-cell">
+                                        <CBadge :class="colorEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE)" class="assist-badge-sm">
+                                            {{ alumno.t_tardanza_grave }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center d-none d-xl-table-cell">
+                                        <CBadge :class="colorEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA)" class="assist-badge-sm">
+                                            {{ alumno.t_tardanza_extrema }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center d-xl-none">
+                                        <CBadge :class="colorEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA)" class="assist-badge-sm">
+                                            {{ totalTardanzasAlumno(alumno) }}
+                                        </CBadge>
+                                    </CTableDataCell>
+                                    <CTableDataCell class="text-center">
+                                        <CBadge :class="colorEstado(ESTADOS_ASISTENCIA.FALTA)" class="assist-badge-sm">
+                                            {{ alumno.t_faltas }}
+                                        </CBadge>
+                                    </CTableDataCell>
 
-                                        <i class="fas fa-chart-line text-success mx-2"
-                                            style="cursor:pointer; font-size:16px" v-c-tooltip="{
-                                                content: 'Ver gráfico',
-                                                placement: 'top'
-                                            }" @click="verDashboard(alumno)"></i>
-
+                                    <CTableDataCell class="text-center text-nowrap">
+                                        <i class="fas fa-eye text-primary mx-1" style="cursor:pointer; font-size:16px"
+                                            v-c-tooltip="{ content: 'Ver detalle', placement: 'top' }"
+                                            @click="verDetalle(alumno)"></i>
+                                        <i class="fas fa-chart-line text-success mx-1"
+                                            style="cursor:pointer; font-size:16px"
+                                            v-c-tooltip="{ content: 'Ver gráfico', placement: 'top' }"
+                                            @click="verDashboard(alumno)"></i>
                                     </CTableDataCell>
                                 </CTableRow>
                             </template>
                         </CTableBody>
-
                     </CTable>
                     </div>
 
@@ -242,6 +270,12 @@ const limpiar = () => {
 
     fetchAlumnos(1)
 }
+
+const totalTardanzasAlumno = (alumno) =>
+  Number(alumno.t_tardanza_leve || 0) +
+  Number(alumno.t_tardanza_moderada || 0) +
+  Number(alumno.t_tardanza_grave || 0) +
+  Number(alumno.t_tardanza_extrema || 0)
 
 const verDetalle = (alumno) => {
     router.push(`/assistances/admin/detail-alumno/${alumno.id}`)

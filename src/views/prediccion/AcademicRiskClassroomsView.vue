@@ -92,6 +92,7 @@ import AcademicRiskDashFilters from '@/components/academic-risk/AcademicRiskDash
 import AcademicRiskDashKpis from '@/components/academic-risk/AcademicRiskDashKpis.vue'
 import { useAcademicRiskDashboardStore } from '@/stores/academicRiskDashboard'
 import { toastError, toastSuccess } from '@/utils/alerts'
+import { formatSkippedStudentLabel } from '@/utils/academicRiskFilters'
 
 const store = useAcademicRiskDashboardStore()
 const router = useRouter()
@@ -120,8 +121,14 @@ const goOperational = (classroom = null) => {
 
 const buildSkippedStudentsHtml = (skippedStudents = []) => {
   if (!skippedStudents.length) return ''
-  const items = skippedStudents.map((name) => `<li>${name}</li>`).join('')
-  return `<p class="mb-2 mt-3">No se pudo calcular la predicción de:</p><ul class="text-start mb-0">${items}</ul>`
+  const items = skippedStudents
+    .slice(0, 40)
+    .map((item) => `<li>${formatSkippedStudentLabel(item)}</li>`)
+    .join('')
+  const more = skippedStudents.length > 40
+    ? `<p class="mt-2 mb-0"><small>… y ${skippedStudents.length - 40} más</small></p>`
+    : ''
+  return `<p class="mb-2 mt-3">No se pudo calcular la predicción de:</p><ul class="text-start mb-0">${items}</ul>${more}`
 }
 
 const showBulkResult = (payload = {}) => {
@@ -146,7 +153,7 @@ const showBulkResult = (payload = {}) => {
 const confirmUpdateAll = async () => {
   const result = await Swal.fire({
     title: '¿Actualizar predicciones de todas las aulas?',
-    html: 'Se ejecutará el modelo para <strong>todas las aulas de su alcance</strong> en el bimestre seleccionado.<br><br>Se calculará solo para alumnos con datos ML completos. El proceso puede tardar varios minutos.',
+    html: `Se ejecutará el modelo para <strong>todas las aulas de su alcance</strong> del año <strong>${store.filters.schoolYear}</strong> y bimestre seleccionado.<br><br>Se calculará solo para alumnos con datos ML completos. El proceso puede tardar varios minutos.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Actualizar todas',

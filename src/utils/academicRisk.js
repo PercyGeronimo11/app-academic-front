@@ -45,7 +45,9 @@ export const getModelCodeByBimester = (bimester) => BIMESTER_TO_MODEL[bimester] 
 export const formatFactorName = (factorName) => {
   if (!factorName) return 'Factor desconocido'
   const match = factorName.match(/^(.+)_B(\d+)$/)
-  if (!match) return factorName
+  if (!match) {
+    return FACTOR_LABELS[factorName] || factorName.replaceAll('_', ' ')
+  }
   const [, code, bimester] = match
   const label = FACTOR_LABELS[code] || code.replaceAll('_', ' ')
   return `${label} (B${bimester})`

@@ -2,12 +2,28 @@
   <div class="academic-risk-view">
     <CRow class="mb-3">
       <CCol>
-        <CCard class="shadow-sm border-0">
-          <CCardBody class="py-3 px-4">
-            <h4 class="fw-bold text-primary mb-0">
-              <i class="fas fa-exclamation-triangle me-2"></i>
-              Sistema de Alerta Temprana de Riesgo Académico
-            </h4>
+        <CCard class="shadow-sm border-0 risk-hero-card">
+          <CCardBody class="py-4 px-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
+              <div>
+                <p class="risk-hero-card__eyebrow mb-2">Alerta temprana</p>
+                <h4 class="fw-bold mb-2">Vista operativa</h4>
+                <p class="mb-0 text-body-secondary">
+                  Predicciones por alumno del aula seleccionada: detalle, factores y acciones.
+                </p>
+                <p class="risk-hero-card__meta mb-0 mt-2">
+                  <i class="fas fa-clock me-1"></i>
+                  Última actualización:
+                  <strong>{{ formatDateTime(store.summary.lastUpdated) }}</strong>
+                </p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <CButton color="secondary" variant="outline" @click="goToDashboard">
+                  <i class="fas fa-chart-line me-2"></i>
+                  Dashboard
+                </CButton>
+              </div>
+            </div>
           </CCardBody>
         </CCard>
       </CCol>
@@ -35,7 +51,6 @@
     <AcademicRiskDrawer
       :visible="store.drawerVisible"
       :row="store.selectedRow"
-      :bimester="store.filters.bimester"
       @close="store.closeDetail"
     />
 
@@ -69,10 +84,23 @@ import AcademicRiskSummary from '@/components/academic-risk/AcademicRiskSummary.
 import AcademicRiskTable from '@/components/academic-risk/AcademicRiskTable.vue'
 import { useAcademicRiskStore } from '@/stores/academicRisk'
 import { toastError, toastSuccess } from '@/utils/alerts'
+import { formatDateTime } from '@/utils/academicRisk'
+import { formatSkippedStudentLabel } from '@/utils/academicRiskFilters'
 
 const store = useAcademicRiskStore()
 const router = useRouter()
 const route = useRoute()
+
+const goToDashboard = () => {
+  router.push({
+    path: '/prediccion/dashboard',
+    query: {
+      school_year: store.filters.schoolYear || undefined,
+      bimester: store.filters.bimester || undefined,
+      grade_section_id: store.filters.gradeSectionId || undefined,
+    },
+  })
+}
 
 const goToStudentProfile = (rowOrId) => {
   const studentId = typeof rowOrId === 'object' ? rowOrId?.studentId : rowOrId
@@ -88,7 +116,9 @@ const buildMissingFieldsHtml = (missingFields = []) => {
 
 const buildSkippedStudentsHtml = (skippedStudents = []) => {
   if (!skippedStudents.length) return ''
-  const items = skippedStudents.map((name) => `<li>${name}</li>`).join('')
+  const items = skippedStudents
+    .map((item) => `<li>${formatSkippedStudentLabel(item)}</li>`)
+    .join('')
   return `<p class="mb-2 mt-3">No se pudo calcular la predicción de:</p><ul class="text-start mb-0">${items}</ul>`
 }
 

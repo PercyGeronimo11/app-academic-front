@@ -91,16 +91,17 @@
     <!-- Tabla de asistencias -->
     <CRow>
       <CCol>
-        <CCard class="shadow-lg border-0">
-          <CCardBody>
-            <CTable hover responsive align="middle" class="text-center border">
-              <CTableHead color="dark">
-                <CTableRow>
-                  <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Hora</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
-                </CTableRow>
-              </CTableHead>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="modern-table-shell assist-table-tight">
+              <CTable hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header">
+                  <CTableRow>
+                    <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Hora</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
 
               <CTableBody>
                 <template v-if="!asistencias.length">
@@ -116,7 +117,7 @@
                       </CTableDataCell>
                     <CTableDataCell class="text-center fw-medium">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
                     <CTableDataCell class="text-center">
-                      <CBadge :class="colorEstado(item.estado)" shape="rounded-pill">
+                      <CBadge :class="colorEstado(item.estado)" class="assist-badge-sm">
                         {{ textoEstado(item.estado) }}
                       </CBadge>
                     </CTableDataCell>
@@ -124,9 +125,10 @@
                 </template>
               </CTableBody>
             </CTable>
+            </div>
 
             <!-- Paginacion -->
-            <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">
+            <div class="d-flex justify-content-between align-items-center mt-3 p-2 px-3">
               <CButton color="primary" variant="outline" :disabled="!previousPage"
                 @click="fetchAsistencias(currentPage - 1)" class="d-flex align-items-center gap-2">
                 <i class="fas fa-chevron-left"></i>

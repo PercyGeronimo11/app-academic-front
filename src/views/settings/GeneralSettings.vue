@@ -52,11 +52,6 @@
         :data="bimesters"
         empty-message="No hay bimestres para este año. Edite el periodo para generarlos."
       >
-        <template #status="{ item }">
-          <span :class="['status-pill', item.status ? 'status-open' : 'status-closed']">
-            {{ item.status ? 'Abierto' : 'Cerrado' }}
-          </span>
-        </template>
         <template #actions="{ item }">
           <CButton color="warning" class="text-white" @click="openEditBimester(item)">
             <CIcon :content="cilPencil" size="lg" />
@@ -201,7 +196,6 @@ const bimesterColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'start_date', label: 'Inicio' },
   { key: 'end_date', label: 'Fin' },
-  { key: 'status', label: 'Estado' },
   { key: 'actions', label: 'Opciones' },
 ]
 
@@ -413,18 +407,21 @@ onMounted(async () => {
   max-width: 100%;
 }
 
-/* La geometría de .status-pill viene del sistema de diseño; aquí sólo el tono. */
-.status-active,
-.status-open {
-  background: var(--rp-success-50);
-  color: var(--rp-success-800);
-  border-color: var(--rp-success-200);
+.status-pill {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
-.status-inactive,
-.status-closed {
-  background: var(--rp-danger-50);
-  color: var(--rp-danger-800);
-  border-color: var(--rp-danger-200);
+.status-active {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.status-inactive {
+  background: #fee2e2;
+  color: #991b1b;
 }
 </style>

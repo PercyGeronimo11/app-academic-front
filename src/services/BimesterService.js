@@ -16,12 +16,4 @@ export default {
   async updateItem(data) {
     return axios.put(`${API_URL}/bimester/update`, data)
   },
-
-  async close(id) {
-    return axios.patch(`${API_URL}/bimester/${id}/close`)
-  },
-
-  async reopen(id) {
-    return axios.patch(`${API_URL}/bimester/${id}/reopen`)
-  },
 }

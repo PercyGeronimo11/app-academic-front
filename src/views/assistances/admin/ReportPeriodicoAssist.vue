@@ -15,55 +15,43 @@
 
           <CCardBody class="py-3 px-3 px-md-4">
 
-            <CRow class="gy-3 align-items-center">
-
-              <!-- 🔍 Filtros -->
+            <CRow class="gy-3 align-items-end">
 
               <CCol xs="12" md="8">
-                <div class="d-flex flex-column flex-md-row gap-2">
-
-                  <CFormSelect v-model="filtros.tipo" @change="onChangeTipo" class="w-100 w-md-auto">
-                    <option value="diario">Diario</option>
-                    <option value="semanal">Semanal</option>
-                    <option value="mensual">Mensual</option>
-                  </CFormSelect>
-
-                  <!-- Fecha -->
-                  <CFormInput v-if="filtros.tipo === 'diario' || filtros.tipo === 'semanal'" type="date"
-                    v-model="filtros.fecha" class="w-100 w-md-auto" />
-
-                  <!-- Mes -->
-                  <CFormSelect v-if="filtros.tipo === 'mensual'" v-model="filtros.mes" class="w-100 w-md-auto">
-                    <option v-for="mes in meses" :key="mes.value" :value="mes.value">
-                      {{ mes.label }}
-                    </option>
-                  </CFormSelect>
-
-                  <!-- Botón consultar -->
-                  <CButton color="primary" @click="consultarReporte" class="w-100 w-md-auto">
+                <div class="d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-end">
+                  <div class="flex-fill">
+                    <label class="form-label fw-semibold mb-1">Desde</label>
+                    <CFormInput type="date" v-model="filtros.desde" class="w-100" />
+                  </div>
+                  <div class="flex-fill">
+                    <label class="form-label fw-semibold mb-1">Hasta</label>
+                    <CFormInput type="date" v-model="filtros.hasta" class="w-100" />
+                  </div>
+                  <div class="flex-fill">
+                    <label class="form-label fw-semibold mb-1">Aula</label>
+                    <CFormSelect v-model="filtros.aula_id" class="w-100">
+                      <option value="">Todas</option>
+                      <option
+                        v-for="aula in aulasOptions"
+                        :key="aula.grade_section_id"
+                        :value="String(aula.grade_section_id)"
+                      >
+                        {{ aula.grado }}° {{ aula.seccion }}
+                      </option>
+                    </CFormSelect>
+                  </div>
+                  <CButton color="primary" class="w-100 w-md-auto" @click="consultarReporte">
                     <i class="fas fa-search me-1"></i> Consultar
                   </CButton>
-
                 </div>
               </CCol>
 
-              <!-- 📊 Info + acciones -->
               <CCol xs="12" md="4">
                 <div class="d-flex flex-column flex-md-row justify-content-md-end gap-2">
-
-                  <!-- Rango de fechas -->
-                  <CBadge class="text-dark border px-3 py-2 text-center text-md-start">
-                    <small>
-                      📅 {{ formatDate(data.fecha_inicio) }} — {{ formatDate(data.fecha_fin) }}
-                    </small>
-                  </CBadge>
-
-                  <!-- Descargar Excel -->
                   <CButton color="success" class="text-white w-100 w-md-auto" @click="descargarExcel">
                     <i class="fas fa-file-excel me-1"></i>
                     Descargar
                   </CButton>
-
                 </div>
               </CCol>
 
@@ -169,75 +157,63 @@
 
           <CCardBody class="p-0">
 
-            <div class="modern-table-shell">
-              <CTable hover responsive align="middle" class="mb-0 text-center">
-
-                <!-- CABECERA -->
-                <CTableHead class="modern-table-header text-center">
+            <div class="modern-table-shell assist-table-tight">
+              <CTable hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header">
                   <CTableRow>
-                    <CTableHeaderCell class="text-center">Aula</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Total</CTableHeaderCell>
+                    <CTableHeaderCell class="text-start">Aula</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center d-none d-md-table-cell">Total</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">Puntual</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center wrap-text">Tardanza Leve</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center wrap-text">Tardanza Moderada</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center wrap-text">Tardanza Grave</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center wrap-text">Tardanza Extrema</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center ">Faltas</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Leve</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Moderada</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Grave</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Extrema</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center d-lg-none">Tard.</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Faltas</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
 
-                <!-- CUERPO -->
                 <CTableBody>
                   <template v-if="!secciones.length">
                     <CTableRow>
-                      <CTableDataCell colspan="6" class="list-empty-message py-4">
+                      <CTableDataCell colspan="9" class="list-empty-message py-4">
                         No hay registros para mostrar.
                       </CTableDataCell>
                     </CTableRow>
                   </template>
                   <template v-else>
-                    <CTableRow v-for="item in secciones" :key="item.id">
-
-                      <CTableDataCell class="fw-semibold text-center">
+                    <CTableRow v-for="item in secciones" :key="item.grade_section_id">
+                      <CTableDataCell class="fw-semibold text-start">
                         {{ item.grado }}° {{ item.seccion }}
                       </CTableDataCell>
 
-                      <CTableDataCell>
-                        <CBadge color="primary" class="px-3 py-1 fs-6">
-                          {{ item.total }}
-                        </CBadge>
+                      <CTableDataCell class="text-center d-none d-md-table-cell">
+                        <CBadge color="primary" class="assist-badge-sm">{{ item.total }}</CBadge>
                       </CTableDataCell>
 
-                      <CTableDataCell>
-                        <CBadge :class="colorEstado('A')">
-                          {{ item.t_asistencias }}
-                        </CBadge>
+                      <CTableDataCell class="text-center">
+                        <CBadge :class="colorEstado('A')" class="assist-badge-sm">{{ item.t_asistencias }}</CBadge>
                       </CTableDataCell>
 
-                      <CTableDataCell>
-                        <CBadge :class="colorEstado('TL')">
-                          {{ item.t_tard_leve }}
-                        </CBadge>
+                      <CTableDataCell class="text-center d-none d-lg-table-cell">
+                        <CBadge :class="colorEstado('TL')" class="assist-badge-sm">{{ item.t_tard_leve }}</CBadge>
                       </CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge :class="colorEstado('TM')">
-                          {{ item.t_tard_moderado }}
-                        </CBadge>
+                      <CTableDataCell class="text-center d-none d-lg-table-cell">
+                        <CBadge :class="colorEstado('TM')" class="assist-badge-sm">{{ item.t_tard_moderado }}</CBadge>
                       </CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge :class="colorEstado('TG')">
-                          {{ item.t_tard_grave }}
-                        </CBadge>
+                      <CTableDataCell class="text-center d-none d-lg-table-cell">
+                        <CBadge :class="colorEstado('TG')" class="assist-badge-sm">{{ item.t_tard_grave }}</CBadge>
                       </CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge :class="colorEstado('TE')">
-                          {{ item.t_tard_extremo }}
-                        </CBadge>
+                      <CTableDataCell class="text-center d-none d-lg-table-cell">
+                        <CBadge :class="colorEstado('TE')" class="assist-badge-sm">{{ item.t_tard_extremo }}</CBadge>
                       </CTableDataCell>
-                      <CTableDataCell>
-                        <CBadge :class="colorEstado('F')">
-                          {{ item.t_faltas }}
-                        </CBadge>
+
+                      <CTableDataCell class="text-center d-lg-none">
+                        <CBadge :class="colorEstado('TM')" class="assist-badge-sm">{{ totalTardanzas(item) }}</CBadge>
+                      </CTableDataCell>
+
+                      <CTableDataCell class="text-center">
+                        <CBadge :class="colorEstado('F')" class="assist-badge-sm">{{ item.t_faltas }}</CBadge>
                       </CTableDataCell>
                     </CTableRow>
                   </template>
@@ -275,151 +251,282 @@ import ChartDataLabels from 'chartjs-plugin-datalabels'
 import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
 import { CCard, CCardBody, CCol, CRow } from '@coreui/vue'
-import { meses, colorEstado, colorFijoEstado, ESTADOS_ASISTENCIA } from '@/utils/utils'
+import { colorEstado, colorFijoEstado, ESTADOS_ASISTENCIA } from '@/utils/utils'
 import { formatDate } from '@/utils/time'
 import { exportarExcel } from '@/utils/exportExcel'
 import { textoEstado } from '../../../utils/utils'
+import Swal from 'sweetalert2'
 
 
 const router = useRouter()
-const secciones = ref([])
-const data = ref({
+
+const emptyResumen = () => ({
   total_registros: 0,
-  total_presentes: 0,
-  total_tardanzas: 0,
-  total_faltas: 0,
+  t_asistencias: 0,
+  t_tard_leve: 0,
+  t_tard_moderado: 0,
+  t_tard_grave: 0,
+  t_tard_extremo: 0,
+  t_faltas: 0,
   fecha_inicio: '',
-  fecha_fin: ''
+  fecha_fin: '',
 })
+
+const resumenFromAula = (item, fechas = {}) => ({
+  total_registros: Number(item.total || 0),
+  t_asistencias: Number(item.t_asistencias || 0),
+  t_tard_leve: Number(item.t_tard_leve || 0),
+  t_tard_moderado: Number(item.t_tard_moderado || 0),
+  t_tard_grave: Number(item.t_tard_grave || 0),
+  t_tard_extremo: Number(item.t_tard_extremo || 0),
+  t_faltas: Number(item.t_faltas || 0),
+  fecha_inicio: fechas.fecha_inicio || '',
+  fecha_fin: fechas.fecha_fin || '',
+})
+
+const seccionesAll = ref([])
+const dataAll = ref(emptyResumen())
+
+const toISODate = (d) => d.toISOString().split('T')[0]
+const today = new Date()
+const weekAgo = new Date(today)
+weekAgo.setDate(today.getDate() - 6)
 
 const filtros = ref({
-  tipo: 'diario',
-  fecha: new Date().toISOString().split('T')[0], // fecha actual
-  mes: new Date().getMonth() + 1
+  desde: toISODate(weekAgo),
+  hasta: toISODate(today),
+  aula_id: '',
 })
 
-const asistenciasArr = ref([])
-const list_tard_leve = ref([])
-const list_tard_moderado = ref([])
-const list_tard_grave = ref([])
-const list_tard_extremo = ref([])
-const list_faltas = ref([])
-const labelsArr = ref([])
+const aulasOptions = computed(() => seccionesAll.value)
 
+const secciones = computed(() => {
+  if (!filtros.value.aula_id) return seccionesAll.value
+  return seccionesAll.value.filter(
+    (item) => String(item.grade_section_id) === String(filtros.value.aula_id),
+  )
+})
 
-const chartData = computed(() => ({
-  labels: labelsArr.value,
-  datasets: [
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
-      data: asistenciasArr.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
-      data: list_tard_leve.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
-      data: list_tard_moderado.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
-      data: list_tard_grave.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
-      data: list_tard_extremo.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
-      barThickness: 7
-    },
-    {
-      label: textoEstado(ESTADOS_ASISTENCIA.FALTA),
-      data: list_faltas.value,
-      backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.FALTA),
-      barThickness: 7
+const data = computed(() => {
+  if (!filtros.value.aula_id) return dataAll.value
+  const item = seccionesAll.value.find(
+    (aula) => String(aula.grade_section_id) === String(filtros.value.aula_id),
+  )
+  if (!item) {
+    return {
+      ...emptyResumen(),
+      fecha_inicio: dataAll.value.fecha_inicio,
+      fecha_fin: dataAll.value.fecha_fin,
     }
-  ]
-}))
+  }
+  return resumenFromAula(item, {
+    fecha_inicio: dataAll.value.fecha_inicio,
+    fecha_fin: dataAll.value.fecha_fin,
+  })
+})
 
-
+const chartData = computed(() => {
+  const lista = secciones.value
+  return {
+    labels: lista.map((item) => `${item.grado}-${item.seccion}°`),
+    datasets: [
+      {
+        label: textoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
+        data: lista.map((item) => item.t_asistencias),
+        backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.ASISTENCIA),
+        barThickness: 7,
+      },
+      {
+        label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
+        data: lista.map((item) => item.t_tard_leve),
+        backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_LEVE),
+        barThickness: 7,
+      },
+      {
+        label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
+        data: lista.map((item) => item.t_tard_moderado),
+        backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_MODERADA),
+        barThickness: 7,
+      },
+      {
+        label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
+        data: lista.map((item) => item.t_tard_grave),
+        backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_GRAVE),
+        barThickness: 7,
+      },
+      {
+        label: textoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
+        data: lista.map((item) => item.t_tard_extremo),
+        backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.TARDANZA_EXTREMA),
+        barThickness: 7,
+      },
+      {
+        label: textoEstado(ESTADOS_ASISTENCIA.FALTA),
+        data: lista.map((item) => item.t_faltas),
+        backgroundColor: colorFijoEstado(ESTADOS_ASISTENCIA.FALTA),
+        barThickness: 7,
+      },
+    ],
+  }
+})
 
 const consultarReporte = () => {
-
-  let params = {
-    tipo: filtros.value.tipo
+  if (!filtros.value.desde || !filtros.value.hasta) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Fechas requeridas',
+      text: 'Seleccione fecha de inicio y fecha fin.',
+    })
+    return
+  }
+  if (filtros.value.hasta < filtros.value.desde) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Rango inválido',
+      text: 'La fecha fin debe ser posterior o igual a la fecha inicio.',
+    })
+    return
   }
 
-  if (filtros.value.tipo === 'diario' || filtros.value.tipo === 'semanal') {
-    params.fecha = filtros.value.fecha
+  const params = {
+    desde: filtros.value.desde,
+    hasta: filtros.value.hasta,
   }
 
-  if (filtros.value.tipo === 'mensual') {
-    params.nro_mes = filtros.value.mes
-  }
+  AssistanceService.getAsistenciaBySeccion(params).then((res) => {
+    const lista = res.data.data || []
+    seccionesAll.value = lista
+    dataAll.value = {
+      total_registros: res.data.total_registros || 0,
+      t_asistencias: res.data.t_asistencias || 0,
+      t_tard_leve: res.data.t_tard_leve || 0,
+      t_tard_moderado: res.data.t_tard_moderado || 0,
+      t_tard_grave: res.data.t_tard_grave || 0,
+      t_tard_extremo: res.data.t_tard_extremo || 0,
+      t_faltas: res.data.t_faltas || 0,
+      fecha_inicio: res.data.fecha_inicio || '',
+      fecha_fin: res.data.fecha_fin || '',
+    }
 
-  AssistanceService.getAsistenciaBySeccion(params).then(res => {
-    const lista = res.data.data
-
-    secciones.value = lista
-    data.value = res.data
-
-    // limpiar arrays
-    asistenciasArr.value = []
-    list_tard_leve.value = []
-    list_tard_moderado.value = []
-    list_tard_grave.value = []
-    list_tard_extremo.value = []
-    list_faltas.value = []
-    labelsArr.value = []
-
-    // llenar arrays ordenadamente
-
-    asistenciasArr.value = lista.map(item => item.t_asistencias)
-    list_tard_leve.value = lista.map(item => item.t_tard_leve)
-    list_tard_moderado.value = lista.map(item => item.t_tard_moderado)
-    list_tard_grave.value = lista.map(item => item.t_tard_grave)
-    list_tard_extremo.value = lista.map(item => item.t_tard_extremo)
-    list_faltas.value = lista.map(item => item.t_faltas)
-    labelsArr.value = lista.map(item => `${item.grado}-${item.seccion}°`)
+    if (
+      filtros.value.aula_id &&
+      !lista.some((aula) => String(aula.grade_section_id) === String(filtros.value.aula_id))
+    ) {
+      filtros.value.aula_id = ''
+    }
+  }).catch((error) => {
+    const message = error.response?.data?.error || 'No se pudo consultar el reporte.'
+    Swal.fire({ icon: 'error', title: 'Error', text: message })
   })
-  console.log('total asistencias:', asistenciasArr.value)
-  console.log('total faltas:', list_faltas.value)
 }
 
-const onChangeTipo = () => {
-  filtros.value.fecha = ''
-}
+const totalTardanzas = (item) =>
+  Number(item.t_tard_leve || 0) +
+  Number(item.t_tard_moderado || 0) +
+  Number(item.t_tard_grave || 0) +
+  Number(item.t_tard_extremo || 0)
 
 const verDetalle = (item) => {
   router.push(`/assistances/seguimiento/seccion/${item.grade_section_id}`)
 }
 
+const pct = (valor, total) => {
+  if (!total) return '0.0%'
+  return `${((valor / total) * 100).toFixed(1)}%`
+}
 
 const descargarExcel = () => {
+  if (!secciones.value.length) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Sin datos',
+      text: 'Consulte un reporte con resultados antes de descargar el Excel.'
+    })
+    return
+  }
+
+  const total = data.value.total_registros || 0
+  const aulaLabel = filtros.value.aula_id
+    ? (() => {
+        const aula = seccionesAll.value.find(
+          (item) => String(item.grade_section_id) === String(filtros.value.aula_id),
+        )
+        return aula ? `${aula.grado}° ${aula.seccion}` : 'Aula seleccionada'
+      })()
+    : 'Todas'
+
   exportarExcel({
-    fileName: 'reporte_asistencia.xlsx',
-    sheetName: 'Asistencia',
+    fileName: `reporte_asistencias_${data.value.fecha_inicio}_${data.value.fecha_fin}.xlsx`,
+    sheetName: 'Reporte por aula',
+    title: 'Reporte de asistencias',
+    metaRows: [
+      ['Fecha inicio', formatDate(data.value.fecha_inicio)],
+      ['Fecha fin', formatDate(data.value.fecha_fin)],
+      ['Aula', aulaLabel],
+      ['Total registros', total],
+      ['Asistencias (A)', `${data.value.t_asistencias} (${pct(data.value.t_asistencias, total)})`],
+      ['Tardanza leve (TL)', `${data.value.t_tard_leve} (${pct(data.value.t_tard_leve, total)})`],
+      ['Tardanza moderada (TM)', `${data.value.t_tard_moderado} (${pct(data.value.t_tard_moderado, total)})`],
+      ['Tardanza grave (TG)', `${data.value.t_tard_grave} (${pct(data.value.t_tard_grave, total)})`],
+      ['Tardanza extrema (TE)', `${data.value.t_tard_extremo} (${pct(data.value.t_tard_extremo, total)})`],
+      ['Faltas (F)', `${data.value.t_faltas} (${pct(data.value.t_faltas, total)})`]
+    ],
     data: secciones.value,
     columns: [
       {
-        header: 'Sección',
-        key: 'seccion',
-        width: 20,
+        header: 'Aula',
+        key: 'aula',
+        width: 14,
         formatter: (item) => `${item.grado}° ${item.seccion}`
       },
-      { header: 'Total', key: 'total', width: 15 },
-      { header: 'Asistencias', key: 'asistencias', width: 15 },
-      { header: 'Tardanzas', key: 'tardanzas', width: 15 },
-      { header: 'Faltas', key: 'faltas', width: 15 }
-    ]
+      { header: 'Total', key: 'total', width: 10 },
+      {
+        header: 'Puntual (A)',
+        key: 't_asistencias',
+        width: 12,
+        formatter: (item) => `${item.t_asistencias} (${pct(item.t_asistencias, item.total)})`
+      },
+      {
+        header: 'Tardanza leve (TL)',
+        key: 't_tard_leve',
+        width: 16,
+        formatter: (item) => `${item.t_tard_leve} (${pct(item.t_tard_leve, item.total)})`
+      },
+      {
+        header: 'Tardanza moderada (TM)',
+        key: 't_tard_moderado',
+        width: 18,
+        formatter: (item) => `${item.t_tard_moderado} (${pct(item.t_tard_moderado, item.total)})`
+      },
+      {
+        header: 'Tardanza grave (TG)',
+        key: 't_tard_grave',
+        width: 16,
+        formatter: (item) => `${item.t_tard_grave} (${pct(item.t_tard_grave, item.total)})`
+      },
+      {
+        header: 'Tardanza extrema (TE)',
+        key: 't_tard_extremo',
+        width: 18,
+        formatter: (item) => `${item.t_tard_extremo} (${pct(item.t_tard_extremo, item.total)})`
+      },
+      {
+        header: 'Faltas (F)',
+        key: 't_faltas',
+        width: 12,
+        formatter: (item) => `${item.t_faltas} (${pct(item.t_faltas, item.total)})`
+      }
+    ],
+    summaryRow: {
+      aula: 'TOTAL GENERAL',
+      total: total,
+      t_asistencias: `${data.value.t_asistencias} (${pct(data.value.t_asistencias, total)})`,
+      t_tard_leve: `${data.value.t_tard_leve} (${pct(data.value.t_tard_leve, total)})`,
+      t_tard_moderado: `${data.value.t_tard_moderado} (${pct(data.value.t_tard_moderado, total)})`,
+      t_tard_grave: `${data.value.t_tard_grave} (${pct(data.value.t_tard_grave, total)})`,
+      t_tard_extremo: `${data.value.t_tard_extremo} (${pct(data.value.t_tard_extremo, total)})`,
+      t_faltas: `${data.value.t_faltas} (${pct(data.value.t_faltas, total)})`
+    }
   })
 }
 
