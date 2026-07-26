@@ -11,12 +11,12 @@ $enable-deprecation-messages: false !default;
 
 // --- Marca institucional -----------------------------------------------------
 $primary: #176fb6;
-$secondary: #17518b;
-$info: #3192f3;
+$secondary: #135b96;
+$info: #3d94d6;
 $warning: #f39c12;
 $success: #16a34a;
 $danger: #dc2626;
-$light: #f6f8fb;
+$light: #f1f5f9;
 $dark: #1e293b;
 
 // --- Tipografía --------------------------------------------------------------
@@ -45,13 +45,13 @@ $enable-shadows: false;
 $enable-gradients: false;
 
 :root {
-  --box-content-bg: #f6f8fb;
+  --box-content-bg: #f8fafc;
   --box-content-color: #1e293b;
-  --box-content-bg-hover: #eef2f7;
+  --box-content-bg-hover: #f1f5f9;
 }
 
 [data-coreui-theme='dark'] {
-  --box-content-bg: #262c38;
-  --box-content-color: #e7eaee;
-  --box-content-bg-hover: #1b2028;
+  --box-content-bg: #24334a;
+  --box-content-color: #e2e8f0;
+  --box-content-bg-hover: #172136;
 }

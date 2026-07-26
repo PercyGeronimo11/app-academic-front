@@ -6,7 +6,7 @@
       :subtitle="studentSubtitle"
     >
       <template #actions>
-        <CButton color="light" variant="outline" class="text-white border-white" @click="generatePDF">
+        <CButton color="primary" variant="outline" @click="generatePDF">
           <i class="fas fa-file-pdf me-2"></i>Descargar PDF
         </CButton>
       </template>
@@ -78,6 +78,7 @@ import CompetencyScoreService from '@/services/CompetencyScoreService';
 import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
 import EmptyState from '@/components/academic/EmptyState.vue';
 import ScoreLevelBadge from '@/components/academic/ScoreLevelBadge.vue';
+import { pickCurrentBimesterId } from '@/utils/bimester';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -101,7 +102,7 @@ const loadBimesters = async () => {
   const response = await CompetencyScoreService.listBimesters();
   bimesters.value = response.data?.data || [];
   if (bimesters.value.length && !selectedBimesterId.value) {
-    selectedBimesterId.value = Number(bimesters.value[0].id);
+    selectedBimesterId.value = pickCurrentBimesterId(bimesters.value);
   }
 };
 

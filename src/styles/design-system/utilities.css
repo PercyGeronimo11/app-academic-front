@@ -74,6 +74,7 @@
 .wrap-text {
   white-space: normal !important;
   word-break: break-word;
+  line-height: var(--rp-leading-tight);
   line-height: 1.2;
 }
 

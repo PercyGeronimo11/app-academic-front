@@ -416,12 +416,12 @@ onMounted(async () => {
 }
 
 .status-active {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--rp-success-100);
+  color: var(--rp-success-800);
 }
 
 .status-inactive {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--rp-danger-100);
+  color: var(--rp-danger-800);
 }
 </style>

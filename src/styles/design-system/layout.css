@@ -69,6 +69,11 @@
   align-items: center;
 }
 
+/* Acciones del header: siempre legibles en claro y oscuro (sin forzar blanco). */
+.module-page-header__actions .btn {
+  font-weight: var(--rp-weight-medium);
+}
+
 /* --- Tarjetas -------------------------------------------------------------- */
 
 .module-card {

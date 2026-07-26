@@ -15,41 +15,64 @@
   --cui-sidebar-header-bg: transparent;
   --cui-sidebar-footer-bg: transparent;
 
+  box-shadow: var(--rp-shadow-md);
+}
+
+/* CoreUI redeclara todas las variables del menú sobre `.sidebar-nav`, así que
+   deben definirse en ese nodo: si se ponen en `.custom-sidebar` se pierden y
+   los estados vuelven a los del tema oscuro (fondo casi negro en hover). */
+.custom-sidebar .sidebar-nav {
+  --cui-sidebar-nav-padding-x: 0;
+  --cui-sidebar-nav-gap: 0.125rem;
+
   --cui-sidebar-nav-title-color: var(--rp-sidebar-title);
-  --cui-sidebar-nav-title-padding-y: 1.25rem;
+  --cui-sidebar-nav-title-padding-x: 1.25rem;
+  --cui-sidebar-nav-title-padding-y: 0.5rem;
+  --cui-sidebar-nav-title-margin-top: 1rem;
 
   --cui-sidebar-nav-link-color: var(--rp-sidebar-color);
   --cui-sidebar-nav-link-padding-x: 0.75rem;
   --cui-sidebar-nav-link-padding-y: 0.5625rem;
   --cui-sidebar-nav-link-bg: transparent;
+  --cui-sidebar-nav-link-border-radius: var(--rp-radius-md);
+  --cui-sidebar-nav-link-icon-color: var(--rp-sidebar-icon);
+
   --cui-sidebar-nav-link-hover-color: var(--rp-sidebar-color-hover);
   --cui-sidebar-nav-link-hover-bg: var(--rp-sidebar-item-hover);
-  --cui-sidebar-nav-link-active-color: var(--rp-sidebar-color-hover);
-  --cui-sidebar-nav-link-active-bg: var(--rp-sidebar-item-active);
-  --cui-sidebar-nav-link-icon-color: rgba(255, 255, 255, 0.65);
-  --cui-sidebar-nav-link-hover-icon-color: #ffffff;
-  --cui-sidebar-nav-link-active-icon-color: #ffffff;
-  --cui-sidebar-nav-group-bg: rgba(0, 0, 0, 0.14);
+  --cui-sidebar-nav-link-hover-icon-color: var(--rp-sidebar-color-hover);
 
-  box-shadow: var(--rp-shadow-md);
+  --cui-sidebar-nav-link-active-color: var(--rp-sidebar-item-active-color);
+  --cui-sidebar-nav-link-active-bg: var(--rp-sidebar-item-active);
+  --cui-sidebar-nav-link-active-icon-color: var(--rp-sidebar-item-active-color);
+
+  --cui-sidebar-nav-group-bg: var(--rp-sidebar-group-bg);
+  --cui-sidebar-nav-group-border-radius: var(--rp-radius-md);
+  --cui-sidebar-nav-group-toggle-show-color: var(--rp-sidebar-color-hover);
+  --cui-sidebar-nav-group-indicator-color: var(--rp-sidebar-icon);
+  --cui-sidebar-nav-group-indicator-hover-color: var(--rp-sidebar-color-hover);
 }
 
 .custom-sidebar .sidebar-header {
+  background: var(--rp-sidebar-brand-bg);
   border-bottom: 1px solid var(--rp-sidebar-border);
-  padding-block: 0.5rem;
+  padding-block: 0.75rem;
 }
 
 .custom-sidebar .sidebar-brand {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
+  gap: 0.75rem;
   width: 100%;
+  min-width: 0;
+  padding-inline: 0.75rem;
+  text-decoration: none;
   cursor: pointer;
 }
 
 .custom-sidebar .sidebar-logo {
-  max-width: 100%;
-  height: 3.25rem;
+  flex-shrink: 0;
+  height: 2.75rem;
   width: auto;
   object-fit: contain;
   transition: height var(--rp-transition-base);
@@ -59,14 +82,54 @@
   height: 2.25rem;
 }
 
-/* Ítems del menú: píldora redondeada con acento a la izquierda cuando está activa. */
-.custom-sidebar .nav-link {
+.custom-sidebar .sidebar-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.15;
+}
+
+.custom-sidebar .sidebar-brand-text__eyebrow {
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--rp-sidebar-title);
+}
+
+.custom-sidebar .sidebar-brand-text__name {
+  font-size: var(--rp-text-sm);
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-sidebar-color-hover);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* En modo estrecho el escudo queda centrado. */
+.sidebar-narrow .sidebar-brand,
+.sidebar-narrow-unfoldable:not(:hover) .sidebar-brand {
+  justify-content: center;
+  padding-inline: 0.25rem;
+}
+
+/* Ítems del menú: píldora redondeada. El activo usa el azul institucional
+   sólido; el hover es un velo claro apenas perceptible. */
+/* No se usa `>` porque simplebar envuelve el menú en contenedores propios. */
+.custom-sidebar .nav-item,
+.custom-sidebar .nav-group {
   margin-inline: 0.5rem;
-  border-radius: var(--rp-radius-md);
+}
+
+.custom-sidebar .nav-group-items .nav-item,
+.custom-sidebar .nav-group-items .nav-group {
+  margin-inline: 0;
+}
+
+.custom-sidebar .nav-link {
   font-size: var(--rp-text-base);
   font-weight: var(--rp-weight-medium);
   letter-spacing: 0.005em;
-  position: relative;
   transition: background-color var(--rp-transition-fast), color var(--rp-transition-fast);
 }
 
@@ -74,16 +137,11 @@
   font-weight: var(--rp-weight-semibold);
 }
 
-.custom-sidebar .nav-link.active::before {
-  content: '';
-  position: absolute;
-  inset-inline-start: -0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 1.25rem;
-  border-radius: 0 var(--rp-radius-pill) var(--rp-radius-pill) 0;
-  background: #ffffff;
+/* Sin esta regla el hover de CoreUI (declarado después) apagaría la píldora del
+   ítem activo, dejándola del mismo color que el resto del menú. */
+.custom-sidebar .nav-link.active:hover {
+  background: var(--rp-sidebar-item-active-hover);
+  color: var(--rp-sidebar-item-active-color);
 }
 
 .custom-sidebar .nav-icon {
@@ -98,15 +156,37 @@
   letter-spacing: 0.08em;
 }
 
-/* Grupos colapsables: se distinguen por fondo hundido, no por color nuevo. */
+/* --- Jerarquía de los grupos colapsables ----------------------------------
+   Un submenú se reconoce por tres señales simultáneas: banda de fondo que
+   abarca el módulo, línea guía vertical e indentación con tipografía menor. */
+
+.custom-sidebar .nav-group.show {
+  border-radius: var(--rp-radius-md);
+  padding-bottom: 0.25rem;
+}
+
 .custom-sidebar .nav-group.show > .nav-group-toggle {
-  background: var(--rp-sidebar-item-hover);
-  color: #ffffff;
+  font-weight: var(--rp-weight-semibold);
+}
+
+.custom-sidebar .nav-group-items {
+  /* La guía es un border del contenedor: el fondo del hover/activo de los
+     hijos nunca puede pintarse encima (a diferencia de un ::before). */
+  margin-block: 0.125rem 0.25rem;
+  margin-inline-start: 1.125rem;
+  margin-inline-end: 0;
+  padding-inline-start: 0.625rem;
+  border-inline-start: 1px solid var(--rp-sidebar-guide);
 }
 
 .custom-sidebar .nav-group-items .nav-link {
-  font-weight: var(--rp-weight-regular);
+  margin-inline-start: 0;
   font-size: var(--rp-text-sm);
+  font-weight: var(--rp-weight-regular);
+}
+
+.custom-sidebar .nav-group-items .nav-link.active {
+  font-weight: var(--rp-weight-medium);
 }
 
 .custom-sidebar .sidebar-footer {
@@ -114,18 +194,32 @@
   padding-block: 0.5rem;
 }
 
+/* Igual que el menú: las variables del toggler viven en su propio nodo. */
 .custom-sidebar .sidebar-toggler {
-  background-color: transparent;
+  --cui-sidebar-toggler-bg: transparent;
+  --cui-sidebar-toggler-color: var(--rp-sidebar-icon);
+  --cui-sidebar-toggler-hover-color: var(--rp-sidebar-color-hover);
+  filter: none;
 }
 
 .custom-sidebar .sidebar-toggler:hover {
   background-color: var(--rp-sidebar-item-hover);
 }
 
-/* En modo estrecho no tiene sentido el margen lateral de la píldora. */
-.sidebar-narrow .nav-link,
-.sidebar-narrow-unfoldable:not(:hover) .nav-link {
+/* En modo estrecho sólo se ven iconos: la indentación y la línea guía
+   desalinearían la columna, así que se anulan. */
+.sidebar-narrow .nav-item,
+.sidebar-narrow .nav-group,
+.sidebar-narrow-unfoldable:not(:hover) .nav-item,
+.sidebar-narrow-unfoldable:not(:hover) .nav-group {
   margin-inline: 0.25rem;
+}
+
+.sidebar-narrow .nav-group-items,
+.sidebar-narrow-unfoldable:not(:hover) .nav-group-items {
+  margin-inline-start: 0;
+  padding-inline-start: 0;
+  border-inline-start: 0;
 }
 
 /* --- Header ---------------------------------------------------------------- */

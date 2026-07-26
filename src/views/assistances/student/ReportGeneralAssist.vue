@@ -245,26 +245,3 @@ onMounted(async () => {
   await cargarReporte()
 })
 </script>
-
-<style scoped>
-.bg-orange-1 {
-  background-color: #eed306;
-}
-
-.bg-orange-2 {
-  background-color: #ffb300;
-}
-
-.bg-orange-3 {
-  background-color: #fd841a;
-}
-
-.bg-orange-4 {
-  background-color: #fa6736;
-}
-
-.wrap-text {
-  white-space: normal !important;
-  line-height: 1.2;
-}
-</style>

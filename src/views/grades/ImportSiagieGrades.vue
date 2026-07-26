@@ -6,10 +6,10 @@
       :subtitle="courseName ? `Curso: ${courseName}` : 'Cargue la plantilla RegNotas exportada desde SIAGIE'"
     >
       <template #actions>
-        <CButton color="light" variant="outline" class="text-white border-white" @click="goToGrades">
+        <CButton color="primary" variant="outline" @click="goToGrades">
           <i class="fas fa-table me-2"></i>Ver notas
         </CButton>
-        <CButton color="light" variant="ghost" class="text-white" @click="goBack">
+        <CButton color="secondary" variant="ghost" @click="goBack">
           <i class="fas fa-arrow-left me-2"></i>Volver
         </CButton>
       </template>
@@ -27,12 +27,12 @@
           <div class="col-md-4">
             <CFormLabel for="bimester">Bimestre</CFormLabel>
             <CFormSelect id="bimester" v-model="selectedBimesterId">
-              <option v-for="item in bimesters" :key="item.id" :value="item.id">
+              <option v-for="item in bimesters" :key="item.id" :value="Number(item.id)">
                 {{ item.name }} ({{ item.year }})
               </option>
             </CFormSelect>
             <p class="small text-body-secondary mt-1 mb-0">
-              Requerido si el archivo solo trae la hoja del curso (ej. 063-MATE).
+              Se preselecciona el bimestre vigente según la fecha actual. El valor elegido es el que se usará al importar.
             </p>
           </div>
         </div>
@@ -46,7 +46,9 @@
             @change="onFileChange"
           />
           <p class="upload-zone__hint mb-0">
-            Se toma solo la primera hoja del Excel como notas de este curso (sin importar el nombre de la hoja). Los alumnos se vinculan por código de estudiante (columna «Cód. Estudiante»).
+            Se usa la primera hoja de notas del Excel (puede incluir Parametros). Los alumnos se vinculan
+            <strong>solo por código de estudiante</strong> (columna «Cód. Estudiante») con los del aula de este curso;
+            el grado/sección del archivo no se valida.
           </p>
         </div>
 
@@ -65,11 +67,11 @@
       <div class="module-card__header">Vista previa del archivo</div>
       <div class="module-card__body">
         <div class="preview-meta">
-          <span v-if="preview.metadata?.bimester_code" class="preview-meta__chip">
-            <i class="fas fa-calendar-alt me-1"></i>{{ preview.metadata.bimester_code }}
-          </span>
-          <span v-else-if="selectedBimesterLabel" class="preview-meta__chip">
+          <span v-if="selectedBimesterLabel" class="preview-meta__chip">
             <i class="fas fa-calendar-alt me-1"></i>{{ selectedBimesterLabel }}
+          </span>
+          <span v-else-if="preview.metadata?.bimester_name || preview.metadata?.bimester_code" class="preview-meta__chip">
+            <i class="fas fa-calendar-alt me-1"></i>{{ preview.metadata.bimester_name || preview.metadata.bimester_code }}
           </span>
           <span class="preview-meta__chip">
             <i class="fas fa-school me-1"></i>{{ preview.metadata?.grade_label }} {{ preview.metadata?.section_label }}
@@ -198,9 +200,20 @@
       <p v-if="importResult.classroom" class="small text-body-secondary mt-2 mb-0">
         Aula del curso: <strong>{{ importResult.classroom }}</strong>
         <span v-if="importResult.students_in_file != null">
-          · Alumnos en el Excel: {{ importResult.students_in_file }}
+          · En el Excel: {{ importResult.students_in_file }}
+          · Coincidencias: {{ importResult.matched_students?.length ?? importResult.students_processed }}
         </span>
       </p>
+      <div v-if="importResult.matched_students?.length" class="mt-3">
+        <p class="text-success mb-2 fw-semibold small">
+          Alumnos coincidentes ({{ importResult.matched_students.length }})
+        </p>
+        <ul class="small mb-0 ps-3" style="max-height: 180px; overflow: auto">
+          <li v-for="item in importResult.matched_students" :key="item.student_id || item.student_code">
+            {{ item.full_name }} (cód. {{ item.student_code }})
+          </li>
+        </ul>
+      </div>
       <div v-if="importResult.unmapped_competencies?.length" class="mt-3">
         <p class="text-warning mb-2 fw-semibold small">Competencias del Excel sin vincular</p>
         <p class="small mb-0">
@@ -209,7 +222,7 @@
       </div>
       <div v-if="importResult.skipped_students?.length" class="mt-3">
         <p class="text-warning mb-2 fw-semibold small">
-          Alumnos omitidos ({{ importResult.skipped_students.length }})
+          Sin coincidencia por código ({{ importResult.skipped_students.length }})
         </p>
         <ul class="small mb-0 ps-3" style="max-height: 180px; overflow: auto">
           <li v-for="item in importResult.skipped_students" :key="item.student_code || item.full_name">
@@ -227,6 +240,7 @@ import { useRoute, useRouter } from 'vue-router';
 import CompetencyScoreService from '@/services/CompetencyScoreService';
 import CourseClassService from '@/services/CourseClassService';
 import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
+import { pickCurrentBimesterId } from '@/utils/bimester';
 
 const route = useRoute();
 const router = useRouter();
@@ -279,7 +293,7 @@ const loadBimesters = async () => {
   try {
     const response = await CompetencyScoreService.listBimesters();
     bimesters.value = response.data?.data ?? [];
-    selectedBimesterId.value = bimesters.value[0] ? Number(bimesters.value[0].id) : null;
+    selectedBimesterId.value = pickCurrentBimesterId(bimesters.value);
   } catch {
     bimesters.value = [];
   }

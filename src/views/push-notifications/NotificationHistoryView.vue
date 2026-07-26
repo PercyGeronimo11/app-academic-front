@@ -99,6 +99,7 @@ import Swal from 'sweetalert2'
 
 import NotificationHistoryFilters from '@/components/push-notifications/NotificationHistoryFilters.vue'
 import { usePushNotificationsStore } from '@/stores/pushNotifications'
+import { BRAND_COLOR } from '@/utils/brand'
 
 const store = usePushNotificationsStore()
 
@@ -122,7 +123,7 @@ const openDetail = async (item) => {
     html: `<div class="text-start" style="white-space: pre-line;">${item.message}</div>`,
     icon: 'info',
     confirmButtonText: 'Cerrar',
-    confirmButtonColor: '#0d6efd',
+    confirmButtonColor: BRAND_COLOR,
   })
 }
 

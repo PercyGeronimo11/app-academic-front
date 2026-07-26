@@ -43,7 +43,7 @@ const navigateByRole = () => {
 
 <template>
   <CSidebar
-    class="custom-sidebar border-end"
+    class="custom-sidebar"
     colorScheme="dark"
     position="fixed"
     :unfoldable="sidebar.unfoldable"
@@ -53,17 +53,15 @@ const navigateByRole = () => {
     <CSidebarHeader>
       <CSidebarBrand as="a" role="button" @click="navigateByRole">
         <img
-          v-if="sidebar.unfoldable"
-          class="sidebar-logo sidebar-logo--compact"
+          class="sidebar-logo"
+          :class="{ 'sidebar-logo--compact': sidebar.unfoldable }"
           src="@/assets/images/logo.png"
           alt="I.E. Ricardo Palma 80010"
         />
-        <img
-          v-else
-          class="sidebar-logo"
-          src="@/assets/images/logo-main.png"
-          alt="I.E. Ricardo Palma 80010"
-        />
+        <span v-if="!sidebar.unfoldable" class="sidebar-brand-text">
+          <span class="sidebar-brand-text__eyebrow">I.E. 80010</span>
+          <span class="sidebar-brand-text__name">Ricardo Palma</span>
+        </span>
       </CSidebarBrand>
       <CCloseButton class="d-lg-none" dark @click="sidebar.toggleVisible()" />
     </CSidebarHeader>

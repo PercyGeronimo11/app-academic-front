@@ -6,10 +6,10 @@
       :subtitle="courseName || 'Consulta de niveles de logro por bimestre'"
     >
       <template #actions>
-        <CButton v-if="isTeacher" color="light" variant="outline" class="text-white border-white" @click="goImport">
+        <CButton v-if="isTeacher" color="primary" variant="outline" @click="goImport">
           <i class="fas fa-file-import me-2"></i>Importar SIAGIE
         </CButton>
-        <CButton color="light" variant="ghost" class="text-white" @click="goBack">
+        <CButton color="secondary" variant="ghost" @click="goBack">
           <i class="fas fa-arrow-left me-2"></i>Volver
         </CButton>
       </template>
@@ -95,6 +95,7 @@ import CompetencyScoreService from '@/services/CompetencyScoreService';
 import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
 import EmptyState from '@/components/academic/EmptyState.vue';
 import ScoreLevelBadge from '@/components/academic/ScoreLevelBadge.vue';
+import { pickCurrentBimesterId } from '@/utils/bimester';
 
 const route = useRoute();
 const router = useRouter();
@@ -114,7 +115,7 @@ const loadBimesters = async () => {
   const response = await CompetencyScoreService.listBimesters();
   bimesters.value = response.data?.data || [];
   if (bimesters.value.length && !selectedBimesterId.value) {
-    selectedBimesterId.value = Number(bimesters.value[0].id);
+    selectedBimesterId.value = pickCurrentBimesterId(bimesters.value);
   }
 };
 

@@ -103,6 +103,7 @@ import AcademicRiskDashInsights from '@/components/academic-risk/AcademicRiskDas
 import AcademicRiskDashInsightsModal from '@/components/academic-risk/AcademicRiskDashInsightsModal.vue'
 import AcademicRiskDashKpis from '@/components/academic-risk/AcademicRiskDashKpis.vue'
 import { useAcademicRiskDashboardStore } from '@/stores/academicRiskDashboard'
+import { BRAND_COLOR } from '@/utils/brand'
 import { toastError, toastSuccess } from '@/utils/alerts'
 import { formatSkippedStudentLabel } from '@/utils/academicRiskFilters'
 import {
@@ -215,7 +216,7 @@ const showUpdateResult = (payload = {}) => {
     title: (classroomsOk > 0 || processed > 0) ? 'Predicciones actualizadas' : 'Sin predicciones generadas',
     html: `<p>${payload.message || 'Proceso finalizado.'}</p>${buildSkippedStudentsHtml(skippedStudents)}`,
     confirmButtonText: 'Entendido',
-    confirmButtonColor: '#321fdb',
+    confirmButtonColor: BRAND_COLOR,
   })
 }
 
@@ -231,7 +232,7 @@ const confirmUpdate = async () => {
     showCancelButton: true,
     confirmButtonText: store.isAllClassrooms ? 'Actualizar todas' : 'Actualizar aula',
     cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#321fdb',
+    confirmButtonColor: BRAND_COLOR,
     cancelButtonColor: '#9da5b1',
   })
 

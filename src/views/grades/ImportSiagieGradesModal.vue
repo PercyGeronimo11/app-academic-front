@@ -9,13 +9,14 @@
     <CModalBody>
       <div class="module-alert module-alert--info mb-3">
         <i class="fas fa-info-circle me-2"></i>
-        Acepta el Excel completo de SIAGIE o una sola hoja de curso (ej. 063-MATE).
+        Acepta el Excel de SIAGIE (con o sin hoja Parametros). Los alumnos se vinculan solo por
+        código de estudiante con el aula seleccionada; el grado/sección del archivo no se valida.
       </div>
 
       <div class="mb-3">
         <CFormLabel for="bimester-grade">Bimestre</CFormLabel>
         <CFormSelect id="bimester-grade" v-model="selectedBimesterId">
-          <option v-for="item in bimesters" :key="item.id" :value="item.id">
+          <option v-for="item in bimesters" :key="item.id" :value="Number(item.id)">
             {{ item.name }} ({{ item.year }})
           </option>
         </CFormSelect>
@@ -70,6 +71,7 @@
 <script setup>
 import { computed, ref, watch } from 'vue';
 import CompetencyScoreService from '@/services/CompetencyScoreService';
+import { pickCurrentBimesterId } from '@/utils/bimester';
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -97,7 +99,7 @@ const loadBimesters = async () => {
   try {
     const response = await CompetencyScoreService.listBimesters();
     bimesters.value = response.data?.data ?? [];
-    selectedBimesterId.value = bimesters.value[0]?.id ?? null;
+    selectedBimesterId.value = pickCurrentBimesterId(bimesters.value);
   } catch {
     bimesters.value = [];
   }

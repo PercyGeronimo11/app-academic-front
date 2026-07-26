@@ -209,10 +209,10 @@ const onBimester = (event) => {
   margin: 0;
   padding: 0.35rem 0;
   list-style: none;
-  background: #fff;
-  border: 1px solid #d8dbe0;
-  border-radius: 0.375rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 21, 0.1);
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-md);
+  box-shadow: var(--rp-shadow-md);
 }
 
 .aula-combobox__menu li {
@@ -223,16 +223,16 @@ const onBimester = (event) => {
 
 .aula-combobox__menu li:hover,
 .aula-combobox__menu li.is-active {
-  background: #f0f3ff;
+  background: var(--rp-surface-hover);
 }
 
 .aula-combobox__menu li.is-selected {
-  font-weight: 600;
-  color: #321fdb;
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-brand);
 }
 
 .aula-combobox__empty {
-  color: #9da5b1;
+  color: var(--rp-text-subtle);
   cursor: default !important;
 }
 

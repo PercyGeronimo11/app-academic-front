@@ -22,11 +22,20 @@ const isActiveItem = (route, item) => {
 }
 
 const filterNavByRole = (navItems, role) => {
-  return navItems.filter((item) => {
-    if (item.roles && !item.roles.includes(role)) return false
-    if (item.items) item.items = filterNavByRole(item.items, role) // Filtrar subgrupos también
-    return true
-  })
+  return navItems
+    .map((item) => {
+      if (item.roles && !item.roles.includes(role)) return null
+
+      if (item.items) {
+        const items = filterNavByRole(item.items, role)
+        // Grupo vacío tras filtrar hijos (p. ej. sin permiso de publicar): no se muestra.
+        if (!items.length) return null
+        return { ...item, items }
+      }
+
+      return item
+    })
+    .filter(Boolean)
 }
 
 const AppSidebarNav = defineComponent({

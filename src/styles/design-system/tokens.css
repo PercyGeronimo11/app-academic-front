@@ -6,18 +6,19 @@
 
 :root {
   /* --- Marca institucional -------------------------------------------------
-     brand-500 (#176FB6) es el azul oficial. El resto de la escala se deriva de
-     él para estados, fondos suaves y textos sobre claro. */
-  --rp-brand-50: #eef5fb;
-  --rp-brand-100: #d8e9f7;
-  --rp-brand-200: #b0d2ee;
-  --rp-brand-300: #7fb4e2;
-  --rp-brand-400: #3192f3;
+     brand-500 (#176FB6) es el azul oficial del colegio y no debe cambiar.
+     El resto de la escala se deriva manteniendo su tono (H≈207°) para que los
+     estados, fondos suaves y superficies profundas se lean como una familia. */
+  --rp-brand-50: #eff6fc;
+  --rp-brand-100: #d8eaf8;
+  --rp-brand-200: #b3d5f0;
+  --rp-brand-300: #7bb8e4;
+  --rp-brand-400: #3d94d6;
   --rp-brand-500: #176fb6;
-  --rp-brand-600: #17518b;
-  --rp-brand-700: #123f6c;
-  --rp-brand-800: #0d2e4e;
-  --rp-brand-900: #091f35;
+  --rp-brand-600: #135b96;
+  --rp-brand-700: #0f4776;
+  --rp-brand-800: #0c365b;
+  --rp-brand-900: #08253e;
   --rp-brand-rgb: 23, 111, 182;
 
   /* Acento institucional (naranja) */
@@ -28,11 +29,13 @@
   --rp-accent-600: #c97c07;
   --rp-accent-700: #8f5804;
 
-  /* --- Neutros ------------------------------------------------------------ */
+  /* --- Neutros -------------------------------------------------------------
+     Escala fría (slate): el matiz azulado la hace convivir con el azul
+     institucional y es el estándar en paneles de gestión. */
   --rp-neutral-0: #ffffff;
-  --rp-neutral-25: #fbfcfe;
-  --rp-neutral-50: #f6f8fb;
-  --rp-neutral-100: #eef2f7;
+  --rp-neutral-25: #fbfcfd;
+  --rp-neutral-50: #f8fafc;
+  --rp-neutral-100: #f1f5f9;
   --rp-neutral-200: #e2e8f0;
   --rp-neutral-300: #cbd5e1;
   --rp-neutral-400: #94a3b8;
@@ -102,7 +105,9 @@
   --rp-scale-4: #fa6736;
 
   /* --- Superficies y texto (se invierten en modo oscuro) ------------------ */
-  --rp-bg: var(--rp-neutral-50);
+  /* El lienzo es un gris frío y las tarjetas blancas: así la jerarquía se lee
+     sin necesidad de sombras marcadas. */
+  --rp-bg: var(--rp-neutral-100);
   --rp-surface: var(--rp-neutral-0);
   --rp-surface-muted: var(--rp-neutral-50);
   --rp-surface-sunken: var(--rp-neutral-100);
@@ -197,20 +202,31 @@
   --rp-z-fab: 1045;
 
   /* --- Tokens de tabla (cambiar aquí afecta todas las tablas del sistema) - */
-  --rp-table-head-bg: var(--rp-neutral-50);
+  --rp-table-head-bg: var(--rp-neutral-100);
   --rp-table-head-color: var(--rp-neutral-600);
   --rp-table-head-border: var(--rp-border-strong);
   --rp-table-row-border: var(--rp-border-subtle);
   --rp-table-row-hover: var(--rp-surface-hover);
 
-  /* --- Sidebar ------------------------------------------------------------ */
+  /* --- Sidebar -------------------------------------------------------------
+     La navegación va sobre el azul de la insignia (brand-500).
+     Estados sólo con azules de la misma familia + velos blancos suaves:
+     nunca píldora blanca sólida (rompe la lectura institucional). */
   --rp-sidebar-bg: var(--rp-brand-500);
-  --rp-sidebar-color: rgba(255, 255, 255, 0.82);
+  /* Misma superficie que el menú: el escudo (logo.png) ya está diseñado para
+     ir sobre el azul institucional; el wordmark azul se reemplaza por texto. */
+  --rp-sidebar-brand-bg: transparent;
+  --rp-sidebar-color: rgba(255, 255, 255, 0.92);
   --rp-sidebar-color-hover: #ffffff;
-  --rp-sidebar-item-hover: rgba(255, 255, 255, 0.1);
-  --rp-sidebar-item-active: rgba(255, 255, 255, 0.16);
-  --rp-sidebar-border: rgba(255, 255, 255, 0.12);
-  --rp-sidebar-title: rgba(255, 255, 255, 0.55);
+  --rp-sidebar-icon: rgba(255, 255, 255, 0.75);
+  --rp-sidebar-item-hover: rgba(255, 255, 255, 0.12);
+  --rp-sidebar-item-active: var(--rp-brand-700);
+  --rp-sidebar-item-active-hover: var(--rp-brand-800);
+  --rp-sidebar-item-active-color: #ffffff;
+  --rp-sidebar-group-bg: rgba(8, 37, 62, 0.18);
+  --rp-sidebar-guide: rgba(255, 255, 255, 0.28);
+  --rp-sidebar-border: rgba(255, 255, 255, 0.16);
+  --rp-sidebar-title: rgba(255, 255, 255, 0.88);
 }
 
 /* =============================================================================
@@ -219,10 +235,10 @@
    ============================================================================= */
 
 [data-coreui-theme='dark'] {
-  --rp-bg: #16191f;
-  --rp-surface: #212631;
-  --rp-surface-muted: #262c38;
-  --rp-surface-sunken: #1b2028;
+  --rp-bg: #0f172a;
+  --rp-surface: #1e293b;
+  --rp-surface-muted: #24334a;
+  --rp-surface-sunken: #172136;
   --rp-surface-brand-soft: rgba(var(--rp-brand-rgb), 0.16);
   --rp-surface-hover: rgba(var(--rp-brand-rgb), 0.14);
   --rp-surface-selected: rgba(var(--rp-brand-rgb), 0.22);
@@ -232,10 +248,10 @@
   --rp-border-strong: rgba(255, 255, 255, 0.18);
   --rp-border-brand: rgba(var(--rp-brand-rgb), 0.38);
 
-  --rp-text: #e7eaee;
-  --rp-text-muted: #a7b0bd;
-  --rp-text-subtle: #7d8794;
-  --rp-text-heading: #f3f5f8;
+  --rp-text: #e2e8f0;
+  --rp-text-muted: #94a3b8;
+  --rp-text-subtle: #64748b;
+  --rp-text-heading: #f1f5f9;
   --rp-text-brand: var(--rp-brand-300);
 
   --rp-success-50: rgba(22, 163, 74, 0.14);
@@ -260,8 +276,8 @@
   --rp-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
   --rp-shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.55);
 
-  --rp-table-head-bg: #272d3a;
-  --rp-table-head-color: #b6bec9;
+  --rp-table-head-bg: #24334a;
+  --rp-table-head-color: #cbd5e1;
   --rp-table-head-border: rgba(255, 255, 255, 0.16);
 
   --rp-risk-verylow-bg: rgba(21, 128, 61, 0.2);
@@ -272,8 +288,11 @@
   --rp-risk-high-fg: #fdba74;
   --rp-risk-unknown-fg: var(--rp-text-muted);
 
-  --rp-sidebar-bg: #17293c;
-  --rp-sidebar-item-active: rgba(var(--rp-brand-rgb), 0.45);
+  /* En tema oscuro el azul de la insignia sería demasiado luminoso como
+     superficie: se usa un paso profundo de la misma escala. */
+  --rp-sidebar-bg: var(--rp-brand-800);
+  --rp-sidebar-item-active: var(--rp-brand-500);
+  --rp-sidebar-item-active-hover: var(--rp-brand-600);
 }
 
 /* =============================================================================

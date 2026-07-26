@@ -9,12 +9,14 @@
     <CModalHeader>
       <CModalTitle>
         <i class="fas fa-bullhorn me-2"></i>
-        Comunicados institucionales
+        Comunicados
       </CModalTitle>
     </CModalHeader>
     <CModalBody v-if="current">
       <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
-        <span class="scope-badge">General</span>
+        <span class="scope-badge" :class="{ 'scope-badge--grade': !current.is_general }">
+          {{ scopeLabel(current) }}
+        </span>
         <span class="priority-badge" :class="`priority-badge--${current.priority}`">
           {{ priorityLabel(current.priority) }}
         </span>
@@ -22,7 +24,10 @@
           Vigente: {{ formatRange(current.starts_at, current.ends_at) }}
         </span>
       </div>
-      <h5 class="mb-3">{{ current.title }}</h5>
+      <h5 class="mb-1">{{ current.title }}</h5>
+      <p v-if="current.publisher_name" class="text-body-secondary small mb-3">
+        Publicado por {{ current.publisher_name }}
+      </p>
       <div class="announcement-detail-body" v-html="current.body"></div>
       <p v-if="items.length > 1" class="text-body-secondary small mt-3 mb-0">
         Comunicado {{ index + 1 }} de {{ items.length }}
@@ -47,7 +52,7 @@ import { computed, onMounted, ref } from 'vue'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
 import { hasValidSession } from '@/utils/session'
 
-const SESSION_FLAG = 'announcements_general_shown'
+const SESSION_FLAG = 'announcements_unread_shown'
 
 const visible = ref(false)
 const items = ref([])
@@ -63,6 +68,11 @@ const priorityLabels = {
 }
 
 const priorityLabel = (value) => priorityLabels[value] || value
+
+const scopeLabel = (item) => {
+  if (item?.is_general) return 'General'
+  return item?.target_labels || 'Por grado'
+}
 
 const formatRange = (start, end) => {
   if (!start && !end) return '—'
@@ -126,5 +136,10 @@ onMounted(loadUnread)
   font-weight: 600;
   background: var(--rp-surface-brand-soft);
   color: var(--rp-text-brand);
+}
+
+.scope-badge--grade {
+  background: var(--rp-warning-50);
+  color: var(--rp-warning-700);
 }
 </style>

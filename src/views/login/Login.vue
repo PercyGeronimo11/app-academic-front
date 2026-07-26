@@ -79,8 +79,7 @@ import { ensureStudentPushRegistration } from "@/composables/usePushNotification
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
 import { getPeruTime } from "@/utils/time";
-
-const BRAND_COLOR = "#176fb6";
+import { BRAND_COLOR } from "@/utils/brand";
 
 export default {
   data() {
@@ -109,6 +108,7 @@ export default {
         const role = response.data.user.role;
         const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
         localStorage.setItem("r_key", encryptedRol);
+        sessionStorage.removeItem('announcements_unread_shown');
         sessionStorage.removeItem('announcements_general_shown');
 
         if (response.success) {

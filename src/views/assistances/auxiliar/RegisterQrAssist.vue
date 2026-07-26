@@ -257,7 +257,8 @@ onMounted(() => {
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  border: 2px dashed #dcdcdc;
+  border: 2px dashed var(--rp-border-strong);
+  /* Negro fijo: es el fondo del visor de cámara, no una superficie del tema. */
   background: #000;
   max-width: 520px;
   margin: 0 auto;
@@ -273,7 +274,7 @@ onMounted(() => {
   position: absolute;
   width: 100%;
   height: 3px;
-  background: #20c997;
+  background: var(--rp-success-500);
   top: 0;
   animation: scanMove 2s linear infinite;
 }

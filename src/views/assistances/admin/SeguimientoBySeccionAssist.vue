@@ -122,18 +122,3 @@ AssistanceService.getDetailAssistanceBySeccion(seccionId).then((response) => {
   seccion.value = response.data.section
 })
 </script>
-
-<style scoped>
-.bg-orange-1 {
-  background-color: #eed306;
-}
-.bg-orange-2 {
-  background-color: #ffb300;
-}
-.bg-orange-3 {
-  background-color: #fd841a;
-}
-.bg-orange-4 {
-  background-color: #fa6736;
-}
-</style>

@@ -91,6 +91,7 @@ import AcademicRiskClassroomCards from '@/components/academic-risk/AcademicRiskC
 import AcademicRiskDashFilters from '@/components/academic-risk/AcademicRiskDashFilters.vue'
 import AcademicRiskDashKpis from '@/components/academic-risk/AcademicRiskDashKpis.vue'
 import { useAcademicRiskDashboardStore } from '@/stores/academicRiskDashboard'
+import { BRAND_COLOR } from '@/utils/brand'
 import { toastError, toastSuccess } from '@/utils/alerts'
 import { formatSkippedStudentLabel } from '@/utils/academicRiskFilters'
 
@@ -146,7 +147,7 @@ const showBulkResult = (payload = {}) => {
     title: classroomsOk > 0 ? 'Predicciones actualizadas' : 'Sin predicciones generadas',
     html: `<p>${payload.message || 'Proceso finalizado.'}</p>${buildSkippedStudentsHtml(skippedStudents)}`,
     confirmButtonText: 'Entendido',
-    confirmButtonColor: '#321fdb',
+    confirmButtonColor: BRAND_COLOR,
   })
 }
 
@@ -158,7 +159,7 @@ const confirmUpdateAll = async () => {
     showCancelButton: true,
     confirmButtonText: 'Actualizar todas',
     cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#321fdb',
+    confirmButtonColor: BRAND_COLOR,
     cancelButtonColor: '#9da5b1',
   })
 

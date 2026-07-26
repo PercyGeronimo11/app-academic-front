@@ -134,10 +134,16 @@
 }
 
 .import-result-card {
-  padding: var(--rp-space-4);
+  padding: var(--rp-space-5);
   border-radius: var(--rp-radius-lg);
-  background: var(--rp-success-50);
-  border: 1px solid var(--rp-success-200);
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-left: 4px solid var(--rp-success-500);
+  box-shadow: var(--rp-shadow-xs);
+}
+
+.import-result-card .module-section-title {
+  color: var(--rp-text-heading);
 }
 
 .import-result-card__stats {
@@ -151,6 +157,10 @@
 
 .import-result-card__stat {
   min-width: 7.5rem;
+  padding: var(--rp-space-3);
+  border-radius: var(--rp-radius-md);
+  background: var(--rp-success-50);
+  border: 1px solid var(--rp-success-200);
 }
 
 .import-result-card__stat strong {
@@ -165,6 +175,19 @@
   color: var(--rp-success-700);
   text-transform: uppercase;
   letter-spacing: 0.03em;
+}
+
+[data-coreui-theme='dark'] .import-result-card__stat {
+  background: var(--rp-success-50);
+  border-color: var(--rp-success-200);
+}
+
+[data-coreui-theme='dark'] .import-result-card__stat strong {
+  color: var(--rp-success-700);
+}
+
+[data-coreui-theme='dark'] .import-result-card__stat span {
+  color: var(--rp-text-muted);
 }
 
 /* --- Libreta de notas ----------------------------------------------------- */
@@ -222,11 +245,11 @@
 }
 
 .course-quick-link--grades {
-  color: #0f766e;
+  color: var(--rp-success-700);
 }
 
 .course-quick-link--import {
-  color: #4f46e5;
+  color: var(--rp-brand-500);
 }
 
 .course-quick-link i {

@@ -83,6 +83,7 @@ import AcademicRiskFilters from '@/components/academic-risk/AcademicRiskFilters.
 import AcademicRiskSummary from '@/components/academic-risk/AcademicRiskSummary.vue'
 import AcademicRiskTable from '@/components/academic-risk/AcademicRiskTable.vue'
 import { useAcademicRiskStore } from '@/stores/academicRisk'
+import { BRAND_COLOR } from '@/utils/brand'
 import { toastError, toastSuccess } from '@/utils/alerts'
 import { formatDateTime } from '@/utils/academicRisk'
 import { formatSkippedStudentLabel } from '@/utils/academicRiskFilters'
@@ -137,7 +138,7 @@ const showPredictionError = async (err, studentId = null) => {
       showCancelButton: Boolean(targetStudentId),
       confirmButtonText: 'Entendido',
       cancelButtonText: 'Ir a completar información',
-      confirmButtonColor: '#321fdb',
+      confirmButtonColor: BRAND_COLOR,
       cancelButtonColor: '#39f',
       reverseButtons: true,
     })
@@ -154,7 +155,7 @@ const showPredictionError = async (err, studentId = null) => {
       title: 'Predicción incompleta',
       html: `<p>${message}</p>${buildSkippedStudentsHtml(skippedStudents)}`,
       confirmButtonText: 'Entendido',
-      confirmButtonColor: '#321fdb',
+      confirmButtonColor: BRAND_COLOR,
     })
     return
   }
@@ -176,7 +177,7 @@ const showBatchResult = (payload = {}) => {
     title: processed > 0 ? 'Predicciones actualizadas' : 'Sin predicciones generadas',
     html: `<p>${payload.message || `Se actualizaron ${processed} predicciones.`}</p>${buildSkippedStudentsHtml(skippedStudents)}`,
     confirmButtonText: 'Entendido',
-    confirmButtonColor: '#321fdb',
+    confirmButtonColor: BRAND_COLOR,
   })
 }
 
@@ -188,7 +189,7 @@ const confirmUpdate = async () => {
     showCancelButton: true,
     confirmButtonText: 'Actualizar',
     cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#321fdb',
+    confirmButtonColor: BRAND_COLOR,
     cancelButtonColor: '#9da5b1',
   })
 
@@ -210,7 +211,7 @@ const confirmPredictStudent = async (row) => {
     showCancelButton: true,
     confirmButtonText: 'Calcular',
     cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#321fdb',
+    confirmButtonColor: BRAND_COLOR,
     cancelButtonColor: '#9da5b1',
   })
 

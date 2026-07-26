@@ -50,7 +50,8 @@ import { ref, onMounted } from "vue";
 import CourseClassService from "@/services/CourseClassService";
 import TeacherService from "@/services/TeacherService";
 import { useRoute, useRouter } from "vue-router";
-import Swal from "sweetalert2"; 
+import Swal from "sweetalert2";
+import { BRAND_COLOR, DANGER_COLOR } from "@/utils/brand"; 
 
 const route = useRoute();
 const router = useRouter();
@@ -92,8 +93,8 @@ const confirmSaveAssignments = () => {
     text: "¿Quieres guardar las asignaciones?",
     icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
+    confirmButtonColor: BRAND_COLOR,
+    cancelButtonColor: DANGER_COLOR,
     confirmButtonText: "Sí, guardar",
     cancelButtonText: "Cancelar",
   }).then((result) => {
