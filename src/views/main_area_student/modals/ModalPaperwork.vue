@@ -14,7 +14,7 @@
         </CModalHeader>
 
         <CModalBody>
-            <CForm @submit.prevent="savePaperwork">
+            <CForm :key="formKey" @submit.prevent="savePaperwork">
                 <CContainer>
 
                     <!-- DATOS PRINCIPALES -->
@@ -43,7 +43,7 @@
                         </CCol>
 
                         <CCol md="4">
-                            <CFormInput v-model="form.recipient" label="Destinatario" required disabled />
+                            <CFormInput v-model="form.recipient" label="Destinatario" required readonly />
                         </CCol>
                     </CRow>
 
@@ -98,7 +98,7 @@
                             v-model="files"
                             :maxFiles="5"
                             accept=".pdf,application/pdf"
-                            label="Documentos anexos (solo PDF)"
+                            label="Documentos anexos (Maximo 5 archivos PDF)"
                             helperText="Solo archivos PDF (máximo 5). Se incorporarán al final del PDF del trámite."
                             />
                         </CCol>
@@ -122,6 +122,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import FileDropzone from '@/components/forms/FileDropzone.vue';
 import StudentService from '@/services/StudentService';
@@ -143,6 +144,8 @@ const props = defineProps({
   }
 });
 
+const router = useRouter();
+
 /* -------------------------
    MODO EDICIÓN
 --------------------------*/
@@ -157,6 +160,9 @@ const subjectOptions = [
 ];
 
 const isShowingAlert = ref(false);
+const isSaving = ref(false);
+/** Fuerza remount del formulario: CFormSelect deja valor visual stale si modelValue es ''. */
+const formKey = ref(0);
 
 const guardianData = ref({
   address: '',
@@ -182,7 +188,7 @@ const loadGuardianData = async () => {
   }
 };
 
-const showGuardianInfoAlert = () => {
+const showGuardianInfoAlert = async () => {
   const missingFields = [];
   if (!guardianData.value.address?.trim()) {
     missingFields.push('dirección del apoderado');
@@ -192,58 +198,65 @@ const showGuardianInfoAlert = () => {
   }
 
   isShowingAlert.value = true;
-  Swal.fire({
+  const result = await Swal.fire({
     icon: 'warning',
     title: 'Actualice su información',
     html: `No puede registrar la solicitud hasta completar su perfil.<br><br>Actualice: <strong>${missingFields.join('</strong> y <strong>')}</strong>.`,
+    showCancelButton: true,
     confirmButtonText: 'Entendido',
-  }).finally(() => {
-    isShowingAlert.value = false;
+    cancelButtonText: 'Ir al perfil',
+    reverseButtons: true,
   });
+  isShowingAlert.value = false;
+
+  if (result.dismiss === Swal.DismissReason.cancel) {
+    closeModal();
+    router.push('/user/ver-perfil-student');
+  }
 };
 
 /* -------------------------
    FORMULARIO
 --------------------------*/
+const DEFAULT_RECIPIENT = 'Director(a) de la I.E.';
+
 const getEmptyForm = () => ({
   id: null,
   subject: '',
-  recipient: 'Director(a) de la I.E.',
+  recipient: DEFAULT_RECIPIENT,
   reason: '',
-  signature: '',
+  signature: null,
 });
 
 const form = ref(getEmptyForm());
 const files = ref([]);
 
-/* -------------------------
-   RESET
---------------------------*/
 const resetForm = () => {
   form.value = getEmptyForm();
   files.value = [];
 };
 
-/* -------------------------
-   PRECARGAR DATOS AL EDITAR
---------------------------*/
-watch(
-  () => props.paperwork,
-  (newVal) => {
-    if (newVal) {
-      form.value = { ...newVal };
-      files.value = newVal.files ? [...newVal.files] : [];
-    } else {
-      resetForm();
-    }
-  },
-  { immediate: true }
-);
+const initFormForModal = () => {
+  if (props.paperwork) {
+    form.value = {
+      ...getEmptyForm(),
+      id: props.paperwork.id ?? null,
+      subject: props.paperwork.subject || '',
+      recipient: props.paperwork.recipient || DEFAULT_RECIPIENT,
+      reason: props.paperwork.reason || '',
+    };
+    files.value = [];
+  } else {
+    resetForm();
+  }
+  formKey.value += 1;
+};
 
 watch(
   () => props.isOpenModal,
   async (open) => {
     if (open) {
+      initFormForModal();
       await loadGuardianData();
       if (!hasGuardianContactInfo()) {
         showGuardianInfoAlert();
@@ -256,50 +269,74 @@ watch(
    GUARDAR
 --------------------------*/
 const savePaperwork = async () => {
-  if (!form.value.subject || !form.value.recipient || !form.value.reason?.trim()) {
+  if (isSaving.value) return;
+
+  const subject = String(form.value.subject || '').trim();
+  const recipient = String(form.value.recipient || DEFAULT_RECIPIENT).trim();
+  const reason = String(form.value.reason || '').trim();
+
+  const missing = [];
+  if (!subject) missing.push('asunto');
+  if (!recipient) missing.push('destinatario');
+  if (!reason) missing.push('motivo');
+
+  if (missing.length) {
     isShowingAlert.value = true;
-    Swal.fire({
+    await Swal.fire({
       icon: 'warning',
       title: 'Campos obligatorios',
-      text: 'Complete los campos requeridos.',
-    }).finally(() => {
-      isShowingAlert.value = false;
+      text: `Complete: ${missing.join(', ')}.`,
+      confirmButtonText: 'Entendido',
     });
+    isShowingAlert.value = false;
     return;
   }
 
-  await loadGuardianData();
+  form.value.subject = subject;
+  form.value.recipient = recipient;
+  form.value.reason = reason;
 
-  if (!hasGuardianContactInfo()) {
-    showGuardianInfoAlert();
-    return;
-  }
+  isSaving.value = true;
+  try {
+    await loadGuardianData();
 
-  const formData = new FormData();
-
-  Object.keys(form.value).forEach(key => {
-    if (form.value[key] !== null) {
-      formData.append(key, form.value[key]);
+    if (!hasGuardianContactInfo()) {
+      await showGuardianInfoAlert();
+      return;
     }
-  });
 
-  files.value.forEach((file) => {
-    formData.append('documents[]', file);
-  });
+    const formData = new FormData();
+    formData.append('subject', subject);
+    formData.append('recipient', recipient);
+    formData.append('reason', reason);
 
-  if (isEditMode.value) {
-    emit('updatePaperwork', formData);
-  } else {
-    emit('createPaperwork', formData);
+    if (form.value.id != null) {
+      formData.append('id', String(form.value.id));
+    }
+    if (form.value.signature instanceof File) {
+      formData.append('signature', form.value.signature);
+    }
+
+    files.value.forEach((file) => {
+      formData.append('documents[]', file);
+    });
+
+    if (isEditMode.value) {
+      emit('updatePaperwork', formData);
+    } else {
+      emit('createPaperwork', formData);
+    }
+
+    resetForm();
+    closeModal();
+  } finally {
+    isSaving.value = false;
   }
-
-  resetForm();
-  closeModal();
 };
 
 /* Subir Firma */
 const handleSignature = (event) => {
-  form.value.signature = event.target.files[0];
+  form.value.signature = event.target.files?.[0] || null;
 };
 
 /* -------------------------

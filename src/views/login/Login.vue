@@ -112,18 +112,11 @@ export default {
         sessionStorage.removeItem('announcements_general_shown');
 
         if (response.success) {
-          let route = "/";
-          if (role === "DIRECCION") route = "/dashboard";
-          else if (role === "PROFESOR") route = "/mainAreaTeacher";
-          else if (role === "ESTUDIANTE") route = "/mainAreaStudent";
-          else if (role === "AUXILIAR") route = "/assistances";
-          else route = "/dashboard";
-
-          this.$router.push(route);
-
           if (role === "ESTUDIANTE") {
             ensureStudentPushRegistration();
           }
+
+          this.$router.push("/dashboard");
 
           Swal.fire({
             toast: true,

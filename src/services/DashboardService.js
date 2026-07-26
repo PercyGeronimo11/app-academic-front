@@ -1,9 +1,14 @@
-import axios from 'axios';
+import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL; 
+const API_URL = import.meta.env.VITE_API_URL
 
 export default {
+  async getHome() {
+    return axios.get(`${API_URL}/home`)
+  },
+
+  /** @deprecated Prefer getHome() */
   async getItems() {
-    return await axios.get(`${API_URL}/dashboard`);
+    return axios.get(`${API_URL}/dashboard`)
   },
 }

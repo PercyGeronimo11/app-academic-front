@@ -155,6 +155,10 @@ const routes = [
 
       //Para profesor
       {
+        path: '/classroom/main',
+        redirect: '/dashboard',
+      },
+      {
         path: '/mainAreaTeacher',
         name: 'Mis Cursos',
         component: () => import('@/views/main_area_teacher/AreaTeacher.vue'),
@@ -235,12 +239,8 @@ const routes = [
 
 
       //Para estudiantes y profesores
+      // /classroom/main redirige a /dashboard (homologado)
 
-      {
-        path: '/classroom/main',
-        name: 'Area principal',
-        component: () => import('@/views/main_area_general/MainArea.vue'),
-      },
 
 
 

@@ -59,12 +59,6 @@
                   </CButton>
                 </CCol>
               </CRow>
-
-              <CRow class="mt-3">
-                <CCol xs="12">
-                  <CFormInput v-model="alumnoData.address" label="Dirección (opcional)" />
-                </CCol>
-              </CRow>
             </CCardBody>
           </CCard>
 
@@ -77,19 +71,34 @@
             <CCardBody>
               <CRow class="g-3">
                 <CCol xs="12" md="3">
-                  <CFormInput v-model="alumnoData.representative_dni" label="DNI" readonly />
+                  <CFormInput v-model="alumnoData.representative_dni" label="DNI" maxlength="8" />
                 </CCol>
 
                 <CCol xs="12" md="5">
-                  <CFormInput v-model="alumnoData.representative_name" label="Nombre completo" readonly />
+                  <CFormInput v-model="alumnoData.representative_name" label="Nombre completo" />
                 </CCol>
 
                 <CCol xs="12" md="2">
-                  <CFormInput v-model="alumnoData.representative_phone" label="Teléfono" readonly />
+                  <CFormInput
+                    v-model="alumnoData.representative_phone"
+                    label="Teléfono"
+                    maxlength="9"
+                    placeholder="Requerido para trámites"
+                  />
                 </CCol>
 
                 <CCol xs="12" md="2">
-                  <CFormInput v-model="alumnoData.representative_relationship" label="Parentesco" readonly />
+                  <CFormInput v-model="alumnoData.representative_relationship" label="Parentesco" />
+                </CCol>
+              </CRow>
+
+              <CRow class="g-3 mt-1">
+                <CCol xs="12">
+                  <CFormInput
+                    v-model="alumnoData.address"
+                    label="Dirección del apoderado"
+                    placeholder="Requerida para registrar trámites"
+                  />
                 </CCol>
               </CRow>
             </CCardBody>
@@ -158,16 +167,15 @@
 <script setup>
 
 import StudentService from "@/services/StudentService";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { ref, onMounted } from "vue";
 import Swal from "sweetalert2";
 import { CCard, CCardBody, CCardHeader } from "@coreui/vue";
-import { toastError, toastWarning } from "@/utils/alerts";
-import { toastSuccess } from "../../utils/alerts";
+import { toastError, toastSuccess } from "@/utils/alerts";
 const URL_DJANGO_MEDIA = import.meta.env.VITE_URL_DJANGO_MEDIA;
 
 
-const router = useRouter();
+const route = useRoute();
 const studentId = ref("");
 const alumnoData = ref({
   name: "",
@@ -186,7 +194,7 @@ const alumnoData = ref({
   email: "",
   grade_section: {
     grade: '',
-    seccion: ''
+    section: ''
   },
   user: {
     name: "",
@@ -247,37 +255,24 @@ const getDataStudent = async (id) => {
 
 const submitToEdit = async () => {
   const d = alumnoData.value;
-  if (!String(d.dni || "").trim()) {
-    toastWarning("Ingrese el DNI.");
-    return;
-  }
-  if (!String(d.name || "").trim()) {
-    toastWarning("Ingrese los nombres.");
-    return;
-  }
-  if (!String(d.surname_father || "").trim() || !String(d.surname_mother || "").trim()) {
-    toastWarning("Ingrese apellido paterno y materno.");
-    return;
-  }
-  if (!d.birth_date) {
-    toastWarning("Ingrese la fecha de nacimiento.");
-    return;
-  }
-  if (d.sex !== "M" && d.sex !== "F") {
-    toastWarning("Seleccione el sexo.");
-    return;
-  }
   try {
     calculateAge();
-    await StudentService.updateItem(alumnoData.value);
-    toastSuccess("Estudiante actualizado");
-    router.push("/students");
-
+    await StudentService.updateItem({
+      id: d.id,
+      address: d.address,
+      representative_dni: d.representative_dni,
+      representative_name: d.representative_name,
+      representative_phone: d.representative_phone,
+      representative_relationship: d.representative_relationship,
+      password: d.password || undefined,
+    });
+    alumnoData.value.password = "";
+    toastSuccess("Perfil actualizado correctamente");
   } catch (error) {
     if (error.response && error.response.data && error.response.data.message) {
       toastError(error.response.data.message);
     } else {
-      console.log("error:" + error);
+      toastError("No se pudo actualizar el perfil");
     }
   }
 };
@@ -302,7 +297,6 @@ const obtenerQrCode = async () => {
 };
 
 onMounted(() => {
-  const route = useRoute();
   studentId.value = route.params.id;
   getDataStudent(studentId.value);
 });

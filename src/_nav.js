@@ -1,21 +1,19 @@
 export default [
-  // TODOS
   {
     component: 'CNavItem',
     name: 'Dashboard',
     to: '/dashboard',
     icon: 'cil-speedometer',
-    roles: ['DIRECCION', 'AUXILIAR'],
+    roles: ['DIRECCION', 'AUXILIAR', 'PROFESOR', 'ESTUDIANTE', 'SECRETARIA'],
   },
 
-  // DIRECCION O ADMINISTRATIVO
-  /*   {
+  {
     component: 'CNavItem',
-    name: 'Chatbot',
-    to: '/chatbot',
-    icon: 'cil-chat-bubble',
-    roles: ['DIRECCION',],
-  }, */
+    name: 'Mis Cursos',
+    to: '/mainAreaTeacher',
+    icon: 'cil-library',
+    roles: ['PROFESOR'],
+  },
   {
     component: 'CNavGroup',
     name: 'Alerta Temprana',
@@ -35,13 +33,6 @@ export default [
         to: '/prediccion/academic-risk',
       },
     ],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Notificaciones',
-    to: '/push-notifications/historial',
-    icon: 'cil-bell',
-    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'ESTUDIANTE'],
   },
   {
     component: 'CNavGroup',
@@ -81,13 +72,7 @@ export default [
       },
     ],
   },
-  {
-    component: 'CNavItem',
-    name: 'Configuraciones',
-    to: '/settings/general',
-    icon: 'cil-settings',
-    roles: ['DIRECCION'],
-  },
+
   {
     component: 'CNavGroup',
     name: 'Comunicados',
@@ -111,7 +96,6 @@ export default [
     ],
   },
 
-  // TRAMITES VIRTUALES
   {
     component: 'CNavItem',
     name: 'Trámites (Mesa)',
@@ -140,6 +124,13 @@ export default [
     icon: 'cil-folder-open',
     roles: ['ESTUDIANTE'],
   },
+  {
+    component: 'CNavItem',
+    name: 'Cursos',
+    to: '/courses',
+    icon: 'cil-book',
+    roles: ['DIRECCION'],
+  },
 
   {
     component: 'CNavTitle',
@@ -167,47 +158,15 @@ export default [
     icon: 'cil-people',
     roles: ['DIRECCION'],
   },
+
   {
     component: 'CNavItem',
-    name: 'Cursos',
-    to: '/courses',
-    icon: 'cil-book',
+    name: 'Configuraciones',
+    to: '/settings/general',
+    icon: 'cil-settings',
     roles: ['DIRECCION'],
   },
 
-  /* {
-    component: 'CNavItem',
-    name: 'Asignar Cursos',
-    to: '/classroom/assignment-courses',
-    icon: 'cil-star',
-    roles: ['DIRECCION'],
-  }, */
-
-  //   Para Profesor
-  {
-    component: 'CNavTitle',
-    name: 'ADMINISTRACIÓN',
-    roles: ['PROFESOR'],
-  },
-
-  // Profesor y alumnos
-  {
-    component: 'CNavItem',
-    name: 'Area Principal',
-    to: '/classroom/main',
-    icon: 'cil-home',
-    roles: ['PROFESOR', 'ESTUDIANTE'],
-  },
-
-  {
-    component: 'CNavItem',
-    name: 'Mis Cursos',
-    to: '/mainAreaTeacher',
-    icon: 'cil-library',
-    roles: ['PROFESOR'],
-  },
-
-  //   Para Estudiante
   {
     component: 'CNavItem',
     name: 'Mis Cursos',
