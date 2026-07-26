@@ -89,59 +89,127 @@ const insertEmoji = (emoji) => {
 
 <style scoped>
 .rich-editor {
-  border: 1px solid #ced4da;
-  border-radius: 0.5rem;
+  border: 1px solid var(--rp-border-strong);
+  border-radius: var(--rp-radius-md);
   overflow: hidden;
-  background: #fff;
+  background: var(--rp-surface);
+  transition: border-color var(--rp-transition-fast), box-shadow var(--rp-transition-fast);
 }
 
 .rich-editor--focus {
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+  border-color: var(--rp-brand-400);
+  box-shadow: var(--rp-shadow-focus);
 }
 
 .rich-editor :deep(.ql-toolbar.ql-snow) {
   border: 0;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f8fafc;
+  border-bottom: 1px solid var(--rp-border-subtle);
+  background: var(--rp-surface-muted);
+  padding: var(--rp-space-2);
 }
 
 .rich-editor :deep(.ql-container.ql-snow) {
   border: 0;
-  min-height: 160px;
-  font-size: 0.95rem;
+  min-height: 10rem;
+  font-size: var(--rp-text-base);
+  color: var(--rp-text);
 }
 
 .rich-editor :deep(.ql-editor) {
-  min-height: 160px;
+  min-height: 10rem;
 }
 
 .rich-editor :deep(.ql-editor.ql-blank::before) {
   font-style: normal;
-  color: #94a3b8;
+  color: var(--rp-text-subtle);
+}
+
+/* Quill dibuja los iconos con stroke/fill fijos; hay que redirigirlos a los
+   tokens para que la barra siga al tema. */
+.rich-editor :deep(.ql-snow .ql-stroke) {
+  stroke: var(--rp-text-muted);
+}
+
+.rich-editor :deep(.ql-snow .ql-fill) {
+  fill: var(--rp-text-muted);
+}
+
+.rich-editor :deep(.ql-snow .ql-picker) {
+  color: var(--rp-text-muted);
+}
+
+.rich-editor :deep(.ql-snow .ql-picker-options) {
+  background: var(--rp-surface);
+  border-color: var(--rp-border);
+  border-radius: var(--rp-radius-sm);
+  box-shadow: var(--rp-shadow-md);
+}
+
+.rich-editor :deep(.ql-snow button:hover .ql-stroke),
+.rich-editor :deep(.ql-snow button.ql-active .ql-stroke),
+.rich-editor :deep(.ql-snow .ql-picker-label:hover .ql-stroke) {
+  stroke: var(--rp-brand-500);
+}
+
+.rich-editor :deep(.ql-snow button:hover .ql-fill),
+.rich-editor :deep(.ql-snow button.ql-active .ql-fill) {
+  fill: var(--rp-brand-500);
+}
+
+.rich-editor :deep(.ql-snow button:hover),
+.rich-editor :deep(.ql-snow .ql-picker-label:hover),
+.rich-editor :deep(.ql-snow .ql-picker-item:hover) {
+  color: var(--rp-brand-500);
+}
+
+.rich-editor :deep(.ql-snow blockquote) {
+  border-left: 3px solid var(--rp-border-strong);
+  color: var(--rp-text-muted);
+}
+
+.rich-editor :deep(.ql-snow a) {
+  color: var(--rp-brand-500);
 }
 
 .rich-editor__emoji-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.25rem;
-  padding: 0.45rem 0.55rem;
-  border-top: 1px solid #e5e7eb;
-  background: #fafbfc;
+  gap: var(--rp-space-1);
+  padding: var(--rp-space-2);
+  border-top: 1px solid var(--rp-border-subtle);
+  background: var(--rp-surface-muted);
 }
 
 .rich-editor__emoji-btn {
   border: 0;
   background: transparent;
-  border-radius: 6px;
+  border-radius: var(--rp-radius-sm);
   width: 1.9rem;
   height: 1.9rem;
   line-height: 1;
-  font-size: 1.05rem;
+  font-size: var(--rp-text-lg);
   cursor: pointer;
+  transition: background-color var(--rp-transition-fast);
 }
 
 .rich-editor__emoji-btn:hover {
-  background: #e8eef7;
+  background: var(--rp-surface-hover);
+}
+
+.rich-editor__emoji-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--rp-shadow-focus);
+}
+
+@media (max-width: 575.98px) {
+  .rich-editor :deep(.ql-container.ql-snow),
+  .rich-editor :deep(.ql-editor) {
+    min-height: 8rem;
+  }
+
+  .rich-editor__emoji-bar {
+    gap: 0.125rem;
+    padding: var(--rp-space-1);
+  }
 }
 </style>

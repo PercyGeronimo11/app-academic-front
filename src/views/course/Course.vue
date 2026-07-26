@@ -264,30 +264,33 @@
 </script>
 
 <style scoped>
+.course-thumb,
+.course-thumb-placeholder {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--rp-radius-sm);
+  border: 1px solid var(--rp-border);
+}
+
 .course-thumb {
-  width: 48px;
-  height: 48px;
   object-fit: cover;
-  border-radius: 8px;
 }
 
 .course-thumb-placeholder {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  background: #c3dafe;
-  color: #1e3a8a;
-  font-weight: 700;
+  background: var(--rp-surface-brand-soft);
+  color: var(--rp-text-brand);
+  font-size: var(--rp-text-base);
+  font-weight: var(--rp-weight-semibold);
 }
 
 .course-preview {
-  max-width: 240px;
-  max-height: 160px;
+  max-width: min(100%, 15rem);
+  max-height: 10rem;
   object-fit: cover;
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
+  border-radius: var(--rp-radius-md);
+  border: 1px solid var(--rp-border);
 }
 </style>

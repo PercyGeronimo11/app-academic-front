@@ -398,7 +398,7 @@ const submitToCreate = async () => {
 
 <style>
 .input-group-text {
-  background-color: #f0f0f0;
+  background-color: var(--rp-surface-sunken);
   border-left: none;
   font-weight: bold;
 }
@@ -417,7 +417,7 @@ const submitToCreate = async () => {
 }
 
 .input-group .form-control[readonly] {
-  background-color: var(--cui-tertiary-bg, #e9ecef);
+  background-color: var(--cui-tertiary-bg, var(--rp-border));
 }
 
 .input-group .input-group-text {

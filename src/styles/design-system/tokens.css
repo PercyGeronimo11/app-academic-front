@@ -1,0 +1,314 @@
+/* =============================================================================
+   Design tokens — I.E. Ricardo Palma 80010
+   Única fuente de verdad para color, espaciado, tipografía, radios y sombras.
+   Nunca escribir un hex directamente en una vista: consumir estos tokens.
+   ============================================================================= */
+
+:root {
+  /* --- Marca institucional -------------------------------------------------
+     brand-500 (#176FB6) es el azul oficial. El resto de la escala se deriva de
+     él para estados, fondos suaves y textos sobre claro. */
+  --rp-brand-50: #eef5fb;
+  --rp-brand-100: #d8e9f7;
+  --rp-brand-200: #b0d2ee;
+  --rp-brand-300: #7fb4e2;
+  --rp-brand-400: #3192f3;
+  --rp-brand-500: #176fb6;
+  --rp-brand-600: #17518b;
+  --rp-brand-700: #123f6c;
+  --rp-brand-800: #0d2e4e;
+  --rp-brand-900: #091f35;
+  --rp-brand-rgb: 23, 111, 182;
+
+  /* Acento institucional (naranja) */
+  --rp-accent-50: #fef7e7;
+  --rp-accent-100: #fdecc4;
+  --rp-accent-400: #f5b13f;
+  --rp-accent-500: #f39c12;
+  --rp-accent-600: #c97c07;
+  --rp-accent-700: #8f5804;
+
+  /* --- Neutros ------------------------------------------------------------ */
+  --rp-neutral-0: #ffffff;
+  --rp-neutral-25: #fbfcfe;
+  --rp-neutral-50: #f6f8fb;
+  --rp-neutral-100: #eef2f7;
+  --rp-neutral-200: #e2e8f0;
+  --rp-neutral-300: #cbd5e1;
+  --rp-neutral-400: #94a3b8;
+  --rp-neutral-500: #64748b;
+  --rp-neutral-600: #475569;
+  --rp-neutral-700: #334155;
+  --rp-neutral-800: #1e293b;
+  --rp-neutral-900: #0f172a;
+
+  /* --- Semánticos de estado ---------------------------------------------- */
+  --rp-success-50: #f0fdf4;
+  --rp-success-100: #dcfce7;
+  --rp-success-200: #bbf7d0;
+  --rp-success-500: #16a34a;
+  --rp-success-700: #15803d;
+  --rp-success-800: #166534;
+
+  --rp-warning-50: #fffbeb;
+  --rp-warning-100: #fef3c7;
+  --rp-warning-200: #fde68a;
+  --rp-warning-500: var(--rp-accent-500);
+  --rp-warning-700: #b45309;
+
+  --rp-danger-50: #fef2f2;
+  --rp-danger-100: #fee2e2;
+  --rp-danger-200: #fecaca;
+  --rp-danger-500: #dc2626;
+  --rp-danger-700: #b91c1c;
+  --rp-danger-800: #991b1b;
+
+  --rp-info-50: var(--rp-brand-50);
+  --rp-info-100: var(--rp-brand-100);
+  --rp-info-500: var(--rp-brand-400);
+  --rp-info-700: var(--rp-brand-600);
+
+  /* --- Escala de riesgo académico ----------------------------------------
+     Aquí el color es dato, no decoración: va de verde (sin riesgo) a rojo
+     (crítico), pasando por el ámbar del acento institucional. */
+  --rp-risk-verylow-bg: var(--rp-success-100);
+  --rp-risk-verylow-fg: #0f5132;
+  --rp-risk-verylow-solid: #0f5132;
+
+  --rp-risk-low-bg: var(--rp-success-50);
+  --rp-risk-low-fg: var(--rp-success-800);
+  --rp-risk-low-solid: var(--rp-success-500);
+
+  --rp-risk-medium-bg: var(--rp-warning-100);
+  --rp-risk-medium-fg: var(--rp-warning-700);
+  --rp-risk-medium-solid: var(--rp-accent-500);
+
+  --rp-risk-high-bg: #fde4d0;
+  --rp-risk-high-fg: #9a3412;
+  --rp-risk-high-solid: #ea580c;
+
+  --rp-risk-critical-bg: var(--rp-danger-100);
+  --rp-risk-critical-fg: var(--rp-danger-800);
+  --rp-risk-critical-solid: var(--rp-danger-500);
+
+  --rp-risk-unknown-bg: var(--rp-surface-muted);
+  --rp-risk-unknown-fg: var(--rp-text-muted);
+  --rp-risk-unknown-solid: var(--rp-neutral-400);
+
+  /* --- Escala de tardanzas/asistencia (compartida por 9 vistas) ----------- */
+  --rp-scale-1: #eed306;
+  --rp-scale-2: #ffb300;
+  --rp-scale-3: #fd841a;
+  --rp-scale-4: #fa6736;
+
+  /* --- Superficies y texto (se invierten en modo oscuro) ------------------ */
+  --rp-bg: var(--rp-neutral-50);
+  --rp-surface: var(--rp-neutral-0);
+  --rp-surface-muted: var(--rp-neutral-50);
+  --rp-surface-sunken: var(--rp-neutral-100);
+  --rp-surface-brand-soft: var(--rp-brand-50);
+  --rp-surface-hover: rgba(var(--rp-brand-rgb), 0.05);
+  --rp-surface-selected: rgba(var(--rp-brand-rgb), 0.09);
+
+  --rp-border: var(--rp-neutral-200);
+  --rp-border-subtle: var(--rp-neutral-100);
+  --rp-border-strong: var(--rp-neutral-300);
+  --rp-border-brand: rgba(var(--rp-brand-rgb), 0.22);
+
+  --rp-text: var(--rp-neutral-800);
+  --rp-text-muted: var(--rp-neutral-500);
+  --rp-text-subtle: var(--rp-neutral-400);
+  --rp-text-heading: var(--rp-neutral-900);
+  --rp-text-brand: var(--rp-brand-600);
+  --rp-text-on-brand: #ffffff;
+  --rp-text-on-brand-muted: rgba(255, 255, 255, 0.82);
+  --rp-text-on-brand-subtle: rgba(255, 255, 255, 0.6);
+  --rp-surface-on-brand: rgba(255, 255, 255, 0.16);
+
+  /* Velo para overlays y modales a pantalla completa. */
+  --rp-scrim: rgba(15, 23, 42, 0.72);
+
+  /* --- Tipografía --------------------------------------------------------- */
+  --rp-font-sans: 'Inter Variable', 'Inter', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --rp-font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+
+  --rp-text-2xs: 0.6875rem; /* 11px */
+  --rp-text-xs: 0.75rem; /* 12px */
+  --rp-text-sm: 0.8125rem; /* 13px */
+  --rp-text-base: 0.875rem; /* 14px — base de UI densa */
+  --rp-text-md: 0.9375rem; /* 15px */
+  --rp-text-lg: 1.0625rem; /* 17px */
+  --rp-text-xl: 1.25rem; /* 20px */
+  --rp-text-2xl: 1.5rem; /* 24px */
+
+  --rp-weight-regular: 400;
+  --rp-weight-medium: 500;
+  --rp-weight-semibold: 600;
+  --rp-weight-bold: 700;
+
+  --rp-leading-tight: 1.25;
+  --rp-leading-snug: 1.4;
+  --rp-leading-normal: 1.6;
+
+  --rp-tracking-wide: 0.04em;
+
+  /* --- Espaciado (escala de 4px) ----------------------------------------- */
+  --rp-space-0: 0;
+  --rp-space-1: 0.25rem;
+  --rp-space-2: 0.5rem;
+  --rp-space-3: 0.75rem;
+  --rp-space-4: 1rem;
+  --rp-space-5: 1.25rem;
+  --rp-space-6: 1.5rem;
+  --rp-space-8: 2rem;
+  --rp-space-10: 2.5rem;
+  --rp-space-12: 3rem;
+
+  /* --- Radios ------------------------------------------------------------- */
+  --rp-radius-xs: 4px;
+  --rp-radius-sm: 6px;
+  --rp-radius-md: 8px;
+  --rp-radius-lg: 12px;
+  --rp-radius-xl: 16px;
+  --rp-radius-pill: 999px;
+
+  /* --- Sombras (discretas: el diseño se apoya en bordes, no en sombras) --- */
+  --rp-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.05);
+  --rp-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --rp-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.07);
+  --rp-shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.1);
+  --rp-shadow-focus: 0 0 0 3px rgba(var(--rp-brand-rgb), 0.25);
+
+  /* --- Movimiento --------------------------------------------------------- */
+  --rp-transition-fast: 120ms ease;
+  --rp-transition-base: 180ms ease;
+
+  /* --- Layout ------------------------------------------------------------- */
+  --rp-header-height: 4rem;
+  --rp-page-max-width: 1320px;
+  --rp-page-gutter: 1.5rem;
+  --rp-page-gutter-sm: 1rem;
+
+  /* --- Capas -------------------------------------------------------------- */
+  --rp-z-sticky: 1020;
+  --rp-z-header: 1030;
+  --rp-z-banner: 1040;
+  --rp-z-fab: 1045;
+
+  /* --- Tokens de tabla (cambiar aquí afecta todas las tablas del sistema) - */
+  --rp-table-head-bg: var(--rp-neutral-50);
+  --rp-table-head-color: var(--rp-neutral-600);
+  --rp-table-head-border: var(--rp-border-strong);
+  --rp-table-row-border: var(--rp-border-subtle);
+  --rp-table-row-hover: var(--rp-surface-hover);
+
+  /* --- Sidebar ------------------------------------------------------------ */
+  --rp-sidebar-bg: var(--rp-brand-500);
+  --rp-sidebar-color: rgba(255, 255, 255, 0.82);
+  --rp-sidebar-color-hover: #ffffff;
+  --rp-sidebar-item-hover: rgba(255, 255, 255, 0.1);
+  --rp-sidebar-item-active: rgba(255, 255, 255, 0.16);
+  --rp-sidebar-border: rgba(255, 255, 255, 0.12);
+  --rp-sidebar-title: rgba(255, 255, 255, 0.55);
+}
+
+/* =============================================================================
+   Modo oscuro — sólo se redefinen superficies, bordes y texto.
+   La escala de marca y semánticos permanece igual para no perder identidad.
+   ============================================================================= */
+
+[data-coreui-theme='dark'] {
+  --rp-bg: #16191f;
+  --rp-surface: #212631;
+  --rp-surface-muted: #262c38;
+  --rp-surface-sunken: #1b2028;
+  --rp-surface-brand-soft: rgba(var(--rp-brand-rgb), 0.16);
+  --rp-surface-hover: rgba(var(--rp-brand-rgb), 0.14);
+  --rp-surface-selected: rgba(var(--rp-brand-rgb), 0.22);
+
+  --rp-border: rgba(255, 255, 255, 0.12);
+  --rp-border-subtle: rgba(255, 255, 255, 0.08);
+  --rp-border-strong: rgba(255, 255, 255, 0.18);
+  --rp-border-brand: rgba(var(--rp-brand-rgb), 0.38);
+
+  --rp-text: #e7eaee;
+  --rp-text-muted: #a7b0bd;
+  --rp-text-subtle: #7d8794;
+  --rp-text-heading: #f3f5f8;
+  --rp-text-brand: var(--rp-brand-300);
+
+  --rp-success-50: rgba(22, 163, 74, 0.14);
+  --rp-success-100: rgba(22, 163, 74, 0.2);
+  --rp-success-200: rgba(22, 163, 74, 0.32);
+  --rp-success-700: #4ade80;
+  --rp-success-800: #86efac;
+
+  --rp-warning-50: rgba(243, 156, 18, 0.14);
+  --rp-warning-100: rgba(243, 156, 18, 0.2);
+  --rp-warning-200: rgba(243, 156, 18, 0.34);
+  --rp-warning-700: #fbbf24;
+
+  --rp-danger-50: rgba(220, 38, 38, 0.14);
+  --rp-danger-100: rgba(220, 38, 38, 0.2);
+  --rp-danger-200: rgba(220, 38, 38, 0.34);
+  --rp-danger-700: #f87171;
+  --rp-danger-800: #fca5a5;
+
+  --rp-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --rp-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
+  --rp-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.5);
+  --rp-shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.55);
+
+  --rp-table-head-bg: #272d3a;
+  --rp-table-head-color: #b6bec9;
+  --rp-table-head-border: rgba(255, 255, 255, 0.16);
+
+  --rp-risk-verylow-bg: rgba(21, 128, 61, 0.2);
+  --rp-risk-verylow-fg: #86efac;
+  --rp-risk-low-bg: rgba(22, 163, 74, 0.16);
+  --rp-risk-low-fg: #4ade80;
+  --rp-risk-high-bg: rgba(234, 88, 12, 0.2);
+  --rp-risk-high-fg: #fdba74;
+  --rp-risk-unknown-fg: var(--rp-text-muted);
+
+  --rp-sidebar-bg: #17293c;
+  --rp-sidebar-item-active: rgba(var(--rp-brand-rgb), 0.45);
+}
+
+/* =============================================================================
+   Puente con CoreUI: los componentes del framework consumen los tokens.
+   ============================================================================= */
+
+:root {
+  --cui-body-font-family: var(--rp-font-sans);
+  --cui-body-font-size: var(--rp-text-base);
+  --cui-body-color: var(--rp-text);
+  --cui-border-color: var(--rp-border);
+  --cui-border-radius: var(--rp-radius-md);
+  --cui-border-radius-sm: var(--rp-radius-sm);
+  --cui-border-radius-lg: var(--rp-radius-lg);
+  --cui-heading-color: var(--rp-text-heading);
+  --cui-secondary-color: var(--rp-text-muted);
+  --cui-tertiary-color: var(--rp-text-subtle);
+  --cui-link-color: var(--rp-brand-500);
+  --cui-link-hover-color: var(--rp-brand-600);
+  --cui-emphasis-color: var(--rp-text-heading);
+}
+
+/* Compatibilidad con los nombres antiguos usados en vistas existentes.
+   Se mantienen como alias para no romper código, pero no deben usarse en
+   estilos nuevos. */
+:root {
+  --color-primary: var(--rp-brand-500);
+  --color-secondary: var(--rp-brand-600);
+  --color-additional: var(--rp-brand-400);
+  --color-accent: var(--rp-accent-500);
+  --color-background: var(--rp-bg);
+  --color-text: var(--rp-text);
+  --color-text-light: var(--rp-text-on-brand);
+
+  --box-content-bg: var(--rp-surface-muted);
+  --box-content-color: var(--rp-text);
+  --box-content-bg-hover: var(--rp-surface-sunken);
+}

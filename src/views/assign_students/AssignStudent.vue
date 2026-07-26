@@ -210,89 +210,134 @@ const submit = async () => {
 /* Layout general */
 .select-row {
   display: flex;
-  gap: 20px;
-  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: var(--rp-space-4);
+  margin-bottom: var(--rp-space-5);
 }
 
 .select-container {
-  flex: 1;
+  flex: 1 1 min(100%, 16rem);
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
 
+.select-container label {
+  font-size: var(--rp-text-sm);
+  font-weight: var(--rp-weight-medium);
+  color: var(--rp-text-muted);
+}
+
 .select-wrapper {
-  margin-top: 5px;
+  margin-top: var(--rp-space-1);
   display: flex;
   align-items: center;
+  gap: var(--rp-space-2);
+  min-width: 0;
+}
+
+/* El select ocupa el espacio libre y el botón conserva su tamaño natural. */
+.select-wrapper > :first-child {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* Botones */
 .add-button,
 .submit {
-  margin-left: 10px;
-  padding: 8px 12px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  color: white;
+  padding: var(--rp-space-2) var(--rp-space-4);
+  font-size: var(--rp-text-base);
+  font-weight: var(--rp-weight-semibold);
+  border: 1px solid transparent;
+  border-radius: var(--rp-radius-md);
+  color: var(--rp-text-on-brand);
   cursor: pointer;
-  transition: background-color 0.3s;
+  white-space: nowrap;
+  transition: background-color var(--rp-transition-fast), border-color var(--rp-transition-fast);
 }
 
 .add-button {
-  background-color: #007bff;
+  flex-shrink: 0;
+  background-color: var(--rp-brand-500);
+  border-color: var(--rp-brand-500);
 }
 
 .add-button:hover {
-  background-color: #0056b3;
+  background-color: var(--rp-brand-600);
+  border-color: var(--rp-brand-600);
 }
 
 .submit {
-  margin-top: 20px;
-  background-color: #00be20;
+  align-self: flex-start;
+  margin-top: var(--rp-space-5);
+  background-color: var(--rp-success-500);
+  border-color: var(--rp-success-500);
 }
 
 .submit:hover {
-  background-color: #00862f;
+  background-color: var(--rp-success-700);
+  border-color: var(--rp-success-700);
 }
 
 /* Caja de elementos seleccionados */
 .selected-box {
-  background-color: #fff;
-  border: 1px solid #ccc;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  background-color: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  padding: var(--rp-space-4);
+  border-radius: var(--rp-radius-lg);
+  margin-top: var(--rp-space-5);
+  box-shadow: var(--rp-shadow-xs);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .empty-message {
+  margin: 0;
   text-align: center;
-  color: #ccc;
-  font-style: italic;
+  color: var(--rp-text-muted);
+  font-size: var(--rp-text-base);
 }
 
 /* Tabla */
 .students-table {
   width: 100%;
+  min-width: 38rem;
   border-collapse: collapse;
-  margin-top: 20px;
 }
 
 .students-table th,
 .students-table td {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
+  padding: var(--rp-space-3);
+  text-align: start;
+  font-size: var(--rp-text-base);
+  color: var(--rp-text);
+  border-bottom: 1px solid var(--rp-table-row-border);
 }
 
-.students-table thead {
-  background-color: #f2f2f2;
+.students-table thead th {
+  background-color: var(--rp-table-head-bg);
+  color: var(--rp-table-head-color);
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--rp-tracking-wide);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--rp-table-head-border);
 }
 
-@media (max-width: 768px) {
+.students-table tbody tr:hover {
+  background-color: var(--rp-table-row-hover);
+}
+
+@media (max-width: 767.98px) {
+  .selected-box {
+    padding: var(--rp-space-3);
+    overflow-x: visible;
+  }
+
+  /* En móvil cada fila se convierte en una ficha con etiquetas data-label. */
   .students-table {
-    border: 0;
+    min-width: 0;
   }
 
   .students-table thead {
@@ -301,22 +346,31 @@ const submit = async () => {
 
   .students-table tr {
     display: block;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #ddd;
+    margin-bottom: var(--rp-space-3);
+    border: 1px solid var(--rp-border);
+    border-radius: var(--rp-radius-md);
+    overflow: hidden;
+  }
+
+  .students-table tr:last-child {
+    margin-bottom: 0;
   }
 
   .students-table td {
     display: flex;
     justify-content: space-between;
-    padding: 10px;
-    border: 0;
-    border-bottom: 1px solid #ddd;
+    gap: var(--rp-space-3);
+    padding: var(--rp-space-2) var(--rp-space-3);
+    border-bottom: 1px solid var(--rp-border-subtle);
   }
 
   .students-table td::before {
     content: attr(data-label);
-    font-weight: bold;
-    margin-right: 10px;
+    font-size: var(--rp-text-xs);
+    font-weight: var(--rp-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: var(--rp-tracking-wide);
+    color: var(--rp-text-muted);
   }
 
   .students-table td:last-child {
@@ -326,11 +380,13 @@ const submit = async () => {
 
 /* Icono de cerrar */
 .close-icon {
+  display: inline-flex;
   cursor: pointer;
-  transition: transform 0.15s ease-in-out;
+  color: var(--rp-danger-500);
+  transition: opacity var(--rp-transition-fast);
 }
 
 .close-icon:hover {
-  transform: scale(1.1);
+  opacity: 0.7;
 }
 </style>

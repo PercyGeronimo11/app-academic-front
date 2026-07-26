@@ -73,6 +73,6 @@ onMounted(listItems);
 .no-results {
   text-align: center;
   font-size: 1.25rem;
-  color: #555;
+  color: var(--rp-text-muted);
 }
 </style>

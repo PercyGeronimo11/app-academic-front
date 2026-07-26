@@ -1,0 +1,186 @@
+/* =============================================================================
+   Insignias, píldoras y escalas de color semántico.
+   Todas comparten geometría; sólo cambia el par fondo/texto.
+   ============================================================================= */
+
+.status-pill,
+.priority-badge,
+.status-badge,
+.score-pill,
+.rp-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rp-space-1);
+  font-weight: var(--rp-weight-semibold);
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+
+/* --- Estados de listados CRUD --------------------------------------------- */
+
+.status-pill {
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--rp-radius-sm);
+  font-size: var(--rp-text-xs);
+  border-color: var(--rp-border);
+}
+
+.status-green {
+  background-color: var(--rp-success-50);
+  color: var(--rp-success-800);
+  border-color: var(--rp-success-200);
+}
+
+.status-red {
+  background-color: var(--rp-danger-50);
+  color: var(--rp-danger-800);
+  border-color: var(--rp-danger-200);
+}
+
+.status-yellow {
+  background-color: var(--rp-warning-50);
+  color: var(--rp-warning-700);
+  border-color: var(--rp-warning-200);
+}
+
+.status-blue {
+  background-color: var(--rp-surface-brand-soft);
+  color: var(--rp-text-brand);
+  border-color: var(--rp-border-brand);
+}
+
+.status-purple {
+  background-color: rgba(124, 58, 237, 0.08);
+  color: #6d28d9;
+  border-color: rgba(124, 58, 237, 0.2);
+}
+
+.status-gray {
+  background-color: var(--rp-surface-muted);
+  color: var(--rp-text-muted);
+  border-color: var(--rp-border);
+}
+
+/* --- Prioridad de comunicados --------------------------------------------- */
+
+.priority-badge {
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-bold);
+  text-transform: uppercase;
+  letter-spacing: var(--rp-tracking-wide);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--rp-radius-pill);
+}
+
+.priority-badge--normal {
+  background: var(--rp-surface-muted);
+  color: var(--rp-text-muted);
+  border-color: var(--rp-border);
+}
+
+.priority-badge--importante {
+  background: var(--rp-warning-50);
+  color: var(--rp-warning-700);
+  border-color: var(--rp-warning-200);
+}
+
+.priority-badge--urgente {
+  background: var(--rp-danger-50);
+  color: var(--rp-danger-700);
+  border-color: var(--rp-danger-200);
+}
+
+/* --- Estado de publicación ------------------------------------------------- */
+
+.status-badge {
+  font-size: var(--rp-text-xs);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--rp-radius-pill);
+}
+
+.status-badge--publicado {
+  background: var(--rp-success-50);
+  color: var(--rp-success-800);
+  border-color: var(--rp-success-200);
+}
+
+.status-badge--borrador {
+  background: var(--rp-surface-muted);
+  color: var(--rp-text-muted);
+  border-color: var(--rp-border);
+}
+
+/* --- Nivel de logro (AD / A / B / C) -------------------------------------- */
+
+.score-pill {
+  min-width: 2.1rem;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--rp-radius-sm);
+  font-weight: var(--rp-weight-bold);
+  font-size: var(--rp-text-sm);
+}
+
+.score-pill--ad {
+  background: var(--rp-success-100);
+  color: var(--rp-success-800);
+}
+
+.score-pill--a {
+  background: var(--rp-brand-100);
+  color: var(--rp-brand-700);
+}
+
+.score-pill--b {
+  background: var(--rp-warning-100);
+  color: var(--rp-warning-700);
+}
+
+.score-pill--c {
+  background: var(--rp-danger-100);
+  color: var(--rp-danger-800);
+}
+
+.score-pill--empty {
+  background: var(--rp-surface-muted);
+  color: var(--rp-text-subtle);
+}
+
+/* --- Escala de tardanzas (compartida por el módulo de asistencias) --------
+   Antes estaba duplicada literalmente en 9 vistas. */
+
+.bg-orange-1 {
+  background-color: var(--rp-scale-1) !important;
+  color: var(--rp-neutral-900) !important;
+}
+
+.bg-orange-2 {
+  background-color: var(--rp-scale-2) !important;
+  color: var(--rp-neutral-900) !important;
+}
+
+.bg-orange-3 {
+  background-color: var(--rp-scale-3) !important;
+  color: #ffffff !important;
+}
+
+.bg-orange-4 {
+  background-color: var(--rp-scale-4) !important;
+  color: #ffffff !important;
+}
+
+/* --- CoreUI CBadge -------------------------------------------------------- */
+
+.badge {
+  --cui-badge-font-weight: var(--rp-weight-semibold);
+  --cui-badge-border-radius: var(--rp-radius-sm);
+  --cui-badge-padding-x: 0.5rem;
+  --cui-badge-padding-y: 0.25rem;
+  letter-spacing: 0.01em;
+}
+
+.tramite-status-badge {
+  white-space: normal;
+  text-align: center;
+  line-height: var(--rp-leading-snug);
+}

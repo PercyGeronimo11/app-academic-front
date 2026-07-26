@@ -173,7 +173,7 @@ onMounted(async () => {
   border-radius: 999px;
   font-size: 0.75rem;
   font-weight: 600;
-  background: #e0e7ff;
-  color: #3730a3;
+  background: var(--rp-surface-brand-soft);
+  color: var(--rp-text-brand);
 }
 </style>

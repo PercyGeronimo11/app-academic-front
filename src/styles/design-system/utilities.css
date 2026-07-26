@@ -1,0 +1,115 @@
+/* =============================================================================
+   Utilidades transversales, sobre todo de comportamiento responsive.
+   ============================================================================= */
+
+/* Desplazamiento horizontal controlado para contenido más ancho que la pantalla
+   (tablas de notas, reportes, gráficos). Evita que se rompa el layout. */
+.rp-scroll-x {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+}
+
+/* Lienzo de gráfico: ocupa el ancho disponible y sólo fuerza un mínimo cuando
+   la pantalla es pequeña, delegando en el scroll del contenedor. */
+.rp-chart {
+  position: relative;
+  width: 100%;
+  min-height: 16rem;
+}
+
+.rp-chart--wide {
+  min-width: 100%;
+}
+
+.rp-chart--tall {
+  height: 31.25rem;
+}
+
+@media (max-width: 991.98px) {
+  /* En pantallas pequeñas se conserva la legibilidad con scroll horizontal
+     en lugar de comprimir el gráfico. */
+  .rp-chart--wide {
+    min-width: 44rem;
+  }
+
+  .rp-chart--tall {
+    height: 24rem;
+  }
+}
+
+/* Barra de acciones que se apila en móvil. */
+.rp-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--rp-space-2);
+}
+
+.rp-toolbar--end {
+  justify-content: flex-end;
+}
+
+@media (max-width: 575.98px) {
+  .rp-toolbar > .btn {
+    flex: 1 1 auto;
+  }
+}
+
+/* Rejilla fluida reutilizable para tarjetas (cursos, aulas, widgets). */
+.rp-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: var(--rp-space-4);
+}
+
+/* Texto que debe truncarse en una línea sin romper flex. */
+.rp-truncate {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wrap-text {
+  white-space: normal !important;
+  word-break: break-word;
+  line-height: 1.2;
+}
+
+/* Etiqueta pequeña en mayúsculas, usada en cabeceras y metadatos. */
+.rp-eyebrow {
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--rp-text-subtle);
+}
+
+/* Sólo visible para lectores de pantalla (sin depender de Bootstrap). */
+.rp-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Superficie genérica para paneles sueltos que aún no usan .module-card. */
+.rp-panel {
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  box-shadow: var(--rp-shadow-xs);
+  padding: var(--rp-space-5);
+}
+
+@media (max-width: 767.98px) {
+  .rp-panel {
+    padding: var(--rp-space-4);
+  }
+}

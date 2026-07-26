@@ -1,7 +1,5 @@
 <script setup>
-import { RouterLink, useRouter } from 'vue-router'
-import { logo } from '@/assets/brand/logo'
-import { sygnet } from '@/assets/brand/sygnet'
+import { useRouter } from 'vue-router'
 import { AppSidebarNav } from '@/components/AppSidebarNav.js'
 import { useSidebarStore } from '@/stores/sidebar.js'
 import CryptoJS from 'crypto-js' // Importa CryptoJS
@@ -53,20 +51,20 @@ const navigateByRole = () => {
     @visible-change="(value) => sidebar.toggleVisible(value)"
   >
     <CSidebarHeader>
-      <RouterLink custom>
-        <CSidebarBrand as="a" @click="navigateByRole">
-          <img v-if="sidebar.unfoldable"
-            custom-class-name="sidebar-brand-full"
-            src="/src/assets/images/logo.png"
-            :height="65"
-          />
-          <img v-if="!sidebar.unfoldable"
-            custom-class-name="sidebar-brand-full"
-            src="/src/assets/images/logo-main.png"
-            :height="85"
-          />
-        </CSidebarBrand>
-      </RouterLink>
+      <CSidebarBrand as="a" role="button" @click="navigateByRole">
+        <img
+          v-if="sidebar.unfoldable"
+          class="sidebar-logo sidebar-logo--compact"
+          src="@/assets/images/logo.png"
+          alt="I.E. Ricardo Palma 80010"
+        />
+        <img
+          v-else
+          class="sidebar-logo"
+          src="@/assets/images/logo-main.png"
+          alt="I.E. Ricardo Palma 80010"
+        />
+      </CSidebarBrand>
       <CCloseButton class="d-lg-none" dark @click="sidebar.toggleVisible()" />
     </CSidebarHeader>
     <AppSidebarNav />

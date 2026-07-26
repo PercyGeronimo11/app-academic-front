@@ -12,7 +12,8 @@ import CIcon from '@coreui/icons-vue'
 import { iconsSet as icons } from '@/assets/icons'
 import DocsExample from '@/components/DocsExample'
 import '@fortawesome/fontawesome-free/css/all.css';
-import '@/assets/css/styles.css'
+import '@fontsource-variable/inter'
+import '@/styles/design-system/index.css'
 
 const app = createApp(App)
 app.use(createPinia())

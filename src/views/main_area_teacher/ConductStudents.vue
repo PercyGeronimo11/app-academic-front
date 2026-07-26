@@ -218,11 +218,11 @@ onMounted(fetchData);
   gap: 0.35rem;
   padding: 0.3rem 0.6rem;
   border-radius: 999px;
-  background: #198754;
-  color: #fff;
+  background: var(--rp-success-500);
+  color: var(--rp-text-on-brand);
   font-size: 0.8rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(25, 135, 84, 0.35);
+  box-shadow: var(--rp-shadow-sm);
   pointer-events: none;
 }
 

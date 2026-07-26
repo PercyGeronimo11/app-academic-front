@@ -1,0 +1,14 @@
+/* =============================================================================
+   Sistema de diseño — I.E. Ricardo Palma 80010
+   Punto de entrada único. El orden importa: tokens primero, utilidades al final.
+   ============================================================================= */
+
+@import './tokens.css';
+@import './base.css';
+@import './shell.css';
+@import './layout.css';
+@import './tables.css';
+@import './badges.css';
+@import './controls.css';
+@import './modules.css';
+@import './utilities.css';

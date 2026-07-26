@@ -1,6 +1,6 @@
 import {
   cilQrCode, cilCalendar, cilPencil, cilChatBubble, cilChartLine, cilTask, cilChart,
-  cilStar, cilNotes,
+  cilNotes,
   cilGraph,
   cilList
 } from '@coreui/icons'
@@ -93,14 +93,6 @@ export default [
       }
     ],
   },
-  {
-    component: 'CNavItem',
-    name: 'NOTAS',
-    to: '/classroom/list',
-    icon: cilStar,
-    roles: ['DIRECCION',],
-  },
-
   {
     component: 'CNavItem',
     name: 'Configuraciones',

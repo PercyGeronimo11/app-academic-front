@@ -1,17 +1,57 @@
 // Variable overrides
 //
-// If you want to customize your project please add your variables below.
+// Estos valores se aplican ANTES de compilar CoreUI, por lo que todos los
+// componentes del framework (botones, enlaces, badges, focus, progress...)
+// se generan ya con la identidad de la institución.
+// La fuente de verdad en tiempo de ejecución son los tokens CSS de
+// `src/styles/design-system/tokens.css`; aquí sólo se replican los valores que
+// CoreUI necesita en tiempo de compilación.
 
 $enable-deprecation-messages: false !default;
 
+// --- Marca institucional -----------------------------------------------------
+$primary: #176fb6;
+$secondary: #17518b;
+$info: #3192f3;
+$warning: #f39c12;
+$success: #16a34a;
+$danger: #dc2626;
+$light: #f6f8fb;
+$dark: #1e293b;
+
+// --- Tipografía --------------------------------------------------------------
+$font-family-sans-serif:
+  'Inter Variable',
+  'Inter',
+  -apple-system,
+  BlinkMacSystemFont,
+  'Segoe UI',
+  Roboto,
+  'Helvetica Neue',
+  Arial,
+  sans-serif;
+
+$font-size-base: 0.875rem;
+$headings-font-weight: 600;
+$line-height-base: 1.6;
+
+// --- Geometría ---------------------------------------------------------------
+$border-radius: 0.5rem;
+$border-radius-sm: 0.375rem;
+$border-radius-lg: 0.75rem;
+$border-radius-xl: 1rem;
+
+$enable-shadows: false;
+$enable-gradients: false;
+
 :root {
-  --box-content-bg: #F9FAFB;
-  --box-content-color: #000000;
-  --box-content-bg-hover: #dcdcdc;
+  --box-content-bg: #f6f8fb;
+  --box-content-color: #1e293b;
+  --box-content-bg-hover: #eef2f7;
 }
 
-[data-coreui-theme="dark"] {
-  --box-content-bg: #38342f;
-  --box-content-color: #ffffff;
-  --box-content-bg-hover: #707070;
+[data-coreui-theme='dark'] {
+  --box-content-bg: #262c38;
+  --box-content-color: #e7eaee;
+  --box-content-bg-hover: #1b2028;
 }

@@ -246,19 +246,19 @@ onMounted(fetchAssistances);
 <style scoped>
 .save-feedback {
   position: fixed;
-  top: calc(4rem + 0.25rem);
-  right: 1.25rem;
-  z-index: 1020;
+  top: calc(var(--rp-header-height) + var(--rp-space-1));
+  right: var(--rp-space-5);
+  z-index: var(--rp-z-sticky);
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
   padding: 0.3rem 0.6rem;
-  border-radius: 999px;
-  background: #198754;
-  color: #fff;
+  border-radius: var(--rp-radius-pill);
+  background: var(--rp-success-500);
+  color: var(--rp-text-on-brand);
   font-size: 0.8rem;
   font-weight: 600;
-  box-shadow: 0 2px 8px rgba(25, 135, 84, 0.35);
+  box-shadow: var(--rp-shadow-sm);
   pointer-events: none;
 }
 
@@ -282,7 +282,8 @@ onMounted(fetchAssistances);
 }
 
 .form-select {
-  min-width: 160px;
+  min-width: 9rem;
+  max-width: 100%;
   margin: 0 auto;
 }
 

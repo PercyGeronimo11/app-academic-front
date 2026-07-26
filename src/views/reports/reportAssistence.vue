@@ -10,7 +10,7 @@
     </div>
 
     <div v-else-if="assistenceData.length > 0">
-      <div class="table-wrapper">
+      <div class="table-wrapper rp-scroll-x">
         <table class="attendance-table">
           <thead>
             <tr>
@@ -148,131 +148,110 @@ onMounted(fetchData)
 </script>
 
 <style scoped>
-/* General Container Styles */
 .report-container {
-  max-width: 1200px;
+  max-width: var(--rp-page-max-width);
   margin: 0 auto;
-  padding: 20px;
-  font-family: 'Roboto', sans-serif;
-  background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: var(--rp-space-5);
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  box-shadow: var(--rp-shadow-xs);
 }
 
-/* Title Styles */
 .report-title {
-  text-align: center;
-  margin-bottom: 20px;
-  font-size: 2.5rem;
-  font-weight: 600;
-  color: #333;
+  margin: var(--rp-space-4) 0 var(--rp-space-5);
+  font-size: var(--rp-text-2xl);
+  font-weight: var(--rp-weight-semibold);
+  line-height: var(--rp-leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--rp-text-heading);
 }
 
-/* Back Button Styles */
-.back-button {
-  display: inline-block;
-  background-color: #007BFF;
-  color: white;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-
-.back-button:hover {
-  background-color: #0056b3;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-/* Table Wrapper Styles */
 .table-wrapper {
-  overflow-x: auto;
-  margin-top: 20px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
+  margin-top: var(--rp-space-5);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
 }
 
-/* Table Styles */
+/* Cinco columnas no caben en móvil: se fija un mínimo y el wrapper hace scroll. */
 .attendance-table {
   width: 100%;
+  min-width: 34rem;
   border-collapse: collapse;
-  border-spacing: 0;
-  border-radius: 10px;
-  overflow: hidden;
 }
 
-.attendance-table th, .attendance-table td {
-  padding: 15px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  border-right: 1px solid #ddd; /* Línea entre columnas */
+.attendance-table th,
+.attendance-table td {
+  padding: var(--rp-space-3);
+  text-align: start;
+  font-size: var(--rp-text-base);
+  border-bottom: 1px solid var(--rp-table-row-border);
 }
 
 .attendance-table th {
-  background-color: #007BFF;
-  color: white;
-  font-weight: bold;
+  background-color: var(--rp-table-head-bg);
+  color: var(--rp-table-head-color);
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
   text-transform: uppercase;
-  border-right: 1px solid white; /* Línea blanca entre encabezados */
-}
-
-.attendance-table th:last-child,
-.attendance-table td:last-child {
-  border-right: none; /* Evita líneas en la última columna */
+  letter-spacing: var(--rp-tracking-wide);
+  white-space: nowrap;
+  border-bottom: 1px solid var(--rp-table-head-border);
 }
 
 .attendance-table td {
-  background-color: #fafafa;
-  color: #333;
+  color: var(--rp-text);
 }
 
-.attendance-table tr:nth-child(even) {
-  background-color: #f2f2f2;
+.attendance-table tbody tr {
+  transition: background-color var(--rp-transition-fast);
 }
 
-.attendance-table tr:hover {
-  background-color: #eaf4ff;
+.attendance-table tbody tr:hover {
+  background-color: var(--rp-table-row-hover);
 }
 
-/* Loading Styles */
+.attendance-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
 .loading-container {
   text-align: center;
-  margin-top: 50px;
+  padding: var(--rp-space-10) var(--rp-space-4);
 }
 
 .loading-text {
-  font-size: 1.2rem;
-  color: #666;
+  margin: 0;
+  font-size: var(--rp-text-md);
+  color: var(--rp-text-muted);
 }
 
-/* Responsive Styles */
-@media screen and (max-width: 768px) {
-  .report-title {
-    font-size: 1.8rem;
-  }
+.div-pdf {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rp-space-2);
+  margin: var(--rp-space-5) 0 0;
+}
 
-  .attendance-table th, .attendance-table td {
-    padding: 10px;
-    font-size: 0.9rem;
-  }
-
+@media (max-width: 767.98px) {
   .report-container {
-    padding: 15px;
+    padding: var(--rp-space-4);
   }
 
-  .back-button {
-    font-size: 0.9rem;
-    padding: 8px 15px;
+  .report-title {
+    font-size: var(--rp-text-xl);
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    padding: var(--rp-space-2);
+    font-size: var(--rp-text-sm);
   }
 }
 
-.div-pdf{
-  margin: 15px 0px;
-}
-
-.excel-button{
-  margin-left: 10px;
+@media (max-width: 575.98px) {
+  .div-pdf > .btn {
+    flex: 1 1 auto;
+  }
 }
 </style>

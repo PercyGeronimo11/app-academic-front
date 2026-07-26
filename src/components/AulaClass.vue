@@ -59,55 +59,86 @@ const handleClick = () => {
 
 <style scoped>
 .card {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 320px;
-  margin: 10px;
-  border-radius: 12px;
+  max-width: 22rem;
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  background-color: var(--rp-surface);
+  box-shadow: var(--rp-shadow-xs);
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
   text-decoration: none;
-  background-color: white;
+  cursor: pointer;
+  transition: border-color var(--rp-transition-fast), box-shadow var(--rp-transition-fast);
 }
 
 .card:hover {
-  transform: scale(1.02);
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+  border-color: var(--rp-border-brand);
+  box-shadow: var(--rp-shadow-sm);
+}
+
+.card:focus-visible {
+  outline: none;
+  border-color: var(--rp-brand-400);
+  box-shadow: var(--rp-shadow-focus);
 }
 
 .image-wrapper {
-  height: 160px;
+  height: 9.5rem;
   overflow: hidden;
+  background: var(--rp-surface-sunken);
 }
 
 .card-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .no-image {
-  height: 160px;
+  height: 9.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .no-image-text {
-  font-size: 2rem;
-  color: white;
-  font-weight: bold;
+  font-size: var(--rp-text-2xl);
+  color: var(--rp-text-on-brand);
+  font-weight: var(--rp-weight-semibold);
 }
 
 .card-content {
-  padding: 15px;
-  text-align: center;
+  padding: var(--rp-space-4);
+  text-align: start;
 }
 
 .card-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #374151;
+  font-size: var(--rp-text-lg);
+  font-weight: var(--rp-weight-semibold);
+  line-height: var(--rp-leading-snug);
+  color: var(--rp-text-heading);
   margin: 0;
+}
+
+@media (max-width: 575.98px) {
+  .card {
+    max-width: 100%;
+  }
+
+  .image-wrapper,
+  .no-image {
+    height: 8rem;
+  }
+
+  .card-content {
+    padding: var(--rp-space-3);
+  }
+
+  .card-title {
+    font-size: var(--rp-text-md);
+  }
 }
 </style>

@@ -1,0 +1,241 @@
+/* =============================================================================
+   Piezas específicas de módulos académicos: bandeja de comunicados/notificaciones,
+   importación SIAGIE, libreta de notas y accesos rápidos de curso.
+   ============================================================================= */
+
+/* --- Bandeja (comunicados y notificaciones) ------------------------------- */
+
+.inbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rp-space-2);
+}
+
+.inbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--rp-space-3);
+  padding: var(--rp-space-4);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  background: var(--rp-surface);
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--rp-transition-fast), background-color var(--rp-transition-fast);
+}
+
+.inbox-item:hover {
+  border-color: var(--rp-border-brand);
+  background: var(--rp-surface-hover);
+}
+
+.inbox-item--unread {
+  border-inline-start: 3px solid var(--rp-brand-500);
+}
+
+.inbox-item__icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--rp-radius-md);
+  background: var(--rp-surface-brand-soft);
+  color: var(--rp-brand-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--rp-text-md);
+  flex-shrink: 0;
+}
+
+.inbox-item--unread .inbox-item__icon {
+  background: var(--rp-brand-500);
+  color: var(--rp-text-on-brand);
+}
+
+.inbox-item__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.inbox-item__title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--rp-space-2);
+  margin-bottom: var(--rp-space-1);
+}
+
+.inbox-item__title {
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-md);
+  color: var(--rp-text-heading);
+}
+
+.inbox-item__excerpt {
+  font-size: var(--rp-text-base);
+  color: var(--rp-text-muted);
+  line-height: var(--rp-leading-snug);
+}
+
+.inbox-item__meta {
+  margin-top: var(--rp-space-1);
+  font-size: var(--rp-text-xs);
+  color: var(--rp-text-subtle);
+}
+
+.inbox-item__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--rp-brand-500);
+  flex-shrink: 0;
+  margin-top: var(--rp-space-2);
+}
+
+/* --- Cuerpo de un comunicado ---------------------------------------------- */
+
+.announcement-detail-body {
+  line-height: var(--rp-leading-normal);
+  padding: var(--rp-space-4);
+  border-radius: var(--rp-radius-md);
+  background: var(--rp-surface-muted);
+  border: 1px solid var(--rp-border-subtle);
+  color: var(--rp-text);
+}
+
+.announcement-detail-body :where(p) {
+  margin-bottom: var(--rp-space-3);
+}
+
+.announcement-detail-body :where(ul, ol) {
+  padding-inline-start: var(--rp-space-5);
+  margin-bottom: var(--rp-space-3);
+}
+
+.announcement-detail-body :where(a) {
+  color: var(--rp-brand-500);
+}
+
+/* --- Importación SIAGIE --------------------------------------------------- */
+
+.preview-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rp-space-2);
+  margin-bottom: var(--rp-space-4);
+}
+
+.preview-meta__chip {
+  font-size: var(--rp-text-sm);
+  padding: 0.25rem 0.65rem;
+  border-radius: var(--rp-radius-pill);
+  background: var(--rp-surface-brand-soft);
+  color: var(--rp-text-brand);
+  border: 1px solid var(--rp-border-brand);
+}
+
+.import-result-card {
+  padding: var(--rp-space-4);
+  border-radius: var(--rp-radius-lg);
+  background: var(--rp-success-50);
+  border: 1px solid var(--rp-success-200);
+}
+
+.import-result-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rp-space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.import-result-card__stat {
+  min-width: 7.5rem;
+}
+
+.import-result-card__stat strong {
+  display: block;
+  font-size: var(--rp-text-xl);
+  color: var(--rp-success-800);
+  line-height: var(--rp-leading-tight);
+}
+
+.import-result-card__stat span {
+  font-size: var(--rp-text-xs);
+  color: var(--rp-success-700);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* --- Libreta de notas ----------------------------------------------------- */
+
+.report-course-card {
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  overflow: hidden;
+  background: var(--rp-surface);
+  box-shadow: var(--rp-shadow-xs);
+}
+
+.report-course-card__header {
+  padding: var(--rp-space-3) var(--rp-space-4);
+  background: var(--rp-surface-muted);
+  border-bottom: 1px solid var(--rp-border-subtle);
+  color: var(--rp-text-heading);
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-md);
+}
+
+/* --- Accesos rápidos del curso (docente / estudiante) --------------------- */
+
+.card_attendence .section-header {
+  margin: var(--rp-space-3) 0;
+}
+
+.course-quick-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rp-space-2);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--rp-radius-md);
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-base);
+  text-decoration: none;
+  border: 1px solid var(--rp-border);
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  transition: border-color var(--rp-transition-fast), background-color var(--rp-transition-fast),
+    color var(--rp-transition-fast);
+}
+
+.course-quick-link:hover {
+  border-color: currentcolor;
+  background: var(--rp-surface-muted);
+}
+
+.course-quick-link--attendance {
+  color: var(--rp-brand-600);
+}
+
+.course-quick-link--conduct {
+  color: var(--rp-warning-700);
+}
+
+.course-quick-link--grades {
+  color: #0f766e;
+}
+
+.course-quick-link--import {
+  color: #4f46e5;
+}
+
+.course-quick-link i {
+  color: inherit;
+}
+
+@media (max-width: 575.98px) {
+  .course-quick-link {
+    width: 100%;
+    justify-content: center;
+  }
+}

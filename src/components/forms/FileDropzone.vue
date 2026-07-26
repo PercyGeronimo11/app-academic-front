@@ -120,21 +120,55 @@ const removeFile = (index) => {
 
 <style scoped>
 .dropzone {
-  border: 2px dashed #6c757d;
-  border-radius: 10px;
-  padding: 40px;
+  border: 1px dashed var(--rp-border-brand);
+  border-radius: var(--rp-radius-lg);
+  padding: var(--rp-space-8) var(--rp-space-4);
   text-align: center;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background-color: #f8f9fa;
+  background-color: var(--rp-surface-muted);
+  transition: border-color var(--rp-transition-fast), background-color var(--rp-transition-fast);
 }
 
 .dropzone:hover {
-  background-color: #e9ecef;
+  border-color: var(--rp-brand-400);
+  background-color: var(--rp-surface-brand-soft);
 }
 
 .dropzone-active {
-  border-color: #321fdb;
-  background-color: #e7e6ff;
+  border-color: var(--rp-brand-500);
+  background-color: var(--rp-surface-selected);
+}
+
+.dropzone p {
+  margin: 0;
+  font-size: var(--rp-text-base);
+  font-weight: var(--rp-weight-medium);
+  color: var(--rp-text);
+}
+
+.dropzone small {
+  display: block;
+  margin-top: var(--rp-space-1);
+  font-size: var(--rp-text-xs);
+  color: var(--rp-text-muted);
+}
+
+.dropzone .list-group {
+  text-align: start;
+}
+
+.dropzone .list-group-item {
+  gap: var(--rp-space-2);
+  font-size: var(--rp-text-base);
+  color: var(--rp-text);
+  background: var(--rp-surface);
+  border-color: var(--rp-border);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 575.98px) {
+  .dropzone {
+    padding: var(--rp-space-5) var(--rp-space-3);
+  }
 }
 </style>

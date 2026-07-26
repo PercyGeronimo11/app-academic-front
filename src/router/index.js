@@ -88,36 +88,37 @@ const routes = [
           }
         ]
       },
-      {
-        path: '/classroom/',
-        children: [
-          /* {
-            path: 'assignment-courses',
-            name: 'Asignar Cursos',
-            component: () => import('@/views/classroom/AssignmentCourses.vue'),
-          }, */
-          {
-            path: ':grade/:section/:id/teachers',
-            name: 'Asignar Profesores',
-            component: () => import('@/views/classroom/AssignmentTeachers.vue'),
-          },
-          {
-            path: ':grade/:section/:id/students',
-            name: 'Lista de estudiantes',
-            component: () => import('@/views/classroom/DetailClassroom.vue'),
-          },
-          {
-            path: 'list',
-            name: 'Lista de Aulas',
-            component: () => import('@/views/classroom/ListClassroom.vue'),
-          },
-          {
-            path: ':grade/:section',
-            name: 'Detalle del aula',
-            component: () => import('@/views/classroom/DetailClassroom.vue'),
-          },
-        ],
-      },
+      // Flujo NOTAS del director (classroom/list y vistas hijas) deshabilitado
+      // {
+      //   path: '/classroom/',
+      //   children: [
+      //     {
+      //       path: 'assignment-courses',
+      //       name: 'Asignar Cursos',
+      //       component: () => import('@/views/classroom/AssignmentCourses.vue'),
+      //     },
+      //     {
+      //       path: ':grade/:section/:id/teachers',
+      //       name: 'Asignar Profesores',
+      //       component: () => import('@/views/classroom/AssignmentTeachers.vue'),
+      //     },
+      //     {
+      //       path: ':grade/:section/:id/students',
+      //       name: 'Lista de estudiantes',
+      //       component: () => import('@/views/classroom/DetailClassroom.vue'),
+      //     },
+      //     {
+      //       path: 'list',
+      //       name: 'Lista de Aulas',
+      //       component: () => import('@/views/classroom/ListClassroom.vue'),
+      //     },
+      //     {
+      //       path: ':grade/:section',
+      //       name: 'Detalle del aula',
+      //       component: () => import('@/views/classroom/DetailClassroom.vue'),
+      //     },
+      //   ],
+      // },
       {
         path: '/grade-section',
         name: 'Aulas',

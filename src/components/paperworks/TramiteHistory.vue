@@ -47,48 +47,50 @@ defineProps({
 
 <style scoped>
 .th-panel {
-  border-radius: 10px;
+  border-radius: var(--rp-radius-lg);
   overflow: hidden;
-  border: 1px solid #d0dce8;
-  background: linear-gradient(180deg, #f8fbff 0%, #fff 48%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 1px solid var(--rp-border);
+  background: var(--rp-surface);
+  box-shadow: var(--rp-shadow-xs);
 }
 
 .th-panel__title {
-  font-weight: 700;
-  font-size: 0.875rem;
-  color: #1a4a6e;
-  padding: 0.65rem 1rem;
-  background: linear-gradient(90deg, rgba(23, 111, 182, 0.12) 0%, rgba(42, 143, 216, 0.08) 100%);
-  border-bottom: 1px solid #d0dce8;
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-base);
+  color: var(--rp-text-heading);
+  padding: var(--rp-space-3) var(--rp-space-4);
+  background: var(--rp-surface-muted);
+  border-bottom: 1px solid var(--rp-border-subtle);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--rp-space-2);
 }
 
 .th-panel__icon {
-  font-size: 0.75rem;
-  opacity: 0.85;
+  font-size: var(--rp-text-xs);
+  color: var(--rp-brand-500);
 }
 
 .th-panel__body {
-  padding: 0.5rem 0.75rem 0.75rem;
+  padding: var(--rp-space-2) var(--rp-space-3) var(--rp-space-3);
 }
 
 .th-panel__table :deep(thead th) {
-  background: #edf3f8 !important;
-  color: #2c5282 !important;
-  font-size: 0.72rem;
+  background: var(--rp-table-head-bg);
+  color: var(--rp-table-head-color);
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
-  border-color: #d0dce8 !important;
-  padding: 0.45rem 0.5rem;
+  letter-spacing: var(--rp-tracking-wide);
+  border-color: var(--rp-table-head-border);
+  padding: var(--rp-space-2);
 }
 
 .th-panel__table :deep(tbody td) {
-  border-color: #e8edf3 !important;
-  padding: 0.5rem 0.5rem;
-  font-size: 0.8125rem;
+  border-color: var(--rp-table-row-border);
+  color: var(--rp-text);
+  padding: var(--rp-space-2);
+  font-size: var(--rp-text-sm);
 }
 
 .th-col-date {
@@ -97,31 +99,19 @@ defineProps({
 }
 
 .th-empty {
-  border-color: #e8edf3 !important;
-}
-</style>
-
-<style>
-[data-coreui-theme='dark'] .th-panel {
-  border-color: rgba(255, 255, 255, 0.12) !important;
-  background: var(--cui-body-bg, #212631) !important;
-  box-shadow: none !important;
+  border-color: var(--rp-table-row-border);
+  color: var(--rp-text-muted);
 }
 
-[data-coreui-theme='dark'] .th-panel__title {
-  color: var(--cui-body-color, #e7eaee) !important;
-  background: linear-gradient(90deg, rgba(23, 111, 182, 0.25) 0%, rgba(23, 111, 182, 0.12) 100%) !important;
-  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
-}
+@media (max-width: 575.98px) {
+  .th-panel__body {
+    padding: var(--rp-space-2);
+  }
 
-[data-coreui-theme='dark'] .th-panel__table thead th {
-  background: rgba(255, 255, 255, 0.06) !important;
-  color: var(--cui-body-color, #e7eaee) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-[data-coreui-theme='dark'] .th-panel__table tbody td {
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  color: var(--cui-body-color, #e7eaee) !important;
+  /* A 360px la fecha completa no cabe en una línea sin desbordar la tabla. */
+  .th-col-date {
+    width: 42%;
+    white-space: normal;
+  }
 }
 </style>

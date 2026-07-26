@@ -401,34 +401,30 @@ onMounted(async () => {
 
 <style scoped>
 .settings-page {
-  padding-bottom: 1rem;
+  padding-bottom: var(--rp-space-4);
 }
 
 .settings-intro {
-  font-size: 0.95rem;
+  font-size: var(--rp-text-base);
 }
 
 .year-select {
-  min-width: 160px;
+  min-width: 9rem;
+  max-width: 100%;
 }
 
-.status-pill {
-  display: inline-block;
-  padding: 0.2rem 0.65rem;
-  border-radius: 999px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
+/* La geometría de .status-pill viene del sistema de diseño; aquí sólo el tono. */
 .status-active,
 .status-open {
-  background: #d1fae5;
-  color: #065f46;
+  background: var(--rp-success-50);
+  color: var(--rp-success-800);
+  border-color: var(--rp-success-200);
 }
 
 .status-inactive,
 .status-closed {
-  background: #fee2e2;
-  color: #991b1b;
+  background: var(--rp-danger-50);
+  color: var(--rp-danger-800);
+  border-color: var(--rp-danger-200);
 }
 </style>

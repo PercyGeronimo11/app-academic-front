@@ -35,8 +35,7 @@ onBeforeMount(() => {
 </template>
 
 <style lang="scss">
-// Import Main styles for this application
+// Base de CoreUI con las variables de la institución.
+// El sistema de diseño (tokens y componentes) se carga desde `main.js`.
 @import 'styles/style';
-// We use those styles to show code examples, you should remove them in your application.
-@import 'styles/examples';
 </style>

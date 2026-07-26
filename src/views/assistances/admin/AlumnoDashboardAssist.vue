@@ -115,8 +115,8 @@
               Distribución de asistencias por mes
             </h5>
 
-            <div style="overflow-x: auto;">
-              <div style="min-width: 900px; height: 500px;">
+            <div class="rp-scroll-x">
+              <div class="rp-chart rp-chart--wide rp-chart--tall">
                 <CChartBar :data="chartData" :options="options" :plugins="plugins" />
               </div>
             </div>
@@ -244,28 +244,3 @@ onMounted(() => {
   cargarReporte()
 })
 </script>
-
-
-<style scoped>
-.bg-orange-1 {
-  background-color: #eed306;
-}
-
-.bg-orange-2 {
-  background-color: #ffb300;
-}
-
-.bg-orange-3 {
-  background-color: #fd841a;
-}
-
-.bg-orange-4 {
-  background-color: #fa6736;
-}
-
-.wrap-text {
-  white-space: normal !important;
-  /* permite salto */
-  line-height: 1.2;
-}
-</style>

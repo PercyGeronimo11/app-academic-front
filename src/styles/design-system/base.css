@@ -1,0 +1,105 @@
+/* =============================================================================
+   Base — reset, tipografía global, foco accesible y scrollbars.
+   ============================================================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--rp-font-sans);
+  font-size: var(--rp-text-base);
+  line-height: var(--rp-leading-normal);
+  color: var(--rp-text);
+  background-color: var(--rp-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--rp-text-heading);
+  font-weight: var(--rp-weight-semibold);
+  line-height: var(--rp-leading-tight);
+  letter-spacing: -0.01em;
+}
+
+a {
+  color: var(--rp-brand-500);
+  text-decoration: none;
+  transition: color var(--rp-transition-fast);
+}
+
+a:hover {
+  color: var(--rp-brand-600);
+}
+
+/* Un único anillo de foco en todo el sistema, visible sólo por teclado. */
+:focus-visible {
+  outline: 2px solid var(--rp-brand-400);
+  outline-offset: 2px;
+}
+
+.btn:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+  outline: none;
+  box-shadow: var(--rp-shadow-focus);
+}
+
+/* Scrollbars discretas y coherentes con el tema. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--rp-border-strong) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--rp-border-strong);
+  border: 3px solid transparent;
+  border-radius: var(--rp-radius-pill);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--rp-neutral-400);
+}
+
+::selection {
+  background: rgba(var(--rp-brand-rgb), 0.2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

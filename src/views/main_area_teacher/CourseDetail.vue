@@ -95,128 +95,118 @@ onMounted(async () => {
 
 <style scoped>
 .course-detail {
-  padding: 1rem 0 2rem;
+  padding: var(--rp-space-4) 0 var(--rp-space-8);
+  max-width: var(--rp-page-max-width);
+  margin-inline: auto;
 }
 
 .course-header {
-  text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: var(--rp-space-6);
+  padding-bottom: var(--rp-space-5);
+  border-bottom: 1px solid var(--rp-border);
 }
 
 .course-eyebrow {
   margin: 0;
-  font-size: 0.85rem;
-  letter-spacing: 0.06em;
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
+  letter-spacing: var(--rp-tracking-wide);
   text-transform: uppercase;
-  color: #64748b;
+  color: var(--rp-text-subtle);
 }
 
 .course-title {
-  margin: 0.35rem 0 0.25rem;
-  color: #034285;
-  font-size: clamp(1.6rem, 2.5vw, 2rem);
-  font-weight: 700;
+  margin: var(--rp-space-1) 0 0;
+  color: var(--rp-text-heading);
+  font-size: clamp(var(--rp-text-xl), 4vw, var(--rp-text-2xl));
+  font-weight: var(--rp-weight-semibold);
+  line-height: var(--rp-leading-tight);
+  letter-spacing: -0.02em;
+  overflow-wrap: break-word;
 }
 
 .course-subtitle {
-  margin: 0;
-  color: #64748b;
+  margin: var(--rp-space-1) 0 0;
+  font-size: var(--rp-text-base);
+  color: var(--rp-text-muted);
 }
 
 .section-heading {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
-  margin: 0 0 1rem;
+  font-size: var(--rp-text-lg);
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-heading);
+  margin: 0 0 var(--rp-space-4);
 }
 
 .options-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: var(--rp-space-4);
 }
 
 .option-card {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  min-height: 170px;
-  padding: 1.25rem;
-  border-radius: 14px;
+  gap: var(--rp-space-3);
+  padding: var(--rp-space-5);
+  border-radius: var(--rp-radius-lg);
   text-decoration: none;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
-  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  box-shadow: var(--rp-shadow-xs);
+  transition: border-color var(--rp-transition-base), background-color var(--rp-transition-base);
 }
 
 .option-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+  border-color: var(--rp-border-brand);
+  background: var(--rp-surface-hover);
   text-decoration: none;
 }
 
 .option-card__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--rp-radius-md);
   display: grid;
   place-items: center;
-  font-size: 1.2rem;
-  color: #fff;
+  font-size: var(--rp-text-md);
+  background: var(--rp-surface-brand-soft);
+  color: var(--rp-brand-500);
 }
 
 .option-card__title {
-  margin: 0 0 0.35rem;
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: #0f172a;
+  margin: 0 0 var(--rp-space-1);
+  font-size: var(--rp-text-md);
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-heading);
 }
 
 .option-card__desc {
   margin: 0;
-  font-size: 0.9rem;
-  line-height: 1.4;
-  color: #64748b;
+  font-size: var(--rp-text-base);
+  line-height: var(--rp-leading-snug);
+  color: var(--rp-text-muted);
 }
 
-.option-card--attendance {
-  border-color: #bfdbfe;
-}
-.option-card--attendance .option-card__icon {
-  background: #2563eb;
-}
-.option-card--attendance:hover {
-  border-color: #93c5fd;
-}
-
-.option-card--conduct {
-  border-color: #fde68a;
-}
+/* El tono sólo tiñe el icono: la tarjeta mantiene el borde neutro del sistema. */
 .option-card--conduct .option-card__icon {
-  background: #d97706;
-}
-.option-card--conduct:hover {
-  border-color: #fcd34d;
+  background: var(--rp-warning-50);
+  color: var(--rp-warning-700);
 }
 
-.option-card--grades {
-  border-color: #bbf7d0;
-}
 .option-card--grades .option-card__icon {
-  background: #059669;
-}
-.option-card--grades:hover {
-  border-color: #86efac;
+  background: var(--rp-success-50);
+  color: var(--rp-success-700);
 }
 
-.option-card--import {
-  border-color: #c7d2fe;
-}
 .option-card--import .option-card__icon {
-  background: #4f46e5;
+  background: var(--rp-brand-100);
+  color: var(--rp-brand-600);
 }
-.option-card--import:hover {
-  border-color: #a5b4fc;
+
+@media (max-width: 575.98px) {
+  .option-card {
+    padding: var(--rp-space-4);
+  }
 }
 </style>

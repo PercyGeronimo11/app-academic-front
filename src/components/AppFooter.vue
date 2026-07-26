@@ -1,14 +1,12 @@
 <template>
   <CFooter class="px-4">
-    <!-- <div>
-      <a href="https://coreui.io" target="_blank">CoreUI</a>
-      <span class="ms-1"
-        >&copy; {{ new Date().getFullYear() }} creativeLabs.</span
-      >
+    <div class="app-footer__inner">
+      <span>&copy; {{ currentYear }} I.E. Ricardo Palma 80010</span>
+      <span>Sistema de Gestión Académica</span>
     </div>
-    <div class="ms-auto">
-      <span class="me-1" target="_blank">Powered by</span>
-      <a href="https://coreui.io/vue">CoreUI for Vue</a>
-    </div> FooterHere-->
   </CFooter>
 </template>
+
+<script setup>
+const currentYear = new Date().getFullYear()
+</script>

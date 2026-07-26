@@ -145,86 +145,133 @@ onMounted(listItems);
 
 <style scoped>
 .listCourses-wrapper {
-  text-align: center;
   margin: 0 auto;
-  max-width: 800px;
+  max-width: min(100%, 50rem);
+  padding: var(--rp-space-5) 0 var(--rp-space-8);
+}
+
+.listCourses-wrapper h1 {
+  font-size: var(--rp-text-2xl);
+  font-weight: var(--rp-weight-semibold);
+  line-height: var(--rp-leading-tight);
+  letter-spacing: -0.02em;
+  color: var(--rp-text-heading);
+  margin: 0 0 var(--rp-space-5);
+  padding-bottom: var(--rp-space-4);
+  border-bottom: 1px solid var(--rp-border);
 }
 
 .listCourses-container {
-  margin-top: 20px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  justify-content: center;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: var(--rp-space-4);
 }
 
 .course-item {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  background-color: #f0f4f8;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  box-shadow: var(--rp-shadow-xs);
+  padding: var(--rp-space-4);
+}
+
+.course-info h3 {
+  margin: 0;
+  font-size: var(--rp-text-md);
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-heading);
+  line-height: var(--rp-leading-snug);
+  overflow-wrap: break-word;
 }
 
 .professor-select {
-  margin-top: 10px;
+  margin-top: var(--rp-space-3);
   width: 100%;
 }
 
 .styled-select {
   width: 100%;
-  padding: 8px;
-  font-size: 16px;
-  border: 2px solid #1e3a5f;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  color: #1e3a5f;
+  max-width: 100%;
+  padding: var(--rp-space-2) var(--rp-space-3);
+  font-size: var(--rp-text-base);
+  border: 1px solid var(--rp-border-strong);
+  border-radius: var(--rp-radius-md);
+  background-color: var(--rp-surface);
+  color: var(--rp-text);
   outline: none;
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color var(--rp-transition-fast), box-shadow var(--rp-transition-fast);
 }
 
 .styled-select:focus {
-  border-color: #27496d;
-  box-shadow: 0 0 8px rgba(39, 73, 109, 0.5);
+  border-color: var(--rp-brand-400);
+  box-shadow: var(--rp-shadow-focus);
 }
 
 .button-container {
-  margin-top: 30px;
+  margin-top: var(--rp-space-6);
   display: flex;
-  justify-content: center;
-  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--rp-space-2);
 }
 
 .styled-button {
-  background-color: #1e3a5f;
-  color: white;
-  padding: 12px 25px;
-  border: none;
-  border-radius: 5px;
+  padding: var(--rp-space-2) var(--rp-space-5);
+  font-size: var(--rp-text-base);
+  font-weight: var(--rp-weight-semibold);
+  border: 1px solid var(--rp-brand-500);
+  border-radius: var(--rp-radius-md);
+  background-color: var(--rp-brand-500);
+  color: var(--rp-text-on-brand);
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s, transform 0.3s;
+  transition: background-color var(--rp-transition-fast), border-color var(--rp-transition-fast);
 }
 
 .styled-button:hover {
-  background-color: #27496d;
-  transform: scale(1.05);
+  background-color: var(--rp-brand-600);
+  border-color: var(--rp-brand-600);
 }
 
-.styled-button:active {
-  background-color: #16293b;
-}
-
-.styled-button:focus {
+.styled-button:focus-visible {
   outline: none;
+  box-shadow: var(--rp-shadow-focus);
+}
+
+/* El segundo botón ("Regresar") es la acción secundaria y comparte clase. */
+.button-container .styled-button + .styled-button {
+  background-color: var(--rp-surface);
+  border-color: var(--rp-border-strong);
+  color: var(--rp-text);
+}
+
+.button-container .styled-button + .styled-button:hover {
+  background-color: var(--rp-surface-sunken);
 }
 
 .toast-bottom-right {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1050;
+  bottom: var(--rp-space-5);
+  right: var(--rp-space-5);
+  z-index: var(--rp-z-banner);
+}
+
+@media (max-width: 767.98px) {
+  .listCourses-wrapper h1 {
+    font-size: var(--rp-text-xl);
+  }
+}
+
+@media (max-width: 575.98px) {
+  .button-container > .styled-button {
+    flex: 1 1 auto;
+  }
+
+  .toast-bottom-right {
+    left: var(--rp-space-3);
+    right: var(--rp-space-3);
+    bottom: var(--rp-space-3);
+  }
 }
 </style>

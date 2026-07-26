@@ -36,62 +36,84 @@ const handleClick = () => {
 <style scoped>
 .gmail-banner {
   position: fixed;
-  top: calc(4rem + 0.25rem);
+  top: calc(var(--rp-header-height) + var(--rp-space-1));
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1030;
+  z-index: var(--rp-z-banner);
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  width: min(420px, calc(100vw - 1.5rem));
-  padding: 0.75rem 1rem;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
-  border-left: 4px solid #1a73e8;
+  gap: var(--rp-space-3);
+  width: min(26rem, calc(100vw - var(--rp-space-6)));
+  padding: var(--rp-space-3) var(--rp-space-4);
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  border-left: 3px solid var(--rp-brand-500);
+  border-radius: var(--rp-radius-md);
+  box-shadow: var(--rp-shadow-md);
   cursor: pointer;
 }
 
 .gmail-banner-icon {
-  color: #1a73e8;
-  font-size: 1.1rem;
-  padding-top: 0.15rem;
+  color: var(--rp-brand-500);
+  font-size: var(--rp-text-lg);
+  padding-top: 0.1rem;
+}
+
+.gmail-banner-content {
+  min-width: 0;
 }
 
 .gmail-banner-title {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #202124;
-  margin-bottom: 0.15rem;
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-base);
+  color: var(--rp-text-heading);
+  margin-bottom: var(--rp-space-1);
 }
 
 .gmail-banner-body {
-  font-size: 0.82rem;
-  color: #5f6368;
-  line-height: 1.35;
+  font-size: var(--rp-text-sm);
+  color: var(--rp-text-muted);
+  line-height: var(--rp-leading-snug);
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  overflow-wrap: anywhere;
 }
 
 .gmail-banner-close {
   background: none;
   border: none;
-  color: #5f6368;
-  padding: 0.15rem;
+  color: var(--rp-text-subtle);
+  font-size: var(--rp-text-base);
+  padding: var(--rp-space-1);
   margin-left: auto;
   cursor: pointer;
+  border-radius: var(--rp-radius-xs);
+  transition: color var(--rp-transition-fast), background-color var(--rp-transition-fast);
+}
+
+.gmail-banner-close:hover {
+  color: var(--rp-text);
+  background: var(--rp-surface-hover);
 }
 
 .gmail-banner-enter-active,
 .gmail-banner-leave-active {
-  transition: opacity 0.25s ease, transform 0.25s ease;
+  transition: opacity var(--rp-transition-base), transform var(--rp-transition-base);
 }
 
 .gmail-banner-enter-from,
 .gmail-banner-leave-to {
   opacity: 0;
-  transform: translateX(-50%) translateY(-12px);
+  transform: translateX(-50%) translateY(-0.75rem);
+}
+
+@media (max-width: 575.98px) {
+  .gmail-banner {
+    width: calc(100vw - var(--rp-space-4));
+    padding: var(--rp-space-3);
+    gap: var(--rp-space-2);
+  }
 }
 </style>

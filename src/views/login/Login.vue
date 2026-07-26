@@ -1,55 +1,75 @@
 <template>
-  <div class="login-page d-flex align-items-center justify-content-center min-vh-100">
-    <div class="login-card shadow-lg rounded-4 bg-white p-5 text-center animate-fade">
-      <div class="mb-4">
-        <img src="/img/logo_rp.png" alt="Logo" class="login-logo mb-3" />
-        <h3 class="fw-bold text-primary mb-1">I.E. RICARDO PALMA 80010</h3>
-        <p class="text-muted">Acceda a su cuenta</p>
-        <div v-if="sessionExpired" class="alert alert-warning py-2 small mb-0" role="alert">
+  <div class="login-shell">
+    <!-- Panel institucional: sólo en pantallas grandes -->
+    <aside class="login-brand d-none d-lg-flex">
+      <div class="login-brand__content">
+        <img src="/img/logo_rp.png" alt="" class="login-brand__logo" />
+        <h1 class="login-brand__title">I.E. Ricardo Palma 80010</h1>
+        <p class="login-brand__text">
+          Sistema de Gestión Académica: asistencias, calificaciones, comunicados
+          y trámites en un solo lugar.
+        </p>
+      </div>
+      <p class="login-brand__footer">
+        © {{ currentYear }} — Institución Educativa Ricardo Palma 80010
+      </p>
+    </aside>
+
+    <!-- Panel de acceso -->
+    <main class="login-form-panel">
+      <div class="login-form">
+        <img src="/img/logo_rp.png" alt="" class="login-form__logo d-lg-none" />
+
+        <header class="login-form__header">
+          <h2 class="login-form__title">Iniciar sesión</h2>
+          <p class="login-form__subtitle">
+            Ingrese sus credenciales institucionales para continuar.
+          </p>
+        </header>
+
+        <div v-if="sessionExpired" class="module-alert module-alert--warning" role="alert">
           Su sesión expiró. Inicie sesión nuevamente.
         </div>
+
+        <CForm novalidate @submit.prevent="handleLogin">
+          <div class="mb-3">
+            <CFormLabel for="login-email">Correo electrónico</CFormLabel>
+            <CInputGroup>
+              <CInputGroupText>
+                <CIcon icon="cil-user" />
+              </CInputGroupText>
+              <CFormInput id="login-email" v-model="email" type="email" placeholder="usuario@ejemplo.edu.pe"
+                autocomplete="username" required />
+            </CInputGroup>
+          </div>
+
+          <div class="mb-4">
+            <CFormLabel for="login-password">Contraseña</CFormLabel>
+            <CInputGroup>
+              <CInputGroupText>
+                <CIcon icon="cil-lock-locked" />
+              </CInputGroupText>
+              <CFormInput id="login-password" v-model="password" :type="showPassword ? 'text' : 'password'"
+                placeholder="••••••••" autocomplete="current-password" required />
+              <CButton type="button" color="secondary" variant="outline"
+                :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+                @click="showPassword = !showPassword">
+                <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" aria-hidden="true"></i>
+              </CButton>
+            </CInputGroup>
+          </div>
+
+          <CButton color="primary" class="w-100 py-2" type="submit" :disabled="loadingLogin">
+            <CSpinner v-if="loadingLogin" size="sm" class="me-2" />
+            {{ loadingLogin ? 'Verificando...' : 'Iniciar sesión' }}
+          </CButton>
+        </CForm>
+
+        <p class="login-form__footer d-lg-none">
+          © {{ currentYear }} — Sistema de Gestión Académica
+        </p>
       </div>
-
-      <CForm @submit.prevent="handleLogin">
-        <CInputGroup class="mb-3">
-          <CInputGroupText class="bg-primary text-white border-0">
-            <CIcon icon="cil-user" />
-          </CInputGroupText>
-          <CFormInput
-            v-model="email"
-            placeholder="Correo electrónico"
-            autocomplete="username"
-            required
-          />
-        </CInputGroup>
-
-        <CInputGroup class="mb-4">
-          <CInputGroupText class="bg-primary text-white border-0">
-            <CIcon icon="cil-lock-locked" />
-          </CInputGroupText>
-          <CFormInput
-            v-model="password"
-            type="password"
-            placeholder="Contraseña"
-            autocomplete="current-password"
-            required
-          />
-        </CInputGroup>
-
-        <CButton color="primary" class="w-100 fw-semibold py-2" type="submit" :disable="loadingLogin">
-          <span v-if="!loadingLogin">Iniciar sesión</span>
-          <span v-else>
-            <CSpinner/>
-          </span>
-        </CButton>
-      </CForm>
-
-      <hr class="my-4" />
-
-      <small class="text-muted d-block">
-        © {{ new Date().getFullYear() }} — Sistema de Gestión Escolar
-      </small>
-    </div>
+    </main>
   </div>
 </template>
 
@@ -60,13 +80,17 @@ import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
 import { getPeruTime } from "@/utils/time";
 
+const BRAND_COLOR = "#176fb6";
+
 export default {
   data() {
     return {
       email: "",
       password: "",
+      showPassword: false,
       loadingLogin: false,
       sessionExpired: false,
+      currentYear: new Date().getFullYear(),
     };
   },
   mounted() {
@@ -85,12 +109,11 @@ export default {
         const role = response.data.user.role;
         const encryptedRol = CryptoJS.AES.encrypt(role, secretKey).toString();
         localStorage.setItem("r_key", encryptedRol);
-        console.log('Respuesa de login', response);
         sessionStorage.removeItem('announcements_general_shown');
-        
+
         if (response.success) {
           let route = "/";
-          if (role === "DIRECCION" ) route = "/dashboard";
+          if (role === "DIRECCION") route = "/dashboard";
           else if (role === "PROFESOR") route = "/mainAreaTeacher";
           else if (role === "ESTUDIANTE") route = "/mainAreaStudent";
           else if (role === "AUXILIAR") route = "/assistances";
@@ -116,7 +139,7 @@ export default {
             icon: "error",
             title: "Error en el inicio de sesión",
             text: "Verifique sus credenciales",
-            confirmButtonColor: "#0d6efd",
+            confirmButtonColor: BRAND_COLOR,
           });
         }
       } catch (error) {
@@ -137,38 +160,102 @@ export default {
 </script>
 
 <style scoped>
-.login-page {
-  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-  background-attachment: fixed;
+.login-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+  background: var(--rp-bg);
 }
 
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 40px 30px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+@media (min-width: 992px) {
+  .login-shell {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  }
 }
 
-.login-logo {
-  width: 90px;
+/* --- Panel de marca ------------------------------------------------------- */
+
+.login-brand {
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--rp-space-12) var(--rp-space-10);
+  background: var(--rp-brand-600);
+  color: var(--rp-text-on-brand);
+}
+
+.login-brand__content {
+  margin-block: auto;
+  max-width: 30rem;
+}
+
+.login-brand__logo {
+  width: 4.5rem;
   height: auto;
-  filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.15));
+  margin-bottom: var(--rp-space-6);
 }
 
-.animate-fade {
-  animation: fadeIn 0.8s ease-in-out;
+.login-brand__title {
+  font-size: 2rem;
+  font-weight: var(--rp-weight-bold);
+  color: var(--rp-text-on-brand);
+  line-height: var(--rp-leading-tight);
+  margin-bottom: var(--rp-space-4);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.login-brand__text {
+  font-size: var(--rp-text-md);
+  line-height: var(--rp-leading-normal);
+  color: var(--rp-text-on-brand-muted);
+  margin: 0;
+}
+
+.login-brand__footer {
+  margin: 0;
+  font-size: var(--rp-text-xs);
+  color: var(--rp-text-on-brand-subtle);
+}
+
+/* --- Panel de formulario -------------------------------------------------- */
+
+.login-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--rp-space-6) var(--rp-space-4);
+  background: var(--rp-surface);
+}
+
+.login-form {
+  width: 100%;
+  max-width: 24rem;
+}
+
+.login-form__logo {
+  width: 3.5rem;
+  height: auto;
+  margin-bottom: var(--rp-space-4);
+}
+
+.login-form__header {
+  margin-bottom: var(--rp-space-6);
+}
+
+.login-form__title {
+  font-size: var(--rp-text-2xl);
+  font-weight: var(--rp-weight-semibold);
+  margin-bottom: var(--rp-space-1);
+}
+
+.login-form__subtitle {
+  margin: 0;
+  color: var(--rp-text-muted);
+  font-size: var(--rp-text-base);
+}
+
+.login-form__footer {
+  margin: var(--rp-space-8) 0 0;
+  text-align: center;
+  font-size: var(--rp-text-xs);
+  color: var(--rp-text-subtle);
 }
 </style>

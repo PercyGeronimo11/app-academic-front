@@ -1,0 +1,256 @@
+/* =============================================================================
+   Controles — formularios, botones, modales y dropdowns de CoreUI alineados
+   a los tokens del sistema.
+   ============================================================================= */
+
+/* --- Formularios ----------------------------------------------------------- */
+
+.form-control,
+.form-select {
+  --cui-form-control-bg: var(--rp-surface);
+  --cui-form-control-color: var(--rp-text);
+  --cui-form-control-border-color: var(--rp-border-strong);
+  border-radius: var(--rp-radius-md);
+  font-size: var(--rp-text-base);
+  transition: border-color var(--rp-transition-fast), box-shadow var(--rp-transition-fast);
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--rp-brand-400);
+  box-shadow: var(--rp-shadow-focus);
+}
+
+.form-control::placeholder {
+  color: var(--rp-text-subtle);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  background-color: var(--rp-surface-sunken);
+  color: var(--rp-text-subtle);
+}
+
+.form-label {
+  font-size: var(--rp-text-sm);
+  font-weight: var(--rp-weight-medium);
+  color: var(--rp-text-muted);
+  margin-bottom: var(--rp-space-1);
+}
+
+.form-text {
+  font-size: var(--rp-text-xs);
+  color: var(--rp-text-subtle);
+}
+
+.form-check-input {
+  border-color: var(--rp-border-strong);
+}
+
+.form-check-input:checked {
+  background-color: var(--rp-brand-500);
+  border-color: var(--rp-brand-500);
+}
+
+.form-check-input:focus {
+  border-color: var(--rp-brand-400);
+  box-shadow: var(--rp-shadow-focus);
+}
+
+.input-group-text {
+  background-color: var(--rp-surface-muted);
+  border-color: var(--rp-border-strong);
+  color: var(--rp-text-muted);
+  font-size: var(--rp-text-base);
+}
+
+/* Grilla de selección de grados/secciones */
+.grade-check-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: var(--rp-space-2);
+  max-height: 14rem;
+  overflow-y: auto;
+  padding: var(--rp-space-3);
+  border-radius: var(--rp-radius-md);
+  border: 1px solid var(--rp-border);
+  background: var(--rp-surface-muted);
+}
+
+.grade-check-grid label {
+  display: flex;
+  align-items: center;
+  gap: var(--rp-space-2);
+  padding: var(--rp-space-2);
+  border-radius: var(--rp-radius-sm);
+  background: var(--rp-surface);
+  border: 1px solid var(--rp-border);
+  cursor: pointer;
+  font-size: var(--rp-text-base);
+  margin: 0;
+  transition: border-color var(--rp-transition-fast), background-color var(--rp-transition-fast);
+}
+
+.grade-check-grid label:has(input:checked) {
+  border-color: var(--rp-brand-400);
+  background: var(--rp-surface-brand-soft);
+  color: var(--rp-text-brand);
+}
+
+/* Zona de carga de archivos */
+.upload-zone {
+  border: 1px dashed var(--rp-border-brand);
+  border-radius: var(--rp-radius-lg);
+  padding: var(--rp-space-5);
+  background: var(--rp-surface-muted);
+  transition: border-color var(--rp-transition-fast), background-color var(--rp-transition-fast);
+}
+
+.upload-zone:hover {
+  border-color: var(--rp-brand-400);
+  background: var(--rp-surface-brand-soft);
+}
+
+.upload-zone__hint {
+  font-size: var(--rp-text-base);
+  color: var(--rp-text-muted);
+  margin-top: var(--rp-space-2);
+}
+
+/* --- Botones --------------------------------------------------------------- */
+
+.btn {
+  --cui-btn-border-radius: var(--rp-radius-md);
+  --cui-btn-font-weight: var(--rp-weight-semibold);
+  --cui-btn-font-size: var(--rp-text-base);
+  --cui-btn-padding-x: 0.875rem;
+  --cui-btn-padding-y: 0.4375rem;
+  --cui-btn-focus-box-shadow: var(--rp-shadow-focus);
+  transition: background-color var(--rp-transition-fast), border-color var(--rp-transition-fast),
+    color var(--rp-transition-fast), box-shadow var(--rp-transition-fast);
+}
+
+.btn-sm {
+  --cui-btn-font-size: var(--rp-text-sm);
+  --cui-btn-padding-x: 0.625rem;
+  --cui-btn-padding-y: 0.3125rem;
+}
+
+.btn-lg {
+  --cui-btn-font-size: var(--rp-text-md);
+  --cui-btn-padding-x: 1.125rem;
+  --cui-btn-padding-y: 0.625rem;
+}
+
+/* Botón secundario legible: gris neutro en vez del gris azulado de CoreUI. */
+.btn-secondary {
+  --cui-btn-bg: var(--rp-surface-muted);
+  --cui-btn-border-color: var(--rp-border-strong);
+  --cui-btn-color: var(--rp-text);
+  --cui-btn-hover-bg: var(--rp-surface-sunken);
+  --cui-btn-hover-border-color: var(--rp-border-strong);
+  --cui-btn-hover-color: var(--rp-text-heading);
+  --cui-btn-active-bg: var(--rp-surface-sunken);
+  --cui-btn-active-color: var(--rp-text-heading);
+}
+
+.btn-link {
+  --cui-btn-color: var(--rp-brand-500);
+  --cui-btn-hover-color: var(--rp-brand-600);
+  text-decoration: none;
+}
+
+/* Acciones dentro de tablas: iconos discretos con área de toque suficiente. */
+.rp-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-sm);
+  background: var(--rp-surface);
+  color: var(--rp-text-muted);
+  transition: all var(--rp-transition-fast);
+}
+
+.rp-action-btn:hover {
+  border-color: var(--rp-border-brand);
+  background: var(--rp-surface-brand-soft);
+  color: var(--rp-brand-500);
+}
+
+/* --- Modales --------------------------------------------------------------- */
+
+.modal-content {
+  --cui-modal-bg: var(--rp-surface);
+  --cui-modal-color: var(--rp-text);
+  --cui-modal-border-color: var(--rp-border);
+  --cui-modal-border-radius: var(--rp-radius-lg);
+  --cui-modal-header-border-color: var(--rp-border-subtle);
+  --cui-modal-footer-border-color: var(--rp-border-subtle);
+  box-shadow: var(--rp-shadow-lg);
+}
+
+.modal-title {
+  font-size: var(--rp-text-lg);
+  font-weight: var(--rp-weight-semibold);
+}
+
+.modal-header,
+.modal-footer {
+  padding: var(--rp-space-4) var(--rp-space-5);
+}
+
+.modal-body {
+  padding: var(--rp-space-5);
+}
+
+/* --- Dropdowns ------------------------------------------------------------- */
+
+.dropdown-menu {
+  --cui-dropdown-bg: var(--rp-surface);
+  --cui-dropdown-color: var(--rp-text);
+  --cui-dropdown-border-color: var(--rp-border);
+  --cui-dropdown-border-radius: var(--rp-radius-lg);
+  --cui-dropdown-link-color: var(--rp-text);
+  --cui-dropdown-link-hover-bg: var(--rp-surface-hover);
+  --cui-dropdown-link-hover-color: var(--rp-brand-600);
+  --cui-dropdown-link-active-bg: var(--rp-surface-selected);
+  --cui-dropdown-link-active-color: var(--rp-brand-600);
+  --cui-dropdown-font-size: var(--rp-text-base);
+  box-shadow: var(--rp-shadow-lg);
+  padding-block: var(--rp-space-1);
+}
+
+.dropdown-item {
+  border-radius: var(--rp-radius-sm);
+  margin-inline: var(--rp-space-1);
+  width: auto;
+}
+
+/* --- Pestañas -------------------------------------------------------------- */
+
+.nav-tabs {
+  --cui-nav-tabs-border-color: var(--rp-border);
+  --cui-nav-tabs-link-active-color: var(--rp-brand-600);
+  --cui-nav-tabs-link-active-bg: var(--rp-surface);
+  --cui-nav-tabs-link-active-border-color: var(--rp-border) var(--rp-border) var(--rp-surface);
+  --cui-nav-link-color: var(--rp-text-muted);
+  --cui-nav-link-hover-color: var(--rp-brand-500);
+}
+
+/* --- Alertas de CoreUI ---------------------------------------------------- */
+
+.alert {
+  --cui-alert-border-radius: var(--rp-radius-md);
+  font-size: var(--rp-text-base);
+}
+
+/* --- Tooltips y popovers -------------------------------------------------- */
+
+.tooltip-inner {
+  font-size: var(--rp-text-xs);
+  border-radius: var(--rp-radius-sm);
+  padding: 0.35rem 0.55rem;
+}

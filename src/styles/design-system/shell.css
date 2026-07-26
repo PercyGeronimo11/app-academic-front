@@ -1,0 +1,238 @@
+/* =============================================================================
+   Shell de la aplicación — sidebar, header, contenedor de página y footer.
+   Se configura vía variables de CoreUI para no pelear con !important.
+   ============================================================================= */
+
+/* --- Sidebar --------------------------------------------------------------- */
+
+.custom-sidebar {
+  --cui-sidebar-width: 15.5rem;
+  --cui-sidebar-bg: var(--rp-sidebar-bg);
+  --cui-sidebar-color: var(--rp-sidebar-color);
+  --cui-sidebar-border-width: 0;
+
+  --cui-sidebar-brand-bg: transparent;
+  --cui-sidebar-header-bg: transparent;
+  --cui-sidebar-footer-bg: transparent;
+
+  --cui-sidebar-nav-title-color: var(--rp-sidebar-title);
+  --cui-sidebar-nav-title-padding-y: 1.25rem;
+
+  --cui-sidebar-nav-link-color: var(--rp-sidebar-color);
+  --cui-sidebar-nav-link-padding-x: 0.75rem;
+  --cui-sidebar-nav-link-padding-y: 0.5625rem;
+  --cui-sidebar-nav-link-bg: transparent;
+  --cui-sidebar-nav-link-hover-color: var(--rp-sidebar-color-hover);
+  --cui-sidebar-nav-link-hover-bg: var(--rp-sidebar-item-hover);
+  --cui-sidebar-nav-link-active-color: var(--rp-sidebar-color-hover);
+  --cui-sidebar-nav-link-active-bg: var(--rp-sidebar-item-active);
+  --cui-sidebar-nav-link-icon-color: rgba(255, 255, 255, 0.65);
+  --cui-sidebar-nav-link-hover-icon-color: #ffffff;
+  --cui-sidebar-nav-link-active-icon-color: #ffffff;
+  --cui-sidebar-nav-group-bg: rgba(0, 0, 0, 0.14);
+
+  box-shadow: var(--rp-shadow-md);
+}
+
+.custom-sidebar .sidebar-header {
+  border-bottom: 1px solid var(--rp-sidebar-border);
+  padding-block: 0.5rem;
+}
+
+.custom-sidebar .sidebar-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  cursor: pointer;
+}
+
+.custom-sidebar .sidebar-logo {
+  max-width: 100%;
+  height: 3.25rem;
+  width: auto;
+  object-fit: contain;
+  transition: height var(--rp-transition-base);
+}
+
+.custom-sidebar .sidebar-logo--compact {
+  height: 2.25rem;
+}
+
+/* Ítems del menú: píldora redondeada con acento a la izquierda cuando está activa. */
+.custom-sidebar .nav-link {
+  margin-inline: 0.5rem;
+  border-radius: var(--rp-radius-md);
+  font-size: var(--rp-text-base);
+  font-weight: var(--rp-weight-medium);
+  letter-spacing: 0.005em;
+  position: relative;
+  transition: background-color var(--rp-transition-fast), color var(--rp-transition-fast);
+}
+
+.custom-sidebar .nav-link.active {
+  font-weight: var(--rp-weight-semibold);
+}
+
+.custom-sidebar .nav-link.active::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: -0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 1.25rem;
+  border-radius: 0 var(--rp-radius-pill) var(--rp-radius-pill) 0;
+  background: #ffffff;
+}
+
+.custom-sidebar .nav-icon {
+  flex-shrink: 0;
+}
+
+/* Títulos de sección del menú */
+.custom-sidebar .nav-title {
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Grupos colapsables: se distinguen por fondo hundido, no por color nuevo. */
+.custom-sidebar .nav-group.show > .nav-group-toggle {
+  background: var(--rp-sidebar-item-hover);
+  color: #ffffff;
+}
+
+.custom-sidebar .nav-group-items .nav-link {
+  font-weight: var(--rp-weight-regular);
+  font-size: var(--rp-text-sm);
+}
+
+.custom-sidebar .sidebar-footer {
+  border-top: 1px solid var(--rp-sidebar-border);
+  padding-block: 0.5rem;
+}
+
+.custom-sidebar .sidebar-toggler {
+  background-color: transparent;
+}
+
+.custom-sidebar .sidebar-toggler:hover {
+  background-color: var(--rp-sidebar-item-hover);
+}
+
+/* En modo estrecho no tiene sentido el margen lateral de la píldora. */
+.sidebar-narrow .nav-link,
+.sidebar-narrow-unfoldable:not(:hover) .nav-link {
+  margin-inline: 0.25rem;
+}
+
+/* --- Header ---------------------------------------------------------------- */
+
+.header {
+  --cui-header-bg: var(--rp-surface);
+  --cui-header-color: var(--rp-text-muted);
+  --cui-header-border-color: var(--rp-border);
+  --cui-header-hover-color: var(--rp-text);
+  --cui-header-active-color: var(--rp-text-heading);
+  --cui-header-min-height: var(--rp-header-height);
+  backdrop-filter: saturate(180%) blur(6px);
+  transition: box-shadow var(--rp-transition-base);
+}
+
+.header > .container-fluid {
+  gap: 0.25rem;
+}
+
+.header .header-toggler {
+  color: var(--rp-text-muted);
+  border-radius: var(--rp-radius-md);
+}
+
+.header .header-toggler:hover {
+  color: var(--rp-brand-500);
+  background-color: var(--rp-surface-hover);
+}
+
+.header .nav-link {
+  color: var(--rp-text-muted);
+  border-radius: var(--rp-radius-md);
+  transition: color var(--rp-transition-fast), background-color var(--rp-transition-fast);
+}
+
+.header .nav-link:hover {
+  color: var(--rp-brand-500);
+}
+
+/* Título de la página actual, dentro del header. */
+.app-header-title {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-inline-start: 0.5rem;
+}
+
+.app-header-title__eyebrow {
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--rp-text-subtle);
+  line-height: 1.2;
+}
+
+.app-header-title__current {
+  font-size: var(--rp-text-md);
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-heading);
+  line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* --- Footer ---------------------------------------------------------------- */
+
+.footer {
+  --cui-footer-bg: transparent;
+  --cui-footer-border-color: var(--rp-border);
+  --cui-footer-color: var(--rp-text-subtle);
+  font-size: var(--rp-text-xs);
+}
+
+.app-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--rp-space-2);
+  width: 100%;
+}
+
+/* --- Contenedor de contenido ---------------------------------------------- */
+
+.wrapper {
+  background-color: var(--rp-bg);
+}
+
+.body {
+  padding-block: 0;
+}
+
+.body > .container-lg,
+.body > .container-fluid {
+  max-width: var(--rp-page-max-width);
+}
+
+@media (max-width: 575.98px) {
+  .header .app-header-title__eyebrow {
+    display: none;
+  }
+
+  .body > .container-lg,
+  .body > .container-fluid {
+    padding-inline: var(--rp-page-gutter-sm) !important;
+  }
+}

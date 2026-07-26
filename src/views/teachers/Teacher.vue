@@ -364,7 +364,7 @@ watch(searchData, (newVal) => {
 
 <style>
 .input-group-text {
-  background-color: #f0f0f0;
+  background-color: var(--rp-surface-sunken);
   border-left: none;
   font-weight: bold;
 }

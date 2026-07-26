@@ -137,24 +137,26 @@ onMounted(loadProfile);
 
 <style scoped>
 .info-box {
-  padding: 0.85rem 1rem;
-  background: var(--cui-body-bg, #fff);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
+  padding: var(--rp-space-3) var(--rp-space-4);
+  background: var(--rp-surface-muted);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-md);
 }
 
 .info-box label {
   display: block;
-  font-size: 0.72rem;
+  font-size: var(--rp-text-2xs);
+  font-weight: var(--rp-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--cui-secondary-color, #6b7280);
-  margin-bottom: 0.25rem;
+  letter-spacing: var(--rp-tracking-wide);
+  color: var(--rp-text-muted);
+  margin-bottom: var(--rp-space-1);
 }
 
 .info-box p {
   margin: 0;
-  font-weight: 600;
-  color: var(--cui-body-color, #212631);
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-heading);
+  overflow-wrap: anywhere;
 }
 </style>

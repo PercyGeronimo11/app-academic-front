@@ -1,6 +1,6 @@
-body {
-  background-color: var(--cui-tertiary-bg);
-}
+// Ajustes estructurales del shell que dependen de mixins de CoreUI.
+// La apariencia (color, borde, tipografía) vive en
+// `src/styles/design-system/shell.css`; aquí sólo geometría y transiciones.
 
 .wrapper {
   width: 100%;
@@ -13,10 +13,6 @@ body {
 .header > .container-fluid,
 .sidebar-header {
   min-height: calc(4rem + 1px); // stylelint-disable-line function-disallowed-list
-}
-
-.sidebar-brand-full {
-  margin-left: 3px;
 }
 
 .sidebar-header {
@@ -49,16 +45,4 @@ body {
 
 .footer {
   min-height: calc(3rem + 1px); // stylelint-disable-line function-disallowed-list
-}
-
-@if $enable-dark-mode {
-  @include color-mode(dark) {
-    body {
-      background-color: var(--cui-dark-bg-subtle);
-    }
-
-    .footer {
-      --cui-footer-bg: var(--cui-body-bg);
-    }
-  }
 }

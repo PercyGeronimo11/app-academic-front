@@ -23,23 +23,41 @@ const goToAssistant = () => {
 <style scoped>
 .assistant-fab {
   position: fixed;
-  right: 1.5rem;
-  bottom: 1.5rem;
-  z-index: 1050;
-  width: 3.6rem;
-  height: 3.6rem;
-  border: none;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #0072ff 0%, #00c6ff 100%);
-  color: #fff;
-  font-size: 1.35rem;
-  box-shadow: 0 10px 28px rgba(0, 114, 255, 0.35);
+  right: var(--rp-space-6);
+  bottom: var(--rp-space-6);
+  z-index: var(--rp-z-fab);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border: 1px solid var(--rp-brand-600);
+  border-radius: var(--rp-radius-pill);
+  background: var(--rp-brand-500);
+  color: var(--rp-text-on-brand);
+  font-size: var(--rp-text-xl);
+  box-shadow: var(--rp-shadow-md);
   cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color var(--rp-transition-fast), box-shadow var(--rp-transition-fast);
 }
 
 .assistant-fab:hover {
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 14px 32px rgba(0, 114, 255, 0.45);
+  background: var(--rp-brand-600);
+  box-shadow: var(--rp-shadow-lg);
+}
+
+.assistant-fab:focus-visible {
+  outline: none;
+  box-shadow: var(--rp-shadow-focus);
+}
+
+@media (max-width: 575.98px) {
+  .assistant-fab {
+    right: var(--rp-space-4);
+    bottom: var(--rp-space-4);
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: var(--rp-text-lg);
+  }
 }
 </style>

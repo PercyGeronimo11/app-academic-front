@@ -80,111 +80,77 @@ const viewStudents = () =>
 </script>
 
 <style scoped>
-/* 🌟 Base general */
 .card {
   width: 100%;
-  max-width: 340px;
-  height: 160px;
-  margin: 16px;
-  border-radius: 20px;
+  max-width: 100%;
+  min-height: 7rem;
+  padding: var(--rp-space-5);
+  border: 1px solid var(--rp-border);
+  border-inline-start: 3px solid var(--rp-neutral-400);
+  border-radius: var(--rp-radius-lg);
+  background: var(--rp-surface);
+  box-shadow: var(--rp-shadow-xs);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
   text-align: center;
-  font-family: "Poppins", sans-serif;
-  transition: all 0.35s ease;
+  color: var(--rp-text);
   cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-/* ✨ Animación y brillo al pasar el mouse */
-.card::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(
-    circle at center,
-    rgba(255, 255, 255, 0.15),
-    transparent 70%
-  );
-  transform: scale(0);
-  transition: transform 0.5s ease;
-}
-
-.card:hover::before {
-  transform: scale(1);
+  transition: background-color var(--rp-transition-fast), border-color var(--rp-transition-fast);
 }
 
 .card:hover {
-  transform: translateY(-6px) scale(1.03);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
-}
-
-.card-content {
-  z-index: 2;
+  background: var(--rp-surface-hover);
+  border-color: var(--rp-border-brand);
 }
 
 .card-title {
-  font-size: 1.9rem;
-  font-weight: 700;
   margin: 0;
-  letter-spacing: 1px;
-  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
+  font-size: var(--rp-text-xl);
+  font-weight: var(--rp-weight-semibold);
+  line-height: var(--rp-leading-tight);
+  color: var(--rp-text-heading);
   text-transform: capitalize;
-  line-height: 1.2;
+  overflow-wrap: break-word;
 }
 
-.card:hover .card-title {
-  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7),
-    0 0 20px rgba(255, 255, 255, 0.4);
-}
-
-/* 🎨 Colores según el grado */
-
-/* Primero → Azul cielo */
+/* El grado se identifica por el color del filete lateral, no por el relleno. */
 .card.first {
-  background: linear-gradient(135deg, #3b82f6, #2563eb, #1e40af);
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  border-inline-start-color: var(--rp-brand-300);
 }
 
-/* Segundo → Verde menta */
 .card.second {
-  background: linear-gradient(135deg, #10b981, #059669, #064e3b);
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+  border-inline-start-color: var(--rp-brand-400);
 }
 
-/* Tercero → Naranja cálido */
 .card.third {
-  background: linear-gradient(135deg, #f59e0b, #d97706, #92400e);
-  box-shadow: 0 8px 20px rgba(245, 158, 11, 0.4);
+  border-inline-start-color: var(--rp-brand-500);
 }
 
-/* Cuarto → Violeta intenso */
 .card.fourth {
-  background: linear-gradient(135deg, #9333ea, #7e22ce, #581c87);
-  box-shadow: 0 8px 20px rgba(147, 51, 234, 0.4);
+  border-inline-start-color: var(--rp-brand-600);
 }
 
-/* Quinto → Rojo coral */
 .card.fifth {
-  background: linear-gradient(135deg, #ef4444, #b91c1c, #7f1d1d);
-  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+  border-inline-start-color: var(--rp-accent-400);
 }
 
-/* Sexto → Turquesa brillante */
 .card.sixth {
-  background: linear-gradient(135deg, #06b6d4, #0891b2, #0e7490);
-  box-shadow: 0 8px 20px rgba(6, 182, 212, 0.4);
+  border-inline-start-color: var(--rp-accent-600);
 }
 
-/* Por defecto → Gris azulado */
 .card.default {
-  background: linear-gradient(135deg, #64748b, #475569, #334155);
-  box-shadow: 0 8px 20px rgba(71, 85, 105, 0.4);
+  border-inline-start-color: var(--rp-neutral-400);
+}
+
+@media (max-width: 575.98px) {
+  .card {
+    min-height: 5.5rem;
+    padding: var(--rp-space-4);
+  }
+
+  .card-title {
+    font-size: var(--rp-text-lg);
+  }
 }
 </style>

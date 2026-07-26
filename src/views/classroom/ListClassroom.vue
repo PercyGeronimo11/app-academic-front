@@ -37,27 +37,27 @@ onMounted(listItems);
 
 <style scoped>
 .gradeSections-wrapper {
-  padding: 20px;
+  padding-block: var(--rp-space-5);
 }
 
 .filters {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: var(--rp-space-5);
   flex-wrap: wrap;
+  gap: var(--rp-space-3);
 }
 
 .gradeSections-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  padding: 20px;
-  justify-items: center;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 17rem), 1fr));
+  gap: var(--rp-space-4);
 }
 
 .no-results {
   text-align: center;
-  font-size: 1.25rem;
-  color: #555;
+  font-size: var(--rp-text-md);
+  color: var(--rp-text-muted);
+  padding: var(--rp-space-10) var(--rp-space-4);
 }
 </style>

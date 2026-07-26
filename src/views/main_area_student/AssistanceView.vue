@@ -82,28 +82,33 @@ onMounted(fetchAssistancesByStudent);
 </script>
 
 <style>
-.status-success, .status-danger, .status-muted {
+.status-success,
+.status-danger,
+.status-muted {
   display: inline-block;
-  padding: 0.5em 1em;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: bold;
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--rp-radius-pill);
+  font-size: var(--rp-text-xs);
+  font-weight: var(--rp-weight-semibold);
   text-align: center;
-  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid transparent;
 }
 
 .status-success {
-  color: aliceblue;
-  background-color: #28a745; /* Verde */
+  background-color: var(--rp-success-50);
+  border-color: var(--rp-success-200);
+  color: var(--rp-success-800);
 }
 
 .status-danger {
-  color: white;
-  background-color: #dc3545; /* Rojo */
+  background-color: var(--rp-danger-50);
+  border-color: var(--rp-danger-200);
+  color: var(--rp-danger-800);
 }
 
 .status-muted {
-  color: white;
-  background-color: #6c757d; /* Gris */
+  background-color: var(--rp-surface-muted);
+  border-color: var(--rp-border);
+  color: var(--rp-text-muted);
 }
 </style>

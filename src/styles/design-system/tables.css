@@ -1,0 +1,373 @@
+/* =============================================================================
+   Tablas y listados — un solo lenguaje visual para:
+     .modern-table-shell   → CTable envuelta (reportes, detalles)
+     .modern-list-wrapper  → ElegantCrudList (listados CRUD)
+     .tls-table-wrap       → TramiteListShell (trámites)
+     .grades-table-wrap    → tabla de notas con columna fija
+   Los colores de cabecera y filas se controlan con los tokens --rp-table-*.
+   ============================================================================= */
+
+.modern-table-shell,
+.modern-list-wrapper,
+.tls-table-wrap,
+.list-with-pagination-wrap,
+.grades-table-wrap {
+  background: var(--rp-surface);
+  color: var(--rp-text);
+  border: 1px solid var(--rp-border);
+  border-radius: var(--rp-radius-lg);
+  box-shadow: var(--rp-shadow-xs);
+  overflow: hidden;
+}
+
+/* Las tablas anchas deben poder desplazarse en lugar de romper el layout. */
+.modern-table-shell,
+.modern-list-wrapper,
+.tls-table-wrap,
+.grades-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* --- Cabecera -------------------------------------------------------------- */
+
+.modern-table-shell .modern-table-header th,
+.modern-table-shell thead th,
+.modern-list-wrapper .table-header .table-cell,
+.tls-table-wrap thead th {
+  background: var(--rp-table-head-bg);
+  color: var(--rp-table-head-color);
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-2xs);
+  text-transform: uppercase;
+  letter-spacing: var(--rp-tracking-wide);
+  padding: var(--rp-space-3) var(--rp-space-3);
+  border: none;
+  border-bottom: 1px solid var(--rp-table-head-border);
+  white-space: nowrap;
+  vertical-align: middle;
+  text-align: start;
+}
+
+/* --- Celdas ---------------------------------------------------------------- */
+
+.modern-table-shell tbody td,
+.modern-table-shell tbody th,
+.modern-list-wrapper .table-cell,
+.tls-table-wrap tbody td,
+.tls-table-wrap tbody th {
+  padding: var(--rp-space-3);
+  font-size: var(--rp-text-base);
+  color: var(--rp-text);
+  border-color: var(--rp-table-row-border);
+  border-bottom: 1px solid var(--rp-table-row-border);
+  vertical-align: middle;
+}
+
+.modern-table-shell tbody tr:last-child td,
+.tls-table-wrap tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.modern-table-shell tbody tr,
+.modern-list-wrapper .table-row,
+.tls-table-wrap tbody tr {
+  transition: background-color var(--rp-transition-fast);
+}
+
+.modern-table-shell tbody tr:hover,
+.modern-list-wrapper .table-row:hover,
+.tls-table-wrap tbody tr:hover {
+  background-color: var(--rp-table-row-hover);
+}
+
+.modern-table-shell .table,
+.tls-table-wrap table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  vertical-align: middle;
+  --cui-table-border-color: var(--rp-table-row-border);
+  --cui-table-color: var(--rp-text);
+  --cui-table-bg: transparent;
+  --cui-table-hover-bg: var(--rp-table-row-hover);
+}
+
+/* --- ElegantCrudList: estructura display:table ----------------------------- */
+
+.modern-list-wrapper .modern-table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+  border: none;
+}
+
+.modern-list-wrapper .table-header {
+  display: table-header-group;
+}
+
+.modern-list-wrapper .table-row {
+  display: table-row;
+}
+
+.modern-list-wrapper .table-cell {
+  display: table-cell;
+}
+
+.modern-list-wrapper .table-header .table-cell {
+  border-bottom: 1px solid var(--rp-table-head-border);
+}
+
+.modern-list-wrapper .table-row:last-child .table-cell {
+  border-bottom: none;
+}
+
+.modern-list-wrapper .center-cell,
+.modern-table-shell .center-cell {
+  text-align: center;
+}
+
+.modern-list-wrapper .table-row:focus-visible {
+  outline: 2px solid var(--rp-brand-400);
+  outline-offset: -2px;
+}
+
+.modern-list-wrapper .row-selected {
+  background-color: var(--rp-surface-selected);
+}
+
+.modern-list-empty {
+  padding: var(--rp-space-8) var(--rp-space-4);
+  text-align: center;
+}
+
+.modern-list-wrapper .checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--rp-brand-500);
+}
+
+.modern-list-wrapper .avatar-wrapper {
+  display: inline-flex;
+  align-items: center;
+}
+
+.modern-list-wrapper .avatar,
+.modern-list-wrapper .avatar-fallback {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--rp-radius-sm);
+  border: 1px solid var(--rp-border);
+}
+
+.modern-list-wrapper .avatar {
+  object-fit: cover;
+}
+
+.modern-list-wrapper .avatar-fallback {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--rp-surface-muted);
+  color: var(--rp-text-muted);
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-xs);
+}
+
+.modern-list-wrapper .email-link {
+  color: var(--rp-brand-500);
+  text-decoration: none;
+}
+
+.modern-list-wrapper .email-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Celdas de "sin datos" ------------------------------------------------- */
+
+.modern-table-shell td.tls-empty-cell,
+.modern-table-shell td.table-empty-cell,
+.tls-table-wrap td.tls-empty-cell,
+.tls-table-wrap td.table-empty-cell {
+  padding: var(--rp-space-10) var(--rp-space-4) !important;
+  vertical-align: middle !important;
+  border-bottom: none !important;
+}
+
+.modern-table-shell .list-empty-message {
+  padding: var(--rp-space-5) var(--rp-space-3);
+}
+
+.tls-empty {
+  text-align: center;
+  max-width: 28rem;
+  margin: 0 auto;
+}
+
+.tls-empty__icon {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: var(--rp-space-2);
+  opacity: 0.85;
+}
+
+/* --- Paginación ------------------------------------------------------------ */
+
+.list-with-pagination-wrap .modern-list-wrapper,
+.list-with-pagination-wrap .modern-table-shell {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  background: transparent;
+}
+
+.modern-list-pagination-bar {
+  border-top: 1px solid var(--rp-border-subtle);
+  background: var(--rp-surface-muted);
+  padding: var(--rp-space-3) var(--rp-space-4);
+}
+
+.pagination {
+  --cui-pagination-color: var(--rp-text-muted);
+  --cui-pagination-bg: transparent;
+  --cui-pagination-border-color: var(--rp-border);
+  --cui-pagination-hover-color: var(--rp-brand-600);
+  --cui-pagination-hover-bg: var(--rp-surface-hover);
+  --cui-pagination-hover-border-color: var(--rp-border-brand);
+  --cui-pagination-active-bg: var(--rp-brand-500);
+  --cui-pagination-active-border-color: var(--rp-brand-500);
+  --cui-pagination-border-radius: var(--rp-radius-md);
+  margin-bottom: 0;
+}
+
+/* --- Trámites: filas expandibles y banners -------------------------------- */
+
+.tls-root {
+  width: 100%;
+}
+
+.tls-intro {
+  margin-bottom: var(--rp-space-4);
+}
+
+.tls-intro-text {
+  font-size: var(--rp-text-base);
+  color: var(--rp-text-muted);
+  line-height: var(--rp-leading-normal);
+  padding-top: var(--rp-space-1);
+}
+
+.tls-toolbar {
+  margin-bottom: var(--rp-space-4);
+}
+
+/* Evita el doble marco cuando dentro va un ElegantCrudList. */
+.tls-table-wrap:has(.modern-list-wrapper) {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.tls-table-wrap .btn {
+  font-size: var(--rp-text-sm);
+  font-weight: var(--rp-weight-semibold);
+}
+
+.tls-table-wrap .btn-sm {
+  padding: 0.35rem 0.65rem;
+}
+
+.modern-table-shell tbody tr.tls-expand-row:hover,
+.tls-table-wrap tbody tr.tls-expand-row:hover,
+.tls-table-wrap tbody tr.tls-obs-row:hover {
+  background-color: transparent;
+}
+
+.modern-table-shell tbody tr.tls-expand-row td,
+.tls-table-wrap tbody tr.tls-expand-row td {
+  border-top: none;
+}
+
+.tls-expand-inner {
+  padding: var(--rp-space-3) var(--rp-space-4) var(--rp-space-4);
+  background: var(--rp-surface-muted);
+  border-top: 1px solid var(--rp-border-subtle);
+}
+
+.tls-table-wrap tbody tr.table-active,
+.tls-table-wrap tbody tr.bg-light {
+  background: var(--rp-surface-muted) !important;
+}
+
+.tls-obs-banner {
+  margin: 0 var(--rp-space-2) var(--rp-space-2);
+  padding: var(--rp-space-3) var(--rp-space-4);
+  border-radius: var(--rp-radius-md);
+  border: 1px solid var(--rp-warning-200);
+  background: var(--rp-warning-50);
+  color: var(--rp-warning-700);
+}
+
+.tls-obs-label {
+  display: block;
+  font-weight: var(--rp-weight-bold);
+  font-size: var(--rp-text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: var(--rp-space-1);
+}
+
+.tls-obs-text {
+  font-size: var(--rp-text-base);
+  line-height: var(--rp-leading-snug);
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: var(--rp-text);
+}
+
+/* --- Tabla de notas con primera columna fija ------------------------------- */
+
+.grades-table-wrap .grades-sticky-col {
+  position: sticky;
+  inset-inline-start: 0;
+  z-index: 2;
+  background: var(--rp-surface);
+  min-width: 12.5rem;
+  box-shadow: 1px 0 0 var(--rp-border-subtle);
+}
+
+.grades-table-wrap thead .grades-sticky-col {
+  background: var(--rp-table-head-bg);
+  color: var(--rp-table-head-color);
+  z-index: 3;
+}
+
+.grades-table-wrap thead .competency-code,
+.grades-table-wrap thead .competency-name {
+  color: var(--rp-table-head-color);
+}
+
+/* --- Densidad en pantallas pequeñas --------------------------------------- */
+
+@media (max-width: 767.98px) {
+  .modern-table-shell tbody td,
+  .modern-table-shell tbody th,
+  .modern-list-wrapper .table-cell,
+  .tls-table-wrap tbody td,
+  .tls-table-wrap tbody th {
+    padding: var(--rp-space-2);
+    font-size: var(--rp-text-sm);
+  }
+
+  .modern-table-shell .modern-table-header th,
+  .modern-table-shell thead th,
+  .modern-list-wrapper .table-header .table-cell,
+  .tls-table-wrap thead th {
+    padding: var(--rp-space-2);
+  }
+
+  .grades-table-wrap .grades-sticky-col {
+    min-width: 9rem;
+  }
+}
