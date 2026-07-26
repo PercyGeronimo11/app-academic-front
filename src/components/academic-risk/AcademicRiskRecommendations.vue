@@ -1,69 +1,56 @@
 <template>
-  <div v-if="!groupedRecommendations.length" class="text-body-secondary">
-    No hay recomendaciones registradas para este estudiante.
+  <div v-if="!displayItems.length" class="risk-detail-empty">
+    {{ emptyMessage }}
   </div>
 
-  <CAccordion v-else always-open>
-    <CAccordionItem
-      v-for="group in groupedRecommendations"
-      :key="group.category"
-      :item-key="group.category"
+  <div v-else class="risk-rec-list">
+    <p v-if="isLowRisk" class="risk-detail-hint mb-3">
+      Acciones preventivas o de seguimiento puntual (el riesgo global sigue siendo bajo).
+    </p>
+    <article
+      v-for="(item, index) in displayItems"
+      :key="`${item.category}-${index}`"
+      class="risk-rec-card"
+      :class="`risk-rec-card--${(item.priority || 'medium').toLowerCase()}`"
     >
-      <CAccordionHeader>
-        {{ group.label }}
-        <CBadge color="secondary" class="ms-2">{{ group.items.length }}</CBadge>
-      </CAccordionHeader>
-      <CAccordionBody>
-        <div
-          v-for="(item, index) in group.items"
-          :key="`${group.category}-${index}`"
-          class="recommendation-item"
-        >
-          <div class="d-flex align-items-center gap-2 mb-2">
-            <span :class="getPriorityChipClass(item.priority)">
-              {{ getPriorityLabel(item.priority) }}
-            </span>
-            <strong>{{ item.title }}</strong>
-          </div>
-          <p class="mb-0 text-body-secondary">{{ item.description }}</p>
-        </div>
-      </CAccordionBody>
-    </CAccordionItem>
-  </CAccordion>
+      <div class="risk-rec-card__top">
+        <span class="risk-rec-card__category">{{ getCategoryLabel(item.category) }}</span>
+        <span class="risk-rec-card__tone">{{ item.toneLabel }}</span>
+      </div>
+      <h6 class="risk-rec-card__title">{{ item.title }}</h6>
+      <p class="risk-rec-card__desc">{{ item.description }}</p>
+    </article>
+  </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-
-import { RECOMMENDATION_CATEGORIES } from '@/types/academicRisk'
-import {
-  getCategoryLabel,
-  getPriorityChipClass,
-  getPriorityLabel,
-} from '@/utils/academicRisk'
+import { RISK_LEVELS } from '@/types/academicRisk'
+import { getCategoryLabel } from '@/utils/academicRisk'
+import { presentRecommendationsForDisplay } from '@/utils/academicRiskPresentation'
 
 const props = defineProps({
   recommendations: {
     type: Array,
     default: () => [],
   },
+  riskLevel: {
+    type: Number,
+    default: null,
+  },
 })
 
-const CATEGORY_ORDER = [
-  RECOMMENDATION_CATEGORIES.ACADEMIC,
-  RECOMMENDATION_CATEGORIES.ATTENDANCE,
-  RECOMMENDATION_CATEGORIES.BEHAVIOR,
-  RECOMMENDATION_CATEGORIES.TUTORING,
-  RECOMMENDATION_CATEGORIES.FAMILY,
-]
+const displayItems = computed(() => (
+  presentRecommendationsForDisplay(props.recommendations, props.riskLevel)
+))
 
-const groupedRecommendations = computed(() => {
-  const groups = CATEGORY_ORDER.map((category) => ({
-    category,
-    label: getCategoryLabel(category),
-    items: props.recommendations.filter((item) => item.category === category),
-  }))
+const isLowRisk = computed(() => (
+  props.riskLevel === RISK_LEVELS.VERY_LOW || props.riskLevel === RISK_LEVELS.LOW
+))
 
-  return groups.filter((group) => group.items.length > 0)
-})
+const emptyMessage = computed(() => (
+  isLowRisk.value
+    ? 'No hay acciones prioritarias. El alumno mantiene un buen perfil.'
+    : 'No hay recomendaciones registradas para este estudiante.'
+))
 </script>

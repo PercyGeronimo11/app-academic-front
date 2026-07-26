@@ -141,8 +141,10 @@ const routes = [
       },
       {
         path: '/prediccion/aulas',
-        name: 'PrediccionAulas',
-        component: () => import('@/views/prediccion/AcademicRiskClassroomsView.vue'),
+        redirect: (to) => ({
+          path: '/prediccion/dashboard',
+          query: to.query,
+        }),
       },
       {
         path: '/prediccion/academic-risk',

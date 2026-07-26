@@ -69,17 +69,18 @@
     <CCol>
       <CCard class="shadow-sm border-0">
         <CCardBody class="p-0">
-          <div class="modern-table-shell">
-            <CTable hover responsive align="middle" class="mb-0 text-center">
+          <div class="modern-table-shell assist-table-tight">
+            <CTable hover align="middle" class="mb-0">
 
-              <CTableHead class="modern-table-header text-center">
+              <CTableHead class="modern-table-header">
                 <CTableRow>
-                  <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Apellidos</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Nombres</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center">Grado </CTableHeaderCell>
-                  <CTableHeaderCell class="text-center"> Sección</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center"> Asistencia</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center d-none d-md-table-cell" style="width: 3rem">N°</CTableHeaderCell>
+                  <CTableHeaderCell class="d-none d-md-table-cell">Apellidos</CTableHeaderCell>
+                  <CTableHeaderCell class="d-none d-md-table-cell">Nombres</CTableHeaderCell>
+                  <CTableHeaderCell class="d-md-none text-start">Alumno</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center d-none d-md-table-cell">Grado</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center d-none d-md-table-cell">Sección</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Asistencia</CTableHeaderCell>
                   <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
@@ -94,14 +95,23 @@
                 </template>
                 <template v-else>
                   <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
-                    <CTableDataCell>{{ (currentPage - 1) * pageSize + index + 1 }}</CTableDataCell>
-                    <CTableDataCell class="fw-semibold text-left">{{ alumno.apellidos }}</CTableDataCell>
-                    <CTableDataCell class="text-left">{{ alumno.nombres }}</CTableDataCell>
-                    <CTableDataCell class="text-center">{{ alumno.grade }}° </CTableDataCell>
-                    <CTableDataCell class="text-center"> {{ alumno.section }} </CTableDataCell>
+                    <CTableDataCell class="text-center d-none d-md-table-cell">
+                      {{ (currentPage - 1) * pageSize + index + 1 }}
+                    </CTableDataCell>
+                    <CTableDataCell class="fw-semibold text-start d-none d-md-table-cell">{{ alumno.apellidos }}</CTableDataCell>
+                    <CTableDataCell class="text-start d-none d-md-table-cell">{{ alumno.nombres }}</CTableDataCell>
+                    <CTableDataCell class="d-md-none">
+                      <div class="assist-name-stack">
+                        <span class="assist-name-surnames">{{ alumno.apellidos }}</span>
+                        <span class="assist-name-given">{{ alumno.nombres }}</span>
+                        <span class="assist-name-given">{{ alumno.grade }}° {{ alumno.section }}</span>
+                      </div>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center d-none d-md-table-cell">{{ alumno.grade }}°</CTableDataCell>
+                    <CTableDataCell class="text-center d-none d-md-table-cell">{{ alumno.section }}</CTableDataCell>
 
                     <CTableDataCell class="text-center">
-                      <CBadge :class="colorEstado(alumno.asistencia_estado)">
+                      <CBadge :class="colorEstado(alumno.asistencia_estado)" class="assist-badge-sm">
                         {{ textoEstado(alumno.asistencia_estado) }}
                       </CBadge>
                     </CTableDataCell>

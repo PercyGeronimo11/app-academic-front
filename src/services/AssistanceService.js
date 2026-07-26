@@ -3,8 +3,6 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL;
 const API_URL_DJANGO = import.meta.env.VITE_API_URL_DJANGO;
 
-const token = localStorage.getItem('access_token');
-
 export default {
   getAsistenciaBySeccion(params) {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/seguimiento-by-seccion/`, {params});
@@ -14,8 +12,10 @@ export default {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/detail-by-seccion/${seccionId}/`);
   },
   
-  getDashboardAlumno(idAlumno) {
-    return axios.get(`${API_URL_DJANGO}/assistances/admin/dashboard-alumno/${idAlumno}/`);
+  getDashboardAlumno(idAlumno, params = {}) {
+    return axios.get(`${API_URL_DJANGO}/assistances/admin/dashboard-alumno/${idAlumno}/`, {
+      params,
+    });
   },
 
   listarAlumnos: (params) => {
@@ -36,23 +36,12 @@ export default {
     return axios.get(`${API_URL_DJANGO}/assistances/admin/historial-by-alumno/`, { params })
   },
 
-  getReporteGeneralAlumno() {
-    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-general/`, 
-    {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+  getReporteGeneralAlumno(params = {}) {
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-general/`, { params });
   },
 
   getAlumnoReporteDetallado(params) {
-    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-detallado/`, { params },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      }
-    );
+    return axios.get(`${API_URL_DJANGO}/assistances/alumno/reporte-detallado/`, { params });
   },
 
 

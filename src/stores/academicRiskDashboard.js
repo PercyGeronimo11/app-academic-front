@@ -3,6 +3,12 @@ import { defineStore } from 'pinia'
 
 import AcademicRiskService from '@/services/AcademicRiskService'
 import BimesterService from '@/services/BimesterService'
+import {
+  loadSchoolYearOptions,
+  resolveActiveSchoolYear,
+  resolveDefaultBimesterNumber,
+} from '@/utils/academicRiskFilters'
+import { resolveDefaultBimester } from '@/utils/schoolPeriodDefaults'
 
 const EMPTY_SUMMARY = {
   total_students: 0,
@@ -35,15 +41,25 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
   const filters = ref({
     schoolYear: null,
     bimester: null,
+    gradeSectionId: null, // null = Todas
   })
 
   const schoolYears = ref([])
   const bimesters = ref([])
+  const gradeSections = ref([])
+  const activeSchoolYear = ref(null)
 
   const summary = ref({ ...EMPTY_SUMMARY })
   const alerts = ref({ ...EMPTY_ALERTS })
   const topClassrooms = ref([])
   const classrooms = ref([])
+  const students = ref([])
+  const insights = ref({
+    top_factors: [],
+    top_recommendations: [],
+    top_merit: [],
+    top_punctuality: [],
+  })
 
   const loading = ref(false)
   const updating = ref(false)
@@ -56,9 +72,37 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     isStudentView: false,
   })
 
+  /** Evita bootstrap / overview duplicados (remount HMR, doble navigate). */
+  let bootstrapPromise = null
+  let overviewPromise = null
+  let lastOverviewKey = null
+
   const selectedBimester = computed(() => (
     bimesters.value.find((item) => item.number === filters.value.bimester) || null
   ))
+
+  const selectedGradeSection = computed(() => {
+    if (!filters.value.gradeSectionId) return null
+    return gradeSections.value.find((item) => item.id === filters.value.gradeSectionId) || null
+  })
+
+  const isAllClassrooms = computed(() => filters.value.gradeSectionId == null)
+
+  const currentWritableBimester = computed(() => {
+    if (!activeSchoolYear.value || Number(filters.value.schoolYear) !== Number(activeSchoolYear.value)) {
+      return null
+    }
+    return resolveDefaultBimester(bimesters.value, { maxNumber: 3 })
+  })
+
+  const isWritableWindow = computed(() => {
+    const current = currentWritableBimester.value
+    return Boolean(
+      current
+      && Number(filters.value.schoolYear) === Number(activeSchoolYear.value)
+      && Number(filters.value.bimester) === Number(current.number),
+    )
+  })
 
   const canQuery = computed(() => (
     Boolean(filters.value.schoolYear) && Boolean(filters.value.bimester)
@@ -66,19 +110,23 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
 
   const canUpdatePredictions = computed(() => (
     scope.value.canUpdatePredictions
+    && isWritableWindow.value
     && Boolean(filters.value.schoolYear)
     && Boolean(filters.value.bimester)
     && !updating.value
     && !loading.value
   ))
 
+  const overviewKey = () => {
+    const f = filters.value
+    return `${f.schoolYear ?? ''}|${f.bimester ?? ''}|${f.gradeSectionId ?? 'all'}`
+  }
+
   const loadSchoolYears = async () => {
-    const response = await BimesterService.list()
-    const data = extractLaravelData(response)
-    const years = [...new Set(data.map((item) => item.year))].sort((a, b) => b - a)
-    schoolYears.value = years.length ? years : [new Date().getFullYear()]
+    schoolYears.value = await loadSchoolYearOptions()
+    activeSchoolYear.value = await resolveActiveSchoolYear(schoolYears.value)
     if (!filters.value.schoolYear) {
-      filters.value.schoolYear = schoolYears.value[0]
+      filters.value.schoolYear = activeSchoolYear.value
     }
   }
 
@@ -93,7 +141,7 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
       .sort((a, b) => a.number - b.number)
 
     if (!bimesters.value.some((item) => item.number === filters.value.bimester)) {
-      filters.value.bimester = bimesters.value[0]?.number ?? null
+      filters.value.bimester = resolveDefaultBimesterNumber(bimesters.value, { maxNumber: 3 })
     }
   }
 
@@ -108,109 +156,183 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     }
   }
 
-  const queryParams = () => ({
-    school_year: filters.value.schoolYear,
-    bimester: filters.value.bimester,
-  })
+  const loadGradeSections = async () => {
+    if (!filters.value.schoolYear) {
+      gradeSections.value = []
+      return
+    }
+    const response = await AcademicRiskService.getGradeSections({
+      school_year: filters.value.schoolYear,
+    })
+    gradeSections.value = extractLaravelData(response).map((item) => ({
+      id: Number(item.id),
+      label: item.label || `${item.grade} ${item.section}`,
+      grade: item.grade,
+      section: item.section,
+    }))
 
-  const loadOverview = async () => {
-    if (!canQuery.value) return
-    loading.value = true
-    error.value = null
-    connectionError.value = false
-
-    try {
-      const response = await AcademicRiskService.getDashboard(queryParams())
-      const data = response.data?.data ?? {}
-      summary.value = { ...EMPTY_SUMMARY, ...(data.summary || {}) }
-      alerts.value = { ...EMPTY_ALERTS, ...(data.alerts || {}) }
-      topClassrooms.value = data.top_classrooms || []
-    } catch (err) {
-      if (!err.response) connectionError.value = true
-      error.value = err.response?.data?.message
-        || 'No se pudo cargar el dashboard de alerta temprana.'
-      summary.value = { ...EMPTY_SUMMARY }
-      alerts.value = { ...EMPTY_ALERTS }
-      topClassrooms.value = []
-    } finally {
-      loading.value = false
+    if (
+      filters.value.gradeSectionId != null
+      && !gradeSections.value.some((item) => item.id === filters.value.gradeSectionId)
+    ) {
+      filters.value.gradeSectionId = null
     }
   }
 
-  const loadClassrooms = async () => {
+  /** Tras tener año: bimestres + scope + aulas en paralelo. */
+  const loadYearDependentMeta = async () => {
+    await Promise.all([
+      loadBimesters(),
+      loadScope(),
+      loadGradeSections(),
+    ])
+  }
+
+  const queryParams = () => {
+    const params = {
+      school_year: filters.value.schoolYear,
+      bimester: filters.value.bimester,
+    }
+    if (filters.value.gradeSectionId != null) {
+      params.grade_section_id = filters.value.gradeSectionId
+    }
+    return params
+  }
+
+  const applyOverviewPayload = (data) => {
+    summary.value = { ...EMPTY_SUMMARY, ...(data.summary || {}) }
+    alerts.value = { ...EMPTY_ALERTS, ...(data.alerts || {}) }
+    topClassrooms.value = data.top_classrooms || []
+    classrooms.value = data.classrooms || []
+    students.value = data.students || []
+    insights.value = {
+      top_factors: data.insights?.top_factors || [],
+      top_recommendations: data.insights?.top_recommendations || [],
+      top_merit: data.insights?.top_merit || [],
+      top_punctuality: data.insights?.top_punctuality || [],
+    }
+  }
+
+  const resetOverviewPayload = () => {
+    summary.value = { ...EMPTY_SUMMARY }
+    alerts.value = { ...EMPTY_ALERTS }
+    topClassrooms.value = []
+    classrooms.value = []
+    students.value = []
+    insights.value = {
+      top_factors: [],
+      top_recommendations: [],
+      top_merit: [],
+      top_punctuality: [],
+    }
+  }
+
+  /**
+   * @param {{ force?: boolean }} [options]
+   */
+  const loadOverview = async (options = {}) => {
+    const force = Boolean(options?.force)
     if (!canQuery.value) return
+
+    const key = overviewKey()
+
+    // Misma consulta ya en vuelo → reutilizar
+    if (overviewPromise && lastOverviewKey === key) {
+      return overviewPromise
+    }
+
+    // Misma clave recién cargada y no force → no repetir
+    if (!force && !overviewPromise && lastOverviewKey === key && !error.value && !connectionError.value) {
+      return
+    }
+
+    lastOverviewKey = key
     loading.value = true
     error.value = null
     connectionError.value = false
 
-    try {
-      const response = await AcademicRiskService.getClassrooms(queryParams())
-      const data = response.data?.data ?? {}
-      summary.value = { ...EMPTY_SUMMARY, ...(data.summary || {}) }
-      classrooms.value = data.classrooms || []
-    } catch (err) {
-      if (!err.response) connectionError.value = true
-      error.value = err.response?.data?.message
-        || 'No se pudo cargar el comparativo de aulas.'
-      summary.value = { ...EMPTY_SUMMARY }
-      classrooms.value = []
-    } finally {
-      loading.value = false
-    }
+    overviewPromise = (async () => {
+      try {
+        const response = await AcademicRiskService.getDashboard(queryParams())
+        // Si el usuario cambió filtros mientras tanto, descartar resultado viejo
+        if (overviewKey() !== key) return
+        applyOverviewPayload(response.data?.data ?? {})
+      } catch (err) {
+        if (overviewKey() !== key) return
+        if (!err.response) connectionError.value = true
+        error.value = err.response?.data?.message
+          || 'No se pudo cargar el dashboard de alerta temprana.'
+        resetOverviewPayload()
+      } finally {
+        if (lastOverviewKey === key) {
+          overviewPromise = null
+          loading.value = false
+        }
+      }
+    })()
+
+    return overviewPromise
   }
 
   const bootstrapOverview = async () => {
-    loading.value = true
-    error.value = null
-    connectionError.value = false
-    try {
-      await loadSchoolYears()
-      await loadBimesters()
-      await loadScope()
-      await loadOverview()
-    } catch (err) {
-      if (!err.response) connectionError.value = true
-      error.value = 'No se pudo inicializar el dashboard.'
-      loading.value = false
-    }
-  }
+    if (bootstrapPromise) return bootstrapPromise
 
-  const bootstrapClassrooms = async () => {
-    loading.value = true
-    error.value = null
-    connectionError.value = false
-    try {
-      await loadSchoolYears()
-      await loadBimesters()
-      await loadScope()
-      await loadClassrooms()
-    } catch (err) {
-      if (!err.response) connectionError.value = true
-      error.value = 'No se pudo inicializar el comparativo de aulas.'
-      loading.value = false
-    }
+    bootstrapPromise = (async () => {
+      loading.value = true
+      error.value = null
+      connectionError.value = false
+      try {
+        await loadSchoolYears()
+        await loadYearDependentMeta()
+        await loadOverview({ force: true })
+      } catch (err) {
+        if (!err.response) connectionError.value = true
+        error.value = 'No se pudo inicializar el dashboard.'
+        loading.value = false
+      }
+    })().finally(() => {
+      bootstrapPromise = null
+    })
+
+    return bootstrapPromise
   }
 
   const onSchoolYearChange = async (year) => {
     filters.value.schoolYear = year
-    await loadBimesters()
-    await loadScope()
+    filters.value.gradeSectionId = null
+    lastOverviewKey = null
+    await loadYearDependentMeta()
   }
 
   const onBimesterChange = (bimester) => {
     filters.value.bimester = bimester
   }
 
-  const updatePredictionsAll = async () => {
+  const onGradeSectionChange = (gradeSectionId) => {
+    filters.value.gradeSectionId = gradeSectionId == null || gradeSectionId === ''
+      ? null
+      : Number(gradeSectionId)
+  }
+
+  const updatePredictions = async () => {
     updating.value = true
     connectionError.value = false
 
     try {
-      const response = await AcademicRiskService.updatePredictionsAll({
-        school_year: filters.value.schoolYear,
-        bimester: filters.value.bimester,
-      })
-      await loadClassrooms()
+      let response
+      if (filters.value.gradeSectionId == null) {
+        response = await AcademicRiskService.updatePredictionsAll({
+          school_year: filters.value.schoolYear,
+          bimester: filters.value.bimester,
+        })
+      } else {
+        response = await AcademicRiskService.updatePredictions({
+          school_year: filters.value.schoolYear,
+          bimester: filters.value.bimester,
+          grade_section_id: filters.value.gradeSectionId,
+        })
+      }
+      await loadOverview({ force: true })
       return response.data
     } catch (err) {
       if (!err.response) connectionError.value = true
@@ -226,24 +348,30 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     filters,
     schoolYears,
     bimesters,
+    gradeSections,
+    activeSchoolYear,
     summary,
     alerts,
     topClassrooms,
     classrooms,
+    students,
+    insights,
     loading,
     updating,
     error,
     connectionError,
     scope,
     selectedBimester,
+    selectedGradeSection,
+    isAllClassrooms,
+    isWritableWindow,
     canQuery,
     canUpdatePredictions,
     bootstrapOverview,
-    bootstrapClassrooms,
     loadOverview,
-    loadClassrooms,
     onSchoolYearChange,
     onBimesterChange,
-    updatePredictionsAll,
+    onGradeSectionChange,
+    updatePredictions,
   }
 })

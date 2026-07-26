@@ -11,6 +11,12 @@ import {
 import {
   buildStudentFullName,
 } from '@/utils/academicRisk'
+import {
+  loadSchoolYearOptions,
+  resolveActiveSchoolYear,
+  resolveDefaultBimesterNumber,
+} from '@/utils/academicRiskFilters'
+import { resolveDefaultBimester } from '@/utils/schoolPeriodDefaults'
 
 const EMPTY_SUMMARY = {
   totalStudents: 0,
@@ -43,6 +49,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const students = ref([])
   const rows = ref([])
   const summary = ref({ ...EMPTY_SUMMARY })
+  const activeSchoolYear = ref(null)
 
   const loading = ref(false)
   const updating = ref(false)
@@ -63,8 +70,17 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     return rows.value.filter((row) => row.studentId === filters.value.studentId)
   })
 
+  const isWritableWindow = computed(() => {
+    if (!activeSchoolYear.value || Number(filters.value.schoolYear) !== Number(activeSchoolYear.value)) {
+      return false
+    }
+    const current = resolveDefaultBimester(bimesters.value, { maxNumber: 3 })
+    return Boolean(current && Number(filters.value.bimester) === Number(current.number))
+  })
+
   const canUpdate = computed(() => (
     scope.value.canUpdatePredictions
+    && isWritableWindow.value
     && Boolean(filters.value.schoolYear)
     && Boolean(filters.value.bimester)
     && Boolean(filters.value.gradeSectionId)
@@ -74,6 +90,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
   const canPredictIndividual = computed(() => (
     scope.value.canUpdatePredictions
+    && isWritableWindow.value
     && Boolean(filters.value.schoolYear)
     && Boolean(filters.value.bimester)
     && !updating.value
@@ -113,12 +130,10 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   }
 
   const loadSchoolYears = async () => {
-    const response = await BimesterService.list()
-    const data = extractLaravelData(response)
-    const years = [...new Set(data.map((item) => item.year))].sort((a, b) => b - a)
-    schoolYears.value = years.length ? years : [new Date().getFullYear()]
+    schoolYears.value = await loadSchoolYearOptions()
+    activeSchoolYear.value = await resolveActiveSchoolYear(schoolYears.value)
     if (!filters.value.schoolYear) {
-      filters.value.schoolYear = schoolYears.value[0]
+      filters.value.schoolYear = activeSchoolYear.value
     }
   }
 
@@ -133,7 +148,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       .sort((a, b) => a.number - b.number)
 
     if (!bimesters.value.some((item) => item.number === filters.value.bimester)) {
-      filters.value.bimester = bimesters.value[0]?.number ?? null
+      filters.value.bimester = resolveDefaultBimesterNumber(bimesters.value, { maxNumber: 3 })
     }
   }
 

@@ -729,3 +729,58 @@ body {
 [data-coreui-theme='dark'] .grades-table-wrap .grades-sticky-col {
   background: var(--cui-body-bg, #212631);
 }
+
+/* ---- Módulo asistencias: ancho útil + tablas responsive ---- */
+.assistances-container {
+  max-width: 100% !important;
+}
+
+.assist-name-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  text-align: left;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.assist-name-surnames {
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: inherit;
+  word-break: break-word;
+}
+
+.assist-name-given {
+  font-weight: 500;
+  font-size: 0.78rem;
+  opacity: 0.85;
+  word-break: break-word;
+}
+
+.assist-table-tight.modern-table-shell tbody td,
+.assist-table-tight .modern-table-header th {
+  padding-left: 0.45rem !important;
+  padding-right: 0.45rem !important;
+}
+
+@media (max-width: 767.98px) {
+  .assist-table-tight.modern-table-shell tbody td,
+  .assist-table-tight .modern-table-header th {
+    padding: 0.55rem 0.4rem !important;
+    font-size: 0.8rem;
+  }
+
+  .assist-table-tight .modern-table-header th {
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+    white-space: normal;
+  }
+
+  .assist-badge-sm.badge,
+  .assist-table-tight .badge {
+    font-size: 0.72rem;
+    padding: 0.35rem 0.45rem;
+  }
+}

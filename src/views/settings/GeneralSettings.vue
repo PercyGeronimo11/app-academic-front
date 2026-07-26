@@ -52,11 +52,6 @@
         :data="bimesters"
         empty-message="No hay bimestres para este año. Edite el periodo para generarlos."
       >
-        <template #status="{ item }">
-          <span :class="['status-pill', item.status ? 'status-open' : 'status-closed']">
-            {{ item.status ? 'Abierto' : 'Cerrado' }}
-          </span>
-        </template>
         <template #actions="{ item }">
           <CButton color="warning" class="text-white" @click="openEditBimester(item)">
             <CIcon :content="cilPencil" size="lg" />
@@ -201,7 +196,6 @@ const bimesterColumns = [
   { key: 'name', label: 'Nombre' },
   { key: 'start_date', label: 'Inicio' },
   { key: 'end_date', label: 'Fin' },
-  { key: 'status', label: 'Estado' },
   { key: 'actions', label: 'Opciones' },
 ]
 
@@ -420,14 +414,12 @@ onMounted(async () => {
   font-weight: 600;
 }
 
-.status-active,
-.status-open {
+.status-active {
   background: #d1fae5;
   color: #065f46;
 }
 
-.status-inactive,
-.status-closed {
+.status-inactive {
   background: #fee2e2;
   color: #991b1b;
 }

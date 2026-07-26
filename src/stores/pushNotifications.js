@@ -3,6 +3,10 @@ import { defineStore } from 'pinia'
 
 import PushNotificationService from '@/services/PushNotificationService'
 import AcademicRiskService from '@/services/AcademicRiskService'
+import {
+  loadSchoolYearOptions,
+  resolveActiveSchoolYear,
+} from '@/utils/schoolPeriodDefaults'
 
 const extractData = (response) => response?.data ?? {}
 
@@ -14,7 +18,7 @@ const buildStudentLabel = (student) => {
 
 export const usePushNotificationsStore = defineStore('pushNotifications', () => {
   const filters = ref({
-    schoolYear: new Date().getFullYear(),
+    schoolYear: null,
     gradeSectionId: null,
     studentId: null,
     type: 'absence',
@@ -42,13 +46,16 @@ export const usePushNotificationsStore = defineStore('pushNotifications', () => 
 
   const loading = ref(false)
   const error = ref(null)
-
-  const schoolYears = computed(() => {
-    const current = new Date().getFullYear()
-    return [current, current - 1]
-  })
+  const schoolYears = ref([])
 
   const canFilterByGradeSection = computed(() => !scope.value.isStudentView)
+
+  const loadSchoolYears = async () => {
+    schoolYears.value = await loadSchoolYearOptions()
+    if (!filters.value.schoolYear) {
+      filters.value.schoolYear = await resolveActiveSchoolYear(schoolYears.value)
+    }
+  }
 
   const loadScope = async () => {
     const response = await PushNotificationService.getScope({
@@ -139,6 +146,7 @@ export const usePushNotificationsStore = defineStore('pushNotifications', () => 
   }
 
   const initialize = async () => {
+    await loadSchoolYears()
     await loadScope()
     await loadGradeSections()
     if (!scope.value.isStudentView) {

@@ -83,13 +83,14 @@
         <CCard class="shadow border-0">
           <CCardBody>
 
-            <CTable hover responsive align="middle" class="text-center border">
+            <div class="modern-table-shell assist-table-tight">
+            <CTable hover align="middle" class="mb-0">
 
-              <CTableHead color="dark">
+              <CTableHead class="modern-table-header">
                 <CTableRow>
-                  <CTableHeaderCell>Fecha</CTableHeaderCell>
-                  <CTableHeaderCell>Hora</CTableHeaderCell>
-                  <CTableHeaderCell>Estado</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Hora</CTableHeaderCell>
+                  <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
 
@@ -103,10 +104,10 @@
                 </template>
                 <template v-else>
                   <CTableRow v-for="(item, index) in asistencias" :key="index">
-                    <CTableDataCell>{{ formatDate(item.fecha_hora) }}</CTableDataCell>
-                    <CTableDataCell>{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
+                    <CTableDataCell class="text-center">{{ formatDate(item.fecha_hora) }}</CTableDataCell>
+                    <CTableDataCell class="text-center">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
                     <CTableDataCell class="text-center">
-                      <CBadge :class="colorEstado(item.estado)" shape="rounded-pill">
+                      <CBadge :class="colorEstado(item.estado)" class="assist-badge-sm">
                         {{ textoEstado(item.estado) }}
                       </CBadge>
                     </CTableDataCell>
@@ -115,6 +116,7 @@
               </CTableBody>
 
             </CTable>
+            </div>
 
             <!-- Paginación -->
             <div class="d-flex justify-content-between align-items-center mt-4 p-2 ">

@@ -26,6 +26,50 @@
           </CFormSelect>
         </div>
 
+        <div
+          v-if="!store.scope.isStudentView"
+          class="academic-risk-filters__field academic-risk-filters__field--aula"
+        >
+          <CFormLabel class="academic-risk-filters__label">Aula</CFormLabel>
+          <div class="aula-combobox" ref="comboRoot">
+            <CFormInput
+              v-model="aulaSearch"
+              type="search"
+              placeholder="Buscar grado / sección..."
+              autocomplete="off"
+              :disabled="store.loading || store.updating"
+              @focus="openAulaMenu"
+              @input="openAulaMenu"
+              @keydown.down.prevent="moveAulaHighlight(1)"
+              @keydown.up.prevent="moveAulaHighlight(-1)"
+              @keydown.enter.prevent="selectHighlightedAula"
+              @keydown.esc="closeAulaMenu"
+            />
+            <ul v-if="aulaMenuOpen" class="aula-combobox__menu">
+              <li
+                :class="{ 'is-active': highlightedIndex === 0, 'is-selected': store.filters.gradeSectionId == null }"
+                @mousedown.prevent="selectAula(null)"
+              >
+                Todas
+              </li>
+              <li
+                v-for="(item, index) in filteredAulas"
+                :key="item.id"
+                :class="{
+                  'is-active': highlightedIndex === index + 1,
+                  'is-selected': store.filters.gradeSectionId === item.id,
+                }"
+                @mousedown.prevent="selectAula(item.id)"
+              >
+                {{ item.label }}
+              </li>
+              <li v-if="!filteredAulas.length" class="aula-combobox__empty">
+                Sin coincidencias
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <div class="academic-risk-filters__actions">
           <CButton
             color="secondary"
@@ -37,7 +81,7 @@
             Consultar
           </CButton>
           <CButton
-            v-if="showBulkUpdate && store.canUpdatePredictions"
+            v-if="store.canUpdatePredictions"
             color="primary"
             :disabled="!store.canUpdatePredictions || store.updating"
             @click="$emit('update-predictions')"
@@ -52,18 +96,93 @@
 </template>
 
 <script setup>
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useAcademicRiskDashboardStore } from '@/stores/academicRiskDashboard'
-
-defineProps({
-  showBulkUpdate: {
-    type: Boolean,
-    default: false,
-  },
-})
 
 defineEmits(['apply', 'update-predictions'])
 
 const store = useAcademicRiskDashboardStore()
+
+const aulaSearch = ref('Todas')
+const aulaMenuOpen = ref(false)
+const highlightedIndex = ref(0)
+const comboRoot = ref(null)
+
+const filteredAulas = computed(() => {
+  const query = aulaSearch.value.trim().toLowerCase()
+  if (!query || query === 'todas') return store.gradeSections
+  return store.gradeSections.filter((item) => item.label.toLowerCase().includes(query))
+})
+
+const syncAulaLabel = () => {
+  if (store.filters.gradeSectionId == null) {
+    aulaSearch.value = 'Todas'
+    return
+  }
+  const selected = store.gradeSections.find((item) => item.id === store.filters.gradeSectionId)
+  aulaSearch.value = selected?.label || 'Todas'
+}
+
+watch(
+  () => [store.filters.gradeSectionId, store.gradeSections],
+  () => syncAulaLabel(),
+  { deep: true },
+)
+
+const openAulaMenu = () => {
+  aulaMenuOpen.value = true
+  highlightedIndex.value = 0
+  aulaSearch.value = ''
+}
+
+const closeAulaMenu = () => {
+  aulaMenuOpen.value = false
+  syncAulaLabel()
+}
+
+const selectAula = (id) => {
+  store.onGradeSectionChange(id)
+  syncAulaLabel()
+  aulaMenuOpen.value = false
+}
+
+const moveAulaHighlight = (delta) => {
+  if (!aulaMenuOpen.value) openAulaMenu()
+  const max = filteredAulas.value.length
+  const next = highlightedIndex.value + delta
+  if (next < 0) {
+    highlightedIndex.value = max
+  } else if (next > max) {
+    highlightedIndex.value = 0
+  } else {
+    highlightedIndex.value = next
+  }
+}
+
+const selectHighlightedAula = () => {
+  if (!aulaMenuOpen.value) return
+  if (highlightedIndex.value === 0) {
+    selectAula(null)
+    return
+  }
+  const item = filteredAulas.value[highlightedIndex.value - 1]
+  if (item) selectAula(item.id)
+}
+
+const onDocumentClick = (event) => {
+  if (!comboRoot.value?.contains(event.target)) {
+    closeAulaMenu()
+  }
+}
+
+onMounted(() => {
+  syncAulaLabel()
+  document.addEventListener('mousedown', onDocumentClick)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('mousedown', onDocumentClick)
+})
 
 const onYear = async (event) => {
   await store.onSchoolYearChange(Number(event.target.value))
@@ -73,3 +192,52 @@ const onBimester = (event) => {
   store.onBimesterChange(Number(event.target.value))
 }
 </script>
+
+<style scoped lang="scss">
+.aula-combobox {
+  position: relative;
+}
+
+.aula-combobox__menu {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 240px;
+  overflow: auto;
+  margin: 0;
+  padding: 0.35rem 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #d8dbe0;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 21, 0.1);
+}
+
+.aula-combobox__menu li {
+  padding: 0.45rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.aula-combobox__menu li:hover,
+.aula-combobox__menu li.is-active {
+  background: #f0f3ff;
+}
+
+.aula-combobox__menu li.is-selected {
+  font-weight: 600;
+  color: #321fdb;
+}
+
+.aula-combobox__empty {
+  color: #9da5b1;
+  cursor: default !important;
+}
+
+.academic-risk-filters__field--aula {
+  min-width: 220px;
+  flex: 1.2;
+}
+</style>

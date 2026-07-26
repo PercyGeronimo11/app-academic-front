@@ -1,7 +1,7 @@
 <template>
   <div class="risk-kpis mb-4">
     <CRow class="g-3">
-      <CCol xs="12" sm="6" xl="3">
+      <CCol xs="12" sm="6" lg="4">
         <div class="risk-kpi risk-kpi--indigo">
           <div class="risk-kpi__icon"><i class="fas fa-user-graduate"></i></div>
           <div>
@@ -11,7 +11,7 @@
           </div>
         </div>
       </CCol>
-      <CCol xs="12" sm="6" xl="3">
+      <CCol xs="12" sm="6" lg="4">
         <div class="risk-kpi risk-kpi--slate">
           <div class="risk-kpi__icon"><i class="fas fa-hourglass-half"></i></div>
           <div>
@@ -21,23 +21,13 @@
           </div>
         </div>
       </CCol>
-      <CCol xs="12" sm="6" xl="3">
+      <CCol xs="12" sm="6" lg="4">
         <div class="risk-kpi risk-kpi--alert">
           <div class="risk-kpi__icon"><i class="fas fa-exclamation-circle"></i></div>
           <div>
             <div class="risk-kpi__label">Alto + Crítico</div>
             <div class="risk-kpi__value">{{ summary.high_or_critical }}</div>
             <div class="risk-kpi__hint">{{ formatPercent(summary.high_or_critical_percentage) }} del evaluado</div>
-          </div>
-        </div>
-      </CCol>
-      <CCol xs="12" sm="6" xl="3">
-        <div class="risk-kpi risk-kpi--time">
-          <div class="risk-kpi__icon"><i class="fas fa-clock"></i></div>
-          <div>
-            <div class="risk-kpi__label">Última actualización</div>
-            <div class="risk-kpi__value risk-kpi__value--sm">{{ formatDateTime(summary.last_updated) }}</div>
-            <div class="risk-kpi__hint">{{ summary.classrooms_count }} aulas en alcance</div>
           </div>
         </div>
       </CCol>
@@ -56,7 +46,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { formatDateTime, formatPercent } from '@/utils/academicRisk'
+import { formatPercent } from '@/utils/academicRisk'
 
 const props = defineProps({
   summary: {

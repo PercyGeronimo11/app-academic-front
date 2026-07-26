@@ -5,6 +5,9 @@ const unreadCount = ref(0);
 const latestBanner = ref(null);
 const lastSeenId = ref(Number(localStorage.getItem('last_notification_id') || 0));
 let pollTimer = null;
+let pollInFlight = null;
+let layoutSubscribers = 0;
+let stopPollingTimer = null;
 
 const requestBrowserPermission = async () => {
   if (!('Notification' in window)) return false;
@@ -46,47 +49,74 @@ const pollNotifications = async () => {
   const token = localStorage.getItem('access_token');
   if (!token) return;
 
-  try {
-    const [countRes, latestRes] = await Promise.all([
-      UserNotificationService.unreadCount(),
-      UserNotificationService.latestUnread(),
-    ]);
+  if (pollInFlight) return pollInFlight;
 
-    unreadCount.value = countRes.data?.data?.count ?? 0;
+  pollInFlight = (async () => {
+    try {
+      const [countRes, latestRes] = await Promise.all([
+        UserNotificationService.unreadCount(),
+        UserNotificationService.latestUnread(),
+      ]);
 
-    const latest = latestRes.data?.data;
-    if (latest && latest.id > lastSeenId.value) {
-      const isFirstPoll = !sessionStorage.getItem('notifications_poll_init');
-      lastSeenId.value = latest.id;
-      localStorage.setItem('last_notification_id', String(latest.id));
+      unreadCount.value = countRes.data?.data?.count ?? 0;
 
-      if (!isFirstPoll) {
-        showInAppBanner(latest);
-        showBrowserNotification(latest);
-      } else {
-        sessionStorage.setItem('notifications_poll_init', '1');
+      const latest = latestRes.data?.data;
+      if (latest && latest.id > lastSeenId.value) {
+        const isFirstPoll = !sessionStorage.getItem('notifications_poll_init');
+        lastSeenId.value = latest.id;
+        localStorage.setItem('last_notification_id', String(latest.id));
+
+        if (!isFirstPoll) {
+          showInAppBanner(latest);
+          showBrowserNotification(latest);
+        } else {
+          sessionStorage.setItem('notifications_poll_init', '1');
+        }
       }
+    } catch {
+      // silencioso en polling
+    } finally {
+      pollInFlight = null;
     }
-  } catch {
-    // silencioso en polling
-  }
+  })();
+
+  return pollInFlight;
 };
 
 export function useUserNotifications() {
   const startPolling = (intervalMs = 45000) => {
+    layoutSubscribers += 1;
+    if (stopPollingTimer) {
+      clearTimeout(stopPollingTimer);
+      stopPollingTimer = null;
+    }
     if (pollTimer) return;
     pollNotifications();
     pollTimer = setInterval(pollNotifications, intervalMs);
   };
 
   const stopPolling = () => {
-    if (pollTimer) {
-      clearInterval(pollTimer);
-      pollTimer = null;
-    }
+    layoutSubscribers = Math.max(0, layoutSubscribers - 1);
+    if (layoutSubscribers > 0) return;
+
+    // Evita cortar el poll en remounts rápidos (HMR / re-render layout)
+    if (stopPollingTimer) clearTimeout(stopPollingTimer);
+    stopPollingTimer = setTimeout(() => {
+      if (layoutSubscribers > 0) return;
+      if (pollTimer) {
+        clearInterval(pollTimer);
+        pollTimer = null;
+      }
+      stopPollingTimer = null;
+    }, 300);
   };
 
+  /** Usa el poll en curso si existe; no dispara unread-count extra. */
   const refreshCount = async () => {
+    if (pollInFlight) {
+      await pollInFlight;
+      return;
+    }
     try {
       const res = await UserNotificationService.unreadCount();
       unreadCount.value = res.data?.data?.count ?? 0;
