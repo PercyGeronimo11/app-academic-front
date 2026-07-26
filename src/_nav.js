@@ -1,4 +1,12 @@
 export default [
+  // para profesor y estudiante
+  {
+    component: 'CNavItem',
+    name: 'Area Principal',
+    to: '/classroom/main',
+    icon: 'cil-home',
+    roles: ['PROFESOR', 'ESTUDIANTE'],
+  },
   // TODOS
   {
     component: 'CNavItem',
@@ -35,13 +43,6 @@ export default [
         to: '/prediccion/academic-risk',
       },
     ],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Notificaciones',
-    to: '/push-notifications/historial',
-    icon: 'cil-bell',
-    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'ESTUDIANTE'],
   },
   {
     component: 'CNavGroup',
@@ -191,13 +192,6 @@ export default [
   },
 
   // Profesor y alumnos
-  {
-    component: 'CNavItem',
-    name: 'Area Principal',
-    to: '/classroom/main',
-    icon: 'cil-home',
-    roles: ['PROFESOR', 'ESTUDIANTE'],
-  },
 
   {
     component: 'CNavItem',
@@ -215,14 +209,6 @@ export default [
     icon: 'cil-library',
     roles: ['ESTUDIANTE'],
   },
-
-  {
-    component: 'CNavItem',
-    name: 'Notificaciones',
-    to: '/my-notifications',
-    icon: 'cil-bell',
-    roles: ['ESTUDIANTE'],
-  },
   {
     component: 'CNavItem',
     name: 'Libreta de notas',
@@ -230,7 +216,6 @@ export default [
     icon: 'cil-spreadsheet',
     roles: ['ESTUDIANTE'],
   },
-
   {
     component: 'CNavGroup',
     name: 'ASISTENCIAS',

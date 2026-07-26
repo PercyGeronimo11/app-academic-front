@@ -89,7 +89,6 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
 import UserNotificationService from '@/services/UserNotificationService';
 import ConductIncidentService from '@/services/ConductIncidentService';
 import { useUserNotifications } from '@/composables/useUserNotifications';
@@ -97,7 +96,6 @@ import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
 import EmptyState from '@/components/academic/EmptyState.vue';
 
 const { refreshCount } = useUserNotifications();
-const router = useRouter();
 
 const notifications = ref([]);
 const incidents = ref([]);
@@ -148,12 +146,6 @@ const openNotification = async (item) => {
     await refreshCount();
   }
 
-  if (item.type === 'official_announcement' && item.data?.announcement_id) {
-    router.push({
-      path: '/my-announcements',
-      query: { id: item.data.announcement_id },
-    });
-  }
 };
 
 const markAllRead = async () => {
