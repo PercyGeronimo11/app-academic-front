@@ -28,6 +28,8 @@
         </router-link>
       </div>
     </section>
+
+    <AnnouncementLoginModal :course-class-id="course_class_id" />
   </div>
 </template>
 
@@ -35,6 +37,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import CourseClassService from '@/services/CourseClassService'
+import AnnouncementLoginModal from '@/components/announcements/AnnouncementLoginModal.vue'
 
 const route = useRoute()
 const course_class_id = Number(route.params.courseClass)

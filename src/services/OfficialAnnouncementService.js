@@ -15,6 +15,10 @@ export default {
     return axios.post(`${API_URL}/official-announcements`, data);
   },
 
+  update(id, data) {
+    return axios.put(`${API_URL}/official-announcements/${id}`, data);
+  },
+
   publish(id) {
     return axios.post(`${API_URL}/official-announcements/${id}/publish`);
   },
@@ -49,5 +53,9 @@ export default {
 
   listUnreadGeneral() {
     return axios.get(`${API_URL}/official-announcements/unread-general`);
+  },
+
+  listUnreadForCourse(courseClassId) {
+    return axios.get(`${API_URL}/official-announcements/course/${courseClassId}/unread`);
   },
 };

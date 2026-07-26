@@ -72,6 +72,15 @@
               <CButton
                 v-if="item.status === 'borrador'"
                 size="sm"
+                color="warning"
+                class="text-white me-1"
+                @click="openEditModal(item)"
+              >
+                Editar
+              </CButton>
+              <CButton
+                v-if="item.status === 'borrador'"
+                size="sm"
                 color="primary"
                 class="me-1"
                 @click="publishDraft(item)"
@@ -87,10 +96,10 @@
       </CTable>
     </div>
 
-    <!-- Modal crear -->
+    <!-- Modal crear / editar -->
     <CModal :visible="formModalVisible" size="lg" alignment="center" @close="closeFormModal">
       <CModalHeader>
-        <CModalTitle>Nuevo comunicado</CModalTitle>
+        <CModalTitle>{{ editingId ? 'Editar borrador' : 'Nuevo comunicado' }}</CModalTitle>
       </CModalHeader>
       <CModalBody>
         <CForm @submit.prevent="submitForm">
@@ -143,7 +152,12 @@
             </div>
 
             <div v-else class="col-12">
-              <CFormLabel>Grados destinatarios</CFormLabel>
+              <div class="alert alert-info mb-3 py-2 small">
+                <i class="fas fa-info-circle me-1"></i>
+                Estos comunicados se muestran a los alumnos de las aulas seleccionadas
+                <strong> al entrar al curso</strong> de este docente, solo si la fecha actual está dentro de la vigencia.
+              </div>
+              <CFormLabel>Aulas destinatarias</CFormLabel>
               <div v-if="loadingGrades" class="module-loading">
                 <i class="fas fa-spinner fa-spin"></i> Cargando grados...
               </div>
@@ -177,10 +191,10 @@
           :disabled="saving || !canSubmit"
           @click="saveDraft"
         >
-          Guardar borrador
+          {{ editingId ? 'Actualizar borrador' : 'Guardar borrador' }}
         </CButton>
         <CButton color="primary" :disabled="saving || !canSubmit" @click="submitForm">
-          {{ saving ? 'Publicando...' : 'Publicar' }}
+          {{ saving ? 'Guardando...' : 'Publicar' }}
         </CButton>
       </CModalFooter>
     </CModal>
@@ -239,8 +253,8 @@ const isDirection = computed(() => decryptedRole === 'DIRECCION')
 
 const headerSubtitle = computed(() =>
   isDirection.value
-    ? 'Publique comunicados generales visibles para todos los usuarios durante su vigencia.'
-    : 'Publique información dirigida a los grados de sus aulas, con fecha de inicio y fin.'
+    ? 'Publique comunicados generales: se muestran al iniciar sesión mientras estén vigentes.'
+    : 'Publique a sus aulas: el alumno lo verá al entrar a su curso, dentro del rango de fechas.'
 )
 
 const gradeOptions = ref([])
@@ -254,6 +268,7 @@ const detailVisible = ref(false)
 const formModalVisible = ref(false)
 const selectedItem = ref(null)
 const editorKey = ref(0)
+const editingId = ref(null)
 
 const today = () => new Date().toISOString().slice(0, 10)
 
@@ -293,6 +308,7 @@ const formatRange = (start, end) => {
 }
 
 const resetForm = () => {
+  editingId.value = null
   form.value = {
     title: '',
     body: '',
@@ -314,8 +330,46 @@ const openCreateModal = async () => {
   }
 }
 
+const openEditModal = async (item) => {
+  successMessage.value = ''
+  loadError.value = ''
+
+  if (!isDirection.value && !gradeOptions.value.length) {
+    await loadGrades()
+  }
+
+  try {
+    const response = await OfficialAnnouncementService.getItem(item.id)
+    if (!response.data.success) {
+      loadError.value = response.data.message || 'No se pudo cargar el borrador.'
+      return
+    }
+
+    const data = response.data.data
+    if (data.status !== 'borrador') {
+      loadError.value = 'Solo se pueden editar comunicados en borrador.'
+      return
+    }
+
+    editingId.value = data.id
+    form.value = {
+      title: data.title || '',
+      body: data.body || '',
+      priority: data.priority || 'normal',
+      grade_section_ids: (data.grade_sections || []).map((g) => g.id),
+      starts_at: data.starts_at || today(),
+      ends_at: data.ends_at || today(),
+    }
+    editorKey.value += 1
+    formModalVisible.value = true
+  } catch (error) {
+    loadError.value = error.response?.data?.message || 'No se pudo cargar el borrador.'
+  }
+}
+
 const closeFormModal = () => {
   formModalVisible.value = false
+  editingId.value = null
 }
 
 const loadGrades = async () => {
@@ -348,7 +402,7 @@ const loadPublished = async () => {
   }
 }
 
-const createAnnouncement = async (publish) => {
+const saveAnnouncement = async (publish) => {
   if (!canSubmit.value) return
 
   saving.value = true
@@ -370,7 +424,9 @@ const createAnnouncement = async (publish) => {
       payload.grade_section_ids = form.value.grade_section_ids
     }
 
-    const response = await OfficialAnnouncementService.create(payload)
+    const response = editingId.value
+      ? await OfficialAnnouncementService.update(editingId.value, payload)
+      : await OfficialAnnouncementService.create(payload)
 
     if (response.data.success) {
       successMessage.value = response.data.message
@@ -391,8 +447,8 @@ const createAnnouncement = async (publish) => {
   }
 }
 
-const submitForm = () => createAnnouncement(true)
-const saveDraft = () => createAnnouncement(false)
+const submitForm = () => saveAnnouncement(true)
+const saveDraft = () => saveAnnouncement(false)
 
 const openDetail = async (item) => {
   try {

@@ -2,14 +2,15 @@
   <div class="rich-editor" :class="{ 'rich-editor--focus': focused }">
     <QuillEditor
       ref="quillRef"
-      v-model:content="innerHtml"
+      v-model:content="localHtml"
       content-type="html"
       theme="snow"
       :toolbar="toolbarOptions"
       :placeholder="placeholder"
       @focus="focused = true"
-      @blur="focused = false"
-      @update:content="onUpdate"
+      @blur="onBlur"
+      @textChange="syncFromEditor"
+      @update:content="onUpdateContent"
     />
 
     <div class="rich-editor__emoji-bar">
@@ -28,7 +29,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { QuillEditor } from '@vueup/vue-quill'
 import '@vueup/vue-quill/dist/vue-quill.snow.css'
 
@@ -47,11 +48,8 @@ const emit = defineEmits(['update:modelValue'])
 
 const quillRef = ref(null)
 const focused = ref(false)
-
-const innerHtml = computed({
-  get: () => props.modelValue || '',
-  set: (value) => emit('update:modelValue', value || ''),
-})
+// Estado local: el padre remonta el componente con :key al abrir crear/editar.
+const localHtml = ref(props.modelValue || '')
 
 const toolbarOptions = [
   ['bold', 'italic', 'underline', 'strike'],
@@ -68,22 +66,52 @@ const emojis = [
   '🏫', '📝', '🗓️', '⏰', '💡', '❤️', '⭐', '🙏',
 ]
 
-const onUpdate = (value) => {
-  emit('update:modelValue', value || '')
+const getEditor = () => quillRef.value?.getQuill?.() || null
+
+const normalizeHtml = (html) => {
+  const value = String(html || '').trim()
+  if (!value || value === '<p><br></p>' || value === '<p></p>') return ''
+  return value
+}
+
+const emitHtml = (html) => {
+  const next = normalizeHtml(html)
+  localHtml.value = html || ''
+  emit('update:modelValue', next)
+}
+
+const syncFromEditor = () => {
+  const editor = getEditor()
+  if (!editor) return
+  emitHtml(editor.root.innerHTML)
+}
+
+const onUpdateContent = (value) => {
+  if (typeof value === 'string') {
+    emitHtml(value)
+    return
+  }
+  syncFromEditor()
+}
+
+const onBlur = () => {
+  focused.value = false
+  syncFromEditor()
 }
 
 const insertEmoji = (emoji) => {
-  const editor = quillRef.value?.getQuill?.()
+  const editor = getEditor()
   if (!editor) {
-    emit('update:modelValue', `${props.modelValue || ''}${emoji}`)
+    emitHtml(`${normalizeHtml(localHtml.value)}${emoji}`)
     return
   }
 
   const range = editor.getSelection(true)
-  const index = range ? range.index : editor.getLength()
+  const index = range ? range.index : Math.max(editor.getLength() - 1, 0)
   editor.insertText(index, emoji, 'user')
   editor.setSelection(index + emoji.length, 0, 'user')
   editor.focus()
+  syncFromEditor()
 }
 </script>
 

@@ -9,7 +9,7 @@
     <CModalHeader>
       <CModalTitle>
         <i class="fas fa-bullhorn me-2"></i>
-        Comunicados
+        {{ courseClassId ? 'Comunicado del docente' : 'Comunicados oficiales' }}
       </CModalTitle>
     </CModalHeader>
     <CModalBody v-if="current">
@@ -48,9 +48,17 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
 import { hasValidSession } from '@/utils/session'
+
+const props = defineProps({
+  /** Si se indica, carga comunicados del docente para ese curso (no los generales de login). */
+  courseClassId: {
+    type: Number,
+    default: null,
+  },
+})
 
 const SESSION_FLAG = 'announcements_unread_shown'
 
@@ -71,7 +79,7 @@ const priorityLabel = (value) => priorityLabels[value] || value
 
 const scopeLabel = (item) => {
   if (item?.is_general) return 'General'
-  return item?.target_labels || 'Por grado'
+  return item?.target_labels || 'Por aula'
 }
 
 const formatRange = (start, end) => {
@@ -102,21 +110,38 @@ const next = async () => {
 const closeAll = async () => {
   await markCurrentRead()
   visible.value = false
-  sessionStorage.setItem(SESSION_FLAG, '1')
+  if (!props.courseClassId) {
+    sessionStorage.setItem(SESSION_FLAG, '1')
+  }
 }
 
 const loadUnread = async () => {
   if (!hasValidSession()) return
-  if (sessionStorage.getItem(SESSION_FLAG) === '1') return
+
+  // Solo en login: evitar repetir el popup en la misma sesión del navegador.
+  if (!props.courseClassId && sessionStorage.getItem(SESSION_FLAG) === '1') return
 
   try {
-    const response = await OfficialAnnouncementService.listUnreadGeneral()
+    const response = props.courseClassId
+      ? await OfficialAnnouncementService.listUnreadForCourse(props.courseClassId)
+      : await OfficialAnnouncementService.listUnreadGeneral()
+
     const list = response.data?.success ? response.data.data || [] : []
-    if (!list.length) {
-      sessionStorage.setItem(SESSION_FLAG, '1')
+    // Defensa: el login nunca debe mostrar comunicados por aula.
+    const filtered = props.courseClassId
+      ? list
+      : list.filter((item) => item.is_general)
+
+    if (!filtered.length) {
+      if (!props.courseClassId) {
+        sessionStorage.setItem(SESSION_FLAG, '1')
+      }
+      visible.value = false
+      items.value = []
       return
     }
-    items.value = list
+
+    items.value = filtered
     index.value = 0
     visible.value = true
   } catch {
@@ -125,6 +150,15 @@ const loadUnread = async () => {
 }
 
 onMounted(loadUnread)
+
+watch(
+  () => props.courseClassId,
+  (id, prev) => {
+    if (id && id !== prev) {
+      loadUnread()
+    }
+  }
+)
 </script>
 
 <style scoped>
