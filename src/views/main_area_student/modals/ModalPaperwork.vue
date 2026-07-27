@@ -99,7 +99,7 @@
                             :maxFiles="5"
                             accept=".pdf,application/pdf"
                             label="Documentos anexos (solo PDF)"
-                            helperText="Solo archivos PDF (máximo 5). Se incorporarán al final del PDF del trámite."
+                            helperText="Solo archivos PDF (máximo 5). Asigne un nombre a cada documento; aparecerá en la sección VI del PDF."
                             />
                         </CCol>
                     </CRow>
@@ -283,8 +283,24 @@ const savePaperwork = async () => {
     }
   });
 
-  files.value.forEach((file) => {
+  const missingName = files.value.some((item) => !String(item?.name || '').trim());
+  if (files.value.length && missingName) {
+    isShowingAlert.value = true;
+    Swal.fire({
+      icon: 'warning',
+      title: 'Nombre de documento requerido',
+      text: 'Indique un nombre para cada documento anexo.',
+    }).finally(() => {
+      isShowingAlert.value = false;
+    });
+    return;
+  }
+
+  files.value.forEach((item) => {
+    const file = item?.file || item;
+    const name = String(item?.name || '').trim();
     formData.append('documents[]', file);
+    formData.append('document_names[]', name);
   });
 
   if (isEditMode.value) {
