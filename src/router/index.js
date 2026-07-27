@@ -197,6 +197,11 @@ const routes = [
         component: () => import('@/views/main_area_student/MainAreaStudent.vue'),
       },
       {
+        path: '/mi-riesgo-academico',
+        name: 'MiRiesgoAcademico',
+        component: () => import('@/views/main_area_student/MyAcademicRiskView.vue'),
+      },
+      {
         path: '/student/courseClass/:courseClass/detalle',
         name: 'Detalle del curso para estudiante',
         component: () => import('@/views/main_area_student/CourseDetail.vue'),

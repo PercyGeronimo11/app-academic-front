@@ -1,4 +1,7 @@
 export default [
+  // para profesor y estudiante
+
+  // TODOS
   {
     component: 'CNavItem',
     name: 'Dashboard',
@@ -18,7 +21,7 @@ export default [
     component: 'CNavGroup',
     name: 'Alerta Temprana',
     icon: 'cil-warning',
-    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'ESTUDIANTE'],
+    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR'],
     items: [
       {
         component: 'CNavItem',
@@ -36,7 +39,7 @@ export default [
   },
   {
     component: 'CNavGroup',
-    name: 'ASISTENCIAS',
+    name: 'Asistencias',
     icon: 'cil-calendar-check',
     roles: ['DIRECCION', 'AUXILIAR'],
     items: [
@@ -91,11 +94,18 @@ export default [
         name: 'Ver comunicados',
         icon: 'cil-envelope-open',
         to: '/my-announcements',
-        roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'SECRETARIA', 'ESTUDIANTE'],
+        roles: ['DIRECCION', 'PROFESOR' ],
       },
     ],
   },
 
+  {
+    component: 'CNavItem',
+    name: 'Comunicados',
+    icon: 'cil-bullhorn',
+     to: '/my-announcements',
+    roles: ['ESTUDIANTE', 'AUXILIAR', 'SECRETARIA']
+  },
   {
     component: 'CNavItem',
     name: 'Trámites (Mesa)',
@@ -117,13 +127,7 @@ export default [
     icon: 'cil-check-circle',
     roles: ['AUXILIAR'],
   },
-  {
-    component: 'CNavItem',
-    name: 'Mis Trámites',
-    to: '/myPaperworks',
-    icon: 'cil-folder-open',
-    roles: ['ESTUDIANTE'],
-  },
+
   {
     component: 'CNavItem',
     name: 'Cursos',
@@ -167,32 +171,27 @@ export default [
     roles: ['DIRECCION'],
   },
 
+  //   Para Profesor
+  {
+    component: 'CNavTitle',
+    name: 'ADMINISTRACIÓN',
+    roles: ['PROFESOR'],
+  },
+
+
   {
     component: 'CNavItem',
     name: 'Mis Cursos',
-    to: '/mainAreaStudent',
+    to: '/mainAreaTeacher',
     icon: 'cil-library',
-    roles: ['ESTUDIANTE'],
+    roles: ['PROFESOR'],
   },
 
-  {
-    component: 'CNavItem',
-    name: 'Notificaciones',
-    to: '/my-notifications',
-    icon: 'cil-bell',
-    roles: ['ESTUDIANTE'],
-  },
-  {
-    component: 'CNavItem',
-    name: 'Libreta de notas',
-    to: '/my-report-card',
-    icon: 'cil-spreadsheet',
-    roles: ['ESTUDIANTE'],
-  },
+  //   Para Estudiante
 
   {
     component: 'CNavGroup',
-    name: 'ASISTENCIAS',
+    name: 'Asistencias',
     icon: 'cil-calendar-check',
     roles: ['ESTUDIANTE'],
     items: [
@@ -209,5 +208,28 @@ export default [
         to: '/assistances/alumno/reporte-detallado',
       },
     ],
+  },
+  {
+    component: 'CNavItem',
+    name: 'Riesgo académico',
+    to: '/mi-riesgo-academico',
+    icon: 'cil-warning',
+    roles: ['ESTUDIANTE'],
+  },
+
+  {
+    component: 'CNavItem',
+    name: 'Mis Cursos',
+    to: '/mainAreaStudent',
+    icon: 'cil-library',
+    roles: ['ESTUDIANTE'],
+  },
+
+  {
+    component: 'CNavItem',
+    name: 'Trámites',
+    to: '/myPaperworks',
+    icon: 'cil-folder-open',
+    roles: ['ESTUDIANTE'],
   },
 ]

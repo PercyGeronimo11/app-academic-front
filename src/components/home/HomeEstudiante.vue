@@ -1,103 +1,57 @@
 <template>
-  <div class="home-stack">
-    <CRow class="g-3 mb-4">
-      <CCol xs="12" md="4">
-        <div class="home-kpi" :class="riskKpiClass">
-          <div class="home-kpi__label">Mi nivel de riesgo</div>
-          <div class="home-kpi__value home-kpi__value--sm">
-            <template v-if="myRisk?.has_prediction">
-              {{ myRisk.risk_label || getRiskLabel(myRisk.risk_level) }}
-            </template>
-            <template v-else>Sin predicción</template>
-          </div>
-          <div class="home-kpi__hint">
-            <template v-if="myRisk?.has_prediction">
-              Confianza {{ formatConfidence(myRisk.confidence) }}
-            </template>
-            <template v-else>Aún no hay predicción para este bimestre</template>
-          </div>
-        </div>
-      </CCol>
-      <CCol xs="12" md="4">
-        <router-link class="home-kpi home-kpi--slate home-kpi--link" :to="links.attendance || '/assistances/alumno/reporte'">
-          <div class="home-kpi__label">Asistencia del bimestre</div>
-          <div class="home-kpi__value home-kpi__value--sm">
-            <template v-if="attendance">
-              F {{ attendance.faltas }} · T {{ attendance.tardanzas }}
-            </template>
-            <template v-else>—</template>
-          </div>
-          <div class="home-kpi__hint">Ver reporte general</div>
-        </router-link>
-      </CCol>
-      <CCol xs="12" md="4">
-        <router-link class="home-kpi home-kpi--indigo home-kpi--link" :to="links.report_card || '/my-report-card'">
-          <div class="home-kpi__label">Libreta de notas</div>
-          <div class="home-kpi__value home-kpi__value--sm">
-            {{ reportCard?.bimester?.name || 'Bimestre actual' }}
-          </div>
-          <div class="home-kpi__hint">
-            {{ reportCard?.scores_count ?? 0 }} nota(s) · Ver libreta
-          </div>
-        </router-link>
-      </CCol>
-    </CRow>
-
-    <CRow class="g-3 mb-4">
-      <CCol xs="12" lg="6">
-        <section class="home-panel">
-          <div class="home-panel__head">
-            <h2>Novedades</h2>
-          </div>
-          <ul class="home-list">
-            <li>
-              <router-link :to="links.notifications || '/my-notifications'">
-                <strong>{{ notifications.unread_count || 0 }} notificaciones</strong>
-                <span class="home-list__meta">no leídas</span>
-              </router-link>
-            </li>
-            <li>
-              <router-link :to="links.announcements || '/my-announcements'">
-                <strong>{{ announcements.unread_count || 0 }} comunicados</strong>
-                <span class="home-list__meta">no leídos</span>
-              </router-link>
-            </li>
-          </ul>
-          <ul v-if="announcementItems.length" class="home-list mt-3">
-            <li v-for="item in announcementItems" :key="item.id">
-              <strong>{{ item.title }}</strong>
-            </li>
-          </ul>
-        </section>
-      </CCol>
-      <CCol xs="12" lg="6">
-        <section class="home-panel">
-          <div class="home-panel__head">
-            <h2>Mis trámites</h2>
-            <router-link :to="links.requests || '/myPaperworks'">Ver todos</router-link>
-          </div>
-          <div v-if="!latestRequest" class="home-empty">No tienes trámites registrados.</div>
-          <div v-else class="home-teaser">
-            <strong>{{ latestRequest.subject || `Trámite #${latestRequest.id}` }}</strong>
-            <span>{{ latestRequest.current_status }}</span>
-          </div>
-        </section>
+  <div class="home-stack home-student">
+    <CRow class="g-3 mb-4 home-student-kpis">
+      <CCol v-for="card in kpiCards" :key="card.id" xs="6" md="3">
+        <HomeStudentKpiCard
+          :label="card.label"
+          :value="card.value"
+          :hint="card.hint"
+          :cta="card.cta"
+          :to="card.to"
+          :icon="card.icon"
+          :tone="card.tone"
+        >
+          <template v-if="card.id === 'attendance' && attendance" #value>
+            <span class="home-stat-pill home-stat-pill--danger">{{ attendance.faltas }} faltas</span>
+            <span class="home-stat-pill home-stat-pill--warn">{{ attendance.tardanzas }} tardanzas</span>
+          </template>
+          <template v-else-if="card.id === 'requests' && latestRequest" #value>
+            <span class="home-kpi__value-text">{{ latestRequest.subject || `Trámite #${latestRequest.id}` }}</span>
+            <span class="home-status-badge mt-1" :class="requestStatusClass">
+              {{ latestRequest.current_status }}
+            </span>
+          </template>
+        </HomeStudentKpiCard>
       </CCol>
     </CRow>
 
     <section class="home-panel">
       <div class="home-panel__head">
-        <h2>Mis cursos</h2>
+        <h2>
+          <i class="fas fa-graduation-cap home-panel__title-icon" aria-hidden="true"></i>
+          Mis cursos
+        </h2>
         <router-link :to="links.courses || '/mainAreaStudent'">Ver todos</router-link>
       </div>
-      <div v-if="!courses.length" class="home-empty">No hay cursos para el periodo activo.</div>
+      <div v-if="!courses.length" class="home-empty home-empty--iconed">
+        <i class="fas fa-book" aria-hidden="true"></i>
+        <span>No hay cursos para el periodo activo.</span>
+      </div>
       <div v-else class="home-courses">
-        <article v-for="course in courses" :key="course.course_class_id" class="home-course-card">
-          <div>
-            <h3>{{ course.course_name }}</h3>
+        <article
+          v-for="course in courses"
+          :key="course.course_class_id"
+          class="home-course-card home-course-card--rich"
+        >
+          <div class="home-course-card__icon" aria-hidden="true">
+            <i class="fas" :class="courseIcon(course.course_name)"></i>
           </div>
-          <div class="home-course-card__actions">
-            <router-link :to="course.detail_url">Abrir</router-link>
+          <div class="home-course-card__body">
+            <h3>{{ course.course_name }}</h3>
+            <router-link class="home-course-card__open" :to="course.detail_url">
+              Abrir curso
+              <i class="fas fa-arrow-right" aria-hidden="true"></i>
+            </router-link>
           </div>
         </article>
       </div>
@@ -107,8 +61,10 @@
 
 <script setup>
 import { computed } from 'vue'
+import HomeStudentKpiCard from '@/components/home/HomeStudentKpiCard.vue'
 import { formatConfidence, getRiskLabel } from '@/utils/academicRisk'
 import { RISK_LEVELS as LEVELS } from '@/types/academicRisk'
+import { buildStudentHomeKpiCards } from '@/utils/studentHomeKpis'
 
 const props = defineProps({
   data: { type: Object, required: true },
@@ -117,18 +73,62 @@ const props = defineProps({
 const links = computed(() => props.data.links || {})
 const myRisk = computed(() => props.data.my_risk || null)
 const attendance = computed(() => props.data.attendance || null)
-const reportCard = computed(() => props.data.report_card || null)
-const notifications = computed(() => props.data.notifications || {})
 const announcements = computed(() => props.data.announcements || {})
-const announcementItems = computed(() => announcements.value.items || [])
 const latestRequest = computed(() => props.data.latest_request || null)
 const courses = computed(() => props.data.courses || [])
 
-const riskKpiClass = computed(() => {
+const riskTone = computed(() => {
   const level = Number(myRisk.value?.risk_level)
-  if (!myRisk.value?.has_prediction) return 'home-kpi--slate'
-  if (level === LEVELS.VERY_LOW || level === LEVELS.LOW) return 'home-kpi--ok'
-  if (level === LEVELS.MEDIUM) return 'home-kpi--amber'
-  return 'home-kpi--alert'
+  if (!myRisk.value?.has_prediction) return 'slate'
+  if (level === LEVELS.VERY_LOW || level === LEVELS.LOW) return 'ok'
+  if (level === LEVELS.MEDIUM) return 'amber'
+  return 'alert'
 })
+
+const riskIcon = computed(() => {
+  const level = Number(myRisk.value?.risk_level)
+  if (!myRisk.value?.has_prediction) return 'fa-hourglass-half'
+  if (level === LEVELS.VERY_LOW || level === LEVELS.LOW) return 'fa-shield-alt'
+  if (level === LEVELS.MEDIUM) return 'fa-exclamation-circle'
+  return 'fa-exclamation-triangle'
+})
+
+const requestStatusClass = computed(() => {
+  const status = String(latestRequest.value?.current_status || '').toUpperCase()
+  if (status.includes('OBSERVADO')) return 'home-status-badge--warn'
+  if (status.includes('COMPLETADO') || status.includes('APROBADO')) return 'home-status-badge--ok'
+  if (status.includes('REVISION') || status.includes('PENDIENTE')) return 'home-status-badge--info'
+  return 'home-status-badge--neutral'
+})
+
+const kpiCards = computed(() => buildStudentHomeKpiCards({
+  links: links.value,
+  myRisk: myRisk.value,
+  attendance: attendance.value,
+  announcements: announcements.value,
+  latestRequest: latestRequest.value,
+  riskTone: riskTone.value,
+  riskIcon: riskIcon.value,
+  formatConfidence,
+  getRiskLabel,
+}))
+
+const COURSE_ICON_RULES = [
+  { match: /matem/i, icon: 'fa-calculator' },
+  { match: /comunic|lengua|castellano/i, icon: 'fa-comments' },
+  { match: /ingl[eé]s|idioma/i, icon: 'fa-language' },
+  { match: /arte|cultura/i, icon: 'fa-palette' },
+  { match: /social/i, icon: 'fa-globe-americas' },
+  { match: /ciudadan|c[ií]vica|personal/i, icon: 'fa-users' },
+  { match: /f[ií]sica/i, icon: 'fa-running' },
+  { match: /religi/i, icon: 'fa-pray' },
+  { match: /ciencia|tecnolog/i, icon: 'fa-flask' },
+  { match: /trabajo|ept/i, icon: 'fa-tools' },
+  { match: /tutor/i, icon: 'fa-user-friends' },
+]
+
+const courseIcon = (name = '') => {
+  const found = COURSE_ICON_RULES.find((rule) => rule.match.test(name))
+  return found?.icon || 'fa-book'
+}
 </script>
