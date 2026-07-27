@@ -54,7 +54,15 @@
                 </CButton>
               </CTableDataCell>
               <CTableDataCell class="text-center">
-                <CButton color="primary" size="sm" @click="ack(item.id)">Marcar completado</CButton>
+                <CButton
+                  v-if="canComplete(item.status)"
+                  color="primary"
+                  size="sm"
+                  @click="ack(item.id)"
+                >
+                  Marcar completado
+                </CButton>
+                <span v-else class="small text-body-secondary">—</span>
               </CTableDataCell>
             </CTableRow>
             <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
@@ -83,6 +91,8 @@ import { formatDatabaseDate } from '@/utils/time';
 
 const items = ref([]);
 const expanded = reactive({});
+
+const canComplete = (status) => status === 'DERIVADO AL AUXILIAR';
 
 const mapHistory = (details) =>
   (details || []).map((d) => ({

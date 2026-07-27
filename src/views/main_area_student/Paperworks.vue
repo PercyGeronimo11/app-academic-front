@@ -59,7 +59,11 @@
                       <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
                       <CTableDataCell class="text-center fw-medium">{{ item.responsible }}</CTableDataCell>
                       <CTableDataCell class="text-center">
-                        <TramiteStatusBadge :status="item.status" />
+                        <TramiteStatusBadge
+                          :status="item.status"
+                          :show-observation-eye="canViewObservation(item)"
+                          @view-observation="showObservation(item)"
+                        />
                       </CTableDataCell>
                       <CTableDataCell class="text-center">
                         <CButton
@@ -129,7 +133,6 @@
       :visible="pdfModalVisible"
       :loading="pdfLoading"
       :pdf-object-url="pdfObjectUrl"
-      :observations="pdfModalObservations"
       @close="closePdfModal"
     />
 </template>
@@ -194,6 +197,8 @@ const listPaperWorks = async () => {
           responsible: item.names,
           status: normalizeStudentStatus(item.current_status),
           observations: item.observations,
+          signature_url: item.signature_url || '',
+          attachments: item.attachments || [],
           status_history: mapHistory(item.details),
         };
       });
@@ -210,7 +215,6 @@ const toggle = (id) => {
 const pdfModalVisible = ref(false);
 const pdfLoading = ref(false);
 const pdfObjectUrl = ref('');
-const pdfModalObservations = ref('');
 
 const revokePdfUrl = () => {
   if (pdfObjectUrl.value) {
@@ -219,8 +223,22 @@ const revokePdfUrl = () => {
   }
 };
 
+const OBSERVED_STATUSES = ['OBSERVADO POR MESA DE PARTES', 'OBSERVADO POR EL DIRECTOR'];
+
+const canViewObservation = (item) =>
+  OBSERVED_STATUSES.includes(item.status) && !!String(item.observations || '').trim();
+
+const showObservation = (item) => {
+  const text = String(item.observations || '').trim() || 'Sin observación registrada.';
+  Swal.fire({
+    icon: 'info',
+    title: 'Observación',
+    text,
+    confirmButtonText: 'Cerrar',
+  });
+};
+
 const openPdfPreview = async (item) => {
-  pdfModalObservations.value = item.observations || '';
   pdfModalVisible.value = true;
   pdfLoading.value = true;
   revokePdfUrl();
@@ -235,7 +253,6 @@ const openPdfPreview = async (item) => {
       'No se pudo cargar el PDF.';
     Swal.fire('Error', msg, 'error');
     pdfModalVisible.value = false;
-    pdfModalObservations.value = '';
   } finally {
     pdfLoading.value = false;
   }
@@ -243,7 +260,6 @@ const openPdfPreview = async (item) => {
 
 const closePdfModal = () => {
   pdfModalVisible.value = false;
-  pdfModalObservations.value = '';
   revokePdfUrl();
 };
 

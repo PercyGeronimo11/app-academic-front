@@ -1,18 +1,28 @@
 <template>
   <CBadge
     :color="color"
-    class="tramite-status-badge text-truncate d-inline-block"
+    class="tramite-status-badge text-truncate d-inline-flex align-items-center gap-1"
     style="max-width: 100%"
     shape="rounded-pill"
     :title="status"
   >
-    {{ shortLabel }}
+    <span class="tramite-status-badge__label">{{ shortLabel }}</span>
+    <button
+      v-if="showObservationEye"
+      type="button"
+      class="tramite-status-badge__eye"
+      title="Ver observación"
+      aria-label="Ver observación"
+      @click.stop="$emit('view-observation')"
+    >
+      <i class="fas fa-eye" aria-hidden="true"></i>
+    </button>
   </CBadge>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { CBadge } from '@coreui/vue';
+import { computed } from 'vue'
+import { CBadge } from '@coreui/vue'
 
 const props = defineProps({
   status: {
@@ -24,25 +34,32 @@ const props = defineProps({
     type: Number,
     default: 42,
   },
-});
+  /** Muestra el ojito para ver la observación (vista estudiante). */
+  showObservationEye: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+defineEmits(['view-observation'])
 
 const color = computed(() => {
-  const s = (props.status || '').toUpperCase();
-  if (s.includes('EN REVISION')) return 'info';
-  if (s.includes('PENDIENTE')) return 'warning';
-  if (s.includes('COMPLETADO')) return 'success';
-  if (s.includes('DERIVADO')) return 'info';
-  if (s.includes('OBSERVADO')) return 'danger';
-  if (s.includes('REVISADO POR MESA')) return 'primary';
-  if (s.includes('MESA')) return 'primary';
-  return 'secondary';
-});
+  const s = (props.status || '').toUpperCase()
+  if (s.includes('EN REVISION') || s.includes('EN REVISIÓN')) return 'info'
+  if (s.includes('PENDIENTE')) return 'warning'
+  if (s.includes('COMPLETADO')) return 'success'
+  if (s.includes('DERIVADO')) return 'info'
+  if (s.includes('OBSERVADO')) return 'danger'
+  if (s.includes('REVISADO POR MESA')) return 'primary'
+  if (s.includes('MESA')) return 'primary'
+  return 'secondary'
+})
 
 const shortLabel = computed(() => {
-  const t = props.status || '—';
-  if (t.length <= props.maxLen) return t;
-  return `${t.slice(0, props.maxLen - 1)}…`;
-});
+  const t = props.status || '—'
+  if (t.length <= props.maxLen) return t
+  return `${t.slice(0, props.maxLen - 1)}…`
+})
 </script>
 
 <style scoped>
@@ -51,5 +68,46 @@ const shortLabel = computed(() => {
   font-weight: 600;
   padding: 0.35em 0.85em;
   letter-spacing: 0.02em;
+  max-width: 100%;
+}
+
+.tramite-status-badge__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tramite-status-badge__eye {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: #ffc107;
+  color: #1a1a1a;
+  cursor: pointer;
+  line-height: 1;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
+  transition: background-color 0.15s ease, transform 0.15s ease;
+}
+
+.tramite-status-badge__eye:hover {
+  background: #ffca2c;
+  transform: scale(1.06);
+}
+
+.tramite-status-badge__eye:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+
+.tramite-status-badge__eye i {
+  font-size: 0.72rem;
 }
 </style>

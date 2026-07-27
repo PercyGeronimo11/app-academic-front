@@ -8,19 +8,12 @@ export default {
   },
 
   async createPaperwork(data) {
-    return await axios.post(`${API_URL}`, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    // No fijar Content-Type manualmente: el navegador debe enviar el boundary del multipart.
+    return await axios.post(`${API_URL}`, data);
   },
 
   async updatePaperwork(id, data) {
-    return await axios.post(`${API_URL}/${id}`, data, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+    return await axios.post(`${API_URL}/${id}`, data);
   },
 
   async observeMesa(id, observations) {

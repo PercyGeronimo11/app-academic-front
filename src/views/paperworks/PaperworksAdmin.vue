@@ -74,8 +74,11 @@
                       </CTableDataCell>
                       <CTableDataCell class="text-center">
                         <div class="d-flex gap-1 flex-wrap justify-content-center align-items-center">
-                          <CButton color="success" size="sm" @click="approve(item.id)">Aprobar y derivar</CButton>
-                          <CButton color="warning" size="sm" @click="openObserve(item)">Observar</CButton>
+                          <template v-if="canActOn(item.status)">
+                            <CButton color="success" size="sm" @click="approve(item.id)">Aprobar y derivar</CButton>
+                            <CButton color="warning" size="sm" @click="openObserve(item)">Observar</CButton>
+                          </template>
+                          <span v-else class="small text-body-secondary">—</span>
                           <CButton
                             color="secondary"
                             size="sm"
@@ -138,6 +141,12 @@ const pdfObjectUrl = ref('');
 const pdfModalObservations = ref('');
 
 const truncate = (s, n) => (s && s.length > n ? `${s.slice(0, n)}…` : s || '');
+
+const ACTIONABLE_STATUSES = [
+  'REVISADO POR MESA DE PARTES',
+  'EN REVISION POR ADMINISTRACION',
+];
+const canActOn = (status) => ACTIONABLE_STATUSES.includes(status);
 
 const mapHistory = (details) =>
   (details || []).map((d) => ({

@@ -27,12 +27,14 @@
       <div v-else class="file-list" @click.stop>
         <div
           v-for="(item, index) in internalItems"
-          :key="item.id"
+          :key="item.uid"
           class="file-item"
         >
           <div class="file-item__meta">
-            <span class="file-item__filename" :title="item.file.name">
-              <i class="fas fa-file-pdf me-1"></i>{{ item.file.name }}
+            <span class="file-item__filename" :title="item.label">
+              <i class="fas fa-file-pdf me-1"></i>
+              {{ item.label }}
+              <span v-if="item.existing" class="file-item__badge">Ya subido</span>
             </span>
             <button
               type="button"
@@ -43,11 +45,11 @@
             </button>
           </div>
           <div class="file-item__name">
-            <label :for="`doc-name-${item.id}`" class="form-label mb-1">
+            <label :for="`doc-name-${item.uid}`" class="form-label mb-1">
               Nombre del documento
             </label>
             <input
-              :id="`doc-name-${item.id}`"
+              :id="`doc-name-${item.uid}`"
               v-model="item.name"
               type="text"
               class="form-control form-control-sm"
@@ -94,8 +96,8 @@ const emit = defineEmits(['update:modelValue'])
 
 const fileInput = ref(null)
 const isDragging = ref(false)
-const internalItems = ref(normalizeItems(props.modelValue))
 let idSeq = 0
+let syncingFromParent = false
 
 function defaultNameFromFile(file) {
   const raw = String(file?.name || '').trim()
@@ -105,36 +107,69 @@ function defaultNameFromFile(file) {
 
 function normalizeItems(value) {
   if (!Array.isArray(value)) return []
-  return value.map((item) => {
-    if (item instanceof File) {
+  return value
+    .map((item) => {
+      if (item instanceof File) {
+        idSeq += 1
+        return {
+          uid: `local-${idSeq}`,
+          serverId: null,
+          existing: false,
+          file: item,
+          name: defaultNameFromFile(item),
+          label: item.name,
+          url: null,
+        }
+      }
+
+      const existing = !!(item.existing || item.serverId || (item.id && !item.file))
+      const serverId = item.serverId || (existing ? item.id : null) || null
       idSeq += 1
-      return { id: idSeq, file: item, name: defaultNameFromFile(item) }
-    }
-    idSeq += 1
-    return {
-      id: item.id || idSeq,
-      file: item.file,
-      name: item.name?.trim() || defaultNameFromFile(item.file),
-    }
-  }).filter((item) => item.file instanceof File)
+      const file = item.file instanceof File ? item.file : null
+      const name =
+        String(item.name || item.document_name || '').trim() ||
+        (file ? defaultNameFromFile(file) : 'Documento anexo')
+
+      return {
+        uid: item.uid || (serverId ? `server-${serverId}` : `local-${idSeq}`),
+        serverId,
+        existing: existing && !file,
+        file,
+        name,
+        label: file?.name || item.label || name || 'Documento guardado',
+        url: item.url || null,
+      }
+    })
+    .filter((item) => item.file instanceof File || item.existing)
 }
+
+const internalItems = ref(normalizeItems(props.modelValue))
+
+const fingerprint = (list) =>
+  (list || [])
+    .map((item) => {
+      if (item instanceof File) return `f:${item.name}:${item.size}`
+      return `${item.uid || item.serverId || item.id || ''}:${item.name || ''}:${item.existing ? 1 : 0}`
+    })
+    .join('|')
 
 watch(
   () => props.modelValue,
   (value) => {
-    // Solo sincronizar desde el padre cuando limpia o reemplaza (p. ej. reset).
-    if (!Array.isArray(value) || value.length === 0) {
-      if (internalItems.value.length) {
-        internalItems.value = []
-      }
-      return
-    }
+    const next = Array.isArray(value) ? value : []
+    if (fingerprint(next) === fingerprint(internalItems.value)) return
+    syncingFromParent = true
+    internalItems.value = normalizeItems(next)
+    queueMicrotask(() => {
+      syncingFromParent = false
+    })
   }
 )
 
 watch(
   internalItems,
   (newVal) => {
+    if (syncingFromParent) return
     emit('update:modelValue', newVal)
   },
   { deep: true }
@@ -170,9 +205,13 @@ const processFiles = (newFiles) => {
   const next = validFiles.map((file) => {
     idSeq += 1
     return {
-      id: idSeq,
+      uid: `local-${idSeq}`,
+      serverId: null,
+      existing: false,
       file,
       name: defaultNameFromFile(file),
+      label: file.name,
+      url: null,
     }
   })
 
@@ -246,6 +285,17 @@ const removeFile = (index) => {
   font-size: var(--rp-text-sm);
   color: var(--rp-text-muted);
   overflow-wrap: anywhere;
+}
+
+.file-item__badge {
+  display: inline-block;
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--rp-brand-700, #0b5a8c);
+  background: var(--rp-surface-brand-soft, #e7f3fb);
 }
 
 .file-item__name .form-label {

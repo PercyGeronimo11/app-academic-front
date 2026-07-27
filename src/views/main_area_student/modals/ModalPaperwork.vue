@@ -75,16 +75,20 @@
                     </CRow>
 
                     <!-- FIRMA -->
-                    <CRow>
-                        
-                    </CRow>
                     <CRow class="mb-3">
                         <CCol>
                             <CFormInput
                                 label="Firma"
                                 type="file"
+                                accept="image/*"
                                 @change="handleSignature"
                             />
+                            <div v-if="existingSignatureUrl && !form.signature" class="mt-2 signature-preview">
+                                <small class="text-body-secondary d-block mb-1">
+                                    Firma actual (se conserva si no sube otra):
+                                </small>
+                                <img :src="existingSignatureUrl" alt="Firma actual" class="signature-preview__img" />
+                            </div>
                         </CCol>
                     </CRow>
 
@@ -96,7 +100,7 @@
                             :maxFiles="5"
                             accept=".pdf,application/pdf"
                             label="Documentos anexos (Maximo 5 archivos PDF)"
-                            helperText="Solo archivos PDF (máximo 5). Asigne un nombre a cada documento; aparecerá en la sección VI del PDF."
+                            helperText="Solo archivos PDF (máximo 5). Al subsanar se recuperan los ya subidos; puede quitarlos, renombrarlos o agregar nuevos."
                             />
                         </CCol>
                     </CRow>
@@ -116,6 +120,18 @@
         </CModalFooter>
     </CModal>
 </template>
+
+<style scoped>
+.signature-preview__img {
+  max-height: 90px;
+  max-width: 100%;
+  border: 1px solid var(--rp-border, #dee2e6);
+  border-radius: 0.375rem;
+  background: #fff;
+  padding: 0.25rem;
+  object-fit: contain;
+}
+</style>
 
 <script setup>
 import { ref, watch, computed } from 'vue';
@@ -227,6 +243,7 @@ const getEmptyForm = () => ({
 
 const form = ref(getEmptyForm());
 const files = ref([]);
+const existingSignatureUrl = ref('');
 
 const onSubjectChange = (event) => {
   form.value.subject = event.target.value || '';
@@ -235,7 +252,19 @@ const onSubjectChange = (event) => {
 const resetForm = () => {
   form.value = getEmptyForm();
   files.value = [];
+  existingSignatureUrl.value = '';
 };
+
+const mapExistingAttachments = (attachments) =>
+  (attachments || []).map((doc) => ({
+    uid: `server-${doc.id}`,
+    serverId: doc.id,
+    existing: true,
+    file: null,
+    name: doc.document_name || 'Documento anexo',
+    label: doc.document_name || 'Documento guardado',
+    url: doc.url || null,
+  }));
 
 const initFormForModal = () => {
   if (props.paperwork) {
@@ -246,7 +275,8 @@ const initFormForModal = () => {
       recipient: props.paperwork.recipient || DEFAULT_RECIPIENT,
       reason: props.paperwork.reason || '',
     };
-    files.value = [];
+    existingSignatureUrl.value = props.paperwork.signature_url || '';
+    files.value = mapExistingAttachments(props.paperwork.attachments);
   } else {
     resetForm();
   }
@@ -331,12 +361,33 @@ const savePaperwork = async () => {
       formData.append('signature', form.value.signature);
     }
 
+    const keepDocuments = [];
+    const newDocuments = [];
     files.value.forEach((item) => {
-      const file = item?.file || item;
       const name = String(item?.name || '').trim();
-      formData.append('documents[]', file);
-      formData.append('document_names[]', name);
+      if (item?.existing && item?.serverId) {
+        keepDocuments.push({ id: item.serverId, name });
+        return;
+      }
+      const file = item?.file;
+      if (file instanceof File) {
+        newDocuments.push({ file, name });
+      }
     });
+
+    if (isEditMode.value) {
+      formData.append('keep_documents_json', JSON.stringify(keepDocuments));
+    }
+
+    const documentNames = [];
+    newDocuments.forEach((item, index) => {
+      formData.append(`documents[${index}]`, item.file);
+      formData.append(`document_names[${index}]`, item.name);
+      documentNames.push(item.name);
+    });
+    if (documentNames.length) {
+      formData.append('document_names_json', JSON.stringify(documentNames));
+    }
 
     if (isEditMode.value) {
       emit('updatePaperwork', formData);
