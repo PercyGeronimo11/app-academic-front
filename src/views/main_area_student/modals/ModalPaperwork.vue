@@ -20,18 +20,15 @@
                     <!-- DATOS PRINCIPALES -->
                     <CRow class="mb-3">
                         <CCol md="4">
-                            <CFormSelect
-                                v-model="form.subject"
-                                label="Asunto"
+                            <label class="form-label" for="paperwork-subject">Asunto</label>
+                            <select
+                                id="paperwork-subject"
+                                class="form-select"
+                                :value="form.subject"
                                 required
+                                @change="onSubjectChange"
                             >
                                 <option disabled value="">Seleccione un asunto</option>
-                                <option
-                                    v-if="form.subject && !subjectOptions.includes(form.subject)"
-                                    :value="form.subject"
-                                >
-                                    {{ form.subject }}
-                                </option>
                                 <option
                                     v-for="option in subjectOptions"
                                     :key="option"
@@ -39,7 +36,7 @@
                                 >
                                     {{ option }}
                                 </option>
-                            </CFormSelect>
+                            </select>
                         </CCol>
 
                         <CCol md="4">
@@ -99,7 +96,7 @@
                             :maxFiles="5"
                             accept=".pdf,application/pdf"
                             label="Documentos anexos (Maximo 5 archivos PDF)"
-                            helperText="Solo archivos PDF (máximo 5). Se incorporarán al final del PDF del trámite."
+                            helperText="Solo archivos PDF (máximo 5). Asigne un nombre a cada documento; aparecerá en la sección VI del PDF."
                             />
                         </CCol>
                     </CRow>
@@ -231,6 +228,10 @@ const getEmptyForm = () => ({
 const form = ref(getEmptyForm());
 const files = ref([]);
 
+const onSubjectChange = (event) => {
+  form.value.subject = event.target.value || '';
+};
+
 const resetForm = () => {
   form.value = getEmptyForm();
   files.value = [];
@@ -271,13 +272,13 @@ watch(
 const savePaperwork = async () => {
   if (isSaving.value) return;
 
+  // Destinatario siempre tiene default; asunto/motivo deben venir del formulario controlado.
   const subject = String(form.value.subject || '').trim();
-  const recipient = String(form.value.recipient || DEFAULT_RECIPIENT).trim();
+  const recipient = String(form.value.recipient || DEFAULT_RECIPIENT).trim() || DEFAULT_RECIPIENT;
   const reason = String(form.value.reason || '').trim();
 
   const missing = [];
   if (!subject) missing.push('asunto');
-  if (!recipient) missing.push('destinatario');
   if (!reason) missing.push('motivo');
 
   if (missing.length) {
@@ -295,6 +296,19 @@ const savePaperwork = async () => {
   form.value.subject = subject;
   form.value.recipient = recipient;
   form.value.reason = reason;
+
+  const missingName = files.value.some((item) => !String(item?.name || '').trim());
+  if (files.value.length && missingName) {
+    isShowingAlert.value = true;
+    await Swal.fire({
+      icon: 'warning',
+      title: 'Nombre de documento requerido',
+      text: 'Indique un nombre para cada documento anexo.',
+      confirmButtonText: 'Entendido',
+    });
+    isShowingAlert.value = false;
+    return;
+  }
 
   isSaving.value = true;
   try {
@@ -317,8 +331,11 @@ const savePaperwork = async () => {
       formData.append('signature', form.value.signature);
     }
 
-    files.value.forEach((file) => {
+    files.value.forEach((item) => {
+      const file = item?.file || item;
+      const name = String(item?.name || '').trim();
       formData.append('documents[]', file);
+      formData.append('document_names[]', name);
     });
 
     if (isEditMode.value) {

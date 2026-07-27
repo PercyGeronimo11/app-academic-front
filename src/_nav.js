@@ -99,13 +99,7 @@ export default [
     ],
   },
 
-  {
-    component: 'CNavItem',
-    name: 'Comunicados',
-    icon: 'cil-bullhorn',
-     to: '/my-announcements',
-    roles: ['ESTUDIANTE', 'AUXILIAR', 'SECRETARIA']
-  },
+
   {
     component: 'CNavItem',
     name: 'Trámites (Mesa)',
@@ -208,6 +202,14 @@ export default [
         to: '/assistances/alumno/reporte-detallado',
       },
     ],
+  },
+
+  {
+    component: 'CNavItem',
+    name: 'Comunicados',
+    icon: 'cil-bullhorn',
+     to: '/my-announcements',
+    roles: ['ESTUDIANTE', 'AUXILIAR', 'SECRETARIA']
   },
   {
     component: 'CNavItem',
