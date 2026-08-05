@@ -9,7 +9,7 @@
               Trámites — Administración
             </h4>
             <p class="tls-intro-text mb-0 text-body-secondary small">
-              Trámites ya revisados por mesa de partes. Puedes aprobar y derivar al auxiliar o observar para que el estudiante subsane y vuelva a mesa.
+              Trámites ya revisados por mesa de partes. Puedes aprobar el trámite o observar para que el estudiante subsane y vuelva a mesa.
             </p>
           </CCardBody>
         </CCard>
@@ -75,7 +75,7 @@
                       <CTableDataCell class="text-center">
                         <div class="d-flex gap-1 flex-wrap justify-content-center align-items-center">
                           <template v-if="canActOn(item.status)">
-                            <CButton color="success" size="sm" @click="approve(item.id)">Aprobar y derivar</CButton>
+                            <CButton color="success" size="sm" @click="approve(item.id)">Aprobar</CButton>
                             <CButton color="warning" size="sm" @click="openObserve(item)">Observar</CButton>
                           </template>
                           <span v-else class="small text-body-secondary">—</span>
@@ -228,17 +228,17 @@ onBeforeUnmount(() => {
 
 const approve = async (id) => {
   const ok = await Swal.fire({
-    title: '¿Aprobar y derivar al auxiliar?',
-    text: 'El auxiliar podrá ver el alumno, fecha y motivo del permiso.',
+    title: '¿Aprobar trámite?',
+    text: 'El trámite quedará como aprobado exitosamente y el auxiliar de las aulas correspondientes podrá tomarlo.',
     icon: 'question',
     showCancelButton: true,
-    confirmButtonText: 'Sí, derivar',
+    confirmButtonText: 'Sí, aprobar',
   });
   if (!ok.isConfirmed) return;
   try {
     await PaperworkService.approveDirector(id);
     await load();
-    Swal.fire('Listo', 'Trámite derivado al auxiliar.', 'success');
+    Swal.fire('Listo', 'Trámite aprobado exitosamente.', 'success');
   } catch (e) {
     Swal.fire('Error', e.response?.data?.message || 'No se pudo aprobar.', 'error');
   }

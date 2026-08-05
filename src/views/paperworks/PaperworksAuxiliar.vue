@@ -1,9 +1,9 @@
 <template>
-  <CardComponent title="Permisos derivados — Auxiliar" style="margin: 20px 10px">
+  <CardComponent title="Trámites de mis aulas — Auxiliar" style="margin: 20px 10px">
     <TramiteListShell>
       <template #intro>
         <p class="tls-intro-text mb-0">
-          Trámites aprobados por administración y mesa de partes. Aquí puedes tomar conocimiento del alumno, la fecha de registro y el motivo del permiso.
+          Trámites de estudiantes de las aulas a tu cargo. Puedes ver el estado de cada uno desde el registro; cuando esté aprobado exitosamente, marca el permiso como completado.
         </p>
       </template>
 
@@ -26,9 +26,9 @@
             <CTableDataCell colspan="9" class="tls-empty-cell">
               <div class="tls-empty">
                 <span class="tls-empty__icon" aria-hidden="true">📭</span>
-                <p class="mb-1 fw-semibold">No hay permisos derivados</p>
+                <p class="mb-1 fw-semibold">No hay trámites registrados</p>
                 <p class="mb-0 small text-body-secondary">
-                  Cuando administración derive trámites al auxiliar, se listarán aquí.
+                  Cuando un estudiante de tus aulas registre un trámite, aparecerá aquí con su estado.
                 </p>
               </div>
             </CTableDataCell>
@@ -92,7 +92,7 @@ import { formatDatabaseDate } from '@/utils/time';
 const items = ref([]);
 const expanded = reactive({});
 
-const canComplete = (status) => status === 'DERIVADO AL AUXILIAR';
+const canComplete = (status) => status === 'APROBADO EXITOSAMENTE';
 
 const mapHistory = (details) =>
   (details || []).map((d) => ({

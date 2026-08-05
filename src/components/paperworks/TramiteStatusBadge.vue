@@ -47,7 +47,7 @@ const color = computed(() => {
   const s = (props.status || '').toUpperCase()
   if (s.includes('EN REVISION') || s.includes('EN REVISIÓN')) return 'info'
   if (s.includes('PENDIENTE')) return 'warning'
-  if (s.includes('COMPLETADO')) return 'success'
+  if (s.includes('COMPLETADO') || s.includes('APROBADO EXITOSAMENTE')) return 'success'
   if (s.includes('DERIVADO')) return 'info'
   if (s.includes('OBSERVADO')) return 'danger'
   if (s.includes('REVISADO POR MESA')) return 'primary'

@@ -116,7 +116,7 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Permisos derivados',
+    name: 'Trámites de mis aulas',
     to: '/auxiliar-tramites',
     icon: 'cil-check-circle',
     roles: ['AUXILIAR'],
