@@ -53,14 +53,20 @@ const routes = [
       //   component: () => import('@/views/user/ViewProfile.vue'),
       // },
       {
-        path: '/courses',
-        name: 'courses',
-        component: () => import('@/views/course/Course.vue'),
+        path: '/settings',
+        name: 'settings',
+        component: () => import('@/views/settings/GeneralSettings.vue'),
       },
       {
         path: '/settings/general',
-        name: 'generalSettings',
-        component: () => import('@/views/settings/GeneralSettings.vue'),
+        redirect: (to) => ({
+          path: '/settings',
+          query: { tab: to.query.tab || 'periodos' },
+        }),
+      },
+      {
+        path: '/courses',
+        redirect: { path: '/settings', query: { tab: 'cursos' } },
       },
       {
         path: '/assignStudents',
@@ -350,6 +356,11 @@ const routes = [
             path: 'admin/detail-alumno/:id',
             name: 'Detalle de Alumno',
             component: () => import('@/views/assistances/admin/AlumnoHistorialAssistance.vue'),
+          },
+          {
+            path: 'justificar',
+            name: 'Justificar faltas',
+            component: () => import('@/views/assistances/admin/JustifyAbsence.vue'),
           },
           {
             path: 'alumno/reporte',

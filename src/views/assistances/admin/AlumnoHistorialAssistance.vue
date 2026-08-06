@@ -63,12 +63,13 @@
                 <label class="form-label fw-semibold">Asistencia</label>
                 <CFormSelect v-model="filters.estado">
                   <option value="">Todos</option>
-                  <option value="A">Asistió</option>
-                  <option value="T">Tardanza Leve</option>
+                  <option value="A">Asistencia Normal</option>
+                  <option value="TL">Tardanza Leve</option>
                   <option value="TM">Tardanza Moderada</option>
                   <option value="TG">Tardanza Grave</option>
                   <option value="TE">Tardanza Extrema</option>
-                  <option value="F">Falta</option>
+                  <option value="FI">Falta Injustificada</option>
+                  <option value="FJ">Falta Justificada</option>
                 </CFormSelect>
               </CCol>
 
@@ -100,13 +101,16 @@
                     <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">Hora</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Tipo de Falta</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Modificado por</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Modificado el</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
 
               <CTableBody>
                 <template v-if="!asistencias.length">
                   <CTableRow>
-                    <CTableDataCell colspan="3" class="list-empty-message py-4">
+                    <CTableDataCell colspan="6" class="list-empty-message py-4">
                       No hay registros para mostrar.
                     </CTableDataCell>
                   </CTableRow>
@@ -115,12 +119,15 @@
                   <CTableRow v-for="(item, index) in asistencias" :key="index" class="align-middle">
                     <CTableDataCell class="text-center fw-medium"> {{  formatDate(item.fecha_hora) }}
                       </CTableDataCell>
-                    <CTableDataCell class="text-center fw-medium">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
+                    <CTableDataCell class="text-center fw-medium">{{ esFaltaSinHora(item.estado) ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
                     <CTableDataCell class="text-center">
                       <CBadge :class="colorEstado(item.estado)" class="assist-badge-sm">
                         {{ textoEstado(item.estado) }}
                       </CBadge>
                     </CTableDataCell>
+                    <CTableDataCell class="text-center">{{ tipoFaltaLabel(item.estado) || '—' }}</CTableDataCell>
+                    <CTableDataCell class="text-center">{{ item.modificado_por || '—' }}</CTableDataCell>
+                    <CTableDataCell class="text-center">{{ item.fecha_modificacion ? formatDate(item.fecha_modificacion) : '—' }}</CTableDataCell>
                   </CTableRow>
                 </template>
               </CTableBody>
@@ -161,7 +168,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AssistanceService from '../../../services/AssistanceService'
 import { CBadge } from '@coreui/vue'
-import { textoEstado, colorEstado, ESTADOS_ASISTENCIA } from '../../../utils/utils'
+import { textoEstado, colorEstado, esFaltaSinHora, tipoFaltaLabel } from '../../../utils/utils'
 import { formatDate, formatTime } from '../../../utils/time'
 const route = useRoute()
 const router = useRouter()

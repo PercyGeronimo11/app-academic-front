@@ -8,10 +8,16 @@ import simplebar from 'simplebar-vue'
 import 'simplebar-vue/dist/simplebar.min.css'
 
 const normalizePath = (path) =>
-  decodeURI(path).replace(/#.*$/, '').replace(/(index)?\.(html)$/, '')
+  decodeURI(String(path))
+    .replace(/[?#].*$/, '')
+    .replace(/(index)?\.(html)$/, '')
 
 const isActiveLink = (route, link) => {
   if (link === undefined) return false
+  if (typeof link === 'object' && link !== null) {
+    const targetPath = normalizePath(link.path || '')
+    return normalizePath(route.path) === targetPath || route.hash === link.hash
+  }
   const currentPath = normalizePath(route.path)
   const targetPath = normalizePath(link)
   return currentPath === targetPath || route.hash === link
@@ -86,7 +92,7 @@ const AppSidebarNav = defineComponent({
                 h(
                   resolveComponent(item.component),
                   {
-                    active: props.isActive,
+                    active: props.isActive || isActiveItem(route, item),
                     as: 'div',
                     href: props.href,
                     onClick: () => props.navigate(),

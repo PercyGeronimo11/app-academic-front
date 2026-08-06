@@ -75,30 +75,6 @@
     </CCol>
   </CRow>
 
-  <CRow class="mb-3">
-    <CCol>
-      <CCard class="shadow-sm border-0">
-        <CCardBody class="bg-white py-3 px-3 px-md-4">
-          <div class="d-flex flex-column flex-sm-row gap-3 gap-md-4 w-100">
-            <div class="flex-fill p-2 rounded bg-light">
-              <div class="text-muted small">Total alumnos</div>
-              <div class="fw-bold fs-5 d-flex align-items-center">
-                <i class="fas fa-users text-primary me-2"></i>
-                {{ totalAlumnos }}
-              </div>
-            </div>
-            <div class="flex-fill p-2 rounded bg-light">
-              <div class="text-muted small">Registros del día</div>
-              <div class="fw-bold fs-5 d-flex align-items-center">
-                <i class="fas fa-calendar-check text-success me-2"></i>
-                {{ asistenciasHoy }}
-              </div>
-            </div>
-          </div>
-        </CCardBody>
-      </CCard>
-    </CCol>
-  </CRow>
 </template>
 
 <script setup>

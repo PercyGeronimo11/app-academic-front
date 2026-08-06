@@ -79,7 +79,6 @@
                   <CTableHeaderCell class="d-none d-md-table-cell">Nombres</CTableHeaderCell>
                   <CTableHeaderCell class="d-md-none text-start">Alumno</CTableHeaderCell>
                   <CTableHeaderCell class="text-center d-none d-md-table-cell">Grado</CTableHeaderCell>
-                  <CTableHeaderCell class="text-center d-none d-md-table-cell">Sección</CTableHeaderCell>
                   <CTableHeaderCell class="text-center">Asistencia</CTableHeaderCell>
                   <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
                 </CTableRow>
@@ -107,9 +106,7 @@
                         <span class="assist-name-given">{{ alumno.grade }}° {{ alumno.section }}</span>
                       </div>
                     </CTableDataCell>
-                    <CTableDataCell class="text-center d-none d-md-table-cell">{{ alumno.grade }}°</CTableDataCell>
-                    <CTableDataCell class="text-center d-none d-md-table-cell">{{ alumno.section }}</CTableDataCell>
-
+                    <CTableDataCell class="text-center d-none d-md-table-cell">{{ alumno.grade }}° {{ alumno.section }}</CTableDataCell>
                     <CTableDataCell class="text-center">
                       <CBadge :class="colorEstado(alumno.asistencia_estado)" class="assist-badge-sm">
                         {{ textoEstado(alumno.asistencia_estado) }}
@@ -118,10 +115,10 @@
 
                     <CTableDataCell class="text-center">
                       <i class="fas fa-user-check"
-                        :class="alumno.asistencia_estado === 'F' ? 'text-success' : 'text-secondary'" :style="{
-                          cursor: alumno.asistencia_estado === 'F' ? 'pointer' : 'not-allowed',
+                        :class="esFaltaInjustificada(alumno.asistencia_estado) ? 'text-success' : 'text-secondary'" :style="{
+                          cursor: esFaltaInjustificada(alumno.asistencia_estado) ? 'pointer' : 'not-allowed',
                           fontSize: '16px',
-                          opacity: alumno.asistencia_estado === 'F' ? 1 : 0.5
+                          opacity: esFaltaInjustificada(alumno.asistencia_estado) ? 1 : 0.5
                         }" @click="abrirModalAsistencia(alumno)"></i>
 
                     </CTableDataCell>
@@ -224,7 +221,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import AssistanceService from '@/services/AssistanceService'
-import { textoEstado, colorEstado } from '@/utils/utils'
+import { textoEstado, colorEstado, esFaltaInjustificada } from '@/utils/utils'
 import { toastError, toastSuccess } from '../../../utils/alerts'
 import Swal from 'sweetalert2'
 
@@ -273,7 +270,7 @@ const fetchAlumnos = async (page = 1) => {
 
 const abrirModalAsistencia = async (alumno) => {
 
-  if (alumno.asistencia_estado === 'A' || alumno.asistencia_estado === 'T') {
+  if (!esFaltaInjustificada(alumno.asistencia_estado)) {
     return
   }
 

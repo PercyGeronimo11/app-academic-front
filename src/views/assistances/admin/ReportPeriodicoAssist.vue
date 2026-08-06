@@ -138,7 +138,7 @@
 
       <!-- Faltas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('F')">
+        <CCard :class="colorEstado('FI')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
@@ -213,7 +213,7 @@
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center">
-                        <CBadge :class="colorEstado('F')" class="assist-badge-sm">{{ item.t_faltas }}</CBadge>
+                        <CBadge :class="colorEstado('FI')" class="assist-badge-sm">{{ item.t_faltas }}</CBadge>
                       </CTableDataCell>
                     </CTableRow>
                   </template>
@@ -469,7 +469,7 @@ const descargarExcel = () => {
       ['Tardanza moderada (TM)', `${data.value.t_tard_moderado} (${pct(data.value.t_tard_moderado, total)})`],
       ['Tardanza grave (TG)', `${data.value.t_tard_grave} (${pct(data.value.t_tard_grave, total)})`],
       ['Tardanza extrema (TE)', `${data.value.t_tard_extremo} (${pct(data.value.t_tard_extremo, total)})`],
-      ['Faltas (F)', `${data.value.t_faltas} (${pct(data.value.t_faltas, total)})`]
+      ['Faltas (FI+FJ)', `${data.value.t_faltas} (${pct(data.value.t_faltas, total)})`]
     ],
     data: secciones.value,
     columns: [
@@ -511,7 +511,7 @@ const descargarExcel = () => {
         formatter: (item) => `${item.t_tard_extremo} (${pct(item.t_tard_extremo, item.total)})`
       },
       {
-        header: 'Faltas (F)',
+        header: 'Faltas (FI+FJ)',
         key: 't_faltas',
         width: 12,
         formatter: (item) => `${item.t_faltas} (${pct(item.t_faltas, item.total)})`

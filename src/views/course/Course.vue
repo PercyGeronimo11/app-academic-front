@@ -1,12 +1,19 @@
 <template>
-  <div>
-    <CardComponent title="Lista de Cursos" style="margin: 20px 10px;">
+  <div :class="{ 'course-embedded': embedded }">
+    <CardComponent v-if="!embedded" title="Lista de Cursos" style="margin: 20px 10px;">
       <div class="box-tools">
         <CRow class="mb-3">
           <CCol>
             <CInputGroup>
-              <CFormInput v-model="searchData" placeholder="Buscar por nombre" aria-label="Buscar por nombre" aria-describedby="button-addon2"/>
-              <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">Buscar</CButton>
+              <CFormInput
+                v-model="searchData"
+                placeholder="Buscar por nombre"
+                aria-label="Buscar por nombre"
+                aria-describedby="button-addon2"
+              />
+              <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">
+                Buscar
+              </CButton>
             </CInputGroup>
           </CCol>
           <CCol></CCol>
@@ -27,17 +34,59 @@
         </template>
         <template #actions="{ item }">
           <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-            <CIcon :content="cilPencil" size="lg"></CIcon>
+            <CIcon :content="cilPencil" size="lg" />
           </CButton>
           <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-            <CIcon :content="cilTrash" size="lg"></CIcon>
+            <CIcon :content="cilTrash" size="lg" />
           </CButton>
         </template>
       </ElegantCrudList>
     </CardComponent>
-    
-    <!-- Modal para Crear/Editar curso -->
-    <CModal 
+
+    <template v-else>
+      <div class="box-tools">
+        <CRow class="mb-3">
+          <CCol>
+            <CInputGroup>
+              <CFormInput
+                v-model="searchData"
+                placeholder="Buscar por nombre"
+                aria-label="Buscar por nombre"
+                aria-describedby="button-addon2"
+              />
+              <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">
+                Buscar
+              </CButton>
+            </CInputGroup>
+          </CCol>
+          <CCol></CCol>
+          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
+          </CCol>
+        </CRow>
+      </div>
+      <ElegantCrudList :columns="listColumns" :data="items">
+        <template #image="{ item }">
+          <img
+            v-if="item.image_url"
+            :src="item.image_url"
+            :alt="item.name"
+            class="course-thumb"
+          />
+          <span v-else class="course-thumb-placeholder">{{ (item.name || '?').charAt(0) }}</span>
+        </template>
+        <template #actions="{ item }">
+          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+            <CIcon :content="cilPencil" size="lg" />
+          </CButton>
+          <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+            <CIcon :content="cilTrash" size="lg" />
+          </CButton>
+        </template>
+      </ElegantCrudList>
+    </template>
+
+    <CModal
       :visible="isModalOpen"
       scrollable
       size="lg"
@@ -58,7 +107,12 @@
                 <CFormInput v-model="itemData.name" label="Nombre" placeholder="nombre..." required />
               </CCol>
               <CCol>
-                <CFormInput v-model="itemData.description" label="Descripcion" placeholder="descripcion..." required />
+                <CFormInput
+                  v-model="itemData.description"
+                  label="Descripcion"
+                  placeholder="descripcion..."
+                  required
+                />
               </CCol>
             </CRow>
             <CRow class="mb-3">
@@ -79,188 +133,193 @@
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="() => {closeModal()}">
-          Cancelar
-        </CButton>
+        <CButton color="secondary" @click="closeModal()">Cancelar</CButton>
         <CButton color="primary" @click="isEditMode ? submitToEdit() : submitToCreate()">
           {{ isEditMode ? 'Actualizar' : 'Registrar' }}
         </CButton>
       </CModalFooter>
     </CModal>
-  </div> 
+  </div>
 </template>
 
 <script setup>
-  import CourseService from '@/services/CourseService'
-  import { ref, onMounted, watch } from 'vue';
-  import Swal from 'sweetalert2'
-  import CardComponent from '@/components/cruds/CardComponent.vue';
-  import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
-  import { cilPencil, cilTrash } from '@coreui/icons';
+import CourseService from '@/services/CourseService'
+import { ref, onMounted, watch } from 'vue'
+import Swal from 'sweetalert2'
+import CardComponent from '@/components/cruds/CardComponent.vue'
+import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue'
+import { cilPencil, cilTrash } from '@coreui/icons'
 
-  const items = ref([]);
-  const isModalOpen = ref(false);
-  const isEditMode = ref(false);
-  var idItemSelected = ref(0);
-  var searchData = ref('');
-  const imagePreview = ref(null);
-  const itemData = ref({
-    name:'',
-    description:'',
+defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const items = ref([])
+const isModalOpen = ref(false)
+const isEditMode = ref(false)
+const idItemSelected = ref(0)
+const searchData = ref('')
+const imagePreview = ref(null)
+const itemData = ref({
+  name: '',
+  description: '',
+  image: null,
+  image_url: null,
+})
+const listColumns = ref([
+  { key: 'id', label: 'N°' },
+  { key: 'image', label: 'Imagen' },
+  { key: 'name', label: 'Nombre' },
+  { key: 'description', label: 'Descripcion' },
+  { key: 'actions', label: 'OPCIONES' },
+])
+
+onMounted(async () => {
+  try {
+    await ListItem()
+  } catch (error) {
+    console.error(error)
+  }
+})
+
+const ListItem = async (data) => {
+  const response = await CourseService.getItems(data)
+  items.value = response.data.data
+}
+
+const onImageSelected = (event) => {
+  const file = event.target.files?.[0] || null
+  itemData.value.image = file
+  if (imagePreview.value && imagePreview.value.startsWith('blob:')) {
+    URL.revokeObjectURL(imagePreview.value)
+  }
+  imagePreview.value = file ? URL.createObjectURL(file) : itemData.value.image_url
+}
+
+const openCreateModal = () => {
+  clearDataModal()
+  isEditMode.value = false
+  isModalOpen.value = true
+}
+
+const openEditModal = async (id) => {
+  const response = await CourseService.getItem(id)
+  idItemSelected.value = response.data.data.id
+  itemData.value = {
+    name: response.data.data.name || '',
+    description: response.data.data.description || '',
+    image: null,
+    image_url: response.data.data.image_url || null,
+  }
+  imagePreview.value = response.data.data.image_url || null
+  isEditMode.value = true
+  isModalOpen.value = true
+}
+
+const clearDataModal = () => {
+  if (imagePreview.value && imagePreview.value.startsWith('blob:')) {
+    URL.revokeObjectURL(imagePreview.value)
+  }
+  imagePreview.value = null
+  itemData.value = {
+    name: '',
+    description: '',
     image: null,
     image_url: null,
-  });
-  const listColumns = ref([
-    { key: 'id', label: 'N°'},
-    { key: 'image', label: 'Imagen' },
-    { key: 'name', label: 'Nombre' },
-    { key: 'description', label: 'Descripcion' },
-    { key: 'actions', label: 'OPCIONES' },
-  ]);
-
-  onMounted(async () => {
-    try {
-      await ListItem();
-    } catch (error) {
-      console.error(error);
-    }
-  });
-
-  const ListItem = async (data) => {
-    const response = await CourseService.getItems(data);
-    items.value = response.data.data;
   }
+}
 
-  const onImageSelected = (event) => {
-    const file = event.target.files?.[0] || null;
-    itemData.value.image = file;
-    if (imagePreview.value && imagePreview.value.startsWith('blob:')) {
-      URL.revokeObjectURL(imagePreview.value);
-    }
-    imagePreview.value = file ? URL.createObjectURL(file) : itemData.value.image_url;
-  };
+const closeModal = () => {
+  isModalOpen.value = false
+  clearDataModal()
+}
 
-  const openCreateModal = () => {
-    clearDataModal();
-    isEditMode.value = false;
-    isModalOpen.value = true;
-  };
+const submitToCreate = async () => {
+  try {
+    await CourseService.createItem(itemData.value)
+    ListItem()
+    closeModal()
+    Swal.fire({
+      icon: 'success',
+      title: 'Registro exitoso',
+      text: 'Curso registrado con éxito.',
+    })
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.errors?.image?.[0] ||
+      'No se pudo registrar el curso.'
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al Guardar',
+      text: typeof message === 'string' ? message : message[0] || 'Error al guardar',
+    })
+  }
+}
 
-  const openEditModal = async (id) => {
-    const response = await CourseService.getItem(id);
-    idItemSelected.value = response.data.data.id;
-    itemData.value = {
-      name: response.data.data.name || '',
-      description: response.data.data.description || '',
-      image: null,
-      image_url: response.data.data.image_url || null,
-    };
-    imagePreview.value = response.data.data.image_url || null;
-    isEditMode.value = true;
-    isModalOpen.value = true;
-  };
+const submitToEdit = async () => {
+  itemData.value.id = idItemSelected.value
+  try {
+    await CourseService.updateItem(itemData.value)
+    ListItem()
+    closeModal()
+    Swal.fire({
+      icon: 'success',
+      title: 'Actualización exitosa',
+      text: 'Curso actualizado con éxito.',
+    })
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.response?.data?.errors?.image?.[0] ||
+      'No se pudo actualizar el curso.'
+    Swal.fire({
+      icon: 'error',
+      title: 'Error al Guardar',
+      text: typeof message === 'string' ? message : message[0] || 'Error al guardar',
+    })
+  }
+}
 
-  const clearDataModal = () => {
-    if (imagePreview.value && imagePreview.value.startsWith('blob:')) {
-      URL.revokeObjectURL(imagePreview.value);
-    }
-    imagePreview.value = null;
-    itemData.value = {
-      name:'',
-      description:'',
-      image: null,
-      image_url: null,
-    };
-  };
-
-  const closeModal = () => {
-    isModalOpen.value = false;
-    clearDataModal();
-  };
-
-  const submitToCreate = async () => {
-    try {
-      await CourseService.createItem(itemData.value);
-      ListItem();
-      closeModal();
+const deleteItem = async (id) => {
+  try {
+    const confirmResult = await Swal.fire({
+      icon: 'question',
+      iconColor: '#E55353',
+      title: 'Eliminar Curso',
+      text: '¿Estás seguro que desea eliminar este curso?',
+      confirmButtonText: 'Eliminar',
+      confirmButtonColor: '#E55353',
+      showCancelButton: true,
+      cancelButtonText: 'Cancelar',
+      cancelButtonColor: '#39F',
+      reverseButtons: true,
+    })
+    if (confirmResult.isConfirmed) {
+      await CourseService.deleteItem(id)
+      ListItem()
       Swal.fire({
         icon: 'success',
-        title: 'Registro exitoso',
-        text: 'Curso registrado con éxito.',
-      });
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.errors?.image?.[0] ||
-        'No se pudo registrar el curso.';
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al Guardar',
-        text: typeof message === 'string' ? message : message[0] || 'Error al guardar',
-      });
+        title: 'Curso eliminado',
+        text: 'El curso ha sido eliminado exitosamente.',
+      })
     }
-  };
+  } catch (error) {
+    console.error(error)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un error al eliminar el Curso. Por favor, inténtalo de nuevo.',
+    })
+  }
+}
 
-  const submitToEdit = async ()  => {
-    itemData.value.id = idItemSelected.value;
-    try {
-      await CourseService.updateItem(itemData.value);
-      ListItem();
-      closeModal();
-      Swal.fire({
-        icon: 'success',
-        title: 'Actualización exitosa',
-        text: 'Curso actualizado con éxito.',
-      });
-    } catch (error) {
-      const message =
-        error.response?.data?.message ||
-        error.response?.data?.errors?.image?.[0] ||
-        'No se pudo actualizar el curso.';
-      Swal.fire({
-        icon: 'error',
-        title: 'Error al Guardar',
-        text: typeof message === 'string' ? message : message[0] || 'Error al guardar',
-      });
-    }
-  };
-
-  const deleteItem = async (id) => {
-    try {
-      const confirmResult = await Swal.fire({
-        icon: 'question',
-        iconColor: '#E55353',
-        title: 'Eliminar Curso',
-        text: '¿Estás seguro que desea eliminar este curso?',
-        confirmButtonText: 'Eliminar',
-        confirmButtonColor: '#E55353',
-        showCancelButton: true,
-        cancelButtonText: 'Cancelar',
-        cancelButtonColor: '#39F',
-        reverseButtons: true,
-      });
-      if (confirmResult.isConfirmed) {
-        await CourseService.deleteItem(id);
-        ListItem();
-        Swal.fire({
-          icon: 'success',
-          title: 'Curso eliminado',
-          text: 'El curso ha sido eliminado exitosamente.',
-        });
-      }
-    } catch (error) {
-      console.error(error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Ocurrió un error al eliminar el Curso. Por favor, inténtalo de nuevo.',
-      });
-    }
-  };
-
-  watch(searchData, (newVal) => {
-    ListItem(newVal);
-  });
+watch(searchData, (newVal) => {
+  ListItem(newVal)
+})
 </script>
 
 <style scoped>

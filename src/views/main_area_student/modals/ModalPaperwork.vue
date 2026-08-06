@@ -165,7 +165,7 @@ const router = useRouter();
 const isEditMode = computed(() => !!props.paperwork);
 
 const subjectOptions = [
-  'Solicitud de permiso de inasistencia',
+  'Solicitud de inasistencia ',
   'Solicitud de retiro anticipado',
   'Solicitud de constancia de estudios',
   'Solicitud de certificado de estudios',

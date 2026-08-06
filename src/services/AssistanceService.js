@@ -60,6 +60,18 @@ export default {
     return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/listar-alumnos/`, { params })
   },
 
+  listUnjustifiedAbsences(params = {}) {
+    return axios.get(`${API_URL_DJANGO}/assistances/unjustified/`, { params })
+  },
+
+  justifyAbsence(payload) {
+    return axios.post(`${API_URL_DJANGO}/assistances/justify/`, payload)
+  },
+
+  correctAssistanceStatus(payload) {
+    return axios.post(`${API_URL_DJANGO}/assistances/correct-status/`, payload)
+  },
+
 
 
   getAssistanceByCourseClass(idCourseClass) {

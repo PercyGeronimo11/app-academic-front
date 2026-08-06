@@ -51,11 +51,12 @@
                 <CFormSelect v-model="filters.estado">
                   <option value="">Todos</option>
                   <option value="A">Asistió</option>
-                  <option value="T">Tardanza Leve</option>
+                  <option value="TL">Tardanza Leve</option>
                   <option value="TM">Tardanza Moderada</option>
                   <option value="TG">Tardanza Grave</option>
                   <option value="TE">Tardanza Extrema</option>
-                  <option value="F">Falta</option>
+                  <option value="FI">Falta Injustificada</option>
+                  <option value="FJ">Falta Justificada</option>
                 </CFormSelect>
               </CCol>
 
@@ -105,7 +106,7 @@
                 <template v-else>
                   <CTableRow v-for="(item, index) in asistencias" :key="index">
                     <CTableDataCell class="text-center">{{ formatDate(item.fecha_hora) }}</CTableDataCell>
-                    <CTableDataCell class="text-center">{{ item.estado === 'F' ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
+                    <CTableDataCell class="text-center">{{ esFaltaSinHora(item.estado) ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
                     <CTableDataCell class="text-center">
                       <CBadge :class="colorEstado(item.estado)" class="assist-badge-sm">
                         {{ textoEstado(item.estado) }}
@@ -151,7 +152,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AssistanceService from '../../../services/AssistanceService'
-import { textoEstado, colorEstado } from '../../../utils/utils'
+import { textoEstado, colorEstado, esFaltaSinHora } from '../../../utils/utils'
 import { formatDate, formatTime } from '../../../utils/time'
 import { useRouter } from 'vue-router'
 

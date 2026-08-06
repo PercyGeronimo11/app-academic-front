@@ -5,29 +5,58 @@ export const ESTADOS_ASISTENCIA = {
   TARDANZA_MODERADA: 'TM',
   TARDANZA_GRAVE: 'TG',
   TARDANZA_EXTREMA: 'TE',
-  FALTA: 'F',
+  FALTA_INJUSTIFICADA: 'FI',
+  FALTA_JUSTIFICADA: 'FJ',
+  /** @deprecated Usar FALTA_INJUSTIFICADA */
+  FALTA: 'FI',
 }
 
-export const textoEstado = (estado) => {
+export const esFalta = (estado) => ['FI', 'FJ', 'F'].includes(estado)
 
-  if (estado === ESTADOS_ASISTENCIA.ASISTENCIA) return 'Asistió'
-  if (estado === ESTADOS_ASISTENCIA.TARDANZA_LEVE) return 'Tardanza Leve'
-  if (estado === ESTADOS_ASISTENCIA.TARDANZA_MODERADA) return 'Tardanza Moderada'
+export const esFaltaInjustificada = (estado) => ['FI', 'F'].includes(estado)
+
+export const esFaltaSinHora = (estado) => esFalta(estado)
+
+export const textoEstado = (estado) => {
+  if (estado === ESTADOS_ASISTENCIA.ASISTENCIA || estado === 'asistio') return 'Asistencia Normal'
+  if (estado === ESTADOS_ASISTENCIA.TARDANZA_LEVE || estado === 'T') return 'Tardanza Leve'
+  if (estado === ESTADOS_ASISTENCIA.TARDANZA_MODERADA || estado === 'tardanza') return 'Tardanza Moderada'
   if (estado === ESTADOS_ASISTENCIA.TARDANZA_GRAVE) return 'Tardanza Grave'
   if (estado === ESTADOS_ASISTENCIA.TARDANZA_EXTREMA) return 'Tardanza Extrema'
-  if (estado === ESTADOS_ASISTENCIA.FALTA) return 'Faltó'
+  if (
+    estado === ESTADOS_ASISTENCIA.FALTA_INJUSTIFICADA
+    || estado === 'F'
+    || estado === 'falto'
+  ) return 'Falta Injustificada'
+  if (
+    estado === ESTADOS_ASISTENCIA.FALTA_JUSTIFICADA
+    || estado === 'falta justificada'
+  ) return 'Falta Justificada'
 
   return 'Sin registro'
+}
+
+export const tipoFaltaLabel = (estado) => {
+  if (estado === ESTADOS_ASISTENCIA.FALTA_JUSTIFICADA) return 'Justificada'
+  if (esFaltaInjustificada(estado)) return 'Injustificada'
+  return ''
 }
 
 export const colorEstado = (type) => {
   const classes = {
     [ESTADOS_ASISTENCIA.ASISTENCIA]: 'bg-success text-white  px-3 py-1 fs-6',
+    asistio: 'bg-success text-white  px-3 py-1 fs-6',
     [ESTADOS_ASISTENCIA.TARDANZA_LEVE]: 'bg-orange-1 text-white  px-3 py-1 fs-6',
+    T: 'bg-orange-1 text-white  px-3 py-1 fs-6',
     [ESTADOS_ASISTENCIA.TARDANZA_MODERADA]: 'bg-orange-2 text-white  px-3 py-1 fs-6',
+    tardanza: 'bg-orange-2 text-white  px-3 py-1 fs-6',
     [ESTADOS_ASISTENCIA.TARDANZA_GRAVE]: 'bg-orange-3 text-white  px-3 py-1 fs-6',
     [ESTADOS_ASISTENCIA.TARDANZA_EXTREMA]: 'bg-orange-4 text-white  px-3 py-1 fs-6',
-    [ESTADOS_ASISTENCIA.FALTA]: 'bg-danger text-white  px-3 py-1 fs-6'
+    [ESTADOS_ASISTENCIA.FALTA_INJUSTIFICADA]: 'bg-danger text-white  px-3 py-1 fs-6',
+    F: 'bg-danger text-white  px-3 py-1 fs-6',
+    falto: 'bg-danger text-white  px-3 py-1 fs-6',
+    [ESTADOS_ASISTENCIA.FALTA_JUSTIFICADA]: 'bg-warning text-dark  px-3 py-1 fs-6',
+    'falta justificada': 'bg-warning text-dark  px-3 py-1 fs-6',
   }
 
   return classes[type] || 'bg-secondary text-white'
@@ -41,7 +70,9 @@ export const colorFijoEstado = (type) => {
     [ESTADOS_ASISTENCIA.TARDANZA_MODERADA]: '#ffb300',
     [ESTADOS_ASISTENCIA.TARDANZA_GRAVE]: '#fd841a',
     [ESTADOS_ASISTENCIA.TARDANZA_EXTREMA]: '#fa6736',
-    [ESTADOS_ASISTENCIA.FALTA]: '#dc3545'
+    [ESTADOS_ASISTENCIA.FALTA_INJUSTIFICADA]: '#dc3545',
+    F: '#dc3545',
+    [ESTADOS_ASISTENCIA.FALTA_JUSTIFICADA]: '#ffc107',
   }
   return colors[type] || '#6c757d'
 }
@@ -88,7 +119,3 @@ export const getFirstName = (fullName) => {
 
   return parts[0] ?? null;
 }
-
-
-
-

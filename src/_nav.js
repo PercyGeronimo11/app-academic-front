@@ -9,7 +9,6 @@ export default [
     icon: 'cil-speedometer',
     roles: ['DIRECCION', 'AUXILIAR', 'PROFESOR', 'ESTUDIANTE', 'SECRETARIA'],
   },
-
   {
     component: 'CNavItem',
     name: 'Mis Cursos',
@@ -19,7 +18,7 @@ export default [
   },
   {
     component: 'CNavGroup',
-    name: 'Alerta Temprana',
+    name: 'Riesgo Académico',
     icon: 'cil-warning',
     roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR'],
     items: [
@@ -41,8 +40,20 @@ export default [
     component: 'CNavGroup',
     name: 'Asistencias',
     icon: 'cil-calendar-check',
-    roles: ['DIRECCION', 'AUXILIAR'],
+    roles: ['DIRECCION', 'AUXILIAR', 'SECRETARIA'],
     items: [
+      {
+        component: 'CNavItem',
+        name: 'Registro QR',
+        icon: 'cil-qr-code',
+        to: '/assistances/auxiliar/register-qr',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Registro Normal',
+        icon: 'cil-pencil',
+        to: '/assistances/auxiliar/register-dni',
+      },
       {
         component: 'CNavItem',
         name: 'Seguimiento Diario',
@@ -63,16 +74,11 @@ export default [
       },
       {
         component: 'CNavItem',
-        name: 'Registro QR',
-        icon: 'cil-qr-code',
-        to: '/assistances/auxiliar/register-qr',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Registro Normal',
+        name: 'Justificar faltas',
         icon: 'cil-pencil',
-        to: '/assistances/auxiliar/register-dni',
+        to: '/assistances/justificar',
       },
+
     ],
   },
 
@@ -98,41 +104,33 @@ export default [
       },
     ],
   },
-
-
   {
     component: 'CNavItem',
-    name: 'Trámites (Mesa)',
+    name: 'Trámites',
     to: '/mesa-tramites',
     icon: 'cil-inbox',
     roles: ['SECRETARIA'],
   },
   {
     component: 'CNavItem',
-    name: 'Trámites virtuales',
+    name: 'Trámites',
     to: '/admin-tramites',
     icon: 'cil-laptop',
     roles: ['DIRECCION'],
   },
   {
     component: 'CNavItem',
-    name: 'Trámites de mis aulas',
+    name: 'Trámites',
     to: '/auxiliar-tramites',
     icon: 'cil-check-circle',
     roles: ['AUXILIAR'],
   },
 
-  {
-    component: 'CNavItem',
-    name: 'Cursos',
-    to: '/courses',
-    icon: 'cil-book',
-    roles: ['DIRECCION'],
-  },
+
 
   {
     component: 'CNavTitle',
-    name: 'USUARIOS',
+    name: 'Administración',
     roles: ['DIRECCION'],
   },
   {
@@ -156,11 +154,10 @@ export default [
     icon: 'cil-people',
     roles: ['DIRECCION'],
   },
-
   {
     component: 'CNavItem',
     name: 'Configuraciones',
-    to: '/settings/general',
+    to: '/settings?tab=periodos',
     icon: 'cil-settings',
     roles: ['DIRECCION'],
   },

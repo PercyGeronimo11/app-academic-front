@@ -128,12 +128,15 @@
       </CCol>
 
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('F')">
+        <CCard :class="colorEstado('FI')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
               {{ data.t_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_faltas)
                 }}%)</span>
+            </div>
+            <div class="small opacity-90 mt-1" v-if="data.t_faltas_injustificadas != null || data.t_faltas_justificadas != null">
+              {{ data.t_faltas_injustificadas ?? 0 }} Injustificadas · {{ data.t_faltas_justificadas ?? 0 }} Justificadas
             </div>
           </CCardBody>
         </CCard>
@@ -200,6 +203,8 @@ const data = ref({
   t_tard_grave: 0,
   t_tard_extrema: 0,
   t_faltas: 0,
+  t_faltas_injustificadas: 0,
+  t_faltas_justificadas: 0,
 })
 
 const chartMinWidth = computed(() => {

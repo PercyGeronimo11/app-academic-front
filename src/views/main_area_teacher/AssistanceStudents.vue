@@ -111,16 +111,12 @@ let saveFeedbackTimer = null;
 
 const statusOptions = [
   { value: 'A', label: 'A — Asistió' },
-  { value: 'F', label: 'F — Faltó' },
   { value: 'TL', label: 'TL — Tardanza leve' },
   { value: 'TM', label: 'TM — Tardanza moderada' },
   { value: 'TG', label: 'TG — Tardanza grave' },
   { value: 'TE', label: 'TE — Tardanza extrema' },
-  { value: 'falta justificada', label: 'Falta justificada' },
-  // valores legacy guardados por docentes antes del cambio
-  { value: 'asistio', label: 'Asistió (manual)' },
-  { value: 'falto', label: 'Faltó (manual)' },
-  { value: 'tardanza', label: 'Tardanza (manual)' },
+  { value: 'FI', label: 'FI — Falta injustificada' },
+  { value: 'FJ', label: 'FJ — Falta justificada' },
 ];
 
 function getTodayDate() {

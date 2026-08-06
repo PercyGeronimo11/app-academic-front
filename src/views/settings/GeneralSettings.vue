@@ -1,63 +1,86 @@
 <template>
   <div class="settings-page">
-    <CardComponent title="Configuraciones generales" style="margin: 20px 10px;">
+    <CardComponent title="Configuración" style="margin: 20px 10px;">
+      <nav class="settings-tabs" aria-label="Secciones de configuración">
+        <button
+          v-for="tab in tabs"
+          :key="tab.id"
+          type="button"
+          class="settings-tabs__item"
+          :class="{ 'is-active': activeTab === tab.id }"
+          @click="setTab(tab.id)"
+        >
+          {{ tab.label }}
+        </button>
+      </nav>
+
       <p class="settings-intro text-body-secondary mb-4">
-        Gestione los periodos escolares y sus 4 bimestres (inicio y fin).
+        {{ activeIntro }}
       </p>
 
-      <!-- Periodos escolares -->
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="mb-0">Periodos escolares</h5>
-        <CButton color="info" class="text-white" @click="openCreatePeriod">Nuevo periodo</CButton>
-      </div>
-
-      <ElegantCrudList :columns="periodColumns" :data="periods">
-        <template #status="{ item }">
-          <span :class="['status-pill', item.status ? 'status-active' : 'status-inactive']">
-            {{ item.status ? 'Activo' : 'Inactivo' }}
-          </span>
-        </template>
-        <template #actions="{ item }">
-          <CButton color="warning" class="text-white me-1" @click="openEditPeriod(item)">
-            <CIcon :content="cilPencil" size="lg" />
-          </CButton>
-          <CButton color="danger" class="text-white" @click="deletePeriod(item)">
-            <CIcon :content="cilTrash" size="lg" />
-          </CButton>
-        </template>
-      </ElegantCrudList>
-
-      <hr class="my-4" />
-
-      <!-- Bimestres -->
-      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <h5 class="mb-0">Bimestres del año escolar</h5>
-        <div class="d-flex align-items-center gap-2">
-          <label class="mb-0 text-body-secondary">Periodo:</label>
-          <select v-model="selectedYear" class="form-select form-select-sm year-select" @change="loadBimesters">
-            <option v-for="p in periods" :key="p.id" :value="p.year">
-              {{ p.name }} {{ p.status ? '(activo)' : '' }}
-            </option>
-          </select>
+      <!-- Periodo escolar -->
+      <div v-show="activeTab === 'periodos'">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h5 class="mb-0">Periodos escolares</h5>
+          <CButton color="info" class="text-white" @click="openCreatePeriod">Nuevo periodo</CButton>
         </div>
+
+        <ElegantCrudList :columns="periodColumns" :data="periods">
+          <template #status="{ item }">
+            <span :class="['status-pill', item.status ? 'status-active' : 'status-inactive']">
+              {{ item.status ? 'Activo' : 'Inactivo' }}
+            </span>
+          </template>
+          <template #actions="{ item }">
+            <CButton color="warning" class="text-white me-1" @click="openEditPeriod(item)">
+              <CIcon :content="cilPencil" size="lg" />
+            </CButton>
+            <CButton color="danger" class="text-white" @click="deletePeriod(item)">
+              <CIcon :content="cilTrash" size="lg" />
+            </CButton>
+          </template>
+        </ElegantCrudList>
+
+        <hr class="my-4" />
+
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <h5 class="mb-0">Bimestres del año escolar</h5>
+          <div class="d-flex align-items-center gap-2">
+            <label class="mb-0 text-body-secondary">Periodo:</label>
+            <select
+              v-model="selectedYear"
+              class="form-select form-select-sm year-select"
+              @change="loadBimesters"
+            >
+              <option v-for="p in periods" :key="p.id" :value="p.year">
+                {{ p.name }} {{ p.status ? '(activo)' : '' }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <p v-if="!periods.length" class="text-body-secondary">
+          Primero registre un periodo escolar para gestionar sus bimestres.
+        </p>
+
+        <ElegantCrudList
+          v-else
+          :columns="bimesterColumns"
+          :data="bimesters"
+          empty-message="No hay bimestres para este año. Edite el periodo para generarlos."
+        >
+          <template #actions="{ item }">
+            <CButton color="warning" class="text-white" @click="openEditBimester(item)">
+              <CIcon :content="cilPencil" size="lg" />
+            </CButton>
+          </template>
+        </ElegantCrudList>
       </div>
 
-      <p v-if="!periods.length" class="text-body-secondary">
-        Primero registre un periodo escolar para gestionar sus bimestres.
-      </p>
-
-      <ElegantCrudList
-        v-else
-        :columns="bimesterColumns"
-        :data="bimesters"
-        empty-message="No hay bimestres para este año. Edite el periodo para generarlos."
-      >
-        <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="openEditBimester(item)">
-            <CIcon :content="cilPencil" size="lg" />
-          </CButton>
-        </template>
-      </ElegantCrudList>
+      <!-- Cursos -->
+      <div v-if="activeTab === 'cursos'">
+        <CourseView embedded />
+      </div>
     </CardComponent>
 
     <!-- Modal periodo -->
@@ -180,14 +203,48 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import Swal from 'sweetalert2'
 import { cilPencil, cilTrash } from '@coreui/icons'
 import CardComponent from '@/components/cruds/CardComponent.vue'
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue'
+import CourseView from '@/views/course/Course.vue'
 import PeriodService from '@/services/PeriodService'
 import BimesterService from '@/services/BimesterService'
 import { formatDate, toIsoDate } from '@/utils/time'
+
+const VALID_TABS = ['periodos', 'cursos']
+
+const tabs = [
+  { id: 'periodos', label: 'Periodo escolar' },
+  { id: 'cursos', label: 'Cursos' },
+]
+
+const route = useRoute()
+const router = useRouter()
+
+const activeTab = computed(() => {
+  const tab = String(route.query.tab || '')
+  return VALID_TABS.includes(tab) ? tab : 'periodos'
+})
+
+const activeIntro = computed(() =>
+  activeTab.value === 'cursos'
+    ? 'Gestione el catálogo de cursos del colegio (alta al inicio del periodo).'
+    : 'Gestione los periodos escolares y sus 4 bimestres (inicio y fin).',
+)
+
+const setTab = (tab) => {
+  if (tab === activeTab.value && route.query.tab === tab) return
+  router.replace({ path: '/settings', query: { tab } })
+}
+
+const ensureTabQuery = () => {
+  if (!VALID_TABS.includes(String(route.query.tab || ''))) {
+    router.replace({ path: '/settings', query: { tab: 'periodos' } })
+  }
+}
 
 const periods = ref([])
 const bimesters = ref([])
@@ -423,7 +480,15 @@ watch(selectedYear, () => {
   loadBimesters()
 })
 
+watch(
+  () => route.query.tab,
+  () => {
+    ensureTabQuery()
+  },
+)
+
 onMounted(async () => {
+  ensureTabQuery()
   try {
     await loadPeriods()
   } catch (error) {
@@ -444,6 +509,41 @@ onMounted(async () => {
 
 .settings-intro {
   font-size: var(--rp-text-base);
+}
+
+.settings-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  padding: 0.3rem;
+  border-radius: var(--rp-radius-md);
+  background: var(--rp-surface-muted);
+  border: 1px solid var(--rp-border);
+}
+
+.settings-tabs__item {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: var(--rp-text-secondary, #64748b);
+  font-weight: 600;
+  font-size: 0.92rem;
+  padding: 0.55rem 1rem;
+  border-radius: calc(var(--rp-radius-md) - 2px);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.settings-tabs__item:hover {
+  color: var(--rp-text-heading, #0f172a);
+  background: color-mix(in srgb, var(--rp-surface) 70%, transparent);
+}
+
+.settings-tabs__item.is-active {
+  color: var(--rp-text-brand, #1e4b7a);
+  background: var(--rp-surface);
+  box-shadow: var(--rp-shadow-xs);
 }
 
 .year-select {

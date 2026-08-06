@@ -89,7 +89,7 @@
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell class="text-center fw-medium">
-                        {{ alumno.estado === 'F' ? '--' : formatTime(alumno.hora) }}
+                        {{ esFaltaSinHora(alumno.estado) ? '--' : formatTime(alumno.hora) }}
                       </CTableDataCell>
                     </CTableRow>
                   </template>
@@ -108,7 +108,7 @@ import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import AssistanceService from '../../../services/AssistanceService'
 import { formatTime, fecha_actual } from '@/utils/time'
-import { textoEstado, colorEstado, gradoTexto } from '@/utils/utils'
+import { textoEstado, colorEstado, gradoTexto, esFaltaSinHora } from '@/utils/utils'
 
 const route = useRoute()
 const seccionId = route.params.id

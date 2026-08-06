@@ -115,7 +115,7 @@
 
       <!-- Faltas -->
       <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('F')">
+        <CCard :class="colorEstado('FI')">
           <CCardBody>
             <div class="fs-6 fw-semibold">Total Faltas</div>
             <div class="fs-4 fw-semibold">
@@ -189,7 +189,7 @@
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center">
-                        <CBadge :class="colorEstado('F')" class="assist-badge-sm">{{ item.t_faltas }}</CBadge>
+                        <CBadge :class="colorEstado('FI')" class="assist-badge-sm">{{ item.t_faltas }}</CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center">

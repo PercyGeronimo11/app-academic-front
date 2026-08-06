@@ -306,7 +306,9 @@ const descargarExcel = async () => {
             { header: 'Seccion', key: 'section', width: 15 },
             { header: 'Asistencias', key: 'total_asistencias', width: 15 },
             { header: 'Tardanzas', key: 'total_tardanzas', width: 15 },
-            { header: 'Faltas', key: 'total_faltas', width: 15 }
+            { header: 'Faltas', key: 'total_faltas', width: 12 },
+            { header: 'Faltas Injustificadas', key: 'total_faltas_injustificadas', width: 18 },
+            { header: 'Faltas Justificadas', key: 'total_faltas_justificadas', width: 18 },
         ]
     })
 }
