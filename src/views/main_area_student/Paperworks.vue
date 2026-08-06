@@ -5,13 +5,18 @@
         <CCard class="shadow-sm border-0">
           <CCardBody class="py-3 px-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
-              <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                <i class="fas fa-file-alt me-2"></i>
-                Trámites del estudiante
-              </h4>
-              <CButton type="button" color="primary" class="px-4" @click="newPaperwork">
+              <div>
+                <h4 class="fw-bold text-primary mb-1 d-flex align-items-center">
+                  <i class="fas fa-file-alt me-2"></i>
+                  Mis trámites
+                </h4>
+                <p class="mb-0 text-body-secondary small">
+                  Lista de solicitudes FUT que has registrado y su estado actual.
+                </p>
+              </div>
+              <CButton color="primary" class="px-4" @click="goToRegister">
                 <CIcon class="me-2" icon="cil-file" size="sm" />
-                Nuevo trámite
+                Registrar trámite
               </CButton>
             </div>
           </CCardBody>
@@ -44,7 +49,7 @@
                         <span class="table-empty-unified__icon" aria-hidden="true">📋</span>
                         <p class="table-empty-unified__title">Aún no registras trámites</p>
                         <p class="table-empty-unified__hint">
-                          Usa <strong>Nuevo trámite</strong> para generar tu solicitud en formato FUT.
+                          Usa <strong>Registrar trámite</strong> para generar tu solicitud en formato FUT.
                         </p>
                       </div>
                     </CTableDataCell>
@@ -125,7 +130,6 @@
     <ModalPaperwork
       v-model:isOpenModal="isOpenModalPaperwork"
       :paperwork="selectedPaperwork"
-      @createPaperwork="createPaperwork"
       @updatePaperwork="onUpdatePaperwork"
     />
 
@@ -139,6 +143,7 @@
 
 <script setup>
 import { onBeforeUnmount, onMounted, reactive, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import Swal from 'sweetalert2';
 import TramiteHistory from '@/components/paperworks/TramiteHistory.vue';
 import TramiteStatusBadge from '@/components/paperworks/TramiteStatusBadge.vue';
@@ -146,6 +151,8 @@ import TramitePdfPreviewModal from '@/components/paperworks/TramitePdfPreviewMod
 import ModalPaperwork from './modals/ModalPaperwork.vue';
 import PaperworkService from '../../services/PaperworkService';
 import { formatDatabaseDate } from '../../utils/time';
+
+const router = useRouter();
 
 const tableHeaders = ref([]);
 const tableItems = ref([]);
@@ -267,9 +274,8 @@ onBeforeUnmount(() => {
   revokePdfUrl();
 });
 
-const newPaperwork = () => {
-  selectedPaperwork.value = null;
-  isOpenModalPaperwork.value = true;
+const goToRegister = () => {
+  router.push('/register-paperwork');
 };
 
 const editPaperwork = (item) => {
@@ -281,21 +287,6 @@ const editPaperwork = (item) => {
 const EDITABLE_STATUSES = ['OBSERVADO POR MESA DE PARTES', 'OBSERVADO POR EL DIRECTOR'];
 
 const canEditPaperwork = (status) => EDITABLE_STATUSES.includes(status);
-
-const createPaperwork = async (formData) => {
-  try {
-    const response = await PaperworkService.createPaperwork(formData);
-    const payload = response.data;
-    if (payload.success) {
-      await listPaperWorks();
-      Swal.fire('Registrado', payload.message || 'Trámite registrado correctamente.', 'success');
-    } else {
-      Swal.fire('Error', payload.message || 'No se pudo registrar.', 'error');
-    }
-  } catch (e) {
-    Swal.fire('Error', e.response?.data?.message || 'No se pudo registrar el trámite.', 'error');
-  }
-};
 
 const onUpdatePaperwork = async (formData) => {
   if (!selectedPaperwork.value?.id) {

@@ -49,8 +49,14 @@
                 <TramiteStatusBadge :status="item.status" />
               </CTableDataCell>
               <CTableDataCell class="text-center">
-                <CButton color="secondary" size="sm" variant="outline" @click="toggle(item.id)">
-                  {{ expanded[item.id] ? 'Ocultar' : 'Historial' }}
+                <CButton
+                  color="secondary"
+                  size="sm"
+                  variant="outline"
+                  :aria-label="`Ver historial de estados del trámite ${item.id}`"
+                  @click="openHistory(item)"
+                >
+                  Historial
                 </CButton>
               </CTableDataCell>
               <CTableDataCell class="text-center">
@@ -65,32 +71,34 @@
                 <span v-else class="small text-body-secondary">—</span>
               </CTableDataCell>
             </CTableRow>
-            <CTableRow v-show="expanded[item.id]" class="tls-expand-row">
-              <CTableDataCell colspan="9" class="p-0 border-0">
-                <div class="tls-expand-inner">
-                  <TramiteHistory :steps="item.status_history" />
-                </div>
-              </CTableDataCell>
-            </CTableRow>
           </template>
         </CTableBody>
       </CTable>
     </TramiteListShell>
   </CardComponent>
+
+  <TramiteHistoryModal
+    :visible="historyModalVisible"
+    :steps="historySteps"
+    :context-label="historyContextLabel"
+    @close="closeHistory"
+  />
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import Swal from 'sweetalert2';
 import CardComponent from '@/components/cruds/CardComponent.vue';
 import TramiteListShell from '@/components/paperworks/TramiteListShell.vue';
-import TramiteHistory from '@/components/paperworks/TramiteHistory.vue';
 import TramiteStatusBadge from '@/components/paperworks/TramiteStatusBadge.vue';
+import TramiteHistoryModal from '@/components/paperworks/TramiteHistoryModal.vue';
 import PaperworkService from '@/services/PaperworkService';
 import { formatDatabaseDate } from '@/utils/time';
 
 const items = ref([]);
-const expanded = reactive({});
+const historyModalVisible = ref(false);
+const historySteps = ref([]);
+const historyContextLabel = ref('');
 
 const canComplete = (status) => status === 'APROBADO EXITOSAMENTE';
 
@@ -125,8 +133,16 @@ const load = async () => {
   }
 };
 
-const toggle = (id) => {
-  expanded[id] = !expanded[id];
+const openHistory = (item) => {
+  historySteps.value = item.status_history || [];
+  historyContextLabel.value = [item.names, item.subject].filter(Boolean).join(' · ');
+  historyModalVisible.value = true;
+};
+
+const closeHistory = () => {
+  historyModalVisible.value = false;
+  historySteps.value = [];
+  historyContextLabel.value = '';
 };
 
 const ack = async (id) => {

@@ -1,6 +1,6 @@
 <template>
-  <div class="th-panel">
-    <div class="th-panel__title">
+  <div class="th-panel" :class="{ 'th-panel--embedded': !showTitle }">
+    <div v-if="showTitle" class="th-panel__title">
       <span class="th-panel__icon" aria-hidden="true">▣</span>
       Historial de estados
     </div>
@@ -42,6 +42,10 @@ defineProps({
     type: Array,
     default: () => [],
   },
+  showTitle: {
+    type: Boolean,
+    default: true,
+  },
 });
 </script>
 
@@ -52,6 +56,17 @@ defineProps({
   border: 1px solid var(--rp-border);
   background: var(--rp-surface);
   box-shadow: var(--rp-shadow-xs);
+}
+
+.th-panel--embedded {
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.th-panel--embedded .th-panel__body {
+  padding: 0;
 }
 
 .th-panel__title {

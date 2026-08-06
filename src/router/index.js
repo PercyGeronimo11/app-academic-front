@@ -244,8 +244,13 @@ const routes = [
       },
       {
         path: '/myPaperworks',
-        name: 'Trámites del Estudiante',
+        name: 'Mis trámites',
         component: () => import('@/views/main_area_student/Paperworks.vue'),
+      },
+      {
+        path: '/register-paperwork',
+        name: 'Registrar trámite',
+        component: () => import('@/views/main_area_student/RegisterPaperwork.vue'),
       },
 
 
@@ -310,12 +315,27 @@ const routes = [
         path: '/mesa-tramites',
         name: 'MesaTramites',
         component: () => import('@/views/paperworks/PaperworksMesa.vue'),
+        props: { mode: 'inbox' },
+      },
+      {
+        path: '/mesa-tramites/historial',
+        name: 'MesaTramitesHistorial',
+        component: () => import('@/views/paperworks/PaperworksMesa.vue'),
+        props: { mode: 'history' },
       },
       {
         path: '/admin-tramites',
         name: 'AdminTramites',
         component: () => import('@/views/paperworks/PaperworksAdmin.vue'),
+        props: { mode: 'inbox' },
       },
+      {
+        path: '/admin-tramites/historial',
+        name: 'AdminTramitesHistorial',
+        component: () => import('@/views/paperworks/PaperworksAdmin.vue'),
+        props: { mode: 'history' },
+      },
+
       {
         path: '/auxiliar-tramites',
         name: 'AuxiliarTramites',

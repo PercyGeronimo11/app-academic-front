@@ -105,19 +105,46 @@ export default [
     ],
   },
   {
-    component: 'CNavItem',
+    component: 'CNavGroup',
     name: 'Trámites',
-    to: '/mesa-tramites',
     icon: 'cil-inbox',
     roles: ['SECRETARIA'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Trámites en proceso',
+        icon: 'cil-task',
+        to: '/mesa-tramites',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Historial de trámites',
+        icon: 'cil-list',
+        to: '/mesa-tramites/historial',
+      },
+    ],
   },
   {
-    component: 'CNavItem',
+    component: 'CNavGroup',
     name: 'Trámites',
-    to: '/admin-tramites',
     icon: 'cil-laptop',
     roles: ['DIRECCION'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Trámites en proceso',
+        icon: 'cil-task',
+        to: '/admin-tramites',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Historial de trámites',
+        icon: 'cil-list',
+        to: '/admin-tramites/historial',
+      },
+    ],
   },
+
   {
     component: 'CNavItem',
     name: 'Trámites',
@@ -225,10 +252,23 @@ export default [
   },
 
   {
-    component: 'CNavItem',
+    component: 'CNavGroup',
     name: 'Trámites',
-    to: '/myPaperworks',
     icon: 'cil-folder-open',
     roles: ['ESTUDIANTE'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Registrar trámite',
+        icon: 'cil-file',
+        to: '/register-paperwork',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Mis trámites',
+        icon: 'cil-list',
+        to: '/myPaperworks',
+      },
+    ],
   },
 ]
