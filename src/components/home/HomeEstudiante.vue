@@ -31,7 +31,7 @@
           <i class="fas fa-graduation-cap home-panel__title-icon" aria-hidden="true"></i>
           Mis cursos
         </h2>
-        <router-link :to="links.courses || '/mainAreaStudent'">Ver todos</router-link>
+        <router-link :to="links.courses || '/courses/student/list'">Ver todos</router-link>
       </div>
       <div v-if="!courses.length" class="home-empty home-empty--iconed">
         <i class="fas fa-book" aria-hidden="true"></i>

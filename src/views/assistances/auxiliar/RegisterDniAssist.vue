@@ -1,12 +1,9 @@
 <template>
-
-
-  <CRow class="mb-2">
+  <CRow v-if="!embedded" class="mb-2">
     <CCol>
       <CCard class="shadow-sm border-0">
         <CCardHeader class="bg-white border-bottom py-3">
           <div class="d-flex justify-content-between align-items-center">
-
             <h5 class="fw-bold text-primary mb-0">
               <i class="fas fa-chart-line me-2"></i>
               Registrar asistencia manualmente
@@ -225,6 +222,12 @@ import { textoEstado, colorEstado, esFaltaInjustificada } from '@/utils/utils'
 import { toastError, toastSuccess } from '../../../utils/alerts'
 import Swal from 'sweetalert2'
 
+defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const alumnos = ref([])
 const search = ref('')

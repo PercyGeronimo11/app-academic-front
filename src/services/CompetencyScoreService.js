@@ -7,6 +7,14 @@ export default {
     return axios.get(`${API_URL}/competency-scores/bimesters`);
   },
 
+  academicRecord(studentId = null) {
+    return axios.get(`${API_URL}/competency-scores/academic-record`, {
+      params: {
+        student_id: studentId,
+      },
+    });
+  },
+
   reportCard(bimesterId = null, studentId = null) {
     return axios.get(`${API_URL}/competency-scores/report-card`, {
       params: {
@@ -21,6 +29,14 @@ export default {
       params: {
         course_class_id: courseClassId,
         bimester_id: bimesterId,
+      },
+    });
+  },
+
+  listByCourseClassPeriod(courseClassId) {
+    return axios.get(`${API_URL}/competency-scores/by-course-class-period`, {
+      params: {
+        course_class_id: courseClassId,
       },
     });
   },

@@ -19,9 +19,12 @@ export default {
     return axios.post(`${API_URL}/conduct-incidents`, data);
   },
 
-  myHistory(bimesterId = null) {
+  myHistory(bimesterId = null, courseClassId = null) {
     return axios.get(`${API_URL}/conduct-incidents/my-history`, {
-      params: { bimester_id: bimesterId },
+      params: {
+        bimester_id: bimesterId,
+        course_class_id: courseClassId,
+      },
     });
   },
 };

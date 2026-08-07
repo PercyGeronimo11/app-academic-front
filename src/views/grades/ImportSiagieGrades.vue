@@ -9,9 +9,6 @@
         <CButton color="primary" variant="outline" @click="goToGrades">
           <i class="fas fa-table me-2"></i>Ver notas
         </CButton>
-        <CButton color="secondary" variant="ghost" @click="goBack">
-          <i class="fas fa-arrow-left me-2"></i>Volver
-        </CButton>
       </template>
     </ModulePageHeader>
 
@@ -358,8 +355,8 @@ const importFile = async () => {
   }
 };
 
-const goToGrades = () => router.push(`/teacher/${courseClassId}/grades`);
-const goBack = () => router.back();
+const goToGrades = () => router.push(`/courses/teacher/${courseClassId}/grades`);
+const goBack = () => router.push(`/courses/teacher/${courseClassId}/grades`);
 
 onMounted(async () => {
   await Promise.all([loadCourse(), loadBimesters()]);

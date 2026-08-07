@@ -1,5 +1,5 @@
 <template>
-  <CRow class="mb-3">
+  <CRow v-if="!embedded" class="mb-3">
     <CCol>
       <CCard class="shadow-sm border-0">
         <CCardHeader class="bg-white border-bottom py-3 px-3 px-md-4">
@@ -23,7 +23,7 @@
 
   <CRow class="mb-3">
     <CCol>
-      <CCard class="shadow-lg border-0">
+      <CCard :class="embedded ? 'shadow-sm border-0' : 'shadow-lg border-0'">
         <CCardHeader class="bg-primary d-flex align-items-center justify-content-between">
           <div class="fw-bold text-white">
             <i class="fas fa-qrcode me-2"></i>
@@ -83,6 +83,13 @@ import { BrowserQRCodeReader } from '@zxing/browser'
 import AssistanceService from '@/services/AssistanceService'
 import { useFechaHora } from '@/composables/useFechaHora'
 import { toastSuccess, toastError } from '@/utils/alerts'
+
+defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
+  },
+})
 
 const { fechaHora } = useFechaHora()
 

@@ -122,11 +122,10 @@ const router = useRouter();
 const isEditMode = computed(() => !!props.paperwork);
 
 const subjectOptions = [
-  'Solicitud de inasistencia ',
+  'Justificación de inasistencia ',
   'Solicitud de retiro anticipado',
   'Solicitud de constancia de estudios',
   'Solicitud de certificado de estudios',
-  'Solicitud de copia de libreta de notas',
 ];
 
 const isShowingAlert = ref(false);

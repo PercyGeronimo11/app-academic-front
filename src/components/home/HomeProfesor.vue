@@ -45,7 +45,7 @@
     <section class="home-panel">
       <div class="home-panel__head">
         <h2>Mis cursos</h2>
-        <router-link :to="links.courses || '/mainAreaTeacher'">Ver todos</router-link>
+        <router-link :to="links.courses || '/courses/teacher/list'">Ver todos</router-link>
       </div>
       <div v-if="!courses.length" class="home-empty">No tienes cursos asignados.</div>
       <div v-else class="home-courses">

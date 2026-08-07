@@ -19,20 +19,23 @@
 
     <CRow class="g-3">
       <CCol xs="12" md="6">
-        <router-link class="home-cta" :to="links.register_qr || '/assistances/auxiliar/register-qr'">
-          <i class="fas fa-qrcode"></i>
+        <router-link
+          class="home-cta"
+          :to="links.register || links.register_qr || '/assistances/registrar?tab=qr'"
+        >
+          <i class="fas fa-user-check"></i>
           <div>
-            <strong>Registro QR</strong>
-            <span>Escanear asistencia</span>
+            <strong>Registrar asistencia</strong>
+            <span>QR o búsqueda de alumno</span>
           </div>
         </router-link>
       </CCol>
       <CCol xs="12" md="6">
-        <router-link class="home-cta home-cta--secondary" :to="links.register_dni || '/assistances/auxiliar/register-dni'">
-          <i class="fas fa-id-card"></i>
+        <router-link class="home-cta home-cta--secondary" :to="links.seguimiento || '/assistances/seguimiento'">
+          <i class="fas fa-tasks"></i>
           <div>
-            <strong>Registro DNI</strong>
-            <span>Ingreso manual</span>
+            <strong>Seguimiento diario</strong>
+            <span>Ver asistencias del día</span>
           </div>
         </router-link>
       </CCol>

@@ -12,7 +12,7 @@ export default [
   {
     component: 'CNavItem',
     name: 'Mis Cursos',
-    to: '/mainAreaTeacher',
+    to: '/courses/teacher/list',
     icon: 'cil-library',
     roles: ['PROFESOR'],
   },
@@ -44,15 +44,9 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Registro QR',
-        icon: 'cil-qr-code',
-        to: '/assistances/auxiliar/register-qr',
-      },
-      {
-        component: 'CNavItem',
-        name: 'Registro Normal',
-        icon: 'cil-pencil',
-        to: '/assistances/auxiliar/register-dni',
+        name: 'Registrar asistencia',
+        icon: 'cil-user-follow',
+        to: '/assistances/registrar?tab=qr',
       },
       {
         component: 'CNavItem',
@@ -112,7 +106,7 @@ export default [
     items: [
       {
         component: 'CNavItem',
-        name: 'Trámites en proceso',
+        name: 'Trámites Pendientes',
         icon: 'cil-task',
         to: '/mesa-tramites',
       },
@@ -158,7 +152,7 @@ export default [
   {
     component: 'CNavTitle',
     name: 'Administración',
-    roles: ['DIRECCION'],
+    roles: ['DIRECCION', 'SECRETARIA'],
   },
   {
     component: 'CNavItem',
@@ -172,7 +166,7 @@ export default [
     name: 'Docentes',
     to: '/teachers',
     icon: 'cil-education',
-    roles: ['DIRECCION'],
+    roles: ['DIRECCION', 'SECRETARIA'],
   },
   {
     component: 'CNavItem',
@@ -186,26 +180,31 @@ export default [
     name: 'Configuraciones',
     to: '/settings?tab=periodos',
     icon: 'cil-settings',
-    roles: ['DIRECCION'],
-  },
-
-  //   Para Profesor
-  {
-    component: 'CNavTitle',
-    name: 'ADMINISTRACIÓN',
-    roles: ['PROFESOR'],
-  },
-
-
-  {
-    component: 'CNavItem',
-    name: 'Mis Cursos',
-    to: '/mainAreaTeacher',
-    icon: 'cil-library',
-    roles: ['PROFESOR'],
+    roles: ['DIRECCION', 'SECRETARIA'],
   },
 
   //   Para Estudiante
+
+  {
+    component: 'CNavGroup',
+    name: 'Mis Cursos',
+    icon: 'cil-library',
+    roles: ['ESTUDIANTE'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Lista de cursos',
+        icon: 'cil-list',
+        to: '/courses/student/list',
+      },
+      {
+        component: 'CNavItem',
+        name: 'Record Académico',
+        to: '/courses/student/academic-record',
+        icon: 'cil-education',
+      },
+    ],
+  },
 
   {
     component: 'CNavGroup',
@@ -229,29 +228,6 @@ export default [
   },
 
   {
-    component: 'CNavItem',
-    name: 'Comunicados',
-    icon: 'cil-bullhorn',
-     to: '/my-announcements',
-    roles: ['ESTUDIANTE', 'AUXILIAR', 'SECRETARIA']
-  },
-  {
-    component: 'CNavItem',
-    name: 'Riesgo académico',
-    to: '/mi-riesgo-academico',
-    icon: 'cil-warning',
-    roles: ['ESTUDIANTE'],
-  },
-
-  {
-    component: 'CNavItem',
-    name: 'Mis Cursos',
-    to: '/mainAreaStudent',
-    icon: 'cil-library',
-    roles: ['ESTUDIANTE'],
-  },
-
-  {
     component: 'CNavGroup',
     name: 'Trámites',
     icon: 'cil-folder-open',
@@ -271,4 +247,22 @@ export default [
       },
     ],
   },
+  {
+    component: 'CNavItem',
+    name: 'Comunicados Oficiales',
+    icon: 'cil-bullhorn',
+     to: '/my-announcements',
+    roles: ['ESTUDIANTE', 'AUXILIAR', 'SECRETARIA']
+  },
+  {
+    component: 'CNavItem',
+    name: 'Riesgo académico',
+    to: '/mi-riesgo-academico',
+    icon: 'cil-warning',
+    roles: ['ESTUDIANTE'],
+  },
+
+
+
+
 ]

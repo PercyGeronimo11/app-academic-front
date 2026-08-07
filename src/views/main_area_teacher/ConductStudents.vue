@@ -14,7 +14,7 @@
     >
       <template #actions>
         <CButton color="light" variant="ghost" class="text-white" @click="goBack">
-          <i class="fas fa-arrow-left me-2"></i>Volver
+          <i class="fas fa-arrow-left me-2"></i>Volver a mis cursos
         </CButton>
       </template>
     </ModulePageHeader>
@@ -202,7 +202,7 @@ const onIncidentSaved = async () => {
   await fetchData();
 };
 
-const goBack = () => router.push(`/teacher/${courseClassId}/detalle`);
+const goBack = () => router.push('/courses/teacher/list');
 
 onMounted(fetchData);
 </script>
