@@ -80,21 +80,21 @@ export default [
     component: 'CNavGroup',
     name: 'Comunicados',
     icon: 'cil-bullhorn',
-    roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR', 'SECRETARIA', 'ESTUDIANTE'],
+    roles: ['DIRECCION', 'PROFESOR', 'SECRETARIA'],
     items: [
       {
         component: 'CNavItem',
-        name: 'Comunicados oficiales',
+        name: 'Principales',
         icon: 'cil-note-add',
         to: '/announcements/publish',
-        roles: ['DIRECCION', 'PROFESOR'],
+        roles: ['DIRECCION', 'SECRETARIA', 'PROFESOR'],
       },
       {
         component: 'CNavItem',
-        name: 'Ver comunicados',
-        icon: 'cil-envelope-open',
-        to: '/my-announcements',
-        roles: ['DIRECCION', 'PROFESOR' ],
+        name: 'Historial',
+        icon: 'cil-list',
+        to: '/announcements/history',
+        roles: ['DIRECCION', 'SECRETARIA', 'PROFESOR'],
       },
     ],
   },
@@ -249,10 +249,10 @@ export default [
   },
   {
     component: 'CNavItem',
-    name: 'Comunicados Oficiales',
+    name: 'Comunicados',
     icon: 'cil-bullhorn',
      to: '/my-announcements',
-    roles: ['ESTUDIANTE', 'AUXILIAR', 'SECRETARIA']
+    roles: ['ESTUDIANTE', 'AUXILIAR']
   },
   {
     component: 'CNavItem',

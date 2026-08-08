@@ -1,126 +1,99 @@
 <template>
   <CContainer fluid>
-
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardBody class="py-3 px-3 px-md-4">
-            <CRow class="gy-3 align-items-end">
-              <CCol xs="12" md="5">
-                <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                  <i class="fas fa-chart-line me-2"></i>
-                  Seguimiento diario por aula
-                </h4>
-              </CCol>
-
-              <CCol xs="12" md="4">
-                <label class="form-label fw-semibold mb-1">Aula</label>
-                <CFormSelect v-model="aulaId" class="w-100">
-                  <option value="">Todas</option>
-                  <option
-                    v-for="aula in aulasOptions"
-                    :key="aula.grade_section_id"
-                    :value="String(aula.grade_section_id)"
-                  >
-                    {{ aula.grado }}° {{ aula.seccion }}
-                  </option>
-                </CFormSelect>
-              </CCol>
-
-              <CCol xs="12" md="3">
-                <div class="d-flex justify-content-md-end">
-                  <CBadge color="dark" class="px-3 py-2 fs-6 w-100 w-md-auto text-center">
-                    📅 {{ fechaHora }}
-                  </CBadge>
-                </div>
-              </CCol>
-            </CRow>
+            <h5 class="fw-bold text-primary mb-0 d-flex align-items-center">
+              <i class="fas fa-chart-line me-2"></i>
+              Seguimiento diario por aulas
+            </h5>
           </CCardBody>
         </CCard>
       </CCol>
     </CRow>
 
-    <!-- Cards resumen -->
-    <CRow class="mb-1">
-      <CCol sm="6" lg="3" class="mb-3">
-        <CCard class="text-white bg-primary shadow">
-          <CCardBody>
-            <div class="fs-6 fw-semibold">Total Alumnos</div>
-            <div class="fs-4 fw-semibold">
-              {{ data.total_registros }} <span class="fs-6 fw-normal opacity-75">
-                ({{ porcentaje(data.total_registros) }}%)
-              </span>
+    <!-- Cards resumen: 2 por fila en móvil -->
+    <CRow class="mb-1 g-2">
+      <CCol xs="6" lg="3">
+        <CCard class="text-white bg-primary shadow h-100 summary-card">
+          <CCardBody class="summary-card__body">
+            <div class="summary-card__label">Total Alumnos</div>
+            <div class="summary-card__value">
+              {{ data.total_registros }}
+              <span class="summary-card__pct">({{ porcentaje(data.total_registros) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
       </CCol>
 
-      <CCol sm="6" lg="3" class="mb-3">
-        <CCard class="text-white bg-success shadow">
-          <CCardBody>
-            <div class="fs-6 fw-semibold">Asistencias</div>
-            <div class="fs-4 fw-semibold">
-              {{ data.t_asistencias }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_asistencias)
-              }}%)</span>
+      <CCol xs="6" lg="3">
+        <CCard class="text-white bg-success shadow h-100 summary-card">
+          <CCardBody class="summary-card__body">
+            <div class="summary-card__label">Asistencias</div>
+            <div class="summary-card__value">
+              {{ data.t_asistencias }}
+              <span class="summary-card__pct">({{ porcentaje(data.t_asistencias) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
       </CCol>
 
-      <!-- Tardanzas -->
-      <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('TL')">
-          <CCardBody>
-            <div class="fs-6 fw-semibold">Tardanzas Leves</div>
-            <div class="fs-4 fw-semibold">
-              {{ data.t_tard_leve }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_leve)
-              }}%)</span>
-            </div>
-          </CCardBody>
-        </CCard>
-      </CCol>
-            <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('TM')">
-          <CCardBody>
-            <div class="fs-6 fw-semibold">Tardanza Moderado</div>
-            <div class="fs-4 fw-semibold">
-              {{ data.t_tard_moderado }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_moderado)
-              }}%)</span>
-            </div>
-          </CCardBody>
-        </CCard>
-      </CCol>
-            <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('TG')">
-          <CCardBody>
-            <div class="fs-6 fw-semibold">Tardanzas Grave</div>
-            <div class="fs-4 fw-semibold">
-              {{ data.t_tard_grave }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_grave)
-              }}%)</span>
-            </div>
-          </CCardBody>
-        </CCard>
-      </CCol>
-            <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('TE')">
-          <CCardBody>
-            <div class="fs-6 fw-semibold">Tardanzas Extremo</div>
-            <div class="fs-4 fw-semibold">
-              {{ data.t_tard_extremo }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_tard_extremo)
-              }}%)</span>
+      <CCol xs="6" lg="3">
+        <CCard :class="[colorEstado('TL'), 'shadow h-100 summary-card']">
+          <CCardBody class="summary-card__body">
+            <div class="summary-card__label">Tardanzas Leves</div>
+            <div class="summary-card__value">
+              {{ data.t_tard_leve }}
+              <span class="summary-card__pct">({{ porcentaje(data.t_tard_leve) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
       </CCol>
 
-      <!-- Faltas -->
-      <CCol sm="6" lg="3" class="mb-3">
-        <CCard :class="colorEstado('FI')">
-          <CCardBody>
-            <div class="fs-6 fw-semibold">Total Faltas</div>
-            <div class="fs-4 fw-semibold">
-              {{ data.t_faltas }} <span class="fs-6 fw-normal opacity-75">({{ porcentaje(data.t_faltas)
-              }}%)</span>
+      <CCol xs="6" lg="3">
+        <CCard :class="[colorEstado('TM'), 'shadow h-100 summary-card']">
+          <CCardBody class="summary-card__body">
+            <div class="summary-card__label">Tardanza Moderado</div>
+            <div class="summary-card__value">
+              {{ data.t_tard_moderado }}
+              <span class="summary-card__pct">({{ porcentaje(data.t_tard_moderado) }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+
+      <CCol xs="6" lg="3">
+        <CCard :class="[colorEstado('TG'), 'shadow h-100 summary-card']">
+          <CCardBody class="summary-card__body">
+            <div class="summary-card__label">Tardanzas Grave</div>
+            <div class="summary-card__value">
+              {{ data.t_tard_grave }}
+              <span class="summary-card__pct">({{ porcentaje(data.t_tard_grave) }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+
+      <CCol xs="6" lg="3">
+        <CCard :class="[colorEstado('TE'), 'shadow h-100 summary-card']">
+          <CCardBody class="summary-card__body">
+            <div class="summary-card__label">Tardanzas Extremo</div>
+            <div class="summary-card__value">
+              {{ data.t_tard_extremo }}
+              <span class="summary-card__pct">({{ porcentaje(data.t_tard_extremo) }}%)</span>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+
+      <CCol xs="6" lg="3">
+        <CCard :class="[colorEstado('FI'), 'shadow h-100 summary-card']">
+          <CCardBody class="summary-card__body">
+            <div class="summary-card__label">Total Faltas</div>
+            <div class="summary-card__value">
+              {{ data.t_faltas }}
+              <span class="summary-card__pct">({{ porcentaje(data.t_faltas) }}%)</span>
             </div>
           </CCardBody>
         </CCard>
@@ -128,24 +101,24 @@
     </CRow>
 
     <!-- Tabla secciones -->
-    <CRow class="mb-3">
+    <CRow class="mb-3 mt-2">
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardBody class="p-0">
-            <div class="modern-table-shell assist-table-tight">
-              <CTable hover align="middle" class="mb-0">
-                <CTableHead class="modern-table-header">
+            <div class="modern-table-shell">
+              <CTable hover responsive align="middle" class="mb-0">
+                <CTableHead color="info" class="modern-table-header">
                   <CTableRow>
-                    <CTableHeaderCell class="text-start">Aula</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center d-none d-md-table-cell">Total</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Puntual</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Leve</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Moderada</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Grave</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center d-none d-lg-table-cell">Tard. Extrema</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center d-lg-none">Tard.</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Faltas</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Ver</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-start">Aula</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center d-none d-md-table-cell">Total</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center">Puntual</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center d-none d-lg-table-cell">Tard. Leve</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center d-none d-lg-table-cell">Tard. Moderada</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center d-none d-lg-table-cell">Tard. Grave</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center d-none d-lg-table-cell">Tard. Extrema</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center d-lg-none">Tard.</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center">Faltas</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center">Ver</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
 
@@ -164,40 +137,44 @@
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center d-none d-md-table-cell">
-                        <CBadge color="primary" class="assist-badge-sm">{{ item.total }}</CBadge>
+                        <CBadge color="primary">{{ item.total }}</CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center">
-                        <CBadge :class="colorEstado('A')" class="assist-badge-sm">{{ item.t_asistencias }}</CBadge>
+                        <CBadge :class="colorEstado('A')">{{ item.t_asistencias }}</CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center d-none d-lg-table-cell">
-                        <CBadge :class="colorEstado('TL')" class="assist-badge-sm">{{ item.t_tard_leve }}</CBadge>
+                        <CBadge :class="colorEstado('TL')">{{ item.t_tard_leve }}</CBadge>
                       </CTableDataCell>
                       <CTableDataCell class="text-center d-none d-lg-table-cell">
-                        <CBadge :class="colorEstado('TM')" class="assist-badge-sm">{{ item.t_tard_moderado }}</CBadge>
+                        <CBadge :class="colorEstado('TM')">{{ item.t_tard_moderado }}</CBadge>
                       </CTableDataCell>
                       <CTableDataCell class="text-center d-none d-lg-table-cell">
-                        <CBadge :class="colorEstado('TG')" class="assist-badge-sm">{{ item.t_tard_grave }}</CBadge>
+                        <CBadge :class="colorEstado('TG')">{{ item.t_tard_grave }}</CBadge>
                       </CTableDataCell>
                       <CTableDataCell class="text-center d-none d-lg-table-cell">
-                        <CBadge :class="colorEstado('TE')" class="assist-badge-sm">{{ item.t_tard_extremo }}</CBadge>
+                        <CBadge :class="colorEstado('TE')">{{ item.t_tard_extremo }}</CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center d-lg-none">
-                        <CBadge :class="colorEstado('TM')" class="assist-badge-sm">{{ totalTardanzas(item) }}</CBadge>
+                        <CBadge :class="colorEstado('TM')">{{ totalTardanzas(item) }}</CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center">
-                        <CBadge :class="colorEstado('FI')" class="assist-badge-sm">{{ item.t_faltas }}</CBadge>
+                        <CBadge :class="colorEstado('FI')">{{ item.t_faltas }}</CBadge>
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center">
-                        <i
-                          class="fas fa-eye text-primary"
-                          style="cursor: pointer; font-size: 16px"
+                        <CButton
+                          size="sm"
+                          color="info"
+                          variant="outline"
+                          title="Ver detalle"
                           @click="verDetalle(item)"
-                        ></i>
+                        >
+                          <i class="fas fa-eye"></i>
+                        </CButton>
                       </CTableDataCell>
                     </CTableRow>
                   </template>
@@ -212,11 +189,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import AssistanceService from '@/services/AssistanceService'
 import { useRouter } from 'vue-router'
-import { CCard, CTableDataCell } from '@coreui/vue'
-import { useFechaHora } from '@/composables/useFechaHora'
 import { colorEstado } from '@/utils/utils'
 
 const emptyResumen = () => ({
@@ -229,39 +204,10 @@ const emptyResumen = () => ({
   t_faltas: 0,
 })
 
-const resumenFromAula = (item) => ({
-  total_registros: Number(item.total || 0),
-  t_asistencias: Number(item.t_asistencias || 0),
-  t_tard_leve: Number(item.t_tard_leve || 0),
-  t_tard_moderado: Number(item.t_tard_moderado || 0),
-  t_tard_grave: Number(item.t_tard_grave || 0),
-  t_tard_extremo: Number(item.t_tard_extremo || 0),
-  t_faltas: Number(item.t_faltas || 0),
-})
-
-const { fechaHora } = useFechaHora()
 const router = useRouter()
-const aulaId = ref('')
-const seccionesAll = ref([])
-const dataAll = ref(emptyResumen())
+const secciones = ref([])
+const data = ref(emptyResumen())
 let refreshTimer = null
-
-const aulasOptions = computed(() => seccionesAll.value)
-
-const secciones = computed(() => {
-  if (!aulaId.value) return seccionesAll.value
-  return seccionesAll.value.filter(
-    (item) => String(item.grade_section_id) === String(aulaId.value),
-  )
-})
-
-const data = computed(() => {
-  if (!aulaId.value) return dataAll.value
-  const item = seccionesAll.value.find(
-    (aula) => String(aula.grade_section_id) === String(aulaId.value),
-  )
-  return item ? resumenFromAula(item) : emptyResumen()
-})
 
 const totalTardanzas = (item) =>
   Number(item.t_tard_leve || 0) +
@@ -281,8 +227,8 @@ const porcentaje = (valor) => {
 const loadAsistencesBySeccion = async () => {
   const params = { tipo: 'diario' }
   AssistanceService.getAsistenciaBySeccion(params).then((res) => {
-    seccionesAll.value = res.data.data || []
-    dataAll.value = {
+    secciones.value = res.data.data || []
+    data.value = {
       total_registros: res.data.total_registros || 0,
       t_asistencias: res.data.t_asistencias || 0,
       t_tard_leve: res.data.t_tard_leve || 0,
@@ -290,14 +236,6 @@ const loadAsistencesBySeccion = async () => {
       t_tard_grave: res.data.t_tard_grave || 0,
       t_tard_extremo: res.data.t_tard_extremo || 0,
       t_faltas: res.data.t_faltas || 0,
-    }
-
-    // Si el aula seleccionada ya no está en la lista, volver a "Todas"
-    if (
-      aulaId.value &&
-      !seccionesAll.value.some((aula) => String(aula.grade_section_id) === String(aulaId.value))
-    ) {
-      aulaId.value = ''
     }
   })
 }
@@ -311,3 +249,46 @@ onUnmounted(() => {
   if (refreshTimer) clearInterval(refreshTimer)
 })
 </script>
+
+<style scoped>
+.summary-card__body {
+  padding: 0.75rem 0.85rem;
+}
+
+.summary-card__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.25rem;
+}
+
+.summary-card__value {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.summary-card__pct {
+  font-size: 0.75rem;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+@media (min-width: 992px) {
+  .summary-card__body {
+    padding: 1rem 1.15rem;
+  }
+
+  .summary-card__label {
+    font-size: 0.95rem;
+  }
+
+  .summary-card__value {
+    font-size: 1.4rem;
+  }
+
+  .summary-card__pct {
+    font-size: 0.9rem;
+  }
+}
+</style>

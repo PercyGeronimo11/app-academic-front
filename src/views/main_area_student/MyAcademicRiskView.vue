@@ -1,41 +1,24 @@
 <template>
   <div class="my-risk-page module-page">
-    <header class="my-risk-hero mb-4">
-      <div>
-        <p class="my-risk-hero__eyebrow mb-1">Alerta temprana personal</p>
-        <h1 class="my-risk-hero__title mb-1">Mi riesgo académico</h1>
-        <p class="my-risk-hero__subtitle mb-0">
-          Consulta tu nivel de riesgo del bimestre, los factores que más influyen y las recomendaciones para mejorar.
-        </p>
-      </div>
-    </header>
-
     <CCard class="shadow-sm border-0 mb-3">
-      <CCardBody class="p-3 p-md-4">
-        <div class="my-risk-filters">
-          <div class="my-risk-filters__field">
-            <CFormLabel class="my-risk-filters__label">Año escolar</CFormLabel>
-            <CFormSelect
-              :model-value="store.filters.schoolYear"
-              :disabled="store.loading"
-              @change="onSchoolYearChange"
-            >
-              <option v-for="year in store.schoolYears" :key="year" :value="year">
-                {{ year }}
-              </option>
-            </CFormSelect>
+      <CCardBody class="py-3 px-3 px-md-4">
+        <div class="my-risk-header">
+          <div class="my-risk-header__intro">
+            <h1 class="my-risk-header__title mb-1">Mi riesgo académico</h1>
+            <p class="my-risk-header__subtitle mb-0">
+              Consulta tu nivel de riesgo académico, los factores que más influyen y las recomendaciones.
+            </p>
           </div>
-          <div class="my-risk-filters__field">
-            <CFormLabel class="my-risk-filters__label">Bimestre</CFormLabel>
-            <CFormSelect
-              :model-value="store.filters.bimester"
-              :disabled="store.loading || !store.bimesters.length"
-              @change="onBimesterChange"
-            >
-              <option v-for="item in store.bimesters" :key="item.id" :value="item.number">
-                {{ item.name }}
-              </option>
-            </CFormSelect>
+
+          <div class="my-risk-header__meta">
+            <div class="my-risk-meta-item">
+              <span class="my-risk-meta-item__label">Año escolar</span>
+              <span class="my-risk-meta-item__value">{{ schoolYearLabel }}</span>
+            </div>
+            <div class="my-risk-meta-item">
+              <span class="my-risk-meta-item__label">Bimestre de predicción</span>
+              <span class="my-risk-meta-item__value">{{ bimesterLabel }}</span>
+            </div>
           </div>
         </div>
       </CCardBody>
@@ -150,6 +133,19 @@ const activeTab = ref('factors')
 
 const row = computed(() => store.filteredRows[0] || store.rows[0] || null)
 
+const schoolYearLabel = computed(() => {
+  const year = store.filters.schoolYear
+  return year ? String(year) : '—'
+})
+
+const bimesterLabel = computed(() => {
+  const item = store.selectedBimester
+  if (item?.name) return item.name
+  if (item?.number) return `Bimestre ${item.number}`
+  if (store.filters.bimester) return `Bimestre ${store.filters.bimester}`
+  return '—'
+})
+
 const presentedFactors = computed(() => (
   presentFactorsForDisplay(row.value?.prediction?.factors || [], row.value?.riskLevel)
 ))
@@ -198,69 +194,77 @@ const tabs = computed(() => [
   },
 ])
 
-const onSchoolYearChange = (event) => {
-  store.onSchoolYearChange(Number(event.target.value))
-}
-
-const onBimesterChange = (event) => {
-  store.onBimesterChange(Number(event.target.value))
-}
-
 onMounted(() => {
   store.initializeFilters()
 })
 </script>
 
 <style scoped>
-.my-risk-page {
-  max-width: 920px;
-  margin-inline: auto;
+.my-risk-header__intro {
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--cui-border-color, #d8dbe0);
 }
 
-.my-risk-hero__eyebrow {
+.my-risk-header__eyebrow {
   font-size: 0.78rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #64748b;
+  color: var(--cui-secondary-color, #64748b);
   font-weight: 700;
 }
 
-.my-risk-hero__title {
-  font-size: clamp(1.45rem, 2vw, 1.85rem);
+.my-risk-header__title {
+  margin: 0;
+  font-size: 1.35rem;
   font-weight: 800;
-  color: #0f172a;
+  line-height: 1.25;
+  color: var(--cui-primary, #321fdb);
 }
 
-.my-risk-hero__subtitle {
-  color: #64748b;
-  max-width: 40rem;
+.my-risk-header__subtitle {
+  color: var(--cui-secondary-color, #64748b);
+  max-width: 42rem;
 }
 
-.my-risk-filters {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 0.85rem;
+.my-risk-header__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 2rem;
 }
 
-.my-risk-filters__label {
+.my-risk-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 8rem;
+}
+
+.my-risk-meta-item__label {
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: var(--cui-secondary-color, #64748b);
+}
+
+.my-risk-meta-item__value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--cui-body-color, #212529);
 }
 
 .my-risk-state {
   display: flex;
   align-items: center;
-  color: #64748b;
+  color: var(--cui-secondary-color, #64748b);
   padding: 1.5rem 0;
 }
 
 .my-risk-empty {
   text-align: center;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--cui-border-color, #e2e8f0);
   border-radius: 1rem;
   padding: 2.25rem 1.5rem;
 }
@@ -426,6 +430,22 @@ onMounted(() => {
   margin: 0;
   font-size: 0.86rem;
   color: #64748b;
+}
+
+@media (max-width: 767.98px) {
+  .my-risk-header__title {
+    font-size: 1.45rem;
+  }
+
+  .my-risk-header__meta {
+    gap: 0.85rem 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .my-risk-header__title {
+    font-size: 1.5rem;
+  }
 }
 </style>
 

@@ -178,26 +178,24 @@ const routes = [
           {
             path: 'assistance',
             name: 'Toma de asistencias',
-            meta: { title: 'Tomar asistencia' },
+            meta: { title: 'Asistencias' },
             component: () => import('@/views/main_area_teacher/AssistanceStudents.vue'),
           },
           {
             path: 'conduct',
             name: 'Incidentes de conducta',
-            meta: { title: 'Incidentes de conducta' },
+            meta: { title: 'Conducta' },
             component: () => import('@/views/main_area_teacher/ConductStudents.vue'),
           },
           {
             path: 'grades',
             name: 'LibretaDeNotasProfesor',
-            meta: { title: 'Libreta de notas' },
+            meta: { title: 'Notas' },
             component: () => import('@/views/grades/CourseGradesView.vue'),
           },
           {
             path: 'import',
-            name: 'Importar notas SIAGIE',
-            meta: { title: 'Importar notas SIAGIE' },
-            component: () => import('@/views/grades/ImportSiagieGrades.vue'),
+            redirect: (to) => `/courses/teacher/${to.params.courseClass}/grades`,
           },
         ],
       },
@@ -217,7 +215,7 @@ const routes = [
       },
       {
         path: '/mi-riesgo-academico',
-        name: 'MiRiesgoAcademico',
+        name: 'Mi Riesgo Academico',
         component: () => import('@/views/main_area_student/MyAcademicRiskView.vue'),
       },
       {
@@ -263,8 +261,18 @@ const routes = [
       },
       {
         path: '/announcements/publish',
-        name: 'Publicar comunicados',
+        name: 'Principales',
         component: () => import('@/views/announcements/AnnouncementPublish.vue'),
+      },
+      {
+        path: '/announcements/history',
+        name: 'Historial de comunicados',
+        component: () => import('@/views/announcements/AnnouncementHistory.vue'),
+      },
+      {
+        path: '/announcements/:id/visualization',
+        name: 'Visualización de comunicado',
+        component: () => import('@/views/announcements/AnnouncementVisualization.vue'),
       },
       {
         path: '/myPaperworks',

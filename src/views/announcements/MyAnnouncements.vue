@@ -27,16 +27,22 @@
         :class="{ 'inbox-item--unread': !item.is_read }"
         @click="openAnnouncement(item)"
       >
-        <div class="inbox-item__icon">
-          <i class="fas fa-bullhorn"></i>
+        <div class="inbox-item__media">
+          <img
+            v-if="item.image_url"
+            :src="item.image_url"
+            :alt="item.title"
+            class="inbox-item__thumb"
+          />
+          <div v-else class="inbox-item__icon">
+            <i class="fas fa-bullhorn"></i>
+          </div>
         </div>
         <div class="inbox-item__content">
           <div class="inbox-item__title-row">
             <span class="inbox-item__title">{{ item.title }}</span>
-            <span v-if="item.is_general" class="scope-badge">General</span>
-            <span class="priority-badge" :class="`priority-badge--${item.priority}`">
-              {{ priorityLabel(item.priority) }}
-            </span>
+            <span v-if="item.is_general" class="scope-badge">Institucional</span>
+            <span v-else class="scope-badge scope-badge--aula">Aula</span>
           </div>
           <div class="inbox-item__excerpt">{{ item.excerpt }}</div>
           <div class="inbox-item__meta">
@@ -49,29 +55,17 @@
       </article>
     </div>
 
-    <CModal :visible="detailVisible" @close="closeDetail" size="lg">
-      <CModalHeader>
-        <CModalTitle>{{ selectedItem?.title }}</CModalTitle>
-      </CModalHeader>
-      <CModalBody v-if="selectedItem">
-        <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
-          <span v-if="selectedItem.is_general" class="scope-badge">General</span>
-          <span class="priority-badge" :class="`priority-badge--${selectedItem.priority}`">
-            {{ priorityLabel(selectedItem.priority) }}
-          </span>
-          <span class="text-body-secondary small">
-            {{ formatRange(selectedItem.starts_at, selectedItem.ends_at) }}
-          </span>
-        </div>
-        <p v-if="selectedItem.publisher_name" class="text-body-secondary small mb-3">
-          <i class="fas fa-user me-1"></i>Publicado por: {{ selectedItem.publisher_name }}
-        </p>
-        <div class="announcement-detail-body" v-html="selectedItem.body"></div>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" @click="closeDetail">Cerrar</CButton>
-      </CModalFooter>
-    </CModal>
+    <AnnouncementAvisoOverlay
+      :visible="detailVisible"
+      :item="selectedItem"
+      :index="0"
+      :total="1"
+      kind-label="Aviso oficial"
+      confirm-label="Cerrar"
+      :show-dismiss="false"
+      @confirm="closeDetail"
+      @dismiss="closeDetail"
+    />
   </div>
 </template>
 
@@ -81,6 +75,7 @@ import { useRoute } from 'vue-router'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
 import ModulePageHeader from '@/components/academic/ModulePageHeader.vue'
 import EmptyState from '@/components/academic/EmptyState.vue'
+import AnnouncementAvisoOverlay from '@/components/announcements/AnnouncementAvisoOverlay.vue'
 
 const route = useRoute()
 
@@ -89,14 +84,6 @@ const loading = ref(true)
 const loadError = ref('')
 const detailVisible = ref(false)
 const selectedItem = ref(null)
-
-const priorityLabels = {
-  normal: 'Normal',
-  importante: 'Importante',
-  urgente: 'Urgente',
-}
-
-const priorityLabel = (value) => priorityLabels[value] || value
 
 const formatRange = (start, end) => {
   if (!start && !end) return '—'
@@ -175,5 +162,33 @@ onMounted(async () => {
   font-weight: 600;
   background: var(--rp-surface-brand-soft);
   color: var(--rp-text-brand);
+}
+
+.scope-badge--aula {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.inbox-item__media {
+  flex-shrink: 0;
+}
+
+.inbox-item__thumb {
+  width: 52px;
+  height: 52px;
+  border-radius: 0.65rem;
+  object-fit: cover;
+  border: 1px solid var(--cui-border-color, #e2e8f0);
+  background: #0f172a;
+}
+
+.inbox-item__icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 0.65rem;
+  display: grid;
+  place-items: center;
+  background: var(--rp-surface-brand-soft, #e0f2fe);
+  color: var(--rp-text-brand, #0e7490);
 }
 </style>

@@ -30,20 +30,39 @@
 }
 
 /* --- Cabecera -------------------------------------------------------------- */
+/* Estándar de plantilla: cabecera azul (mismo tono info/botones).
+   Uso: CTableHead class="modern-table-header" o color="info" dentro de .modern-table-shell */
 
 .modern-table-shell .modern-table-header th,
-.modern-table-shell thead th,
+.modern-table-shell thead.table-info th,
+.modern-table-shell .table-info > tr > th,
 .modern-list-wrapper .table-header .table-cell,
 .tls-table-wrap thead th {
-  background: var(--rp-table-head-bg);
-  color: var(--rp-table-head-color);
+  background: var(--cui-info, #3d94d6);
+  color: #fff;
   font-weight: var(--rp-weight-semibold);
   font-size: var(--rp-text-2xs);
   text-transform: uppercase;
   letter-spacing: var(--rp-tracking-wide);
   padding: var(--rp-space-3) var(--rp-space-3);
   border: none;
-  border-bottom: 1px solid var(--rp-table-head-border);
+  border-bottom: 1px solid transparent;
+  white-space: nowrap;
+  vertical-align: middle;
+  text-align: start;
+}
+
+/* Compat: thead genérico en shell sin clase aún usa el mismo azul */
+.modern-table-shell thead th {
+  background: var(--cui-info, #3d94d6);
+  color: #fff;
+  font-weight: var(--rp-weight-semibold);
+  font-size: var(--rp-text-2xs);
+  text-transform: uppercase;
+  letter-spacing: var(--rp-tracking-wide);
+  padding: var(--rp-space-3) var(--rp-space-3);
+  border: none;
+  border-bottom: 1px solid transparent;
   white-space: nowrap;
   vertical-align: middle;
   text-align: start;

@@ -56,6 +56,19 @@ export default {
     });
   },
 
+  validateSiagieForCourseClass(file, courseClassId, bimesterId = null) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('course_class_id', courseClassId);
+    if (bimesterId) {
+      formData.append('bimester_id', bimesterId);
+    }
+
+    return axios.post(`${API_URL}/competency-scores/validate-siagie`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
   importSiagieForCourseClass(file, courseClassId, bimesterId = null) {
     const formData = new FormData();
     formData.append('file', file);

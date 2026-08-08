@@ -1,33 +1,11 @@
 <template>
-  <CRow v-if="!embedded" class="mb-3">
-    <CCol>
-      <CCard class="shadow-sm border-0">
-        <CCardHeader class="bg-white border-bottom py-3 px-3 px-md-4">
-          <div
-            class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2"
-          >
-            <h5 class="fw-bold text-primary mb-0 d-flex align-items-center">
-              <i class="fas fa-qrcode me-2"></i>
-              Registrar asistencias por QR
-            </h5>
-            <div class="w-30 w-md-auto">
-              <CBadge color="dark" class="px-3 py-2 fs-6 w-100 w-md-auto text-center">
-                {{ fechaHora }}
-              </CBadge>
-            </div>
-          </div>
-        </CCardHeader>
-      </CCard>
-    </CCol>
-  </CRow>
-
   <CRow class="mb-3">
     <CCol>
-      <CCard :class="embedded ? 'shadow-sm border-0' : 'shadow-lg border-0'">
+      <CCard class="shadow-sm border-0">
         <CCardHeader class="bg-primary d-flex align-items-center justify-content-between">
           <div class="fw-bold text-white">
             <i class="fas fa-qrcode me-2"></i>
-            Escáner de Asistencia
+            Escáner de asistencia
           </div>
           <CBadge color="success" v-if="scanning">
             <i class="fas fa-circle me-1"></i> Activo
@@ -81,7 +59,6 @@
 import { ref, onBeforeUnmount, onMounted } from 'vue'
 import { BrowserQRCodeReader } from '@zxing/browser'
 import AssistanceService from '@/services/AssistanceService'
-import { useFechaHora } from '@/composables/useFechaHora'
 import { toastSuccess, toastError } from '@/utils/alerts'
 
 defineProps({
@@ -90,8 +67,6 @@ defineProps({
     default: false,
   },
 })
-
-const { fechaHora } = useFechaHora()
 
 const codeStudentDetectado = ref(null)
 const lastResult = ref(null)

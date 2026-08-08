@@ -3,31 +3,35 @@
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <CCardHeader class="bg-white border-bottom py-3">
-            <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-              <div class="d-flex align-items-center gap-2 gap-md-3 min-w-0">
-                <a href="#" @click.prevent="$router.back()" class="text-primary fs-5 flex-shrink-0">
-                  <i class="fas fa-arrow-left"></i>
-                </a>
-                <div class="min-w-0">
-                  <h5 class="fw-bold text-primary mb-0 text-truncate">
-                    Detalle de asistencias por aula
-                  </h5>
-                  <small class="text-muted">
-                    Grado: {{ gradoTexto(grado) }} - {{ seccion }}
-                  </small>
+          <CCardBody class="py-3 px-3 px-md-4">
+            <div class="aula-header">
+              <div class="aula-header__top">
+                <h5 class="aula-header__title">
+                  Detalle de asistencias por aula
+                </h5>
+                <CButton color="info" variant="outline" class="aula-header__back" @click="goBack">
+                  <i class="fas fa-arrow-left me-1"></i>
+                  Volver
+                </CButton>
+              </div>
+
+              <div class="aula-header__meta">
+                <div class="text-body mb-1">
+                  Aula:
+                  <span class="fw-semibold text-body">
+                    {{ gradoTexto(grado) }} - {{ seccion || '—' }}
+                  </span>
+                </div>
+                <div class="text-body-secondary mb-1">
+                  Fecha hoy:
+                  <span class="fw-semibold text-body">{{ fecha_actual }}</span>
+                </div>
+                <div class="text-body-secondary">
+                  Alumnos:
+                  <span class="fw-semibold text-body">{{ alumnos.length }}</span>
                 </div>
               </div>
             </div>
-          </CCardHeader>
-
-          <CCardBody class="d-flex justify-content-between align-items-center py-2 px-3 gap-2 flex-wrap">
-            <CBadge color="dark" class="px-3 py-2">
-              📅 {{ fecha_actual }}
-            </CBadge>
-            <CBadge color="primary" class="px-3 py-2">
-              {{ alumnos.length }} alumnos
-            </CBadge>
           </CCardBody>
         </CCard>
       </CCol>
@@ -35,19 +39,21 @@
 
     <CRow>
       <CCol>
-        <CCard class="shadow border-0">
+        <CCard class="shadow-sm border-0">
           <CCardBody class="p-0">
-            <div class="modern-table-shell assist-table-tight">
-              <CTable hover align="middle" class="mb-0">
-                <CTableHead class="modern-table-header">
+            <div class="modern-table-shell list-with-pagination-wrap">
+              <CTable hover responsive align="middle" class="mb-0">
+                <CTableHead color="info" class="modern-table-header">
                   <CTableRow>
-                    <CTableHeaderCell class="text-center d-none d-md-table-cell" style="width: 3rem">N°</CTableHeaderCell>
-                    <CTableHeaderCell class="d-none d-md-table-cell">Apell. Paterno</CTableHeaderCell>
-                    <CTableHeaderCell class="d-none d-md-table-cell">Apell. Materno</CTableHeaderCell>
-                    <CTableHeaderCell class="d-none d-md-table-cell">Nombres</CTableHeaderCell>
-                    <CTableHeaderCell class="d-md-none text-start">Alumno</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Asistencia</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center" style="width: 4.5rem">Hora</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center d-none d-md-table-cell" style="width: 3rem">
+                      N°
+                    </CTableHeaderCell>
+                    <CTableHeaderCell class="text-white d-none d-md-table-cell">Apell. Paterno</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white d-none d-md-table-cell">Apell. Materno</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white d-none d-md-table-cell">Nombres</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white d-md-none text-start">Alumno</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center">Asistencia</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center" style="width: 4.5rem">Hora</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
 
@@ -60,9 +66,9 @@
                     </CTableRow>
                   </template>
                   <template v-else>
-                    <CTableRow v-for="(alumno, index) in alumnos" :key="alumno.id">
+                    <CTableRow v-for="(alumno, index) in pagedAlumnos" :key="alumno.id">
                       <CTableDataCell class="fw-semibold text-center d-none d-md-table-cell">
-                        {{ index + 1 }}
+                        {{ (page - 1) * pageSize + index + 1 }}
                       </CTableDataCell>
                       <CTableDataCell class="fw-semibold d-none d-md-table-cell text-start">
                         {{ alumno.surname_father }}
@@ -75,26 +81,31 @@
                       </CTableDataCell>
 
                       <CTableDataCell class="d-md-none">
-                        <div class="assist-name-stack">
-                          <span class="assist-name-surnames">
-                            {{ alumno.surname_father }} {{ alumno.surname_mother }}
-                          </span>
-                          <span class="assist-name-given">{{ alumno.nombre }}</span>
+                        <div class="fw-semibold">
+                          {{ alumno.surname_father }} {{ alumno.surname_mother }}
                         </div>
+                        <div class="small text-body-secondary">{{ alumno.nombre }}</div>
                       </CTableDataCell>
 
                       <CTableDataCell class="text-center">
-                        <CBadge :class="colorEstado(alumno.estado)" class="assist-badge-sm">
+                        <CBadge :class="colorEstado(alumno.estado)">
                           {{ textoEstado(alumno.estado) }}
                         </CBadge>
                       </CTableDataCell>
                       <CTableDataCell class="text-center fw-medium">
-                        {{ esFaltaSinHora(alumno.estado) ? '--' : formatTime(alumno.hora) }}
+                        {{ esFaltaSinHora(alumno.estado) ? '—' : formatTime(alumno.hora) }}
                       </CTableDataCell>
                     </CTableRow>
                   </template>
                 </CTableBody>
               </CTable>
+
+              <TablePagination
+                v-model="page"
+                :total="alumnos.length"
+                :page-size="pageSize"
+                aria-label="Paginación de alumnos del aula"
+              />
             </div>
           </CCardBody>
         </CCard>
@@ -105,20 +116,80 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useRoute } from 'vue-router'
-import AssistanceService from '../../../services/AssistanceService'
+import { useRoute, useRouter } from 'vue-router'
+import AssistanceService from '@/services/AssistanceService'
 import { formatTime, fecha_actual } from '@/utils/time'
 import { textoEstado, colorEstado, gradoTexto, esFaltaSinHora } from '@/utils/utils'
+import TablePagination from '@/components/academic/TablePagination.vue'
+import { useClientPagination } from '@/composables/useClientPagination'
 
 const route = useRoute()
+const router = useRouter()
 const seccionId = route.params.id
 const grado = ref(null)
 const seccion = ref(null)
 const alumnos = ref([])
 
+const { page, pageSize, pagedItems: pagedAlumnos } = useClientPagination(alumnos, 15)
+
+const goBack = () => {
+  router.push('/assistances/seguimiento')
+}
+
 AssistanceService.getDetailAssistanceBySeccion(seccionId).then((response) => {
-  alumnos.value = response.data.alumnos
+  alumnos.value = response.data.alumnos || []
   grado.value = response.data.grade
   seccion.value = response.data.section
+  page.value = 1
 })
 </script>
+
+<style scoped>
+.aula-header {
+  padding-bottom: 0.15rem;
+}
+
+.aula-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--cui-border-color, #d8dbe0);
+}
+
+.aula-header__title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--cui-primary, #321fdb);
+}
+
+.aula-header__back {
+  flex-shrink: 0;
+}
+
+.aula-header__meta {
+  padding-right: 0.25rem;
+}
+
+@media (max-width: 767.98px) {
+  .aula-header__title {
+    font-size: 1.25rem;
+  }
+
+  .aula-header__back {
+    padding-inline: 0.7rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .aula-header__title {
+    font-size: 1.5rem;
+  }
+}
+</style>

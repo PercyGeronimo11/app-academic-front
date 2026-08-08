@@ -1,55 +1,21 @@
 <template>
-  <CModal
+  <AnnouncementAvisoOverlay
     :visible="visible"
-    size="lg"
-    alignment="center"
-    backdrop="static"
-    @close="closeAll"
-  >
-    <CModalHeader>
-      <CModalTitle>
-        <i class="fas fa-bullhorn me-2"></i>
-        {{ courseClassId ? 'Comunicado del docente' : 'Comunicados oficiales' }}
-      </CModalTitle>
-    </CModalHeader>
-    <CModalBody v-if="current">
-      <div class="mb-2 d-flex flex-wrap gap-2 align-items-center">
-        <span class="scope-badge" :class="{ 'scope-badge--grade': !current.is_general }">
-          {{ scopeLabel(current) }}
-        </span>
-        <span class="priority-badge" :class="`priority-badge--${current.priority}`">
-          {{ priorityLabel(current.priority) }}
-        </span>
-        <span class="text-body-secondary small">
-          Vigente: {{ formatRange(current.starts_at, current.ends_at) }}
-        </span>
-      </div>
-      <h5 class="mb-1">{{ current.title }}</h5>
-      <p v-if="current.publisher_name" class="text-body-secondary small mb-3">
-        Publicado por {{ current.publisher_name }}
-      </p>
-      <div class="announcement-detail-body" v-html="current.body"></div>
-      <p v-if="items.length > 1" class="text-body-secondary small mt-3 mb-0">
-        Comunicado {{ index + 1 }} de {{ items.length }}
-      </p>
-    </CModalBody>
-    <CModalFooter>
-      <CButton color="secondary" variant="outline" @click="closeAll">
-        Cerrar
-      </CButton>
-      <CButton v-if="hasNext" color="primary" @click="next">
-        Siguiente
-      </CButton>
-      <CButton v-else color="primary" @click="closeAll">
-        Entendido
-      </CButton>
-    </CModalFooter>
-  </CModal>
+    :item="current"
+    :index="index"
+    :total="items.length"
+    :kind-label="courseClassId ? 'Comunicado del docente' : 'Aviso oficial'"
+    confirm-label="Entendido"
+    @dismiss="closeAll"
+    @next="next"
+    @confirm="closeAll"
+  />
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
+import AnnouncementAvisoOverlay from '@/components/announcements/AnnouncementAvisoOverlay.vue'
 import { hasValidSession } from '@/utils/session'
 
 const props = defineProps({
@@ -69,25 +35,6 @@ const index = ref(0)
 const current = computed(() => items.value[index.value] || null)
 const hasNext = computed(() => index.value < items.value.length - 1)
 
-const priorityLabels = {
-  normal: 'Normal',
-  importante: 'Importante',
-  urgente: 'Urgente',
-}
-
-const priorityLabel = (value) => priorityLabels[value] || value
-
-const scopeLabel = (item) => {
-  if (item?.is_general) return 'General'
-  return item?.target_labels || 'Por aula'
-}
-
-const formatRange = (start, end) => {
-  if (!start && !end) return '—'
-  if (start && end) return `${start} → ${end}`
-  return start || end
-}
-
 const markCurrentRead = async () => {
   const item = current.value
   if (!item?.id) return
@@ -103,7 +50,7 @@ const next = async () => {
   if (hasNext.value) {
     index.value += 1
   } else {
-    closeAll()
+    await closeAll()
   }
 }
 
@@ -160,20 +107,3 @@ watch(
   }
 )
 </script>
-
-<style scoped>
-.scope-badge {
-  display: inline-block;
-  padding: 0.15rem 0.55rem;
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  background: var(--rp-surface-brand-soft);
-  color: var(--rp-text-brand);
-}
-
-.scope-badge--grade {
-  background: var(--rp-warning-50);
-  color: var(--rp-warning-700);
-}
-</style>

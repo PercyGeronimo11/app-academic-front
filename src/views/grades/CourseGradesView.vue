@@ -1,27 +1,5 @@
 <template>
-  <div class="module-page course-grades-view">
-    <ModulePageHeader
-      icon="fas fa-chart-bar"
-      title="Libreta de notas"
-      :subtitle="headerSubtitle"
-    >
-      <template #actions>
-        <CButton v-if="isTeacher" color="primary" variant="outline" @click="goImport">
-          <i class="fas fa-file-import me-2"></i>Importar SIAGIE
-        </CButton>
-      </template>
-    </ModulePageHeader>
-
-    <div v-if="period?.name" class="module-filter-bar grades-meta">
-      <span class="text-body-secondary">
-        Periodo activo: <strong>{{ period.name }}</strong>
-        <template v-if="period.year"> ({{ period.year }})</template>
-      </span>
-      <span v-if="students.length" class="text-body-secondary small">
-        <i class="fas fa-users me-1"></i>{{ students.length }} alumno(s)
-      </span>
-    </div>
-
+  <div class="course-grades-view">
     <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
     <div v-if="loading" class="module-loading">
       <i class="fas fa-spinner fa-spin"></i> Cargando notas...
@@ -41,6 +19,7 @@
           <table class="grades-matrix">
             <thead>
               <tr>
+                <th class="grades-index-col" rowspan="2">#</th>
                 <th class="grades-sticky-col" rowspan="2">Alumno</th>
                 <th
                   v-for="b in displayBimesters"
@@ -66,7 +45,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="student in students" :key="student.student_id">
+              <tr v-for="(student, index) in students" :key="student.student_id">
+                <td class="grades-index-col">{{ index + 1 }}</td>
                 <td class="grades-sticky-col">
                   <div class="fw-semibold student-name">{{ student.student_name }}</div>
                   <div class="small text-body-secondary">DNI {{ student.dni }}</div>
@@ -86,22 +66,17 @@
             </tbody>
           </table>
         </div>
-        <p v-if="competencies.length" class="grades-legend">
-          Subcolumnas:
-          <span v-for="(comp, idx) in competencies" :key="comp.id">
-            <strong>{{ comp.number || comp.code }}</strong> {{ comp.name }}<span v-if="idx < competencies.length - 1"> · </span>
-          </span>
-        </p>
       </div>
 
       <!-- Mobile: acordeón por alumno -->
       <div class="grades-mobile">
         <details
-          v-for="student in students"
+          v-for="(student, index) in students"
           :key="`m-${student.student_id}`"
           class="student-accordion"
         >
           <summary>
+            <span class="student-accordion__index">{{ index + 1 }}.</span>
             <span class="student-accordion__name">{{ student.student_name }}</span>
             <span class="student-accordion__dni">DNI {{ student.dni }}</span>
           </summary>
@@ -145,31 +120,25 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, inject, onMounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import CompetencyScoreService from '@/services/CompetencyScoreService'
-import ModulePageHeader from '@/components/academic/ModulePageHeader.vue'
 import EmptyState from '@/components/academic/EmptyState.vue'
 import ScoreLevelBadge from '@/components/academic/ScoreLevelBadge.vue'
 
 const route = useRoute()
-const router = useRouter()
 
 const courseClassId = Number(route.params.courseClass)
-const isTeacher = computed(() => route.path.includes('/courses/teacher/'))
+const gradesReloadToken = inject('courseGradesReloadToken', null)
+const setCourseStudentsCount = inject('setCourseStudentsCount', null)
+const setCourseCompetenciesLegend = inject('setCourseCompetenciesLegend', null)
 
 const period = ref(null)
 const bimesters = ref([])
-const courseName = ref('')
 const competencies = ref([])
 const students = ref([])
 const loading = ref(true)
 const loadError = ref('')
-
-const headerSubtitle = computed(() => {
-  if (!courseName.value) return 'Niveles de logro de los 4 bimestres del periodo activo'
-  return `${courseName.value} · 4 bimestres del periodo activo`
-})
 
 const displayBimesters = computed(() => {
   const byNumber = new Map((bimesters.value || []).map((b) => [Number(b.number), b]))
@@ -202,34 +171,36 @@ const loadGrades = async () => {
     const response = await CompetencyScoreService.listByCourseClassPeriod(courseClassId)
     if (response.data?.success) {
       const data = response.data.data || {}
-      courseName.value = data.course_name || ''
       period.value = data.period || null
       bimesters.value = data.bimesters || []
       competencies.value = data.competencies || []
       students.value = data.students || []
+      setCourseStudentsCount?.(students.value.length)
+      setCourseCompetenciesLegend?.(competencies.value)
     } else {
       loadError.value = response.data?.message || 'No se pudieron cargar las notas.'
+      setCourseStudentsCount?.(0)
+      setCourseCompetenciesLegend?.([])
     }
   } catch (error) {
     loadError.value = error.response?.data?.message || 'Error al cargar notas.'
+    setCourseStudentsCount?.(0)
+    setCourseCompetenciesLegend?.([])
   } finally {
     loading.value = false
   }
 }
 
-const goImport = () => router.push(`/courses/teacher/${courseClassId}/import`)
-const goBack = () =>
-  router.push(isTeacher.value ? '/courses/teacher/list' : '/courses/student/list')
-
 onMounted(loadGrades)
+
+if (gradesReloadToken) {
+  watch(gradesReloadToken, () => {
+    loadGrades()
+  })
+}
 </script>
 
 <style scoped>
-.grades-meta {
-  justify-content: space-between;
-  gap: 0.75rem;
-}
-
 .grades-desktop {
   display: block;
 }
@@ -255,21 +226,25 @@ onMounted(loadGrades)
 
 .grades-matrix th,
 .grades-matrix td {
-  border: 1px solid var(--rp-border);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   padding: 0.45rem 0.4rem;
   vertical-align: middle;
 }
 
+.grades-matrix tbody td {
+  border-color: var(--rp-border);
+}
+
 .grades-matrix thead th {
-  background: var(--rp-surface-sunken, #f3f4f6);
-  color: var(--rp-text-heading);
+  background: var(--rp-brand-500);
+  color: var(--rp-text-on-brand);
   font-weight: var(--rp-weight-semibold);
   text-align: center;
 }
 
 .bimester-group {
-  background: var(--rp-brand-50, #e8f0fe) !important;
-  color: var(--rp-brand-700, #1d4ed8) !important;
+  background: var(--rp-brand-600) !important;
+  color: var(--rp-text-on-brand) !important;
   white-space: nowrap;
 }
 
@@ -277,11 +252,26 @@ onMounted(loadGrades)
   font-size: 0.75rem;
   min-width: 2.6rem;
   max-width: 3.2rem;
+  background: var(--rp-brand-500) !important;
+  color: var(--rp-text-on-brand) !important;
+}
+
+.grades-index-col {
+  width: 2.5rem;
+  text-align: center !important;
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-muted);
+  background: var(--rp-surface);
+}
+
+thead .grades-index-col {
+  background: var(--rp-brand-500);
+  color: var(--rp-text-on-brand);
 }
 
 .grades-sticky-col {
   position: sticky;
-  left: 0;
+  left: 2.5rem;
   z-index: 2;
   background: var(--rp-surface);
   min-width: 12rem;
@@ -291,7 +281,19 @@ onMounted(loadGrades)
 
 thead .grades-sticky-col {
   z-index: 3;
-  background: var(--rp-surface-sunken, #f3f4f6);
+  background: var(--rp-brand-500);
+  color: var(--rp-text-on-brand);
+  left: 2.5rem;
+}
+
+.grades-index-col {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+thead .grades-index-col {
+  z-index: 4;
 }
 
 .student-name {
@@ -303,36 +305,35 @@ thead .grades-sticky-col {
   text-align: center;
 }
 
-.grades-legend {
-  margin: 0.75rem 0.15rem 0;
-  font-size: 0.78rem;
-  color: var(--rp-text-muted);
-  line-height: 1.4;
-}
-
 .student-accordion {
   border: 1px solid var(--rp-border);
-  border-radius: var(--rp-radius-lg);
+  border-radius: var(--rp-radius-md);
   background: var(--rp-surface);
-  margin-bottom: 0.65rem;
-  overflow: hidden;
+  margin-bottom: 0.5rem;
 }
 
 .student-accordion summary {
-  list-style: none;
-  cursor: pointer;
-  padding: 0.85rem 1rem;
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.65rem;
+  padding: 0.7rem 0.85rem;
+  cursor: pointer;
+  list-style: none;
 }
 
 .student-accordion summary::-webkit-details-marker {
   display: none;
 }
 
+.student-accordion__index {
+  font-weight: 700;
+  color: var(--rp-text-muted);
+  min-width: 1.5rem;
+}
+
 .student-accordion__name {
-  font-weight: var(--rp-weight-semibold);
+  font-weight: 700;
   color: var(--rp-text-heading);
 }
 
@@ -342,9 +343,7 @@ thead .grades-sticky-col {
 }
 
 .student-accordion__body {
-  border-top: 1px solid var(--rp-border);
-  padding: 0.5rem;
-  overflow-x: auto;
+  padding: 0 0.75rem 0.75rem;
 }
 
 .mobile-matrix {
@@ -356,27 +355,26 @@ thead .grades-sticky-col {
 .mobile-matrix th,
 .mobile-matrix td {
   border: 1px solid var(--rp-border);
-  padding: 0.4rem 0.35rem;
-  vertical-align: top;
+  padding: 0.4rem;
+  vertical-align: middle;
 }
 
 .mobile-matrix thead th {
-  background: var(--rp-surface-sunken, #f3f4f6);
-  font-weight: var(--rp-weight-semibold);
+  background: var(--rp-brand-500);
+  color: var(--rp-text-on-brand);
+  text-align: center;
 }
 
 .comp-code {
   font-weight: 700;
-  font-size: 0.75rem;
 }
 
 .comp-name {
   font-size: 0.72rem;
   color: var(--rp-text-muted);
-  line-height: 1.2;
 }
 
-@media (max-width: 767.98px) {
+@media (max-width: 991.98px) {
   .grades-desktop {
     display: none;
   }

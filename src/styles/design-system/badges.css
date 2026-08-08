@@ -111,6 +111,12 @@
   border-color: var(--rp-border);
 }
 
+.status-badge--finalizado {
+  background: var(--rp-surface-muted);
+  color: var(--rp-text-subtle, #64748b);
+  border-color: var(--rp-border);
+}
+
 /* --- Nivel de logro (AD / A / B / C) -------------------------------------- */
 
 .score-pill {

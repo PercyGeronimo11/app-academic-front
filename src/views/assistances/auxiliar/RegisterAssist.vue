@@ -1,44 +1,34 @@
 <template>
-  <div class="register-assist-page">
-    <CRow class="mb-3">
-      <CCol>
-        <CCard class="shadow-sm border-0">
-          <CCardHeader class="bg-white border-bottom py-3 px-3 px-md-4">
-            <div
-              class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2"
-            >
-              <h5 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                <i class="fas fa-user-check me-2"></i>
-                Registrar asistencia
-              </h5>
-              <CBadge color="dark" class="px-3 py-2 fs-6 text-center">
-                {{ fechaHora }}
-              </CBadge>
-            </div>
-          </CCardHeader>
-          <CCardBody class="pt-3 pb-2">
-            <nav class="register-tabs" aria-label="Modos de registro">
-              <button
-                v-for="tab in tabs"
-                :key="tab.id"
-                type="button"
-                class="register-tabs__item"
-                :class="{ 'is-active': activeTab === tab.id }"
-                @click="setTab(tab.id)"
-              >
-                <i :class="tab.icon" aria-hidden="true"></i>
-                <span>{{ tab.label }}</span>
-              </button>
-            </nav>
-            <p class="register-intro text-body-secondary mb-0">
-              {{ activeIntro }}
-            </p>
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
+  <div class="module-page register-assist-page">
+    <CCard class="border-0 shadow-sm mb-3">
+      <CCardBody class="p-3 p-md-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+          <h5 class="fw-bold text-primary mb-0 d-flex align-items-center">
+            <i class="fas fa-user-check me-2"></i>
+            Registrar asistencia
+          </h5>
+        </div>
 
-    <!-- v-if: al salir de QR se desmonta y apaga la cámara (onBeforeUnmount) -->
+        <nav class="register-tabs" aria-label="Modos de registro">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            type="button"
+            class="register-tabs__item"
+            :class="{ 'is-active': activeTab === tab.id }"
+            @click="setTab(tab.id)"
+          >
+            <i :class="tab.icon" aria-hidden="true"></i>
+            <span>{{ tab.label }}</span>
+          </button>
+        </nav>
+
+        <!-- Filtros del modo buscar (inyectados desde RegisterDniAssist) -->
+        <div id="assist-register-filters" class="mt-3"></div>
+      </CCardBody>
+    </CCard>
+
+    <!-- v-if: al salir de QR se desmonta y apaga la cámara -->
     <RegisterQrAssist v-if="activeTab === 'qr'" embedded />
     <RegisterDniAssist v-else-if="activeTab === 'buscar'" embedded />
   </div>
@@ -47,7 +37,6 @@
 <script setup>
 import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { useFechaHora } from '@/composables/useFechaHora'
 import RegisterQrAssist from '@/views/assistances/auxiliar/RegisterQrAssist.vue'
 import RegisterDniAssist from '@/views/assistances/auxiliar/RegisterDniAssist.vue'
 
@@ -60,18 +49,11 @@ const tabs = [
 
 const route = useRoute()
 const router = useRouter()
-const { fechaHora } = useFechaHora()
 
 const activeTab = computed(() => {
   const tab = String(route.query.tab || '')
   return VALID_TABS.includes(tab) ? tab : 'qr'
 })
-
-const activeIntro = computed(() =>
-  activeTab.value === 'buscar'
-    ? 'Busque al alumno por apellido, grado o sección y confirme el registro manual.'
-    : 'Escanee el código QR del alumno para registrar la asistencia.',
-)
 
 const setTab = (tab) => {
   if (tab === activeTab.value && route.query.tab === tab) return
@@ -97,11 +79,20 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.register-assist-page {
+  padding-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .register-assist-page {
+    padding-top: 0.75rem;
+  }
+}
+
 .register-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  margin-bottom: 0.85rem;
   padding: 0.3rem;
   border-radius: var(--rp-radius-md);
   background: var(--rp-surface-muted);
@@ -130,12 +121,8 @@ onMounted(() => {
 }
 
 .register-tabs__item.is-active {
-  color: var(--rp-text-brand, #1e4b7a);
-  background: var(--rp-surface);
+  color: #fff;
+  background: var(--cui-info, #3d94d6);
   box-shadow: var(--rp-shadow-xs);
-}
-
-.register-intro {
-  font-size: var(--rp-text-base);
 }
 </style>
