@@ -69,7 +69,7 @@ const listItems = async () => {
         id: course.id,
         title: course.name,
         image: course.image || null,
-        url: `/student/courseClass/${course.id}/detalle`,
+        url: `/courses/student/${course.id}/assistance`,
       }));
   } catch (error) {
     console.error('Error al obtener los cursos:', error);

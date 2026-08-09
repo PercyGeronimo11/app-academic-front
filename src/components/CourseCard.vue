@@ -1,7 +1,7 @@
 <template>
-  <a :href="url"  class="card">
-    <div v-if="image" class="image-wrapper">
-      <img :src="image" alt="Imagen del Curso" class="card-image" />
+  <router-link :to="url" class="card">
+    <div v-if="displayImage" class="image-wrapper">
+      <img :src="displayImage" :alt="title" class="card-image" />
     </div>
     <div v-else class="no-image" :style="{ backgroundColor: solidColor }">
       <span class="no-image-text">{{ title.charAt(0) }}</span>
@@ -10,13 +10,13 @@
       <h3 class="card-title">{{ title }}</h3>
       <p v-if="subtitle" class="card-subtitle">{{ subtitle }}</p>
     </div>
-  </a>
+  </router-link>
 </template>
 
 <script setup>
-import { defineProps, computed } from "vue";
+import { computed } from 'vue'
+import { resolveCourseCardImage } from '@/utils/courseDefaultImages'
 
-// Definir las props del componente
 const props = defineProps({
   title: {
     type: String,
@@ -34,40 +34,41 @@ const props = defineProps({
     type: String,
     default: '',
   },
-});
+})
 
-// Computed para obtener el color sólido basado en la primera letra del título
+const displayImage = computed(() => resolveCourseCardImage(props.image, props.title))
+
 const solidColor = computed(() => {
   const colorMap = {
-    A: "#FF6B6B",
-    B: "#4ECDC4",
-    C: "#FF9F1C",
-    D: "#1A535C",
-    E: "#FF6F61",
-    F: "#2A9D8F",
-    G: "#F4A261",
-    H: "#264653",
-    I: "#E76F51",
-    J: "#E9C46A",
-    K: "#F4A460",
-    L: "#A5B4FC",
-    M: "#C3DAFE",
-    N: "#FDE68A",
-    O: "#E9A8D4",
-    P: "#86EFAC",
-    Q: "#8A4D76",
-    R: "#8338EC",
-    S: "#3A86FF",
-    T: "#FB5607",
-    U: "#FF006E",
-    V: "#FFD166",
-    W: "#06D6A0",
-    X: "#118AB2",
-    Y: "#073B4C",
-    Z: "#EF476F",
-  };
-  return colorMap[props.title.charAt(0).toUpperCase()] || "#A0AEC0";
-});
+    A: '#FF6B6B',
+    B: '#4ECDC4',
+    C: '#FF9F1C',
+    D: '#1A535C',
+    E: '#FF6F61',
+    F: '#2A9D8F',
+    G: '#F4A261',
+    H: '#264653',
+    I: '#E76F51',
+    J: '#E9C46A',
+    K: '#F4A460',
+    L: '#A5B4FC',
+    M: '#C3DAFE',
+    N: '#FDE68A',
+    O: '#E9A8D4',
+    P: '#86EFAC',
+    Q: '#8A4D76',
+    R: '#8338EC',
+    S: '#3A86FF',
+    T: '#FB5607',
+    U: '#FF006E',
+    V: '#FFD166',
+    W: '#06D6A0',
+    X: '#118AB2',
+    Y: '#073B4C',
+    Z: '#EF476F',
+  }
+  return colorMap[props.title.charAt(0).toUpperCase()] || '#A0AEC0'
+})
 </script>
 
 <style scoped>

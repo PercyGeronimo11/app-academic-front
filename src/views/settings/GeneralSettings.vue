@@ -81,6 +81,11 @@
       <div v-if="activeTab === 'cursos'">
         <CourseView embedded />
       </div>
+
+      <!-- Horarios (solo lectura) -->
+      <div v-if="activeTab === 'horarios'">
+        <SchedulesSettingsPanel />
+      </div>
     </CardComponent>
 
     <!-- Modal periodo -->
@@ -210,15 +215,17 @@ import { cilPencil, cilTrash } from '@coreui/icons'
 import CardComponent from '@/components/cruds/CardComponent.vue'
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue'
 import CourseView from '@/views/course/Course.vue'
+import SchedulesSettingsPanel from '@/views/settings/SchedulesSettingsPanel.vue'
 import PeriodService from '@/services/PeriodService'
 import BimesterService from '@/services/BimesterService'
 import { formatDate, toIsoDate } from '@/utils/time'
 
-const VALID_TABS = ['periodos', 'cursos']
+const VALID_TABS = ['periodos', 'cursos', 'horarios']
 
 const tabs = [
   { id: 'periodos', label: 'Periodo escolar' },
   { id: 'cursos', label: 'Cursos' },
+  { id: 'horarios', label: 'Horarios' },
 ]
 
 const route = useRoute()
@@ -229,11 +236,15 @@ const activeTab = computed(() => {
   return VALID_TABS.includes(tab) ? tab : 'periodos'
 })
 
-const activeIntro = computed(() =>
-  activeTab.value === 'cursos'
-    ? 'Gestione el catálogo de cursos del colegio (alta al inicio del periodo).'
-    : 'Gestione los periodos escolares y sus 4 bimestres (inicio y fin).',
-)
+const activeIntro = computed(() => {
+  if (activeTab.value === 'cursos') {
+    return 'Gestione el catálogo de cursos del colegio (alta al inicio del periodo).'
+  }
+  if (activeTab.value === 'horarios') {
+    return 'Consulte los horarios registrados desde Docentes para el periodo académico activo.'
+  }
+  return 'Gestione los periodos escolares y sus 4 bimestres (inicio y fin).'
+})
 
 const setTab = (tab) => {
   if (tab === activeTab.value && route.query.tab === tab) return

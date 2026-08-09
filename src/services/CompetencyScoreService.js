@@ -7,6 +7,14 @@ export default {
     return axios.get(`${API_URL}/competency-scores/bimesters`);
   },
 
+  academicRecord(studentId = null) {
+    return axios.get(`${API_URL}/competency-scores/academic-record`, {
+      params: {
+        student_id: studentId,
+      },
+    });
+  },
+
   reportCard(bimesterId = null, studentId = null) {
     return axios.get(`${API_URL}/competency-scores/report-card`, {
       params: {
@@ -25,6 +33,14 @@ export default {
     });
   },
 
+  listByCourseClassPeriod(courseClassId) {
+    return axios.get(`${API_URL}/competency-scores/by-course-class-period`, {
+      params: {
+        course_class_id: courseClassId,
+      },
+    });
+  },
+
   previewSiagie(file, courseClassId = null, bimesterId = null) {
     const formData = new FormData();
     formData.append('file', file);
@@ -36,6 +52,19 @@ export default {
     }
 
     return axios.post(`${API_URL}/competency-scores/preview-siagie`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+
+  validateSiagieForCourseClass(file, courseClassId, bimesterId = null) {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('course_class_id', courseClassId);
+    if (bimesterId) {
+      formData.append('bimester_id', bimesterId);
+    }
+
+    return axios.post(`${API_URL}/competency-scores/validate-siagie`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
   },

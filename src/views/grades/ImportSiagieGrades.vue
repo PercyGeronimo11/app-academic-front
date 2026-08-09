@@ -1,19 +1,14 @@
 <template>
-  <div class="module-page import-siagie-grades">
-    <ModulePageHeader
-      icon="fas fa-file-excel"
-      title="Importar notas SIAGIE"
-      :subtitle="courseName ? `Curso: ${courseName}` : 'Cargue la plantilla RegNotas exportada desde SIAGIE'"
-    >
-      <template #actions>
-        <CButton color="primary" variant="outline" @click="goToGrades">
-          <i class="fas fa-table me-2"></i>Ver notas
-        </CButton>
-        <CButton color="secondary" variant="ghost" @click="goBack">
-          <i class="fas fa-arrow-left me-2"></i>Volver
-        </CButton>
-      </template>
-    </ModulePageHeader>
+  <div class="import-siagie-grades">
+    <div class="module-filter-bar import-toolbar mb-3">
+      <div class="import-toolbar__title">
+        <strong>Importar SIAGIE</strong>
+        <span class="text-body-secondary small">Plantilla RegNotas (.xlsx)</span>
+      </div>
+      <CButton color="info" variant="outline" class="import-toolbar__action" @click="goToGrades">
+        <i class="fas fa-table me-1"></i>Ver notas
+      </CButton>
+    </div>
 
     <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
     <div v-if="successMessage" class="module-alert module-alert--success">{{ successMessage }}</div>
@@ -238,15 +233,12 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import CompetencyScoreService from '@/services/CompetencyScoreService';
-import CourseClassService from '@/services/CourseClassService';
-import ModulePageHeader from '@/components/academic/ModulePageHeader.vue';
 import { pickCurrentBimesterId } from '@/utils/bimester';
 
 const route = useRoute();
 const router = useRouter();
 
 const courseClassId = Number(route.params.courseClass);
-const courseName = ref('');
 const bimesters = ref([]);
 const selectedBimesterId = ref(null);
 const file = ref(null);
@@ -278,15 +270,6 @@ const onFileChange = (event) => {
   importResult.value = null;
   loadError.value = '';
   successMessage.value = '';
-};
-
-const loadCourse = async () => {
-  try {
-    const response = await CourseClassService.getCourseClass(courseClassId);
-    courseName.value = response.data?.data?.course_name || '';
-  } catch {
-    courseName.value = '';
-  }
 };
 
 const loadBimesters = async () => {
@@ -358,10 +341,28 @@ const importFile = async () => {
   }
 };
 
-const goToGrades = () => router.push(`/teacher/${courseClassId}/grades`);
-const goBack = () => router.back();
+const goToGrades = () => router.push(`/courses/teacher/${courseClassId}/grades`);
 
 onMounted(async () => {
-  await Promise.all([loadCourse(), loadBimesters()]);
+  await loadBimesters();
 });
 </script>
+
+<style scoped>
+.import-toolbar {
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.import-toolbar__title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.import-toolbar__action {
+  flex-shrink: 0;
+}
+</style>

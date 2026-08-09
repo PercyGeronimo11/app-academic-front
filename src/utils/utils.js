@@ -23,9 +23,9 @@ export const textoEstado = (estado) => {
   if (estado === ESTADOS_ASISTENCIA.TARDANZA_MODERADA || estado === 'tardanza') return 'Tardanza Moderada'
   if (estado === ESTADOS_ASISTENCIA.TARDANZA_GRAVE) return 'Tardanza Grave'
   if (estado === ESTADOS_ASISTENCIA.TARDANZA_EXTREMA) return 'Tardanza Extrema'
+  if (estado === 'F') return 'Faltó'
   if (
     estado === ESTADOS_ASISTENCIA.FALTA_INJUSTIFICADA
-    || estado === 'F'
     || estado === 'falto'
   ) return 'Falta Injustificada'
   if (

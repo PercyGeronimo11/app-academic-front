@@ -40,7 +40,7 @@ const listItems = async () => {
       title: course.course_name,
       subtitle: formatGradeSection(course.grade, course.section),
       image: course.course_image || null,
-      url: `/teacher/${course.course_class_id}/detalle`,
+      url: `/courses/teacher/${course.course_class_id}/assistance`,
     }));
 
     console.log(courses.value); 

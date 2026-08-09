@@ -159,63 +159,95 @@ const routes = [
         component: () => import('@/views/prediccion/AcademicRiskView.vue'),
       },
 
-      //Para profesor
+      // Cursos — profesor
       {
         path: '/classroom/main',
         redirect: '/dashboard',
       },
       {
-        path: '/mainAreaTeacher',
+        path: '/courses/teacher/list',
         name: 'Mis Cursos',
+        meta: { title: 'Mis Cursos' },
         component: () => import('@/views/main_area_teacher/AreaTeacher.vue'),
       },
-
       {
-        path: '/teacher/:courseClass/assistance',
-        name: 'Toma de asistencias',
-        component: () => import('@/views/main_area_teacher/AssistanceStudents.vue'),
-      },
-      {
-        path: '/teacher/:courseClass/conduct',
-        name: 'Incidentes de conducta',
-        component: () => import('@/views/main_area_teacher/ConductStudents.vue'),
-      },
-      {
-        path: '/teacher/:courseClass/grades',
-        name: 'Notas por competencia',
-        component: () => import('@/views/grades/CourseGradesView.vue'),
-      },
-      {
-        path: '/teacher/:courseClass/grades/import',
-        name: 'Importar notas SIAGIE',
-        component: () => import('@/views/grades/ImportSiagieGrades.vue'),
-      },
-      {
-        path: '/teacher/:courseClass/detalle',
-        name: 'Detalle del curso',
+        path: '/courses/teacher/:courseClass',
         component: () => import('@/views/main_area_teacher/CourseDetail.vue'),
+        redirect: (to) => `/courses/teacher/${to.params.courseClass}/assistance`,
+        children: [
+          {
+            path: 'assistance',
+            name: 'Toma de asistencias',
+            meta: { title: 'Asistencias' },
+            component: () => import('@/views/main_area_teacher/AssistanceStudents.vue'),
+          },
+          {
+            path: 'conduct',
+            name: 'Incidentes de conducta',
+            meta: { title: 'Conducta' },
+            component: () => import('@/views/main_area_teacher/ConductStudents.vue'),
+          },
+          {
+            path: 'grades',
+            name: 'LibretaDeNotasProfesor',
+            meta: { title: 'Notas' },
+            component: () => import('@/views/grades/CourseGradesView.vue'),
+          },
+          {
+            path: 'import',
+            redirect: (to) => `/courses/teacher/${to.params.courseClass}/grades`,
+          },
+        ],
       },
 
-      // Para estudiantes
+      // Cursos — estudiante
       {
-        path: '/mainAreaStudent',
+        path: '/courses/student/list',
         name: 'Área Principal para estudiante',
+        meta: { title: 'Mis Cursos' },
         component: () => import('@/views/main_area_student/MainAreaStudent.vue'),
       },
       {
+        path: '/courses/student/academic-record',
+        name: 'RecordAcademico',
+        meta: { title: 'Record Académico' },
+        component: () => import('@/views/grades/AcademicRecord.vue'),
+      },
+      {
         path: '/mi-riesgo-academico',
-        name: 'MiRiesgoAcademico',
+        name: 'Mi Riesgo Academico',
         component: () => import('@/views/main_area_student/MyAcademicRiskView.vue'),
       },
       {
-        path: '/student/courseClass/:courseClass/detalle',
-        name: 'Detalle del curso para estudiante',
+        path: '/courses/student/:courseClass',
         component: () => import('@/views/main_area_student/CourseDetail.vue'),
-      },
-      {
-        path: '/student/courseClass/:courseClass/assistance',
-        name: 'Asistencias del alumno',
-        component: () => import('@/views/main_area_student/AssistanceView.vue'),
+        redirect: (to) => `/courses/student/${to.params.courseClass}/assistance`,
+        children: [
+          {
+            path: 'assistance',
+            name: 'Asistencias del alumno',
+            meta: { title: 'Asistencias' },
+            component: () => import('@/views/main_area_student/AssistanceView.vue'),
+          },
+          {
+            path: 'schedule',
+            name: 'Horario del curso',
+            meta: { title: 'Horario' },
+            component: () => import('@/views/main_area_student/CourseScheduleView.vue'),
+          },
+          {
+            path: 'competencies',
+            name: 'Competencias del curso',
+            meta: { title: 'Competencias' },
+            component: () => import('@/views/main_area_student/CourseCompetenciesView.vue'),
+          },
+          {
+            path: 'conduct',
+            name: 'Conducta del curso',
+            meta: { title: 'Conducta' },
+            component: () => import('@/views/main_area_student/CourseConductView.vue'),
+          },
+        ],
       },
       {
         path: '/my-notifications',
@@ -229,18 +261,18 @@ const routes = [
       },
       {
         path: '/announcements/publish',
-        name: 'Publicar comunicados',
+        name: 'Principales',
         component: () => import('@/views/announcements/AnnouncementPublish.vue'),
       },
       {
-        path: '/student/courseClass/:courseClass/scores',
-        name: 'Notas del alumno',
-        component: () => import('@/views/grades/CourseGradesView.vue'),
+        path: '/announcements/history',
+        name: 'Historial de comunicados',
+        component: () => import('@/views/announcements/AnnouncementHistory.vue'),
       },
       {
-        path: '/my-report-card',
-        name: 'Libreta de notas',
-        component: () => import('@/views/grades/ReportCard.vue'),
+        path: '/announcements/:id/visualization',
+        name: 'Visualización de comunicado',
+        component: () => import('@/views/announcements/AnnouncementVisualization.vue'),
       },
       {
         path: '/myPaperworks',
@@ -393,14 +425,23 @@ const routes = [
             component: () => import('@/views/assistances/student/ReportDetailAssist.vue'),
           },
           {
+            path: 'registrar',
+            name: 'Registrar asistencia',
+            component: () => import('@/views/assistances/auxiliar/RegisterAssist.vue'),
+          },
+          {
             path: 'auxiliar/register-qr',
-            name: 'Registrar Asistencia QR',
-            component: () => import('@/views/assistances/auxiliar/RegisterQrAssist.vue'),
+            redirect: (to) => ({
+              path: '/assistances/registrar',
+              query: { tab: to.query.tab || 'qr' },
+            }),
           },
           {
             path: 'auxiliar/register-dni',
-            name: 'Registrar DNI',
-            component: () => import('@/views/assistances/auxiliar/RegisterDniAssist.vue'),
+            redirect: (to) => ({
+              path: '/assistances/registrar',
+              query: { tab: to.query.tab || 'buscar' },
+            }),
           },
 
         ],

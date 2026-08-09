@@ -1,66 +1,49 @@
 <template>
   <CContainer fluid>
-
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <CCardBody class="d-flex justify-content-between align-items-center py-3 px-4">
-
-            <!-- Información del historial -->
-            <div>
-              <div class="d-flex align-items-center gap-2 mb-1">
-                <a href="#" @click.prevent="$router.back()" class="text-decoration-underline text-primary">
-                  <i class="fas fa-arrow-left"></i>
-                </a>
-
-                <h4 class="fw-bold text-primary mb-0">
+          <CCardBody class="py-3 px-3 px-md-4">
+            <div class="historial-header">
+              <div class="historial-header__top">
+                <h4 class="historial-header__title">
                   Historial de Asistencias
                 </h4>
+                <CButton color="info" variant="outline" class="historial-header__back" @click="goBack">
+                  <i class="fas fa-arrow-left me-1"></i>
+                  Volver
+                </CButton>
               </div>
 
-              <div class="text-secondary fw-semibold ms-4">
-                <span class="me-3">
-                  <i class="fas fa-user-graduate me-1"></i>
+              <div class="historial-header__meta">
+                <div class="text-body mb-1">
                   Alumno:
-                  <strong>{{ alumno.name }} {{ alumno.apellidos }}</strong>
-                </span>
+                  <span class="fw-semibold text-body">
+                    {{ alumno.name }} {{ alumno.apellidos }}
+                  </span>
+                </div>
+                <div class="text-body-secondary">
+                  Grado:
+                  <span class="fw-semibold text-body">
+                    {{ alumno.grade }}° {{ alumno.section }}
+                  </span>
+                </div>
               </div>
             </div>
 
-            <!-- Indicador visual -->
-            <div class="d-flex align-items-center gap-3">
-              <CBadge color="dark" class="px-3 py-2 fs-6">
-                Grado: <strong>{{ alumno.grade }}° {{ alumno.section }} </strong>
-              </CBadge>
-            </div>
-
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
-
-
-    <!-- Filtros -->
-    <CRow class="mb-3">
-      <CCol>
-        <CCard class="shadow-sm border-0">
-          <CCardBody>
-
-            <CRow class="align-items-end">
-
-              <CCol md="3">
-                <label class="form-label fw-semibold">Desde</label>
-                <CFormInput type="date" v-model="filters.desde" />
+            <CRow class="g-2 align-items-end">
+              <CCol xs="6" md="3">
+                <label class="form-label fw-semibold mb-1">Desde</label>
+                <CFormInput v-model="filters.desde" type="date" />
               </CCol>
 
-              <CCol md="3">
-                <label class="form-label fw-semibold">Hasta</label>
-
-                <CFormInput type="date" v-model="filters.hasta" />
+              <CCol xs="6" md="3">
+                <label class="form-label fw-semibold mb-1">Hasta</label>
+                <CFormInput v-model="filters.hasta" type="date" />
               </CCol>
 
-              <CCol md="3">
-                <label class="form-label fw-semibold">Asistencia</label>
+              <CCol xs="12" md="3">
+                <label class="form-label fw-semibold mb-1">Asistencia</label>
                 <CFormSelect v-model="filters.estado">
                   <option value="">Todos</option>
                   <option value="A">Asistencia Normal</option>
@@ -73,103 +56,166 @@
                 </CFormSelect>
               </CCol>
 
-              <CCol md="3" class="d-flex gap-2">
-                <CButton color="primary" @click="buscar">
+              <CCol xs="6" md="auto">
+                <CButton color="primary" class="w-100" @click="buscar">
                   Buscar
-                </CButton>
-
-                <CButton color="secondary" variant="outline" @click="limpiar">
-                  Limpiar
                 </CButton>
               </CCol>
 
+              <CCol xs="6" md="auto">
+                <CButton color="secondary" variant="outline" class="w-100" @click="limpiar">
+                  Limpiar
+                </CButton>
+              </CCol>
             </CRow>
-
           </CCardBody>
         </CCard>
       </CCol>
     </CRow>
-    <!-- Tabla de asistencias -->
+
     <CRow>
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardBody class="p-0">
-            <div class="modern-table-shell assist-table-tight">
-              <CTable hover align="middle" class="mb-0">
-                <CTableHead class="modern-table-header">
+            <div class="modern-table-shell assist-table-tight list-with-pagination-wrap">
+              <CTable hover responsive align="middle" class="mb-0">
+                <CTableHead color="info" class="modern-table-header">
                   <CTableRow>
-                    <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Hora</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Tipo de Falta</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Modificado por</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Modificado el</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center">Fecha</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center">Hora</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center">Estado</CTableHeaderCell>
+                    <CTableHeaderCell class="text-white text-center" style="width: 5rem">Acciones</CTableHeaderCell>
                   </CTableRow>
                 </CTableHead>
 
-              <CTableBody>
-                <template v-if="!asistencias.length">
-                  <CTableRow>
-                    <CTableDataCell colspan="6" class="list-empty-message py-4">
-                      No hay registros para mostrar.
-                    </CTableDataCell>
-                  </CTableRow>
-                </template>
-                <template v-else>
-                  <CTableRow v-for="(item, index) in asistencias" :key="index" class="align-middle">
-                    <CTableDataCell class="text-center fw-medium"> {{  formatDate(item.fecha_hora) }}
+                <CTableBody>
+                  <template v-if="!asistencias.length">
+                    <CTableRow>
+                      <CTableDataCell colspan="4" class="list-empty-message py-4">
+                        No hay registros para mostrar.
                       </CTableDataCell>
-                    <CTableDataCell class="text-center fw-medium">{{ esFaltaSinHora(item.estado) ? '--' : formatTime(item.fecha_hora) }}</CTableDataCell>
-                    <CTableDataCell class="text-center">
-                      <CBadge :class="colorEstado(item.estado)" class="assist-badge-sm">
-                        {{ textoEstado(item.estado) }}
-                      </CBadge>
-                    </CTableDataCell>
-                    <CTableDataCell class="text-center">{{ tipoFaltaLabel(item.estado) || '—' }}</CTableDataCell>
-                    <CTableDataCell class="text-center">{{ item.modificado_por || '—' }}</CTableDataCell>
-                    <CTableDataCell class="text-center">{{ item.fecha_modificacion ? formatDate(item.fecha_modificacion) : '—' }}</CTableDataCell>
-                  </CTableRow>
-                </template>
-              </CTableBody>
-            </CTable>
+                    </CTableRow>
+                  </template>
+                  <template v-else>
+                    <CTableRow v-for="item in asistencias" :key="item.id" class="align-middle">
+                      <CTableDataCell class="text-center fw-medium">
+                        {{ formatDate(item.fecha_hora) }}
+                      </CTableDataCell>
+                      <CTableDataCell class="text-center fw-medium">
+                        {{ esFaltaSinHora(item.estado) ? '—' : formatTime(item.fecha_hora) }}
+                      </CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <CBadge :class="colorEstado(item.estado)" class="assist-badge-sm">
+                          {{ textoEstado(item.estado) }}
+                        </CBadge>
+                      </CTableDataCell>
+                      <CTableDataCell class="text-center">
+                        <i
+                          class="fas fa-eye text-primary"
+                          style="cursor: pointer; font-size: 16px"
+                          v-c-tooltip="{ content: 'Ver detalle', placement: 'top' }"
+                          @click="openDetail(item)"
+                        ></i>
+                      </CTableDataCell>
+                    </CTableRow>
+                  </template>
+                </CTableBody>
+              </CTable>
+
+              <TablePagination
+                :model-value="currentPage"
+                :total="totalCount"
+                :page-size="pageSize"
+                aria-label="Paginación del historial"
+                @update:model-value="fetchAsistencias"
+              />
             </div>
-
-            <!-- Paginacion -->
-            <div class="d-flex justify-content-between align-items-center mt-3 p-2 px-3">
-              <CButton color="primary" variant="outline" :disabled="!previousPage"
-                @click="fetchAsistencias(currentPage - 1)" class="d-flex align-items-center gap-2">
-                <i class="fas fa-chevron-left"></i>
-                Anterior
-              </CButton>
-
-              <div class="text-center fw-semibold text-muted">
-                <i class="fas fa-file-alt me-1"></i>
-                Página <span class="text-dark">{{ currentPage }}</span>
-                /
-                <span class="text-dark">{{ totalPages }}</span>
-              </div>
-
-              <CButton color="primary" variant="outline" :disabled="!nextPage"
-                @click="fetchAsistencias(currentPage + 1)" class="d-flex align-items-center gap-2">
-                Siguiente
-                <i class="fas fa-chevron-right"></i>
-              </CButton>
-            </div>
-
           </CCardBody>
         </CCard>
       </CCol>
     </CRow>
+
+    <CModal :visible="detailVisible" alignment="center" @close="closeDetail">
+      <CModalHeader>
+        <CModalTitle>Detalle de modificación</CModalTitle>
+      </CModalHeader>
+      <CModalBody>
+        <div v-if="selectedItem" class="d-flex flex-column gap-3">
+          <div>
+            <div class="text-body-secondary small mb-1">Registro</div>
+            <div class="fw-semibold">
+              {{ formatDate(selectedItem.fecha_hora) }}
+              ·
+              {{ esFaltaSinHora(selectedItem.estado) ? '—' : formatTime(selectedItem.fecha_hora) }}
+            </div>
+            <div class="mt-1">
+              <CBadge :class="colorEstado(selectedItem.estado)" class="assist-badge-sm">
+                {{ textoEstado(selectedItem.estado) }}
+              </CBadge>
+            </div>
+          </div>
+
+          <div v-if="hasModification(selectedItem)" class="d-flex flex-column gap-2">
+            <div>
+              <div class="text-body-secondary small mb-1">Modificado por</div>
+              <div class="fw-semibold">{{ selectedItem.modificado_por || '—' }}</div>
+            </div>
+            <div>
+              <div class="text-body-secondary small mb-1">Modificado el</div>
+              <div class="fw-semibold">
+                {{ selectedItem.fecha_modificacion ? formatDate(selectedItem.fecha_modificacion) : '—' }}
+              </div>
+            </div>
+            <div>
+              <div class="text-body-secondary small mb-1">Motivo</div>
+              <div class="fw-semibold detail-motivo">
+                {{ selectedItem.motivo || 'Sin motivo registrado' }}
+              </div>
+            </div>
+          </div>
+
+          <div v-else class="text-body-secondary">
+            Este registro no tiene modificaciones.
+          </div>
+        </div>
+      </CModalBody>
+      <CModalFooter>
+        <CButton color="secondary" variant="outline" @click="closeDetail">Cerrar</CButton>
+      </CModalFooter>
+    </CModal>
   </CContainer>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import AssistanceService from '../../../services/AssistanceService'
-import { CBadge } from '@coreui/vue'
-import { textoEstado, colorEstado, esFaltaSinHora, tipoFaltaLabel } from '../../../utils/utils'
-import { formatDate, formatTime } from '../../../utils/time'
+import AssistanceService from '@/services/AssistanceService'
+import TablePagination from '@/components/academic/TablePagination.vue'
+import { textoEstado, colorEstado, esFaltaSinHora } from '@/utils/utils'
+import { formatDate, formatTime } from '@/utils/time'
+import {
+  CBadge,
+  CButton,
+  CCard,
+  CCardBody,
+  CCol,
+  CContainer,
+  CFormInput,
+  CFormSelect,
+  CModal,
+  CModalBody,
+  CModalFooter,
+  CModalHeader,
+  CModalTitle,
+  CRow,
+  CTable,
+  CTableBody,
+  CTableDataCell,
+  CTableHead,
+  CTableHeaderCell,
+  CTableRow,
+} from '@coreui/vue'
+
 const route = useRoute()
 const router = useRouter()
 const alumnoId = route.params.id
@@ -177,36 +223,52 @@ const alumnoId = route.params.id
 const filters = ref({
   desde: '',
   hasta: '',
-  estado: ''
+  estado: '',
 })
-
 
 const alumno = ref({
   name: '',
   apellidos: '',
   grade: '',
-  section: ''
+  section: '',
 })
 
 const asistencias = ref([])
 const currentPage = ref(1)
-const totalPages = ref(1)
-const nextPage = ref(null)
-const previousPage = ref(null)
+const pageSize = 15
+const totalCount = ref(0)
+
+const detailVisible = ref(false)
+const selectedItem = ref(null)
+
+const goBack = () => {
+  router.push('/assistances/admin/list-alumnos')
+}
+
+const hasModification = (item) =>
+  Boolean(item?.modificado_por || item?.fecha_modificacion || item?.motivo)
+
+const openDetail = (item) => {
+  selectedItem.value = item
+  detailVisible.value = true
+}
+
+const closeDetail = () => {
+  detailVisible.value = false
+  selectedItem.value = null
+}
 
 const buscar = () => {
   fetchAsistencias(1)
 }
 
 const limpiar = () => {
-
   filters.value.desde = ''
   filters.value.hasta = ''
   filters.value.estado = ''
-
   fetchAsistencias(1)
 }
-// Traer datos del alumno (nombre, grado, sección)
+
 const fetchAlumno = async () => {
   try {
     const res = await AssistanceService.getVAdmin_AlumnoDetail(alumnoId)
@@ -216,25 +278,21 @@ const fetchAlumno = async () => {
   }
 }
 
-// Traer historial de asistencias paginado
 const fetchAsistencias = async (page = 1) => {
   try {
     const params = {
       alumno_id: alumnoId,
       page,
+      page_size: pageSize,
       desde: filters.value.desde,
       hasta: filters.value.hasta,
-      estado: filters.value.estado
+      estado: filters.value.estado,
     }
 
     const res = await AssistanceService.getVAdmin_HistorialByAlumno(params)
-
-    asistencias.value = res.data.results
-
+    asistencias.value = res.data.results || []
+    totalCount.value = res.data.count || 0
     currentPage.value = page
-    totalPages.value = Math.ceil(res.data.count / 20)
-    nextPage.value = res.data.next
-    previousPage.value = res.data.previous
   } catch (error) {
     console.error('Error al obtener asistencias:', error)
   }
@@ -245,3 +303,58 @@ onMounted(() => {
   fetchAsistencias()
 })
 </script>
+
+<style scoped>
+.historial-header {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--cui-border-color, #d8dbe0);
+}
+
+.historial-header__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.65rem;
+}
+
+.historial-header__title {
+  margin: 0;
+  flex: 1;
+  min-width: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--cui-primary, #321fdb);
+}
+
+.historial-header__back {
+  flex-shrink: 0;
+}
+
+.historial-header__meta {
+  padding-right: 0.25rem;
+}
+
+.detail-motivo {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 767.98px) {
+  .historial-header__title {
+    font-size: 1.45rem;
+  }
+
+  .historial-header__back {
+    padding-inline: 0.7rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .historial-header__title {
+    font-size: 1.5rem;
+  }
+}
+</style>

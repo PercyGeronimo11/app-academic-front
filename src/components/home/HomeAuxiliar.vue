@@ -37,8 +37,8 @@
         <router-link class="home-cta" :to="links.register_qr || '/assistances/auxiliar/register-qr'">
           <i class="fas fa-qrcode"></i>
           <div>
-            <strong>Registro QR</strong>
-            <span>Escanear asistencia</span>
+            <strong>Registrar asistencia</strong>
+            <span>QR o búsqueda de alumno</span>
           </div>
         </router-link>
       </CCol>

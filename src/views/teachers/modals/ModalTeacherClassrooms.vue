@@ -93,13 +93,13 @@
               <CTableHeaderCell class="text-center">Grado</CTableHeaderCell>
               <CTableHeaderCell class="text-center">Sección</CTableHeaderCell>
               <CTableHeaderCell class="text-center">Curso</CTableHeaderCell>
-              <CTableHeaderCell class="text-center" style="width: 90px;">Acciones</CTableHeaderCell>
+              <CTableHeaderCell class="text-center" style="width: 190px;">Acciones</CTableHeaderCell>
             </CTableRow>
           </CTableHead>
           <CTableBody>
             <CTableRow v-if="!assignments.length">
               <CTableDataCell colspan="4" class="text-center text-body-secondary py-4">
-                No hay aulas asignadas.
+                {{ emptyAssignmentsMessage }}
               </CTableDataCell>
             </CTableRow>
             <CTableRow v-for="(item, index) in assignments" :key="item.course_class_id">
@@ -109,9 +109,21 @@
               <CTableDataCell class="text-center">
                 <CButton
                   type="button"
+                  color="info"
+                  size="sm"
+                  class="text-white me-1"
+                  title="Horario"
+                  @click="openScheduleModal(item)"
+                >
+                  <CIcon :content="cilCalendar" size="sm" class="me-1" />
+                  Horario
+                </CButton>
+                <CButton
+                  type="button"
                   color="danger"
                   size="sm"
                   class="text-white"
+                  title="Quitar"
                   @click="removeAssignment(index)"
                 >
                   <CIcon :content="cilTrash" size="sm" />
@@ -132,14 +144,20 @@
       </CButton>
     </CModalFooter>
   </CModal>
+
+  <ModalCourseSchedule
+    v-model:isOpenModal="isScheduleModalOpen"
+    :course-class="selectedScheduleCourse"
+  />
 </template>
 
 <script setup>
 import { computed, ref, watch } from 'vue';
 import Swal from 'sweetalert2';
-import { cilTrash } from '@coreui/icons';
+import { cilCalendar, cilTrash } from '@coreui/icons';
 import CourseClassService from '@/services/CourseClassService';
 import GradeSectionService from '@/services/GradeSectionService';
+import ModalCourseSchedule from './ModalCourseSchedule.vue';
 
 const emit = defineEmits(['update:isOpenModal', 'saved']);
 
@@ -165,6 +183,13 @@ const saving = ref(false);
 const isShowingAlert = ref(false);
 const formKey = ref(0);
 const courseSelectKey = ref(0);
+const assignmentsMessage = ref('');
+const isScheduleModalOpen = ref(false);
+const selectedScheduleCourse = ref(null);
+
+const emptyAssignmentsMessage = computed(() =>
+  assignmentsMessage.value || 'No hay aulas asignadas en el periodo activo.'
+);
 
 const teacherFullName = computed(() => {
   if (!props.teacher) return '';
@@ -228,15 +253,36 @@ const loadGradeSections = async () => {
 const loadTeacherAssignments = async () => {
   if (!props.teacher?.id) {
     assignments.value = [];
+    assignmentsMessage.value = '';
     return;
   }
 
   try {
     const response = await CourseClassService.listCoursesByTeacherId(props.teacher.id);
     assignments.value = (response.data?.data ?? []).map((item) => ({ ...item }));
-  } catch {
+    assignmentsMessage.value = response.data?.message || '';
+    if (!response.data?.success && response.data?.message) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Periodo activo',
+        text: response.data.message,
+      });
+    }
+  } catch (error) {
     assignments.value = [];
+    assignmentsMessage.value =
+      error.response?.data?.message || 'No se pudieron cargar las aulas del periodo activo.';
+    Swal.fire({
+      icon: 'warning',
+      title: 'Periodo activo',
+      text: assignmentsMessage.value,
+    });
   }
+};
+
+const openScheduleModal = (item) => {
+  selectedScheduleCourse.value = { ...item };
+  isScheduleModalOpen.value = true;
 };
 
 const loadCoursesForGradeSection = async () => {
@@ -371,6 +417,9 @@ watch(
     if (!open) {
       resetSelectors();
       assignments.value = [];
+      assignmentsMessage.value = '';
+      isScheduleModalOpen.value = false;
+      selectedScheduleCourse.value = null;
       return;
     }
 
