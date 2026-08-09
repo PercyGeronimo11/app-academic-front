@@ -1,107 +1,160 @@
 <template>
-  <div class="module-page announcements-history">
-    <ModulePageHeader
-      icon="fas fa-history"
-      title="Historial"
-      subtitle="Comunicados finalizados (la fecha de fin ya pasó). Solo consulta y visualización."
-    />
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <h4 class="fw-bold text-primary mb-2 d-flex align-items-center">
+              <i class="fas fa-history me-2"></i>
+              Historial de comunicados
+            </h4>
+            <p class="tls-intro-text mb-0 text-body-secondary small">
+              Comunicados finalizados (la fecha de fin ya pasó). Solo consulta y visualización.
+            </p>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-    <div v-if="loading" class="module-loading">
-      <i class="fas fa-spinner fa-spin"></i> Cargando historial...
-    </div>
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="modern-table-shell">
+              <CTable responsive hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header text-center">
+                  <CTableRow>
+                    <CTableHeaderCell class="text-center">Título</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Inicio</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Fin</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Tipo</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Autor</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Lectura</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
 
-    <EmptyState
-      v-else-if="!items.length"
-      icon="📂"
-      title="Sin comunicados finalizados"
-      hint="Cuando un comunicado publicado termine su vigencia, aparecerá aquí."
-      compact
-    />
+                <CTableBody v-if="loading">
+                  <CTableRow>
+                    <CTableDataCell colspan="8" class="table-empty-cell text-center py-4 text-body-secondary">
+                      <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+                      Cargando historial...
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
 
-    <div v-else class="modern-table-shell">
-      <CTable hover responsive class="mb-0 align-middle">
-        <CTableHead color="info">
-          <CTableRow>
-            <CTableHeaderCell class="text-white">Título</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Inicio</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Fin</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Tipo</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Autor</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Estado</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Lectura</CTableHeaderCell>
-            <CTableHeaderCell class="text-white text-center">Acción</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          <CTableRow v-for="item in items" :key="item.id">
-            <CTableDataCell>
-              <div class="d-flex align-items-center gap-2">
-                <img
-                  v-if="item.image_url"
-                  :src="item.image_url"
-                  alt=""
-                  class="rounded border"
-                  style="width: 36px; height: 36px; object-fit: cover"
-                />
-                <span class="fw-semibold">{{ item.title }}</span>
-              </div>
-            </CTableDataCell>
-            <CTableDataCell class="small text-nowrap">{{ item.starts_at || '—' }}</CTableDataCell>
-            <CTableDataCell class="small text-nowrap">{{ item.ends_at || '—' }}</CTableDataCell>
-            <CTableDataCell class="small">{{ item.type_label || (item.is_general ? 'Institucional' : 'Aula') }}</CTableDataCell>
-            <CTableDataCell class="small">{{ item.publisher_name || '—' }}</CTableDataCell>
-            <CTableDataCell>
-              <span class="status-badge status-badge--finalizado">
-                {{ item.display_status_label || 'Finalizado' }}
-              </span>
-            </CTableDataCell>
-            <CTableDataCell class="small">
-              <template v-if="item.read_stats">
-                {{ item.read_stats.read }}/{{ item.read_stats.recipients }}
-                <span class="text-body-secondary">({{ item.read_stats.percent }}%)</span>
-              </template>
-              <span v-else class="text-body-secondary">—</span>
-            </CTableDataCell>
-            <CTableDataCell class="text-center text-nowrap">
-              <CButton
-                size="sm"
-                color="success"
-                class="me-1"
-                title="Visualización"
-                @click="goVisualization(item)"
-              >
-                <i class="fas fa-chart-bar"></i>
-              </CButton>
-              <CButton size="sm" color="info" variant="outline" title="Ver" @click="openDetail(item)">
-                <i class="fas fa-eye"></i>
-              </CButton>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-      </CTable>
-    </div>
+                <CTableBody v-else-if="!items.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="8" class="table-empty-cell">
+                      <div class="table-empty-unified">
+                        <span class="table-empty-unified__icon" aria-hidden="true">📂</span>
+                        <p class="table-empty-unified__title">Sin comunicados finalizados</p>
+                        <p class="table-empty-unified__hint">
+                          Cuando un comunicado publicado termine su vigencia, aparecerá aquí.
+                        </p>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
 
-    <AnnouncementAvisoOverlay
-      :visible="detailVisible"
-      :item="selectedItem"
-      :index="0"
-      :total="1"
-      kind-label="Comunicado finalizado"
-      confirm-label="Cerrar"
-      :show-dismiss="false"
-      @confirm="detailVisible = false"
-      @dismiss="detailVisible = false"
-    />
-  </div>
+                <CTableBody v-else>
+                  <CTableRow v-for="item in pagedItems" :key="item.id">
+                    <CTableDataCell class="text-center">
+                      <div class="d-inline-flex align-items-center gap-2 justify-content-center text-start">
+                        <img
+                          v-if="item.image_url"
+                          :src="item.image_url"
+                          alt=""
+                          class="announcement-thumb rounded border"
+                        />
+                        <span class="fw-semibold">{{ item.title }}</span>
+                      </div>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small text-nowrap">
+                      {{ item.starts_at || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small text-nowrap">
+                      {{ item.ends_at || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      {{ item.type_label || (item.is_general ? 'Institucional' : 'Aula') }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      {{ item.publisher_name || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span class="status-badge status-badge--finalizado">
+                        {{ item.display_status_label || 'Finalizado' }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      <template v-if="item.read_stats">
+                        {{ item.read_stats.read }}/{{ item.read_stats.recipients }}
+                        <span class="text-body-secondary">({{ item.read_stats.percent }}%)</span>
+                      </template>
+                      <span v-else class="text-body-secondary">—</span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center text-nowrap">
+                      <div class="d-inline-flex gap-1 justify-content-center align-items-center flex-nowrap">
+                        <CButton
+                          size="sm"
+                          color="success"
+                          title="Visualización"
+                          @click="goVisualization(item)"
+                        >
+                          <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                        </CButton>
+                        <CButton
+                          size="sm"
+                          color="primary"
+                          variant="outline"
+                          title="Ver"
+                          :aria-label="`Ver comunicado ${item.title}`"
+                          @click="openDetail(item)"
+                        >
+                          <i class="fas fa-eye" aria-hidden="true"></i>
+                        </CButton>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+              </CTable>
+            </div>
+
+            <TablePagination
+              v-if="!loading && items.length"
+              v-model="page"
+              :total="total"
+              :page-size="pageSize"
+              aria-label="Paginación del historial de comunicados"
+            />
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
+
+  <AnnouncementAvisoOverlay
+    :visible="detailVisible"
+    :item="selectedItem"
+    :index="0"
+    :total="1"
+    kind-label="Comunicado finalizado"
+    confirm-label="Cerrar"
+    :show-dismiss="false"
+    @confirm="detailVisible = false"
+    @dismiss="detailVisible = false"
+  />
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
-import ModulePageHeader from '@/components/academic/ModulePageHeader.vue'
-import EmptyState from '@/components/academic/EmptyState.vue'
 import AnnouncementAvisoOverlay from '@/components/announcements/AnnouncementAvisoOverlay.vue'
+import TablePagination from '@/components/academic/TablePagination.vue'
+import { useClientPagination } from '@/composables/useClientPagination'
 import { toastError } from '@/utils/alerts'
 
 const router = useRouter()
@@ -110,6 +163,13 @@ const items = ref([])
 const loading = ref(true)
 const detailVisible = ref(false)
 const selectedItem = ref(null)
+
+const {
+  page,
+  pageSize,
+  total,
+  pagedItems,
+} = useClientPagination(items, 15)
 
 const loadList = async () => {
   loading.value = true
@@ -142,3 +202,12 @@ const goVisualization = (item) => {
 
 onMounted(loadList)
 </script>
+
+<style scoped>
+.announcement-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+</style>
