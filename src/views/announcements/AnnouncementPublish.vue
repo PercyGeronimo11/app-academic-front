@@ -1,286 +1,338 @@
 <template>
-  <div class="module-page announcements-publish">
-    <ModulePageHeader
-      icon="fas fa-bullhorn"
-      title="Principales"
-      :subtitle="headerSubtitle"
-    >
-      <template #actions>
-        <CButton color="info" class="text-white" @click="openCreateModal">
-          <i class="fas fa-plus me-2"></i>Nuevo comunicado
-        </CButton>
-      </template>
-    </ModulePageHeader>
-
-    <div v-if="loadingList" class="module-loading">
-      <i class="fas fa-spinner fa-spin"></i> Cargando...
-    </div>
-
-    <EmptyState
-      v-else-if="!publishedList.length"
-      icon="📭"
-      title="Sin comunicados principales"
-      hint="Aquí aparecen borradores y publicados vigentes. Use «Nuevo comunicado» para crear uno."
-      compact
-    />
-
-    <div v-else class="modern-table-shell">
-      <CTable hover responsive class="mb-0 align-middle">
-        <CTableHead color="info">
-          <CTableRow>
-            <CTableHeaderCell class="text-white">Título</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Inicio</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Fin</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Tipo</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Autor</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Estado</CTableHeaderCell>
-            <CTableHeaderCell class="text-white">Lectura</CTableHeaderCell>
-            <CTableHeaderCell class="text-white text-center">Acción</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          <CTableRow v-for="item in publishedList" :key="item.id">
-            <CTableDataCell>
-              <div class="d-flex align-items-center gap-2">
-                <img
-                  v-if="item.image_url"
-                  :src="item.image_url"
-                  alt=""
-                  class="rounded border"
-                  style="width: 36px; height: 36px; object-fit: cover"
-                />
-                <div>
-                  <div class="fw-semibold">{{ item.title }}</div>
-                  <div v-if="item.last_modified_at" class="text-body-secondary small">
-                    Modif.: {{ item.last_modified_by_name || '—' }} · {{ item.last_modified_at }}
-                  </div>
-                </div>
-              </div>
-            </CTableDataCell>
-            <CTableDataCell class="small text-nowrap">{{ item.starts_at || '—' }}</CTableDataCell>
-            <CTableDataCell class="small text-nowrap">{{ item.ends_at || '—' }}</CTableDataCell>
-            <CTableDataCell class="small">{{ item.type_label || (item.is_general ? 'Institucional' : 'Aula') }}</CTableDataCell>
-            <CTableDataCell class="small">{{ item.publisher_name || '—' }}</CTableDataCell>
-            <CTableDataCell>
-              <span class="status-badge" :class="statusBadgeClass(item)">
-                {{ item.display_status_label || statusLabel(item) }}
-              </span>
-            </CTableDataCell>
-            <CTableDataCell class="small">
-              <template v-if="item.status === 'publicado' && item.read_stats">
-                {{ item.read_stats.read }}/{{ item.read_stats.recipients }}
-                <span class="text-body-secondary">({{ item.read_stats.percent }}%)</span>
-              </template>
-              <span v-else class="text-body-secondary">—</span>
-            </CTableDataCell>
-            <CTableDataCell class="text-center text-nowrap">
-              <CButton
-                size="sm"
-                color="warning"
-                class="text-white me-1"
-                title="Editar"
-                @click="openEditModal(item)"
-              >
-                <i class="fas fa-pen"></i>
-              </CButton>
-              <CButton
-                v-if="item.status === 'borrador'"
-                size="sm"
-                color="primary"
-                class="me-1"
-                title="Publicar"
-                @click="publishDraft(item)"
-              >
-                <i class="fas fa-paper-plane"></i>
-              </CButton>
-              <CButton
-                v-if="item.status === 'publicado'"
-                size="sm"
-                color="success"
-                class="me-1"
-                title="Visualización"
-                @click="goVisualization(item)"
-              >
-                <i class="fas fa-chart-bar"></i>
-              </CButton>
-              <CButton size="sm" color="info" variant="outline" title="Ver" @click="openDetail(item)">
-                <i class="fas fa-eye"></i>
-              </CButton>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-      </CTable>
-    </div>
-
-    <!-- Modal crear / editar -->
-    <CModal :visible="formModalVisible" size="lg" alignment="center" @close="closeFormModal">
-      <CModalHeader>
-        <CModalTitle>{{ formModalTitle }}</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <CForm @submit.prevent="submitForm">
-          <div class="row g-3">
-            <template v-if="!isPublishedEdit">
-              <div class="col-12">
-                <CFormLabel for="title">Título</CFormLabel>
-                <CFormInput
-                  id="title"
-                  v-model="form.title"
-                  maxlength="200"
-                  placeholder="Ej. Suspensión de clases por feriado"
-                  required
-                />
-              </div>
-
-              <div class="col-12">
-                <CFormLabel for="flyer">Afiche / flyer (opcional)</CFormLabel>
-                <p class="text-body-secondary small mb-2">
-                  Si adjunta una imagen, el texto es opcional. Sin imagen, el contenido es obligatorio.
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+              <div>
+                <h4 class="fw-bold text-primary mb-2 d-flex align-items-center">
+                  <i class="fas fa-bullhorn me-2"></i>
+                  Comunicados oficiales
+                </h4>
+                <p class="tls-intro-text mb-0 text-body-secondary small">
+                  {{ headerSubtitle }}
                 </p>
-                <CFormInput
-                  id="flyer"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp,image/gif"
-                  @change="onImageChange"
-                />
-                <div v-if="imagePreview || (existingImageUrl && !removeImage)" class="flyer-preview mt-2">
-                  <img :src="imagePreview || existingImageUrl" alt="Vista previa del afiche" />
-                  <CButton size="sm" color="danger" variant="outline" class="mt-2" type="button" @click="clearImage">
-                    Quitar imagen
-                  </CButton>
-                </div>
               </div>
+              <CButton color="primary" class="px-4" @click="openCreateModal">
+                <i class="fas fa-plus me-2" aria-hidden="true"></i>
+                Nuevo comunicado
+              </CButton>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-              <div class="col-12">
-                <CFormLabel for="body">
-                  Contenido
-                  <span class="text-body-secondary fw-normal">
-                    {{ hasImageContent ? '(opcional si hay afiche)' : '(obligatorio sin afiche)' }}
-                  </span>
-                </CFormLabel>
-                <RichTextEditor
-                  :key="editorKey"
-                  v-model="form.body"
-                  placeholder="Redacte el comunicado oficial..."
-                />
-              </div>
-            </template>
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="modern-table-shell">
+              <CTable responsive hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header text-center">
+                  <CTableRow>
+                    <CTableHeaderCell class="text-center">Título</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Inicio</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Fin</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Tipo</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Autor</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Lectura</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
 
-            <div v-else class="col-12">
-              <div class="alert alert-warning mb-0 py-2 small">
-                Comunicado publicado: solo puede <strong>recortar o ampliar la fecha de fin</strong>
-                (mínimo hoy). La fecha de inicio no se modifica.
-              </div>
-              <p class="fw-semibold mt-3 mb-1">{{ form.title }}</p>
+                <CTableBody v-if="loadingList">
+                  <CTableRow>
+                    <CTableDataCell colspan="8" class="table-empty-cell text-center py-4 text-body-secondary">
+                      <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+                      Cargando comunicados...
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+
+                <CTableBody v-else-if="!publishedList.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="8" class="table-empty-cell">
+                      <div class="table-empty-unified">
+                        <span class="table-empty-unified__icon" aria-hidden="true">📭</span>
+                        <p class="table-empty-unified__title">Sin comunicados principales</p>
+                        <p class="table-empty-unified__hint">
+                          Aquí aparecen borradores y publicados vigentes. Use
+                          <strong>Nuevo comunicado</strong> para crear uno.
+                        </p>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+
+                <CTableBody v-else>
+                  <CTableRow v-for="item in pagedItems" :key="item.id">
+                    <CTableDataCell class="text-center">
+                      <div class="d-inline-flex align-items-center gap-2 justify-content-center text-start">
+                        <img
+                          v-if="item.image_url"
+                          :src="item.image_url"
+                          alt=""
+                          class="announcement-thumb rounded border"
+                        />
+                        <div>
+                          <div class="fw-semibold">{{ item.title }}</div>
+                          <div v-if="item.last_modified_at" class="text-body-secondary small">
+                            Modif.: {{ item.last_modified_by_name || '—' }} · {{ item.last_modified_at }}
+                          </div>
+                        </div>
+                      </div>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small text-nowrap">
+                      {{ item.starts_at || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small text-nowrap">
+                      {{ item.ends_at || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      {{ item.type_label || (item.is_general ? 'Institucional' : 'Aula') }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      {{ item.publisher_name || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span class="status-badge" :class="statusBadgeClass(item)">
+                        {{ item.display_status_label || statusLabel(item) }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      <template v-if="item.status === 'publicado' && item.read_stats">
+                        {{ item.read_stats.read }}/{{ item.read_stats.recipients }}
+                        <span class="text-body-secondary">({{ item.read_stats.percent }}%)</span>
+                      </template>
+                      <span v-else class="text-body-secondary">—</span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center text-nowrap">
+                      <div class="d-inline-flex gap-1 justify-content-center align-items-center flex-nowrap">
+                        <CButton
+                          size="sm"
+                          color="warning"
+                          class="text-white"
+                          title="Editar"
+                          @click="openEditModal(item)"
+                        >
+                          <i class="fas fa-pen" aria-hidden="true"></i>
+                        </CButton>
+                        <CButton
+                          v-if="item.status === 'borrador'"
+                          size="sm"
+                          color="primary"
+                          title="Publicar"
+                          @click="publishDraft(item)"
+                        >
+                          <i class="fas fa-paper-plane" aria-hidden="true"></i>
+                        </CButton>
+                        <CButton
+                          v-if="item.status === 'publicado'"
+                          size="sm"
+                          color="success"
+                          title="Visualización"
+                          @click="goVisualization(item)"
+                        >
+                          <i class="fas fa-chart-bar" aria-hidden="true"></i>
+                        </CButton>
+                        <CButton
+                          size="sm"
+                          color="primary"
+                          variant="outline"
+                          title="Ver"
+                          :aria-label="`Ver comunicado ${item.title}`"
+                          @click="openDetail(item)"
+                        >
+                          <i class="fas fa-eye" aria-hidden="true"></i>
+                        </CButton>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+              </CTable>
             </div>
 
-            <div class="col-md-6">
-              <CFormLabel for="starts_at">Fecha de inicio</CFormLabel>
+            <TablePagination
+              v-if="!loadingList && publishedList.length"
+              v-model="page"
+              :total="total"
+              :page-size="pageSize"
+              aria-label="Paginación de comunicados"
+            />
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
+
+  <!-- Modal crear / editar -->
+  <CModal :visible="formModalVisible" size="lg" alignment="center" @close="closeFormModal">
+    <CModalHeader>
+      <CModalTitle>{{ formModalTitle }}</CModalTitle>
+    </CModalHeader>
+    <CModalBody>
+      <CForm @submit.prevent="submitForm">
+        <div class="row g-3">
+          <template v-if="!isPublishedEdit">
+            <div class="col-12">
+              <CFormLabel for="title">Título</CFormLabel>
               <CFormInput
-                id="starts_at"
-                v-model="form.starts_at"
-                type="date"
+                id="title"
+                v-model="form.title"
+                maxlength="200"
+                placeholder="Ej. Suspensión de clases por feriado"
                 required
-                :disabled="isPublishedEdit"
               />
-              <p v-if="!isPublishedEdit" class="text-body-secondary small mb-0 mt-1">
-                Para publicar, la fecha de inicio debe ser hoy.
-              </p>
             </div>
 
-            <div class="col-md-6">
-              <CFormLabel for="ends_at">Fecha de fin</CFormLabel>
+            <div class="col-12">
+              <CFormLabel for="flyer">Afiche / flyer (opcional)</CFormLabel>
+              <p class="text-body-secondary small mb-2">
+                Si adjunta una imagen, el texto es opcional. Sin imagen, el contenido es obligatorio.
+              </p>
               <CFormInput
-                id="ends_at"
-                v-model="form.ends_at"
-                type="date"
-                required
-                :min="isPublishedEdit ? today() : null"
+                id="flyer"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                @change="onImageChange"
               />
-              <p v-if="isPublishedEdit" class="text-body-secondary small mb-0 mt-1">
-                Mínimo hoy ({{ today() }}). Puede ampliarla a más días si lo necesita.
-              </p>
-            </div>
-
-            <div v-if="isInstitutional && !isPublishedEdit" class="col-12">
-              <div class="alert alert-info mb-0 py-2 small">
-                <i class="fas fa-info-circle me-1"></i>
-                Comunicado <strong>institucional</strong>: se muestra a estudiantes (y padres con esa cuenta)
-                y queda en lectura para docentes. Push solo a estudiantes.
+              <div v-if="imagePreview || (existingImageUrl && !removeImage)" class="flyer-preview mt-2">
+                <img :src="imagePreview || existingImageUrl" alt="Vista previa del afiche" />
+                <CButton size="sm" color="danger" variant="outline" class="mt-2" type="button" @click="clearImage">
+                  Quitar imagen
+                </CButton>
               </div>
             </div>
 
-            <div v-else-if="!isInstitutional && !isPublishedEdit" class="col-12">
-              <div class="alert alert-info mb-3 py-2 small">
-                <i class="fas fa-info-circle me-1"></i>
-                Comunicado de <strong>aula</strong>: se muestra a los alumnos de las aulas seleccionadas
-                al entrar al curso, dentro de la vigencia.
-              </div>
-              <CFormLabel>Aulas destinatarias</CFormLabel>
-              <div v-if="loadingGrades" class="module-loading">
-                <i class="fas fa-spinner fa-spin"></i> Cargando grados...
-              </div>
-              <EmptyState
-                v-else-if="!gradeOptions.length"
-                icon="🏫"
-                title="Sin grados disponibles"
-                hint="No tiene grados asignados para publicar comunicados."
-                compact
+            <div class="col-12">
+              <CFormLabel for="body">
+                Contenido
+                <span class="text-body-secondary fw-normal">
+                  {{ hasImageContent ? '(opcional si hay afiche)' : '(obligatorio sin afiche)' }}
+                </span>
+              </CFormLabel>
+              <RichTextEditor
+                :key="editorKey"
+                v-model="form.body"
+                placeholder="Redacte el comunicado oficial..."
               />
-              <div v-else class="grade-check-grid">
-                <label v-for="grade in gradeOptions" :key="grade.id">
-                  <input
-                    v-model="form.grade_section_ids"
-                    type="checkbox"
-                    class="form-check-input m-0"
-                    :value="grade.id"
-                  />
-                  <span>{{ grade.label }}</span>
-                </label>
-              </div>
+            </div>
+          </template>
+
+          <div v-else class="col-12">
+            <div class="alert alert-warning mb-0 py-2 small">
+              Comunicado publicado: solo puede <strong>recortar o ampliar la fecha de fin</strong>
+              (mínimo hoy). La fecha de inicio no se modifica.
+            </div>
+            <p class="fw-semibold mt-3 mb-1">{{ form.title }}</p>
+          </div>
+
+          <div class="col-md-6">
+            <CFormLabel for="starts_at">Fecha de inicio</CFormLabel>
+            <CFormInput
+              id="starts_at"
+              v-model="form.starts_at"
+              type="date"
+              required
+              :disabled="isPublishedEdit"
+            />
+            <p v-if="!isPublishedEdit" class="text-body-secondary small mb-0 mt-1">
+              Para publicar, la fecha de inicio debe ser hoy.
+            </p>
+          </div>
+
+          <div class="col-md-6">
+            <CFormLabel for="ends_at">Fecha de fin</CFormLabel>
+            <CFormInput
+              id="ends_at"
+              v-model="form.ends_at"
+              type="date"
+              required
+              :min="isPublishedEdit ? today() : null"
+            />
+            <p v-if="isPublishedEdit" class="text-body-secondary small mb-0 mt-1">
+              Mínimo hoy ({{ today() }}). Puede ampliarla a más días si lo necesita.
+            </p>
+          </div>
+
+          <div v-if="isInstitutional && !isPublishedEdit" class="col-12">
+            <div class="alert alert-info mb-0 py-2 small">
+              <i class="fas fa-info-circle me-1"></i>
+              Comunicado <strong>institucional</strong>: se muestra a estudiantes (y padres con esa cuenta)
+              y queda en lectura para docentes. Push solo a estudiantes.
             </div>
           </div>
-        </CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" :disabled="saving" @click="closeFormModal">Cancelar</CButton>
-        <CButton
-          v-if="!isPublishedEdit"
-          color="secondary"
-          variant="outline"
-          :disabled="saving || !canSubmitDraft"
-          @click="saveDraft"
-        >
-          {{ editingId ? 'Actualizar borrador' : 'Guardar borrador' }}
-        </CButton>
-        <CButton
-          color="primary"
-          :disabled="saving || (isPublishedEdit ? !canSubmitVigency : !canSubmitPublish)"
-          @click="isPublishedEdit ? saveVigency() : submitForm()"
-        >
-          {{
-            saving
-              ? 'Guardando...'
-              : isPublishedEdit
-                ? 'Guardar vigencia'
-                : 'Publicar'
-          }}
-        </CButton>
-      </CModalFooter>
-    </CModal>
 
-    <AnnouncementAvisoOverlay
-      :visible="detailVisible"
-      :item="selectedItem"
-      :index="0"
-      :total="1"
-      kind-label="Vista previa"
-      confirm-label="Cerrar"
-      :show-dismiss="false"
-      @confirm="detailVisible = false"
-      @dismiss="detailVisible = false"
-    />
-  </div>
+          <div v-else-if="!isInstitutional && !isPublishedEdit" class="col-12">
+            <div class="alert alert-info mb-3 py-2 small">
+              <i class="fas fa-info-circle me-1"></i>
+              Comunicado de <strong>aula</strong>: se muestra a los alumnos de las aulas seleccionadas
+              al entrar al curso, dentro de la vigencia.
+            </div>
+            <CFormLabel>Aulas destinatarias</CFormLabel>
+            <div v-if="loadingGrades" class="text-body-secondary small py-2">
+              <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+              Cargando grados...
+            </div>
+            <div v-else-if="!gradeOptions.length" class="text-body-secondary small py-2">
+              No tiene grados asignados para publicar comunicados.
+            </div>
+            <div v-else class="grade-check-grid">
+              <label v-for="grade in gradeOptions" :key="grade.id">
+                <input
+                  v-model="form.grade_section_ids"
+                  type="checkbox"
+                  class="form-check-input m-0"
+                  :value="grade.id"
+                />
+                <span>{{ grade.label }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </CForm>
+    </CModalBody>
+    <CModalFooter>
+      <CButton color="secondary" :disabled="saving" @click="closeFormModal">Cancelar</CButton>
+      <CButton
+        v-if="!isPublishedEdit"
+        color="secondary"
+        variant="outline"
+        :disabled="saving || !canSubmitDraft"
+        @click="saveDraft"
+      >
+        {{ editingId ? 'Actualizar borrador' : 'Guardar borrador' }}
+      </CButton>
+      <CButton
+        color="primary"
+        :disabled="saving || (isPublishedEdit ? !canSubmitVigency : !canSubmitPublish)"
+        @click="isPublishedEdit ? saveVigency() : submitForm()"
+      >
+        {{
+          saving
+            ? 'Guardando...'
+            : isPublishedEdit
+              ? 'Guardar vigencia'
+              : 'Publicar'
+        }}
+      </CButton>
+    </CModalFooter>
+  </CModal>
+
+  <AnnouncementAvisoOverlay
+    :visible="detailVisible"
+    :item="selectedItem"
+    :index="0"
+    :total="1"
+    kind-label="Vista previa"
+    confirm-label="Cerrar"
+    :show-dismiss="false"
+    @confirm="detailVisible = false"
+    @dismiss="detailVisible = false"
+  />
 </template>
 
 <script setup>
@@ -290,6 +342,8 @@ import CryptoJS from 'crypto-js'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
 import RichTextEditor from '@/components/forms/RichTextEditor.vue'
 import AnnouncementAvisoOverlay from '@/components/announcements/AnnouncementAvisoOverlay.vue'
+import TablePagination from '@/components/academic/TablePagination.vue'
+import { useClientPagination } from '@/composables/useClientPagination'
 import { toastError, toastSuccess, toastWarning } from '@/utils/alerts'
 
 const router = useRouter()
@@ -341,6 +395,13 @@ const imageFile = ref(null)
 const imagePreview = ref('')
 const existingImageUrl = ref('')
 const removeImage = ref(false)
+
+const {
+  page,
+  pageSize,
+  total,
+  pagedItems,
+} = useClientPagination(publishedList, 15)
 
 const form = ref({
   title: '',
@@ -640,5 +701,12 @@ onBeforeUnmount(revokePreview)
   border: 1px solid var(--cui-border-color, #e2e8f0);
   object-fit: contain;
   background: #0f172a;
+}
+
+.announcement-thumb {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  flex-shrink: 0;
 }
 </style>

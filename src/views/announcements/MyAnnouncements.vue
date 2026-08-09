@@ -63,62 +63,84 @@
                   </CTableRow>
                 </CTableBody>
 
-    <div v-else class="inbox-list">
-      <article
-        v-for="item in announcements"
-        :key="item.id"
-        class="inbox-item"
-        :class="{ 'inbox-item--unread': !item.is_read }"
-        @click="openAnnouncement(item)"
-      >
-        <div class="inbox-item__media">
-          <img
-            v-if="item.image_url"
-            :src="item.image_url"
-            :alt="item.title"
-            class="inbox-item__thumb"
-          />
-          <div v-else class="inbox-item__icon">
-            <i class="fas fa-bullhorn"></i>
-          </div>
-        </div>
-        <div class="inbox-item__content">
-          <div class="inbox-item__title-row">
-            <span class="inbox-item__title">{{ item.title }}</span>
-            <span v-if="item.is_general" class="scope-badge">Institucional</span>
-            <span v-else class="scope-badge scope-badge--aula">Aula</span>
-          </div>
-          <div class="inbox-item__excerpt">{{ item.excerpt }}</div>
-          <div class="inbox-item__meta">
-            <i class="far fa-calendar-alt me-1"></i>
-            {{ formatRange(item.starts_at, item.ends_at) }}
-            <span v-if="item.publisher_name"> · {{ item.publisher_name }}</span>
-          </div>
-        </div>
-        <span v-if="!item.is_read" class="inbox-item__dot" aria-hidden="true"></span>
-      </article>
-    </div>
+                <CTableBody v-else>
+                  <CTableRow
+                    v-for="item in announcements"
+                    :key="item.id"
+                    :class="{ 'announcement-row--unread': !item.is_read }"
+                  >
+                    <CTableDataCell class="text-center">
+                      <div class="d-inline-flex align-items-center gap-2 justify-content-center">
+                        <img
+                          v-if="item.image_url"
+                          :src="item.image_url"
+                          alt=""
+                          class="announcement-thumb rounded border"
+                        />
+                        <span class="fw-semibold">{{ item.title }}</span>
+                      </div>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span v-if="item.is_general" class="scope-badge">Institucional</span>
+                      <span v-else class="scope-badge scope-badge--aula">Aula</span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span class="priority-badge" :class="`priority-badge--${item.priority || 'normal'}`">
+                        {{ priorityLabel(item.priority) }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small text-body-secondary">
+                      {{ formatRange(item.starts_at, item.ends_at) }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      {{ item.publisher_name || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span
+                        class="status-badge"
+                        :class="item.is_read ? 'status-badge--borrador' : 'status-badge--publicado'"
+                      >
+                        {{ item.is_read ? 'Leído' : 'No leído' }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <CButton
+                        size="sm"
+                        color="primary"
+                        variant="outline"
+                        :aria-label="`Ver comunicado ${item.title}`"
+                        @click="openAnnouncement(item)"
+                      >
+                        <i class="fas fa-eye" aria-hidden="true"></i>
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+              </CTable>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
 
-    <AnnouncementAvisoOverlay
-      :visible="detailVisible"
-      :item="selectedItem"
-      :index="0"
-      :total="1"
-      kind-label="Aviso oficial"
-      confirm-label="Cerrar"
-      :show-dismiss="false"
-      @confirm="closeDetail"
-      @dismiss="closeDetail"
-    />
-  </div>
+  <AnnouncementAvisoOverlay
+    :visible="detailVisible"
+    :item="selectedItem"
+    :index="0"
+    :total="1"
+    kind-label="Aviso oficial"
+    confirm-label="Cerrar"
+    :show-dismiss="false"
+    @confirm="closeDetail"
+    @dismiss="closeDetail"
+  />
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
-import ModulePageHeader from '@/components/academic/ModulePageHeader.vue'
-import EmptyState from '@/components/academic/EmptyState.vue'
 import AnnouncementAvisoOverlay from '@/components/announcements/AnnouncementAvisoOverlay.vue'
 
 const route = useRoute()
@@ -128,6 +150,14 @@ const loading = ref(true)
 const loadError = ref('')
 const detailVisible = ref(false)
 const selectedItem = ref(null)
+
+const priorityLabels = {
+  normal: 'Normal',
+  importante: 'Importante',
+  urgente: 'Urgente',
+}
+
+const priorityLabel = (value) => priorityLabels[value] || value || 'Normal'
 
 const formatRange = (start, end) => {
   if (!start && !end) return '—'
@@ -213,26 +243,14 @@ onMounted(async () => {
   color: #9a3412;
 }
 
-.inbox-item__media {
-  flex-shrink: 0;
+.announcement-row--unread {
+  background: var(--rp-surface-brand-soft, rgba(13, 110, 253, 0.04));
 }
 
-.inbox-item__thumb {
-  width: 52px;
-  height: 52px;
-  border-radius: 0.65rem;
+.announcement-thumb {
+  width: 36px;
+  height: 36px;
   object-fit: cover;
-  border: 1px solid var(--cui-border-color, #e2e8f0);
-  background: #0f172a;
-}
-
-.inbox-item__icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 0.65rem;
-  display: grid;
-  place-items: center;
-  background: var(--rp-surface-brand-soft, #e0f2fe);
-  color: var(--rp-text-brand, #0e7490);
+  flex-shrink: 0;
 }
 </style>
