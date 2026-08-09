@@ -15,7 +15,9 @@ const isFirebaseConfigured = () => (
   && Boolean(firebaseVapidKey)
 )
 
-const getStudentRole = () => {
+const PUSH_ENABLED_ROLES = ['ESTUDIANTE', 'SECRETARIA']
+
+const getUserRole = () => {
   const rawUser = localStorage.getItem('user')
   if (!rawUser) return null
 
@@ -25,6 +27,8 @@ const getStudentRole = () => {
     return null
   }
 }
+
+const canRegisterPush = () => PUSH_ENABLED_ROLES.includes(getUserRole())
 
 const registerMessagingServiceWorker = async () => {
   if (!('serviceWorker' in navigator)) {
@@ -81,8 +85,8 @@ const showForegroundNotification = (payload) => {
 }
 
 export const registerStudentPushNotifications = async () => {
-  if (getStudentRole() !== 'ESTUDIANTE') {
-    return { registered: false, reason: 'not_student' }
+  if (!canRegisterPush()) {
+    return { registered: false, reason: 'role_not_allowed' }
   }
 
   if (!('Notification' in window)) {

@@ -37,14 +37,15 @@ const props = defineProps({
   cta: { type: String, default: '' },
   to: { type: String, default: '' },
   icon: { type: String, required: true },
-  /** slate | blue | indigo | amber | ok | alert */
+  /** slate | blue | brand | indigo | amber | ok | alert */
   tone: { type: String, default: 'slate' },
 })
 
 const toneClass = computed(() => {
   const map = {
     slate: 'home-kpi--slate',
-    blue: 'home-kpi--slate',
+    blue: 'home-kpi--brand',
+    brand: 'home-kpi--brand',
     indigo: 'home-kpi--indigo',
     amber: 'home-kpi--amber',
     ok: 'home-kpi--ok',
@@ -56,7 +57,8 @@ const toneClass = computed(() => {
 const iconToneClass = computed(() => {
   const map = {
     slate: 'home-kpi__icon--slate',
-    blue: 'home-kpi__icon--blue',
+    blue: 'home-kpi__icon--brand',
+    brand: 'home-kpi__icon--brand',
     indigo: 'home-kpi__icon--indigo',
     amber: 'home-kpi__icon--amber',
     ok: 'home-kpi__icon--ok',

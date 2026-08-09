@@ -10,12 +10,12 @@
     <button
       v-if="showObservationEye"
       type="button"
-      class="tramite-status-badge__eye"
+      class="tramite-status-badge__obs"
       title="Ver observación"
-      aria-label="Ver observación"
+      aria-label="Ver observación del trámite"
       @click.stop="$emit('view-observation')"
     >
-      <i class="fas fa-eye" aria-hidden="true"></i>
+      <i class="fas fa-comment-dots" aria-hidden="true"></i>
     </button>
   </CBadge>
 </template>
@@ -49,6 +49,7 @@ const color = computed(() => {
   if (s.includes('PENDIENTE')) return 'warning'
   if (s.includes('COMPLETADO') || s.includes('APROBADO EXITOSAMENTE')) return 'success'
   if (s.includes('DERIVADO')) return 'info'
+  if (s.includes('NO ADMITIDO') || s.includes('DENEGADO')) return 'dark'
   if (s.includes('OBSERVADO')) return 'danger'
   if (s.includes('REVISADO POR MESA')) return 'primary'
   if (s.includes('MESA')) return 'primary'
@@ -78,7 +79,7 @@ const shortLabel = computed(() => {
   white-space: nowrap;
 }
 
-.tramite-status-badge__eye {
+.tramite-status-badge__obs {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -89,25 +90,25 @@ const shortLabel = computed(() => {
   padding: 0;
   border: 0;
   border-radius: 999px;
-  background: #ffc107;
-  color: #1a1a1a;
+  background: rgba(255, 255, 255, 0.92);
+  color: #b02a37;
   cursor: pointer;
   line-height: 1;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12);
   transition: background-color 0.15s ease, transform 0.15s ease;
 }
 
-.tramite-status-badge__eye:hover {
-  background: #ffca2c;
+.tramite-status-badge__obs:hover {
+  background: #fff;
   transform: scale(1.06);
 }
 
-.tramite-status-badge__eye:focus-visible {
+.tramite-status-badge__obs:focus-visible {
   outline: 2px solid #fff;
   outline-offset: 1px;
 }
 
-.tramite-status-badge__eye i {
+.tramite-status-badge__obs i {
   font-size: 0.72rem;
 }
 </style>

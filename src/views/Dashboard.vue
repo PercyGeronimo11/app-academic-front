@@ -24,6 +24,7 @@
       <HomeAuxiliar v-else-if="home.role === 'AUXILIAR'" :data="home" />
       <HomeProfesor v-else-if="home.role === 'PROFESOR'" :data="home" />
       <HomeEstudiante v-else-if="home.role === 'ESTUDIANTE'" :data="home" />
+      <HomeSecretaria v-else-if="home.role === 'SECRETARIA'" :data="home" />
       <HomePlaceholder v-else :data="home" />
     </template>
   </div>
@@ -36,6 +37,7 @@ import HomeDireccion from '@/components/home/HomeDireccion.vue'
 import HomeAuxiliar from '@/components/home/HomeAuxiliar.vue'
 import HomeProfesor from '@/components/home/HomeProfesor.vue'
 import HomeEstudiante from '@/components/home/HomeEstudiante.vue'
+import HomeSecretaria from '@/components/home/HomeSecretaria.vue'
 import HomePlaceholder from '@/components/home/HomePlaceholder.vue'
 
 const loading = ref(true)
@@ -47,18 +49,18 @@ const ROLE_TITLES = {
   AUXILIAR: 'Dashboard Auxiliar',
   PROFESOR: 'Área principal',
   ESTUDIANTE: 'Área principal',
-  SECRETARIA: 'Dashboard',
+  SECRETARIA: 'Dashboard Mesa de partes',
 }
 
 const title = computed(() => ROLE_TITLES[home.value?.role] || 'Dashboard')
 
 const subtitle = computed(() => {
   const role = home.value?.role
-  if (role === 'DIRECCION') return 'Pulso del colegio: riesgo, asistencia del periodo y pendientes.'
-  if (role === 'AUXILIAR') return 'Registro de asistencia del día.'
-  if (role === 'PROFESOR') return 'Tus cursos y alumnos que requieren atención.'
-  if (role === 'ESTUDIANTE') return 'Tu situación académica, asistencia y novedades.'
-  if (role === 'SECRETARIA') return home.value?.message || 'En preparación.'
+  if (role === 'DIRECCION') return 'Pulso del colegio: riesgo, asistencia, trámites y comunicados.'
+  if (role === 'AUXILIAR') return 'Asistencia del día, seguimiento y trámites por completar.'
+  if (role === 'PROFESOR') return 'Tus cursos, alumnos en riesgo y comunicados.'
+  if (role === 'ESTUDIANTE') return 'Tu riesgo, asistencia, libreta, trámites y novedades.'
+  if (role === 'SECRETARIA') return 'Bandeja de trámites, observados y avisos de mesa de partes.'
   return ''
 })
 

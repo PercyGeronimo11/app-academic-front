@@ -10,12 +10,11 @@
       <CTable responsive hover class="align-middle mb-0">
         <CTableHead>
           <CTableRow>
-            <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
+            <CTableHeaderCell class="text-center">N° trámite</CTableHeaderCell>
             <CTableHeaderCell class="text-center">Fecha registro</CTableHeaderCell>
             <CTableHeaderCell class="text-center">Alumno</CTableHeaderCell>
             <CTableHeaderCell class="text-center">DNI</CTableHeaderCell>
             <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
             <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
             <CTableHeaderCell class="text-center">Seguimiento</CTableHeaderCell>
             <CTableHeaderCell class="text-center">Acción</CTableHeaderCell>
@@ -23,7 +22,7 @@
         </CTableHead>
         <CTableBody v-if="!items.length">
           <CTableRow>
-            <CTableDataCell colspan="9" class="tls-empty-cell">
+            <CTableDataCell colspan="8" class="tls-empty-cell">
               <div class="tls-empty">
                 <span class="tls-empty__icon" aria-hidden="true">📭</span>
                 <p class="mb-1 fw-semibold">No hay trámites registrados</p>
@@ -35,16 +34,15 @@
           </CTableRow>
         </CTableBody>
         <CTableBody v-else>
-          <template v-for="(item, index) in items" :key="item.id">
+          <template v-for="item in items" :key="item.id">
             <CTableRow>
-              <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
-                {{ index + 1 }}
+              <CTableHeaderCell scope="row" class="text-center text-nowrap fw-semibold">
+                {{ item.request_number || '—' }}
               </CTableHeaderCell>
               <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
               <CTableDataCell class="text-center fw-medium">{{ item.names }}</CTableDataCell>
               <CTableDataCell class="text-center">{{ item.dni }}</CTableDataCell>
               <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
-              <CTableDataCell class="text-start small">{{ item.reason }}</CTableDataCell>
               <CTableDataCell class="text-center">
                 <TramiteStatusBadge :status="item.status" />
               </CTableDataCell>
@@ -117,11 +115,11 @@ const load = async () => {
       const [date] = formatDatabaseDate(item.created_at).split(' ');
       return {
         id: item.id,
+        request_number: item.request_number || '',
         names: item.names,
         identity_document: item.identity_document,
         dni: item.identity_document,
         subject: item.subject,
-        reason: item.reason,
         date,
         status: item.current_status,
         status_history: mapHistory(item.details),
@@ -135,7 +133,9 @@ const load = async () => {
 
 const openHistory = (item) => {
   historySteps.value = item.status_history || [];
-  historyContextLabel.value = [item.names, item.subject].filter(Boolean).join(' · ');
+  historyContextLabel.value = [item.request_number, item.names, item.subject]
+    .filter(Boolean)
+    .join(' · ');
   historyModalVisible.value = true;
 };
 

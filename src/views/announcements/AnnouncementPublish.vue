@@ -1,236 +1,277 @@
 <template>
-  <div class="module-page announcements-publish">
-    <ModulePageHeader
-      icon="fas fa-bullhorn"
-      title="Comunicados oficiales"
-      :subtitle="headerSubtitle"
-    >
-      <template #actions>
-        <CButton color="info" class="text-white" @click="openCreateModal">
-          <i class="fas fa-plus me-2"></i>Nuevo comunicado
-        </CButton>
-      </template>
-    </ModulePageHeader>
-
-    <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
-    <div v-if="successMessage" class="module-alert module-alert--success">{{ successMessage }}</div>
-
-    <div v-if="loadingList" class="module-loading">
-      <i class="fas fa-spinner fa-spin"></i> Cargando...
-    </div>
-
-    <EmptyState
-      v-else-if="!publishedList.length"
-      icon="📭"
-      title="Sin comunicados registrados"
-      hint="Use el botón «Nuevo comunicado» para crear el primero."
-      compact
-    />
-
-    <div v-else class="modern-table-shell">
-      <CTable hover responsive class="mb-0">
-        <CTableHead class="modern-table-header">
-          <CTableRow>
-            <CTableHeaderCell>Vigencia</CTableHeaderCell>
-            <CTableHeaderCell>Título</CTableHeaderCell>
-            <CTableHeaderCell>Alcance</CTableHeaderCell>
-            <CTableHeaderCell>Estado</CTableHeaderCell>
-            <CTableHeaderCell>Prioridad</CTableHeaderCell>
-            <CTableHeaderCell class="text-center">Acción</CTableHeaderCell>
-          </CTableRow>
-        </CTableHead>
-        <CTableBody>
-          <CTableRow v-for="item in publishedList" :key="item.id">
-            <CTableDataCell class="small">
-              <div>{{ formatRange(item.starts_at, item.ends_at) }}</div>
-              <span
-                v-if="item.status === 'publicado'"
-                class="status-badge"
-                :class="item.is_active ? 'status-badge--publicado' : 'status-badge--borrador'"
-              >
-                {{ item.is_active ? 'Vigente' : 'Fuera de vigencia' }}
-              </span>
-            </CTableDataCell>
-            <CTableDataCell class="fw-semibold">{{ item.title }}</CTableDataCell>
-            <CTableDataCell class="small text-body-secondary">
-              {{ item.is_general ? 'General' : item.target_labels }}
-            </CTableDataCell>
-            <CTableDataCell>
-              <span
-                class="status-badge"
-                :class="item.status === 'publicado' ? 'status-badge--publicado' : 'status-badge--borrador'"
-              >
-                {{ item.status === 'publicado' ? 'Publicado' : 'Borrador' }}
-              </span>
-            </CTableDataCell>
-            <CTableDataCell>
-              <span class="priority-badge" :class="`priority-badge--${item.priority}`">
-                {{ priorityLabel(item.priority) }}
-              </span>
-            </CTableDataCell>
-            <CTableDataCell class="text-center">
-              <CButton
-                v-if="item.status === 'borrador'"
-                size="sm"
-                color="warning"
-                class="text-white me-1"
-                @click="openEditModal(item)"
-              >
-                Editar
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+              <div>
+                <h4 class="fw-bold text-primary mb-2 d-flex align-items-center">
+                  <i class="fas fa-bullhorn me-2"></i>
+                  Comunicados oficiales
+                </h4>
+                <p class="tls-intro-text mb-0 text-body-secondary small">
+                  {{ headerSubtitle }}
+                </p>
+              </div>
+              <CButton color="primary" class="px-4" @click="openCreateModal">
+                <i class="fas fa-plus me-2" aria-hidden="true"></i>
+                Nuevo comunicado
               </CButton>
-              <CButton
-                v-if="item.status === 'borrador'"
-                size="sm"
-                color="primary"
-                class="me-1"
-                @click="publishDraft(item)"
-              >
-                Publicar
-              </CButton>
-              <CButton size="sm" color="info" variant="outline" @click="openDetail(item)">
-                Ver
-              </CButton>
-            </CTableDataCell>
-          </CTableRow>
-        </CTableBody>
-      </CTable>
-    </div>
-
-    <!-- Modal crear / editar -->
-    <CModal :visible="formModalVisible" size="lg" alignment="center" @close="closeFormModal">
-      <CModalHeader>
-        <CModalTitle>{{ editingId ? 'Editar borrador' : 'Nuevo comunicado' }}</CModalTitle>
-      </CModalHeader>
-      <CModalBody>
-        <CForm @submit.prevent="submitForm">
-          <div class="row g-3">
-            <div class="col-12">
-              <CFormLabel for="title">Título</CFormLabel>
-              <CFormInput
-                id="title"
-                v-model="form.title"
-                maxlength="200"
-                placeholder="Ej. Suspensión de clases por feriado"
-                required
-              />
             </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-            <div class="col-12">
-              <CFormLabel for="body">Contenido</CFormLabel>
-              <RichTextEditor
-                :key="editorKey"
-                v-model="form.body"
-                placeholder="Redacte el comunicado oficial..."
-              />
+    <CRow v-if="loadError || successMessage" class="mb-3">
+      <CCol>
+        <CAlert v-if="loadError" color="danger" class="mb-0">
+          {{ loadError }}
+        </CAlert>
+        <CAlert v-else-if="successMessage" color="success" class="mb-0">
+          {{ successMessage }}
+        </CAlert>
+      </CCol>
+    </CRow>
+
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="modern-table-shell">
+              <CTable responsive hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header text-center">
+                  <CTableRow>
+                    <CTableHeaderCell class="text-center">Vigencia</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Título</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Alcance</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Prioridad</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Acciones</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
+
+                <CTableBody v-if="loadingList">
+                  <CTableRow>
+                    <CTableDataCell colspan="6" class="table-empty-cell text-center py-4 text-body-secondary">
+                      <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+                      Cargando comunicados...
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+
+                <CTableBody v-else-if="!publishedList.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="6" class="table-empty-cell">
+                      <div class="table-empty-unified">
+                        <span class="table-empty-unified__icon" aria-hidden="true">📭</span>
+                        <p class="table-empty-unified__title">Sin comunicados registrados</p>
+                        <p class="table-empty-unified__hint">
+                          Use <strong>Nuevo comunicado</strong> para crear el primero.
+                        </p>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+
+                <CTableBody v-else>
+                  <CTableRow v-for="item in publishedList" :key="item.id">
+                    <CTableDataCell class="text-center small">
+                      <div>{{ formatRange(item.starts_at, item.ends_at) }}</div>
+                      <span
+                        v-if="item.status === 'publicado'"
+                        class="status-badge"
+                        :class="item.is_active ? 'status-badge--publicado' : 'status-badge--borrador'"
+                      >
+                        {{ item.is_active ? 'Vigente' : 'Fuera de vigencia' }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center fw-semibold">{{ item.title }}</CTableDataCell>
+                    <CTableDataCell class="text-center small text-body-secondary">
+                      {{ item.is_general ? 'General' : item.target_labels }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span
+                        class="status-badge"
+                        :class="item.status === 'publicado' ? 'status-badge--publicado' : 'status-badge--borrador'"
+                      >
+                        {{ item.status === 'publicado' ? 'Publicado' : 'Borrador' }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span class="priority-badge" :class="`priority-badge--${item.priority}`">
+                        {{ priorityLabel(item.priority) }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center text-nowrap">
+                      <div class="d-inline-flex gap-1 justify-content-center align-items-center flex-nowrap">
+                        <CButton
+                          v-if="item.status === 'borrador'"
+                          size="sm"
+                          color="warning"
+                          @click="openEditModal(item)"
+                        >
+                          Editar
+                        </CButton>
+                        <CButton
+                          v-if="item.status === 'borrador'"
+                          size="sm"
+                          color="success"
+                          @click="publishDraft(item)"
+                        >
+                          Publicar
+                        </CButton>
+                        <CButton
+                          size="sm"
+                          color="primary"
+                          variant="outline"
+                          :aria-label="`Ver comunicado ${item.title}`"
+                          @click="openDetail(item)"
+                        >
+                          <i class="fas fa-eye" aria-hidden="true"></i>
+                        </CButton>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+              </CTable>
             </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
 
-            <div class="col-md-4">
-              <CFormLabel for="priority">Prioridad</CFormLabel>
-              <CFormSelect id="priority" v-model="form.priority">
-                <option value="normal">Normal</option>
-                <option value="importante">Importante</option>
-                <option value="urgente">Urgente</option>
-              </CFormSelect>
+  <!-- Modal crear / editar -->
+  <CModal :visible="formModalVisible" size="lg" alignment="center" @close="closeFormModal">
+    <CModalHeader>
+      <CModalTitle>{{ editingId ? 'Editar borrador' : 'Nuevo comunicado' }}</CModalTitle>
+    </CModalHeader>
+    <CModalBody>
+      <CForm @submit.prevent="submitForm">
+        <div class="row g-3">
+          <div class="col-12">
+            <CFormLabel for="title">Título</CFormLabel>
+            <CFormInput
+              id="title"
+              v-model="form.title"
+              maxlength="200"
+              placeholder="Ej. Suspensión de clases por feriado"
+              required
+            />
+          </div>
+
+          <div class="col-12">
+            <CFormLabel for="body">Contenido</CFormLabel>
+            <RichTextEditor
+              :key="editorKey"
+              v-model="form.body"
+              placeholder="Redacte el comunicado oficial..."
+            />
+          </div>
+
+          <div class="col-md-4">
+            <CFormLabel for="priority">Prioridad</CFormLabel>
+            <CFormSelect id="priority" v-model="form.priority">
+              <option value="normal">Normal</option>
+              <option value="importante">Importante</option>
+              <option value="urgente">Urgente</option>
+            </CFormSelect>
+          </div>
+
+          <div class="col-md-4">
+            <CFormLabel for="starts_at">Fecha de inicio</CFormLabel>
+            <CFormInput id="starts_at" v-model="form.starts_at" type="date" required />
+          </div>
+
+          <div class="col-md-4">
+            <CFormLabel for="ends_at">Fecha de fin</CFormLabel>
+            <CFormInput id="ends_at" v-model="form.ends_at" type="date" required />
+          </div>
+
+          <div v-if="isDirection" class="col-12">
+            <CAlert color="info" class="mb-0 py-2 small">
+              <i class="fas fa-info-circle me-1"></i>
+              Los comunicados de dirección son <strong>generales</strong>: se muestran a todos los usuarios
+              al iniciar sesión mientras estén vigentes.
+            </CAlert>
+          </div>
+
+          <div v-else class="col-12">
+            <CAlert color="info" class="mb-3 py-2 small">
+              <i class="fas fa-info-circle me-1"></i>
+              Estos comunicados se muestran a los alumnos de las aulas seleccionadas
+              <strong> al entrar al curso</strong> de este docente, solo si la fecha actual está dentro de la vigencia.
+            </CAlert>
+            <CFormLabel>Aulas destinatarias</CFormLabel>
+            <div v-if="loadingGrades" class="text-body-secondary small py-2">
+              <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+              Cargando grados...
             </div>
-
-            <div class="col-md-4">
-              <CFormLabel for="starts_at">Fecha de inicio</CFormLabel>
-              <CFormInput id="starts_at" v-model="form.starts_at" type="date" required />
+            <div v-else-if="!gradeOptions.length" class="text-body-secondary small py-2">
+              No tiene grados asignados para publicar comunicados.
             </div>
-
-            <div class="col-md-4">
-              <CFormLabel for="ends_at">Fecha de fin</CFormLabel>
-              <CFormInput id="ends_at" v-model="form.ends_at" type="date" required />
-            </div>
-
-            <div v-if="isDirection" class="col-12">
-              <div class="alert alert-info mb-0 py-2 small">
-                <i class="fas fa-info-circle me-1"></i>
-                Los comunicados de dirección son <strong>generales</strong>: se muestran a todos los usuarios
-                al iniciar sesión mientras estén vigentes.
-              </div>
-            </div>
-
-            <div v-else class="col-12">
-              <div class="alert alert-info mb-3 py-2 small">
-                <i class="fas fa-info-circle me-1"></i>
-                Estos comunicados se muestran a los alumnos de las aulas seleccionadas
-                <strong> al entrar al curso</strong> de este docente, solo si la fecha actual está dentro de la vigencia.
-              </div>
-              <CFormLabel>Aulas destinatarias</CFormLabel>
-              <div v-if="loadingGrades" class="module-loading">
-                <i class="fas fa-spinner fa-spin"></i> Cargando grados...
-              </div>
-              <EmptyState
-                v-else-if="!gradeOptions.length"
-                icon="🏫"
-                title="Sin grados disponibles"
-                hint="No tiene grados asignados para publicar comunicados."
-                compact
-              />
-              <div v-else class="grade-check-grid">
-                <label v-for="grade in gradeOptions" :key="grade.id">
-                  <input
-                    v-model="form.grade_section_ids"
-                    type="checkbox"
-                    class="form-check-input m-0"
-                    :value="grade.id"
-                  />
-                  <span>{{ grade.label }}</span>
-                </label>
-              </div>
+            <div v-else class="grade-check-grid">
+              <label v-for="grade in gradeOptions" :key="grade.id">
+                <input
+                  v-model="form.grade_section_ids"
+                  type="checkbox"
+                  class="form-check-input m-0"
+                  :value="grade.id"
+                />
+                <span>{{ grade.label }}</span>
+              </label>
             </div>
           </div>
-        </CForm>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" :disabled="saving" @click="closeFormModal">Cancelar</CButton>
-        <CButton
-          color="secondary"
-          variant="outline"
-          :disabled="saving || !canSubmit"
-          @click="saveDraft"
-        >
-          {{ editingId ? 'Actualizar borrador' : 'Guardar borrador' }}
-        </CButton>
-        <CButton color="primary" :disabled="saving || !canSubmit" @click="submitForm">
-          {{ saving ? 'Guardando...' : 'Publicar' }}
-        </CButton>
-      </CModalFooter>
-    </CModal>
-
-    <!-- Modal detalle -->
-    <CModal :visible="detailVisible" size="lg" @close="detailVisible = false">
-      <CModalHeader>
-        <CModalTitle>{{ selectedItem?.title }}</CModalTitle>
-      </CModalHeader>
-      <CModalBody v-if="selectedItem">
-        <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
-          <span class="priority-badge" :class="`priority-badge--${selectedItem.priority}`">
-            {{ priorityLabel(selectedItem.priority) }}
-          </span>
-          <span class="text-body-secondary small">
-            {{ formatRange(selectedItem.starts_at, selectedItem.ends_at) }}
-          </span>
         </div>
-        <p class="text-body-secondary small mb-3">
-          <i class="fas fa-users me-1"></i>{{ selectedItem.target_labels }}
-        </p>
-        <div class="announcement-detail-body" v-html="selectedItem.body"></div>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" @click="detailVisible = false">Cerrar</CButton>
-      </CModalFooter>
-    </CModal>
-  </div>
+      </CForm>
+    </CModalBody>
+    <CModalFooter>
+      <CButton color="secondary" :disabled="saving" @click="closeFormModal">Cancelar</CButton>
+      <CButton
+        color="secondary"
+        variant="outline"
+        :disabled="saving || !canSubmit"
+        @click="saveDraft"
+      >
+        {{ editingId ? 'Actualizar borrador' : 'Guardar borrador' }}
+      </CButton>
+      <CButton color="primary" :disabled="saving || !canSubmit" @click="submitForm">
+        {{ saving ? 'Guardando...' : 'Publicar' }}
+      </CButton>
+    </CModalFooter>
+  </CModal>
+
+  <!-- Modal detalle -->
+  <CModal :visible="detailVisible" size="lg" alignment="center" @close="detailVisible = false">
+    <CModalHeader>
+      <CModalTitle>{{ selectedItem?.title }}</CModalTitle>
+    </CModalHeader>
+    <CModalBody v-if="selectedItem">
+      <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+        <span class="priority-badge" :class="`priority-badge--${selectedItem.priority}`">
+          {{ priorityLabel(selectedItem.priority) }}
+        </span>
+        <span class="text-body-secondary small">
+          {{ formatRange(selectedItem.starts_at, selectedItem.ends_at) }}
+        </span>
+      </div>
+      <p class="text-body-secondary small mb-3">
+        <i class="fas fa-users me-1"></i>{{ selectedItem.target_labels }}
+      </p>
+      <div class="announcement-detail-body" v-html="selectedItem.body"></div>
+    </CModalBody>
+    <CModalFooter>
+      <CButton color="secondary" @click="detailVisible = false">Cerrar</CButton>
+    </CModalFooter>
+  </CModal>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import CryptoJS from 'crypto-js'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
-import ModulePageHeader from '@/components/academic/ModulePageHeader.vue'
-import EmptyState from '@/components/academic/EmptyState.vue'
 import RichTextEditor from '@/components/forms/RichTextEditor.vue'
 
 const stripHtml = (html) =>
@@ -254,7 +295,7 @@ const isDirection = computed(() => decryptedRole === 'DIRECCION')
 const headerSubtitle = computed(() =>
   isDirection.value
     ? 'Publique comunicados generales: se muestran al iniciar sesión mientras estén vigentes.'
-    : 'Publique a sus aulas: el alumno lo verá al entrar a su curso, dentro del rango de fechas.'
+    : 'Publique a sus aulas: el alumno lo verá al entrar a su curso, dentro del rango de fechas.',
 )
 
 const gradeOptions = ref([])

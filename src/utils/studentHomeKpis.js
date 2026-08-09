@@ -8,12 +8,17 @@ export function buildStudentHomeKpiCards({
   attendance = null,
   announcements = {},
   latestRequest = null,
+  reportCard = null,
+  notifications = {},
   riskTone = 'slate',
   riskIcon = 'fa-hourglass-half',
   formatConfidence = () => '—',
   getRiskLabel = () => 'Sin dato',
 } = {}) {
   const unreadAnnouncements = Number(announcements?.unread_count || 0)
+  const unreadNotifications = Number(notifications?.unread_count || 0)
+  const scoresCount = Number(reportCard?.scores_count || 0)
+  const coursesCount = Number(reportCard?.courses_count || 0)
 
   return [
     {
@@ -41,6 +46,18 @@ export function buildStudentHomeKpiCards({
       tone: 'blue',
     },
     {
+      id: 'report_card',
+      label: 'Libreta de notas',
+      value: reportCard ? String(scoresCount) : '—',
+      hint: reportCard
+        ? `${scoresCount} nota(s) en ${coursesCount} curso(s)`
+        : 'Aún no hay notas registradas',
+      cta: 'Ver libreta',
+      to: links.report_card || '/my-report-card',
+      icon: 'fa-book-open',
+      tone: 'ok',
+    },
+    {
       id: 'announcements',
       label: 'Comunicados oficiales',
       value: String(unreadAnnouncements),
@@ -51,6 +68,18 @@ export function buildStudentHomeKpiCards({
       to: links.announcements || '/my-announcements',
       icon: 'fa-bullhorn',
       tone: 'indigo',
+    },
+    {
+      id: 'notifications',
+      label: 'Notificaciones',
+      value: String(unreadNotifications),
+      hint: unreadNotifications === 1
+        ? '1 aviso sin leer'
+        : `${unreadNotifications} avisos sin leer`,
+      cta: 'Ver bandeja',
+      to: links.notifications || '/my-notifications',
+      icon: 'fa-bell',
+      tone: unreadNotifications > 0 ? 'amber' : 'slate',
     },
     {
       id: 'requests',

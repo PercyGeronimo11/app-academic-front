@@ -6,10 +6,9 @@
           <label class="form-label" for="paperwork-subject">Asunto</label>
           <select
             id="paperwork-subject"
+            v-model="form.subject"
             class="form-select"
-            :value="form.subject"
             required
-            @change="onSubjectChange"
           >
             <option disabled value="">Seleccione un asunto</option>
             <option
@@ -79,7 +78,7 @@
             :maxFiles="5"
             accept=".pdf,application/pdf"
             label="Documentos anexos (Maximo 5 archivos PDF)"
-            helperText="Solo archivos PDF (máximo 5). Al subsanar se recuperan los ya subidos; puede quitarlos, renombrarlos o agregar nuevos."
+            helperText="Solo archivos PDF (máximo 5). Debe indicar un nombre para cada documento. Al subsanar se recuperan los ya subidos; puede quitarlos, renombrarlos o agregar nuevos."
           />
         </CCol>
       </CRow>
@@ -121,13 +120,31 @@ const router = useRouter();
 
 const isEditMode = computed(() => !!props.paperwork);
 
-const subjectOptions = [
-  'Solicitud de inasistencia ',
-  'Solicitud de retiro anticipado',
+const SUBJECT_OPTIONS = [
+  'Solicitud de inasistencia',
+  'Solicitud de permiso / retiro anticipado',
   'Solicitud de constancia de estudios',
   'Solicitud de certificado de estudios',
   'Solicitud de copia de libreta de notas',
 ];
+
+/** Incluye el asunto guardado si no está en el catálogo (p. ej. datos antiguos). */
+const subjectOptions = computed(() => {
+  const current = String(form.value.subject || '').trim();
+  if (current && !SUBJECT_OPTIONS.includes(current)) {
+    return [current, ...SUBJECT_OPTIONS];
+  }
+  return SUBJECT_OPTIONS;
+});
+
+const resolveSubject = (raw) => {
+  const value = String(raw || '').trim();
+  if (!value) return '';
+  const match = SUBJECT_OPTIONS.find(
+    (option) => option === value || option.toLowerCase() === value.toLowerCase(),
+  );
+  return match || value;
+};
 
 const isShowingAlert = ref(false);
 const isSaving = ref(false);
@@ -198,10 +215,6 @@ const form = ref(getEmptyForm());
 const files = ref([]);
 const existingSignatureUrl = ref('');
 
-const onSubjectChange = (event) => {
-  form.value.subject = event.target.value || '';
-};
-
 const resetForm = () => {
   form.value = getEmptyForm();
   files.value = [];
@@ -224,7 +237,7 @@ const initForm = () => {
     form.value = {
       ...getEmptyForm(),
       id: props.paperwork.id ?? null,
-      subject: props.paperwork.subject || '',
+      subject: resolveSubject(props.paperwork.subject),
       recipient: props.paperwork.recipient || DEFAULT_RECIPIENT,
       reason: props.paperwork.reason || '',
     };

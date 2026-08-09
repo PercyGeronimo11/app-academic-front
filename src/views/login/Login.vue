@@ -112,7 +112,7 @@ export default {
         sessionStorage.removeItem('announcements_general_shown');
 
         if (response.success) {
-          if (role === "ESTUDIANTE") {
+          if (role === "ESTUDIANTE" || role === "SECRETARIA") {
             ensureStudentPushRegistration();
           }
 

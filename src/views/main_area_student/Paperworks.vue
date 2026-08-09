@@ -56,10 +56,10 @@
                   </CTableRow>
                 </CTableBody>
                 <CTableBody v-else>
-                  <template v-for="(item, index) in tableItems" :key="item.id">
+                  <template v-for="item in tableItems" :key="item.id">
                     <CTableRow>
-                      <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
-                        {{ index + 1 }}
+                      <CTableHeaderCell scope="row" class="text-center text-nowrap fw-semibold">
+                        {{ item.request_number || '—' }}
                       </CTableHeaderCell>
                       <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
                       <CTableDataCell class="text-center fw-medium">{{ item.responsible }}</CTableDataCell>
@@ -139,6 +139,13 @@
       :pdf-object-url="pdfObjectUrl"
       @close="closePdfModal"
     />
+
+    <TramiteObservationModal
+      :visible="observationModalVisible"
+      :status="observationStatus"
+      :observations="observationText"
+      @close="closeObservation"
+    />
 </template>
 
 <script setup>
@@ -148,6 +155,7 @@ import Swal from 'sweetalert2';
 import TramiteHistory from '@/components/paperworks/TramiteHistory.vue';
 import TramiteStatusBadge from '@/components/paperworks/TramiteStatusBadge.vue';
 import TramitePdfPreviewModal from '@/components/paperworks/TramitePdfPreviewModal.vue';
+import TramiteObservationModal from '@/components/paperworks/TramiteObservationModal.vue';
 import ModalPaperwork from './modals/ModalPaperwork.vue';
 import PaperworkService from '../../services/PaperworkService';
 import { formatDatabaseDate } from '../../utils/time';
@@ -162,7 +170,7 @@ const selectedPaperwork = ref(null);
 
 onMounted(async () => {
   tableHeaders.value = [
-    'N°',
+    'N° trámite',
     'Fecha',
     'Responsable',
     'Estado',
@@ -197,6 +205,7 @@ const listPaperWorks = async () => {
         const [date] = formatDatabaseDate(item.created_at).split(' ');
         return {
           id: item.id,
+          request_number: item.request_number || '',
           subject: item.subject,
           recipient: item.recipient,
           reason: item.reason,
@@ -230,19 +239,30 @@ const revokePdfUrl = () => {
   }
 };
 
-const OBSERVED_STATUSES = ['OBSERVADO POR MESA DE PARTES', 'OBSERVADO POR EL DIRECTOR'];
+const OBSERVATION_STATUSES = [
+  'OBSERVADO POR MESA DE PARTES',
+  'OBSERVADO POR EL DIRECTOR',
+  'NO ADMITIDO',
+  'DENEGADO',
+];
+
+const observationModalVisible = ref(false);
+const observationStatus = ref('');
+const observationText = ref('');
 
 const canViewObservation = (item) =>
-  OBSERVED_STATUSES.includes(item.status) && !!String(item.observations || '').trim();
+  OBSERVATION_STATUSES.includes(item.status) && !!String(item.observations || '').trim();
 
 const showObservation = (item) => {
-  const text = String(item.observations || '').trim() || 'Sin observación registrada.';
-  Swal.fire({
-    icon: 'info',
-    title: 'Observación',
-    text,
-    confirmButtonText: 'Cerrar',
-  });
+  observationStatus.value = item.status || '';
+  observationText.value = String(item.observations || '').trim();
+  observationModalVisible.value = true;
+};
+
+const closeObservation = () => {
+  observationModalVisible.value = false;
+  observationStatus.value = '';
+  observationText.value = '';
 };
 
 const openPdfPreview = async (item) => {
@@ -298,7 +318,11 @@ const onUpdatePaperwork = async (formData) => {
     const payload = response.data;
     if (payload.success) {
       await listPaperWorks();
-      Swal.fire('Actualizado', payload.message || 'Trámite actualizado y reenviado a mesa de partes.', 'success');
+      Swal.fire(
+        'Actualizado',
+        payload.message || 'Trámite actualizado y reenviado para revisión.',
+        'success',
+      );
     } else {
       Swal.fire('Error', payload.message || 'No se pudo actualizar.', 'error');
     }

@@ -46,7 +46,7 @@
           </div>
           <div class="file-item__name">
             <label :for="`doc-name-${item.uid}`" class="form-label mb-1">
-              Nombre del documento
+              Nombre del documento <span class="text-danger">*</span>
             </label>
             <input
               :id="`doc-name-${item.uid}`"
@@ -54,7 +54,7 @@
               type="text"
               class="form-control form-control-sm"
               maxlength="255"
-              placeholder="Ej. Copia de DNI"
+              placeholder="Ingrese el nombre del documento"
               required
               @click.stop
             />
@@ -99,12 +99,6 @@ const isDragging = ref(false)
 let idSeq = 0
 let syncingFromParent = false
 
-function defaultNameFromFile(file) {
-  const raw = String(file?.name || '').trim()
-  if (!raw) return 'Documento anexo'
-  return raw.replace(/\.[^.]+$/, '') || raw
-}
-
 function normalizeItems(value) {
   if (!Array.isArray(value)) return []
   return value
@@ -116,7 +110,7 @@ function normalizeItems(value) {
           serverId: null,
           existing: false,
           file: item,
-          name: defaultNameFromFile(item),
+          name: '',
           label: item.name,
           url: null,
         }
@@ -126,9 +120,10 @@ function normalizeItems(value) {
       const serverId = item.serverId || (existing ? item.id : null) || null
       idSeq += 1
       const file = item.file instanceof File ? item.file : null
-      const name =
-        String(item.name || item.document_name || '').trim() ||
-        (file ? defaultNameFromFile(file) : 'Documento anexo')
+      // Nuevos: el usuario debe ingresar el nombre. Existentes: conservar el del servidor.
+      const name = existing
+        ? String(item.name || item.document_name || '').trim() || 'Documento anexo'
+        : String(item.name ?? item.document_name ?? '')
 
       return {
         uid: item.uid || (serverId ? `server-${serverId}` : `local-${idSeq}`),
@@ -209,7 +204,7 @@ const processFiles = (newFiles) => {
       serverId: null,
       existing: false,
       file,
-      name: defaultNameFromFile(file),
+      name: '',
       label: file.name,
       url: null,
     }

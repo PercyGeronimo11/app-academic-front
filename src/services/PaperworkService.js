@@ -24,12 +24,20 @@ export default {
     return await axios.post(`${API_URL}/${id}/approve-mesa`);
   },
 
+  async rejectMesa(id, observations) {
+    return await axios.post(`${API_URL}/${id}/reject-mesa`, { observations });
+  },
+
   async observeDirector(id, observations) {
     return await axios.post(`${API_URL}/${id}/observe-director`, { observations });
   },
 
   async approveDirector(id) {
     return await axios.post(`${API_URL}/${id}/approve-director`);
+  },
+
+  async denyDirector(id, observations) {
+    return await axios.post(`${API_URL}/${id}/deny-director`, { observations });
   },
 
   async acknowledgeAuxiliar(id) {

@@ -1,86 +1,150 @@
 <template>
-  <div class="module-page my-announcements">
-    <ModulePageHeader
-      icon="fas fa-bullhorn"
-      title="Comunicados oficiales"
-      subtitle="Comunicados generales y avisos dirigidos a su grado, vigentes hoy."
-    />
+  <CContainer fluid class="px-2 px-md-3">
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="py-3 px-4">
+            <h4 class="fw-bold text-primary mb-2 d-flex align-items-center">
+              <i class="fas fa-bullhorn me-2"></i>
+              Comunicados oficiales
+            </h4>
+            <p class="tls-intro-text mb-0 text-body-secondary small">
+              Comunicados generales y avisos dirigidos a su grado, vigentes hoy.
+            </p>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
 
-    <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
+    <CRow v-if="loadError" class="mb-3">
+      <CCol>
+        <CAlert color="danger" class="mb-0">{{ loadError }}</CAlert>
+      </CCol>
+    </CRow>
 
-    <div v-if="loading" class="module-loading">
-      <i class="fas fa-spinner fa-spin"></i> Cargando comunicados...
-    </div>
+    <CRow class="mb-3">
+      <CCol>
+        <CCard class="shadow-sm border-0">
+          <CCardBody class="p-0">
+            <div class="modern-table-shell">
+              <CTable responsive hover align="middle" class="mb-0">
+                <CTableHead class="modern-table-header text-center">
+                  <CTableRow>
+                    <CTableHeaderCell class="text-center">Título</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Alcance</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Prioridad</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Vigencia</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Publicado por</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">Acción</CTableHeaderCell>
+                  </CTableRow>
+                </CTableHead>
 
-    <EmptyState
-      v-else-if="!announcements.length"
-      icon="📢"
-      title="No hay comunicados vigentes"
-      hint="Cuando haya comunicados activos en su intervalo de fechas, aparecerán aquí."
-    />
+                <CTableBody v-if="loading">
+                  <CTableRow>
+                    <CTableDataCell colspan="7" class="table-empty-cell text-center py-4 text-body-secondary">
+                      <i class="fas fa-spinner fa-spin me-2" aria-hidden="true"></i>
+                      Cargando comunicados...
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
 
-    <div v-else class="inbox-list">
-      <article
-        v-for="item in announcements"
-        :key="item.id"
-        class="inbox-item"
-        :class="{ 'inbox-item--unread': !item.is_read }"
-        @click="openAnnouncement(item)"
-      >
-        <div class="inbox-item__icon">
-          <i class="fas fa-bullhorn"></i>
-        </div>
-        <div class="inbox-item__content">
-          <div class="inbox-item__title-row">
-            <span class="inbox-item__title">{{ item.title }}</span>
-            <span v-if="item.is_general" class="scope-badge">General</span>
-            <span class="priority-badge" :class="`priority-badge--${item.priority}`">
-              {{ priorityLabel(item.priority) }}
-            </span>
-          </div>
-          <div class="inbox-item__excerpt">{{ item.excerpt }}</div>
-          <div class="inbox-item__meta">
-            <i class="far fa-calendar-alt me-1"></i>
-            {{ formatRange(item.starts_at, item.ends_at) }}
-            <span v-if="item.publisher_name"> · {{ item.publisher_name }}</span>
-          </div>
-        </div>
-        <span v-if="!item.is_read" class="inbox-item__dot" aria-hidden="true"></span>
-      </article>
-    </div>
+                <CTableBody v-else-if="!announcements.length">
+                  <CTableRow>
+                    <CTableDataCell colspan="7" class="table-empty-cell">
+                      <div class="table-empty-unified">
+                        <span class="table-empty-unified__icon" aria-hidden="true">📢</span>
+                        <p class="table-empty-unified__title">No hay comunicados vigentes</p>
+                        <p class="table-empty-unified__hint">
+                          Cuando haya comunicados activos en su intervalo de fechas, aparecerán aquí.
+                        </p>
+                      </div>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
 
-    <CModal :visible="detailVisible" @close="closeDetail" size="lg">
-      <CModalHeader>
-        <CModalTitle>{{ selectedItem?.title }}</CModalTitle>
-      </CModalHeader>
-      <CModalBody v-if="selectedItem">
-        <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
-          <span v-if="selectedItem.is_general" class="scope-badge">General</span>
-          <span class="priority-badge" :class="`priority-badge--${selectedItem.priority}`">
-            {{ priorityLabel(selectedItem.priority) }}
-          </span>
-          <span class="text-body-secondary small">
-            {{ formatRange(selectedItem.starts_at, selectedItem.ends_at) }}
-          </span>
-        </div>
-        <p v-if="selectedItem.publisher_name" class="text-body-secondary small mb-3">
-          <i class="fas fa-user me-1"></i>Publicado por: {{ selectedItem.publisher_name }}
-        </p>
-        <div class="announcement-detail-body" v-html="selectedItem.body"></div>
-      </CModalBody>
-      <CModalFooter>
-        <CButton color="secondary" @click="closeDetail">Cerrar</CButton>
-      </CModalFooter>
-    </CModal>
-  </div>
+                <CTableBody v-else>
+                  <CTableRow
+                    v-for="item in announcements"
+                    :key="item.id"
+                    :class="{ 'announcement-row--unread': !item.is_read }"
+                  >
+                    <CTableDataCell class="text-center fw-semibold">
+                      {{ item.title }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span v-if="item.is_general" class="scope-badge">General</span>
+                      <span v-else class="small text-body-secondary">Por grado</span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span class="priority-badge" :class="`priority-badge--${item.priority}`">
+                        {{ priorityLabel(item.priority) }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small text-body-secondary">
+                      {{ formatRange(item.starts_at, item.ends_at) }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      {{ item.publisher_name || '—' }}
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <span
+                        class="status-badge"
+                        :class="item.is_read ? 'status-badge--borrador' : 'status-badge--publicado'"
+                      >
+                        {{ item.is_read ? 'Leído' : 'No leído' }}
+                      </span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center">
+                      <CButton
+                        size="sm"
+                        color="primary"
+                        variant="outline"
+                        :aria-label="`Ver comunicado ${item.title}`"
+                        @click="openAnnouncement(item)"
+                      >
+                        <i class="fas fa-eye" aria-hidden="true"></i>
+                      </CButton>
+                    </CTableDataCell>
+                  </CTableRow>
+                </CTableBody>
+              </CTable>
+            </div>
+          </CCardBody>
+        </CCard>
+      </CCol>
+    </CRow>
+  </CContainer>
+
+  <CModal :visible="detailVisible" size="lg" alignment="center" @close="closeDetail">
+    <CModalHeader>
+      <CModalTitle>{{ selectedItem?.title }}</CModalTitle>
+    </CModalHeader>
+    <CModalBody v-if="selectedItem">
+      <div class="mb-3 d-flex align-items-center gap-2 flex-wrap">
+        <span v-if="selectedItem.is_general" class="scope-badge">General</span>
+        <span class="priority-badge" :class="`priority-badge--${selectedItem.priority}`">
+          {{ priorityLabel(selectedItem.priority) }}
+        </span>
+        <span class="text-body-secondary small">
+          {{ formatRange(selectedItem.starts_at, selectedItem.ends_at) }}
+        </span>
+      </div>
+      <p v-if="selectedItem.publisher_name" class="text-body-secondary small mb-3">
+        <i class="fas fa-user me-1"></i>Publicado por: {{ selectedItem.publisher_name }}
+      </p>
+      <div class="announcement-detail-body" v-html="selectedItem.body"></div>
+    </CModalBody>
+    <CModalFooter>
+      <CButton color="secondary" @click="closeDetail">Cerrar</CButton>
+    </CModalFooter>
+  </CModal>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import OfficialAnnouncementService from '@/services/OfficialAnnouncementService'
-import ModulePageHeader from '@/components/academic/ModulePageHeader.vue'
-import EmptyState from '@/components/academic/EmptyState.vue'
 
 const route = useRoute()
 
@@ -175,5 +239,9 @@ onMounted(async () => {
   font-weight: 600;
   background: var(--rp-surface-brand-soft);
   color: var(--rp-text-brand);
+}
+
+.announcement-row--unread {
+  background: var(--rp-surface-brand-soft, rgba(13, 110, 253, 0.04));
 }
 </style>

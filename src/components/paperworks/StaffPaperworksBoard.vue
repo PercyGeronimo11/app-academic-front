@@ -24,11 +24,10 @@
               <CTable responsive hover align="middle" class="mb-0">
                 <CTableHead class="modern-table-header text-center">
                   <CTableRow>
-                    <CTableHeaderCell class="text-center">N°</CTableHeaderCell>
+                    <CTableHeaderCell class="text-center">N° trámite</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">Fecha</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">Solicitante</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">Asunto</CTableHeaderCell>
-                    <CTableHeaderCell class="text-center">Motivo</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">Estado</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">FUT</CTableHeaderCell>
                     <CTableHeaderCell class="text-center">
@@ -38,7 +37,7 @@
                 </CTableHead>
                 <CTableBody v-if="!items.length">
                   <CTableRow>
-                    <CTableDataCell colspan="8" class="table-empty-cell">
+                    <CTableDataCell colspan="7" class="table-empty-cell">
                       <div class="table-empty-unified">
                         <span class="table-empty-unified__icon" aria-hidden="true">📭</span>
                         <p class="table-empty-unified__title">{{ emptyTitle }}</p>
@@ -48,14 +47,13 @@
                   </CTableRow>
                 </CTableBody>
                 <CTableBody v-else>
-                  <CTableRow v-for="(item, index) in items" :key="item.id">
-                    <CTableHeaderCell scope="row" class="text-center text-body-secondary fw-semibold">
-                      {{ index + 1 }}
+                  <CTableRow v-for="item in items" :key="item.id">
+                    <CTableHeaderCell scope="row" class="text-center text-nowrap fw-semibold">
+                      {{ item.request_number || '—' }}
                     </CTableHeaderCell>
                     <CTableDataCell class="text-center">{{ item.date }}</CTableDataCell>
                     <CTableDataCell class="text-center fw-medium">{{ item.names }}</CTableDataCell>
                     <CTableDataCell class="text-center">{{ item.subject }}</CTableDataCell>
-                    <CTableDataCell class="text-start small">{{ truncate(item.reason, 80) }}</CTableDataCell>
                     <CTableDataCell class="text-center">
                       <TramiteStatusBadge :status="item.status" />
                     </CTableDataCell>
@@ -76,6 +74,9 @@
                         <template v-if="isInbox">
                           <CButton color="success" size="sm" @click="approve(item.id)">Aprobar</CButton>
                           <CButton color="warning" size="sm" @click="openObserve(item)">Observar</CButton>
+                          <CButton color="danger" size="sm" @click="openReject(item)">
+                            {{ config.rejectButtonLabel }}
+                          </CButton>
                         </template>
                         <CButton
                           color="secondary"
@@ -144,7 +145,7 @@ const VARIANT_CONFIG = {
     iconClass: 'fas fa-inbox',
     inboxTitle: 'Trámites en proceso — Mesa de partes',
     inboxIntro:
-      'Solo solicitudes que requieren tu acción: aprueba para enviar a administración u observa para que el estudiante subsane.',
+      'Solo solicitudes que requieren tu acción: aprueba, observa o marca como no admitido para cerrar el flujo.',
     historyTitle: 'Historial de trámites — Mesa de partes',
     historyIntro: 'Consulta el listado completo de trámites registrados y el seguimiento de sus estados.',
     inboxEmptyTitle: 'No hay trámites pendientes de tu acción',
@@ -157,18 +158,24 @@ const VARIANT_CONFIG = {
     observeTitle: 'Observaciones',
     observeLabel: 'Indique qué debe corregir el solicitante',
     observeSuccess: 'Trámite observado por mesa de partes.',
+    rejectButtonLabel: 'No admitido',
+    rejectTitle: 'Marcar como no admitido',
+    rejectLabel: 'Indique el motivo por el cual no se admite el trámite',
+    rejectConfirmText: 'Sí, no admitir',
+    rejectSuccess: 'Trámite marcado como no admitido. El flujo ha finalizado.',
     approveFn: (id) => PaperworkService.approveMesa(id),
     observeFn: (id, text) => PaperworkService.observeMesa(id, text),
+    rejectFn: (id, text) => PaperworkService.rejectMesa(id, text),
   },
   admin: {
     iconClass: 'fas fa-building',
     inboxTitle: 'Trámites en proceso — Administración',
     inboxIntro:
-      'Solo trámites ya revisados por mesa de partes que requieren tu acción: aprueba o observa para que el estudiante subsane.',
+      'Trámites que requieren tu acción. Puedes aprobar, observar o denegar para cerrar el flujo.',
     historyTitle: 'Historial de trámites — Administración',
     historyIntro: 'Consulta el listado completo de trámites registrados y el seguimiento de sus estados.',
     inboxEmptyTitle: 'No hay trámites pendientes de tu acción',
-    inboxEmptyHint: 'Aparecerán aquí cuando mesa de partes envíe solicitudes a administración.',
+    inboxEmptyHint: 'Aparecerán aquí cuando mesa de partes envíe solicitudes o un estudiante subsane una observación tuya.',
     historyEmptyTitle: 'No hay trámites registrados',
     historyEmptyHint: 'Cuando existan solicitudes FUT, se mostrarán en este historial.',
     actionableStatuses: ['REVISADO POR MESA DE PARTES', 'EN REVISION POR ADMINISTRACION'],
@@ -176,11 +183,17 @@ const VARIANT_CONFIG = {
       'El trámite quedará como aprobado exitosamente y el auxiliar de las aulas correspondientes podrá tomarlo.',
     approveSuccess: 'Trámite aprobado exitosamente.',
     observeTitle: 'Observaciones de administración',
-    observeLabel: 'Indique qué debe corregir el solicitante (volverá a mesa de partes)',
+    observeLabel: 'Indique qué debe corregir el solicitante (al subsanar volverá a administración)',
     observeSuccess:
-      'Trámite observado; el solicitante deberá subsanar y volverá a mesa de partes.',
+      'Trámite observado; el solicitante deberá subsanar y el trámite volverá a administración.',
+    rejectButtonLabel: 'Denegado',
+    rejectTitle: 'Denegar trámite',
+    rejectLabel: 'Indique el motivo por el cual se deniega el trámite',
+    rejectConfirmText: 'Sí, denegar',
+    rejectSuccess: 'Trámite denegado. El flujo ha finalizado.',
     approveFn: (id) => PaperworkService.approveDirector(id),
     observeFn: (id, text) => PaperworkService.observeDirector(id, text),
+    rejectFn: (id, text) => PaperworkService.denyDirector(id, text),
   },
 };
 
@@ -211,8 +224,6 @@ const historyModalVisible = ref(false);
 const historySteps = ref([]);
 const historyContextLabel = ref('');
 
-const truncate = (s, n) => (s && s.length > n ? `${s.slice(0, n)}…` : s || '');
-
 const mapHistory = (details) =>
   (details || []).map((d) => ({
     at: formatDatabaseDate(d.created_at),
@@ -223,9 +234,9 @@ const mapItem = (item) => {
   const [date] = formatDatabaseDate(item.created_at).split(' ');
   return {
     id: item.id,
+    request_number: item.request_number || '',
     names: item.names,
     subject: item.subject,
-    reason: item.reason,
     date,
     status: item.current_status,
     observations: item.observations,
@@ -260,7 +271,9 @@ watch(
 
 const openHistory = (item) => {
   historySteps.value = item.status_history || [];
-  historyContextLabel.value = [item.names, item.subject].filter(Boolean).join(' · ');
+  historyContextLabel.value = [item.request_number, item.names, item.subject]
+    .filter(Boolean)
+    .join(' · ');
   historyModalVisible.value = true;
 };
 
@@ -349,6 +362,28 @@ const openObserve = async (item) => {
     Swal.fire('Listo', config.value.observeSuccess, 'success');
   } catch (e) {
     Swal.fire('Error', e.response?.data?.message || 'No se pudo registrar la observación.', 'error');
+  }
+};
+
+const openReject = async (item) => {
+  const { value: text } = await Swal.fire({
+    title: config.value.rejectTitle,
+    input: 'textarea',
+    inputLabel: config.value.rejectLabel,
+    inputPlaceholder: 'Motivo…',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: config.value.rejectConfirmText,
+    confirmButtonColor: '#dc3545',
+    inputValidator: (v) => (!v || !v.trim() ? 'Debe indicar el motivo' : null),
+  });
+  if (!text) return;
+  try {
+    await config.value.rejectFn(item.id, text.trim());
+    await load();
+    Swal.fire('Listo', config.value.rejectSuccess, 'success');
+  } catch (e) {
+    Swal.fire('Error', e.response?.data?.message || 'No se pudo cerrar el trámite.', 'error');
   }
 };
 

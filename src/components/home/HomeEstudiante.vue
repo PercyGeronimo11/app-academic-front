@@ -1,7 +1,7 @@
 <template>
   <div class="home-stack home-student">
     <CRow class="g-3 mb-4 home-student-kpis">
-      <CCol v-for="card in kpiCards" :key="card.id" xs="6" md="3">
+      <CCol v-for="card in kpiCards" :key="card.id" xs="6" md="4" xl="2">
         <HomeStudentKpiCard
           :label="card.label"
           :value="card.value"
@@ -16,7 +16,7 @@
             <span class="home-stat-pill home-stat-pill--warn">{{ attendance.tardanzas }} tardanzas</span>
           </template>
           <template v-else-if="card.id === 'requests' && latestRequest" #value>
-            <span class="home-kpi__value-text">{{ latestRequest.subject || `Trámite #${latestRequest.id}` }}</span>
+            <span class="home-kpi__value-text">{{ latestRequest.subject || latestRequest.request_number || `Trámite #${latestRequest.id}` }}</span>
             <span class="home-status-badge mt-1" :class="requestStatusClass">
               {{ latestRequest.current_status }}
             </span>
@@ -75,6 +75,8 @@ const myRisk = computed(() => props.data.my_risk || null)
 const attendance = computed(() => props.data.attendance || null)
 const announcements = computed(() => props.data.announcements || {})
 const latestRequest = computed(() => props.data.latest_request || null)
+const reportCard = computed(() => props.data.report_card || null)
+const notifications = computed(() => props.data.notifications || {})
 const courses = computed(() => props.data.courses || [])
 
 const riskTone = computed(() => {
@@ -107,6 +109,8 @@ const kpiCards = computed(() => buildStudentHomeKpiCards({
   attendance: attendance.value,
   announcements: announcements.value,
   latestRequest: latestRequest.value,
+  reportCard: reportCard.value,
+  notifications: notifications.value,
   riskTone: riskTone.value,
   riskIcon: riskIcon.value,
   formatConfidence,
