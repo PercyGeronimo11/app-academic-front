@@ -135,11 +135,6 @@ const routes = [
         name: 'AsistenteInteligente',
         component: () => import('@/views/asistente/AsistenteInteligenteView.vue'),
       },
-      {
-        path: '/chatbot',
-        name: 'Chatbot',
-        component: () => import('@/views/chatbot/ChatBot.vue'),
-      },
 
       {
         path: '/prediccion/dashboard',

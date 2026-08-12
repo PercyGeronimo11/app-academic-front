@@ -19,7 +19,8 @@ const FACTOR_LABELS = {
   ING_ESCRITURA: 'Inglés - Escritura',
   TOTAL_ABSENCES: 'Total de faltas',
   TOTAL_TARDINESS: 'Total de tardanzas',
-  INCIDENT_COUNT: 'Incidentes de conducta',
+  AVERAGE_CONDUCT: 'Promedio de gravedad de conducta',
+  INCIDENT_COUNT: 'Promedio de gravedad de conducta',
   WORKS: 'Trabaja',
   FAMILY_SITUATION: 'Situación familiar',
 }

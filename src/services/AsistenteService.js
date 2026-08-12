@@ -34,17 +34,6 @@ export default {
     }).then((r) => r.json())
   },
 
-  chatSync({ prompt, conversationId = null }) {
-    return fetch(`${API_URL}/chatbot-ia/chat/`, {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      body: JSON.stringify({
-        prompt,
-        conversation_id: conversationId,
-      }),
-    }).then((r) => r.json())
-  },
-
   async chatStream({ prompt, conversationId = null, onThinking, onToken, onDone, onError }) {
     const response = await fetch(`${API_URL}/chatbot-ia/stream/`, {
       method: 'POST',

@@ -25,7 +25,8 @@ const FACTOR_CONCEPT_LABELS = {
   ING_ESCRITURA: 'Inglés - Escritura',
   TOTAL_ABSENCES: 'Total de faltas',
   TOTAL_TARDINESS: 'Total de tardanzas',
-  INCIDENT_COUNT: 'Incidentes de conducta',
+  AVERAGE_CONDUCT: 'Promedio de gravedad de conducta',
+  INCIDENT_COUNT: 'Promedio de gravedad de conducta',
   WORKS: 'Situación laboral (trabaja)',
   FAMILY_SITUATION: 'Situación familiar',
 }
@@ -71,11 +72,11 @@ const describeFactorValue = (concept, rawValue) => {
     return n === 1 ? 'Tiene 1 tardanza registrada' : `Tiene ${n} tardanzas registradas`
   }
 
-  if (concept === 'INCIDENT_COUNT') {
+  if (concept === 'AVERAGE_CONDUCT' || concept === 'INCIDENT_COUNT') {
     const n = Number(value)
     if (Number.isNaN(n)) return `Dato de conducta: ${value}`
     if (n === 0) return 'Sin incidentes de conducta'
-    return n === 1 ? 'Tiene 1 incidente de conducta' : `Tiene ${n} incidentes de conducta`
+    return `Promedio de gravedad de conducta: ${n.toFixed(2)} (escala 1 a 5)`
   }
 
   if (concept === 'WORKS') {
