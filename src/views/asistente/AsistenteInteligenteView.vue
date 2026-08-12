@@ -17,7 +17,10 @@
         <div v-if="!messages.length" class="assistant-empty">
           <i class="fas fa-comments"></i>
           <h3>¿En qué puedo ayudarte?</h3>
-          <p>Ejemplos: "¿Quién faltó hoy?", "Alumnos desaprobados en 3-A", "Trámites pendientes"</p>
+          <p>
+            Ejemplos: "¿Quién faltó hoy?", "Alumnos de 3°A con muchas faltas y riesgo alto",
+            "Trámites pendientes"
+          </p>
         </div>
 
         <div
