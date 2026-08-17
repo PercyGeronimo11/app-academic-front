@@ -19,6 +19,7 @@ export function clearSession() {
   localStorage.removeItem(USER_KEY);
   localStorage.removeItem('tiempoLogin');
   localStorage.removeItem('last_notification_id');
+  localStorage.removeItem('r_key');
   sessionStorage.removeItem('notifications_poll_init');
 }
 

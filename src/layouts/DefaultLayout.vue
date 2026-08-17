@@ -8,7 +8,7 @@ import AppHeader from '@/components/AppHeader.vue'
 import AppNotificationBanner from '@/components/AppNotificationBanner.vue'
 import AppSidebar from '@/components/AppSidebar.vue'
 import AssistantFab from '@/components/asistente/AssistantFab.vue'
-import { ensureStudentPushRegistration } from '@/composables/usePushNotifications'
+import { ensurePushRegistration } from '@/composables/usePushNotifications'
 import { useUserNotifications } from '@/composables/useUserNotifications'
 import { hasValidSession } from '@/utils/session'
 
@@ -19,7 +19,7 @@ const isAssistancesRoute = computed(() => String(route.path || '').startsWith('/
 const { startPolling, stopPolling, requestBrowserPermission } = useUserNotifications()
 
 onMounted(() => {
-  ensureStudentPushRegistration()
+  ensurePushRegistration()
 
   if (hasValidSession()) {
     requestBrowserPermission()
