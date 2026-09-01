@@ -20,6 +20,10 @@ export default {
     });
   },
 
+  async getRoles() {
+    return await axios.get(`${API_URL}/administrative/roles`);
+  },
+
   async createItem(data) {
     return await axios.post(`${API_URL}/administrative/create`, data);
   },

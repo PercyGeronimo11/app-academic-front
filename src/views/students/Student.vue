@@ -16,8 +16,8 @@
                 <CFormInput
                   v-model="searchData"
                   label="Buscar"
-                  placeholder="Nombres, apellidos o DNI"
-                  aria-label="Buscar por nombres, apellidos o DNI"
+                  placeholder="Nombres, apellidos, DNI o código"
+                  aria-label="Buscar por nombres, apellidos, DNI o código"
                   @keyup.enter="applyFilters"
                 />
               </CCol>
@@ -98,9 +98,9 @@
                   <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.id)">
                     <CIcon :content="cilPencil" size="lg"></CIcon>
                   </CButton>
-                  <CButton color="danger" class="text-white" @click.stop="deleteItem(item.id)">
+                  <!-- <CButton color="danger" class="text-white" @click.stop="deleteItem(item.id)">
                     <CIcon :content="cilTrash" size="lg"></CIcon>
-                  </CButton>
+                  </CButton> -->
                 </template>
               </ElegantCrudList>
 
@@ -180,6 +180,7 @@ const listColumns = ref([
   { key: 'id', label: 'N°' },
   { key: 'surnames', label: 'Apellidos' },
   { key: 'name', label: 'Nombres' },
+  { key: 'student_code', label: 'Código' },
   { key: 'dni', label: 'DNI' },
   { key: 'grade_section.grade', label: 'Grado' },
   { key: 'grade_section.section', label: 'Sección' },
