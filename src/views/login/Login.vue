@@ -75,7 +75,7 @@
 
 <script>
 import AuthService from "@/services/AuthService";
-import { ensureStudentPushRegistration } from "@/composables/usePushNotifications";
+import { ensurePushRegistration } from "@/composables/usePushNotifications";
 import CryptoJS from "crypto-js";
 import Swal from "sweetalert2";
 import { getPeruTime } from "@/utils/time";
@@ -113,7 +113,9 @@ export default {
 
         if (response.success) {
           if (role === "ESTUDIANTE" || role === "SECRETARIA") {
-            ensureStudentPushRegistration();
+            // Esperar el registro para que device_tokens quede ligado al usuario actual
+            // antes de navegar (evita condiciones de carrera con el layout).
+            await ensurePushRegistration(role);
           }
 
           this.$router.push("/dashboard");

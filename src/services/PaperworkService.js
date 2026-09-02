@@ -7,6 +7,11 @@ export default {
     return await axios.get(`${API_URL}`);
   },
 
+  /** Trámites INA del alumno para vincular al justificar una falta. */
+  async listForJustification(params = {}) {
+    return await axios.get(`${API_URL}/for-justification`, { params });
+  },
+
   async createPaperwork(data) {
     // No fijar Content-Type manualmente: el navegador debe enviar el boundary del multipart.
     return await axios.post(`${API_URL}`, data);

@@ -30,7 +30,6 @@
                 </CInputGroup>
               </CCol>
               <CCol xs="12" md="auto" class="d-flex flex-wrap gap-2 justify-content-md-end">
-                <ImportDataModal descripcion="Alumnos" />
                 <CButton color="info" class="text-white" @click="openCreateModal()">Nuevo</CButton>
               </CCol>
             </CRow>
@@ -80,37 +79,43 @@
       <CModalBody>
         <CForm @submit.prevent="isEditMode ? updateUser() : submitToCreate()">
           <CContainer>
-            <CRow class="mb-3">
-              <CCol>
+            <CRow class="mb-3 gy-3">
+              <CCol :xs="12" :md="4">
                 <CFormInput v-model="administrativeData.names" label="Nombres *" placeholder="Nombre" required />
               </CCol>
-              <CCol>
+              <CCol :xs="12" :md="4">
                 <CFormInput v-model="administrativeData.surname_father" label="Apellido Paterno *" placeholder="Apellido Paterno"
                   required />
               </CCol>
-              <CCol>
+              <CCol :xs="12" :md="4">
                 <CFormInput v-model="administrativeData.surname_mother" label="Apellido Materno *" placeholder="Apellido Materno"
                   required />
               </CCol>
             </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="administrativeData.dni" label="DNI *" placeholder="Documento de identidad" type="number" required @input="limitDniLength"/>
+            <CRow class="mb-3 gy-3">
+              <CCol :xs="12" :md="4">
+                <CFormSelect v-model="administrativeData.role_id" label="Rol *" required>
+                  <option value="">Seleccione un rol</option>
+                  <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+                </CFormSelect>
               </CCol>
-              <CCol>
+              <CCol :xs="12" :md="4">
+                <CFormInput v-model="administrativeData.dni" label="DNI" placeholder="Documento de identidad" type="number" @input="limitDniLength"/>
+              </CCol>
+              <CCol :xs="12" :md="4">
                 <CFormInput v-model="administrativeData.birth_date" label="Fecha de nacimiento *" type="date" required />
               </CCol>
             </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="administrativeData.address" label="Dirección" placeholder="Dirección" required />
+            <CRow class="mb-3 gy-3">
+              <CCol :xs="12" :md="6">
+                <CFormInput v-model="administrativeData.address" label="Dirección" placeholder="Dirección" />
               </CCol>
-              <CCol>
-                <CFormInput v-model="administrativeData.phone_number" label="N° de teléfono" placeholder="N° de teléfono" required />
+              <CCol :xs="12" :md="6">
+                <CFormInput v-model="administrativeData.phone_number" label="N° de teléfono" placeholder="N° de teléfono" />
               </CCol>
             </CRow>
-            <CRow class="mb-3">
-              <CCol>
+            <CRow class="mb-3 gy-3">
+              <CCol :xs="12" :md="6">
                 <CFormLabel for="email">Email *</CFormLabel>
                 <div class="input-group">
                   <input type="text" class="form-control" placeholder="Correo electrónico" v-model="administrativeData.email"
@@ -118,8 +123,12 @@
                   <span class="input-group-text">@ierp.edu.pe</span>
                 </div>
               </CCol>
-              <CCol>
-                <CFormInput v-model="administrativeData.password" label="Contraseña" placeholder="Contraseña" required />
+              <CCol :xs="12" :md="6">
+                <CFormInput v-model="administrativeData.password" :label="isPasswordRequired ? 'Contraseña *' : 'Contraseña'"
+                  placeholder="Contraseña" :required="isPasswordRequired" />
+                <small v-if="isPasswordRequired" class="text-body-secondary">
+                  Sin DNI la contraseña no se puede generar sola, indíquela aquí.
+                </small>
               </CCol>
             </CRow>
           </CContainer>
@@ -138,11 +147,10 @@
 
 <script setup>
 import AdministrativeService from '@/services/AdministrativeService'
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
 import { cilPencil, cilTrash } from '@coreui/icons';
 import ElegantCrudList from '../../components/cruds/ElegantCrudList.vue';
-import ImportDataModal from '@/components/modals/ImportDataModal.vue';
 
 const listColumns = ref([
   { key: 'id', label: 'N°'},
@@ -154,30 +162,45 @@ const listColumns = ref([
 ]);
 
 const teachers = ref([]);
+const roles = ref([]);
 const isModalOpen = ref(false);
 const isEditMode = ref(false);
 var idItemSelected = ref(0);
 var searchData = ref('');
-const administrativeData = ref({
-  names: '',
-  surname_father: '',
-  surname_mother: '',
-  birth_date: '',
-  dni: '',
-  phone_number: '',
-  address: '',
-  email: '',
-  password: '',
-});
+const administrativeData = ref(emptyAdministrative());
 
+function emptyAdministrative() {
+  return {
+    names: '',
+    surname_father: '',
+    surname_mother: '',
+    birth_date: '',
+    role_id: '',
+    dni: '',
+    phone_number: '',
+    address: '',
+    email: '',
+    password: '',
+  };
+}
+
+// Al crear sin DNI el backend no puede derivar la contraseña, así que debe venir escrita.
+const isPasswordRequired = computed(
+  () => !isEditMode.value && !String(administrativeData.value.dni || '').trim()
+);
 
 onMounted(async () => {
   try {
-    await listAdministrativeService();
+    await Promise.all([listAdministrativeService(), listRoles()]);
   } catch (error) {
     console.error(error);
   }
 });
+
+const listRoles = async () => {
+  const response = await AdministrativeService.getRoles();
+  roles.value = response.data.data;
+};
 
 const listAdministrativeService = async (data) => {
   const response = await AdministrativeService.getItems(data);
@@ -192,24 +215,16 @@ const openCreateModal = () => {
 const openEditModal = async (id) => {
   const response = await AdministrativeService.getItem(id);
   idItemSelected.value = response.data.data.id;
-  administrativeData.value = { ...response.data.data };
+  administrativeData.value = { ...emptyAdministrative(), ...response.data.data };
   administrativeData.value.email = response.data.data.user.email.replace('@ierp.edu.pe', '');
+  administrativeData.value.role_id = response.data.data.user.role_id ?? '';
+  administrativeData.value.password = '';
   isEditMode.value = true;
   isModalOpen.value = true;
 };
 
 const clearDataModal = () => {
-  administrativeData.value = {
-    name: '',
-    surname_father: '',
-    surname_mother: '',
-    birth_date: '',
-    dni: '',
-    phone_number: '',
-    address: '',
-    email: '',
-    password: '',
-  };
+  administrativeData.value = emptyAdministrative();
 };
 
 const closeModal = () => {
@@ -218,72 +233,69 @@ const closeModal = () => {
 };
 
 const submitToCreate = async () => {
-  if(validateForm()){
-    try {
-        await AdministrativeService.createItem(administrativeData.value);
-        listAdministrativeService();        
-        closeModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Registro exitoso',
-          text: 'Administrativo registrado con éxito.',
-        });
-      
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al Guardar',
-          text: error.response.data.message,
-        });
-      } else {
-        console.log("error:" + error);
-      }
-    }
-  }else{
+  const falta = missingFieldsMessage();
+  if (falta) {
+    Swal.fire({ icon: 'warning', title: 'Datos incompletos', text: falta });
+    return;
+  }
+
+  try {
+    await AdministrativeService.createItem(administrativeData.value);
+    listAdministrativeService();
+    closeModal();
     Swal.fire({
-      icon: 'warning',
-      title: 'Error',
-      text: 'Complete todos los campos obligatorios.',
+      icon: 'success',
+      title: 'Registro exitoso',
+      text: 'Administrativo registrado con éxito.',
     });
+  } catch (error) {
+    if (error.response && error.response.data && error.response.data.message) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al Guardar',
+        text: error.response.data.message,
+      });
+    } else {
+      console.log("error:" + error);
+    }
   }
 };
 
 const submitToEdit = async () => {
-  if(validateForm()){
-    administrativeData.value.id = idItemSelected.value;
-    var data;
-    if(administrativeData.value.password==''){
-      const { password, ...rest } = administrativeData.value;
-      data = rest;
-    }else
-      data = administrativeData.value
-    try {
-      await AdministrativeService.updateItem(data);
-      listAdministrativeService();
-      closeModal();
-      Swal.fire({
-        icon: 'success',
-        title: 'Actualización exitosa',
-        text: 'Administrativo actualizado con éxito.',
-      });
-    } catch (error) {
-      if (error.response && error.response.data && error.response.data.message) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error al Guardar',
-          text: error.response.data.message[0],
-        });
-      } else {
-        console.log("error:" + error);
-      }
-    }
-  }else{
+  const falta = missingFieldsMessage();
+  if (falta) {
+    Swal.fire({ icon: 'warning', title: 'Datos incompletos', text: falta });
+    return;
+  }
+
+  administrativeData.value.id = idItemSelected.value;
+  var data;
+  if(administrativeData.value.password==''){
+    const { password, ...rest } = administrativeData.value;
+    data = rest;
+  }else
+    data = administrativeData.value
+
+  try {
+    await AdministrativeService.updateItem(data);
+    listAdministrativeService();
+    closeModal();
     Swal.fire({
-      icon: 'warning',
-      title: 'Error',
-      text: 'Complete todos los campos obligatorios.',
+      icon: 'success',
+      title: 'Actualización exitosa',
+      text: 'Administrativo actualizado con éxito.',
     });
+  } catch (error) {
+    const mensaje = error.response?.data?.message;
+    if (mensaje) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al Guardar',
+        text: Array.isArray(mensaje) ? mensaje[0] : mensaje,
+      });
+    } else {
+      console.log("error:" + error);
+    }
   }
 };
 
@@ -328,12 +340,25 @@ const limitDniLength = async(event) => {
   }
 };
 
-const validateForm = () => {
-  if(administrativeData.value.names=='' || administrativeData.value.surname_father=='' || administrativeData.value.surname_mother=='' || administrativeData.value.dni=='' || administrativeData.value.birth_date=='' || administrativeData.value.email==''){
-    return false;
-  }else{
-    return true;
+const missingFieldsMessage = () => {
+  const d = administrativeData.value;
+  const vacio = (valor) => !String(valor ?? '').trim();
+
+  if (vacio(d.names) || vacio(d.surname_father) || vacio(d.surname_mother)
+    || vacio(d.birth_date) || vacio(d.email)) {
+    return 'Complete todos los campos obligatorios.';
   }
+
+  if (vacio(d.role_id)) {
+    return 'Seleccione el rol del administrativo.';
+  }
+
+  // El DNI es opcional porque no siempre se conoce al dar de alta.
+  if (isPasswordRequired.value && vacio(d.password)) {
+    return 'Sin DNI debe indicar una contraseña para el usuario.';
+  }
+
+  return null;
 }
 
 watch(searchData, (newVal) => {

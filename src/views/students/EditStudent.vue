@@ -24,9 +24,10 @@
                     <CCol xs="12" md="4">
                       <CFormInput
                         v-model="alumnoData.student_code"
-                        label="Código de estudiante"
-                        placeholder="Opcional"
+                        label="Código de estudiante *"
+                        placeholder="Código SIAGIE"
                         maxlength="14"
+                        required
                       />
                     </CCol>
                   </CRow>
@@ -249,7 +250,6 @@ const alumnoData = ref({
   grade_section_current: "",
   birth_date: "",
   dni: "",
-  age: "",
   address: "",
   sex: "",
   representative_dni: "",
@@ -332,24 +332,6 @@ const downloadQR = async () => {
   window.URL.revokeObjectURL(url)
 }
 
-const calculateAge = () => {
-  if (!alumnoData.value.birth_date) return;
-
-  const birthDate = new Date(alumnoData.value.birth_date);
-  const today = new Date();
-  let age = today.getFullYear() - birthDate.getFullYear();
-  const monthDifference = today.getMonth() - birthDate.getMonth();
-
-  if (
-    monthDifference < 0 ||
-    (monthDifference === 0 && today.getDate() < birthDate.getDate())
-  ) {
-    age--;
-  }
-
-  alumnoData.value.age = age;
-};
-
 const getDataStudent = async (id) => {
   try {
     const response = await StudentService.getItem(id);
@@ -378,6 +360,10 @@ const submitToEdit = async () => {
   const d = alumnoData.value;
   if (!String(d.dni || "").trim()) {
     Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Ingrese el DNI." });
+    return;
+  }
+  if (!String(d.student_code || "").trim()) {
+    Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Ingrese el código de estudiante." });
     return;
   }
   if (!String(d.name || "").trim()) {
@@ -415,7 +401,6 @@ const submitToEdit = async () => {
     return;
   }
   try {
-    calculateAge();
     const payload = {
       ...alumnoData.value,
     };

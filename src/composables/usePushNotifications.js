@@ -1,5 +1,6 @@
 import { deleteToken, getMessaging, getToken, isSupported, onMessage } from 'firebase/messaging'
 import { initializeApp } from 'firebase/app'
+import CryptoJS from 'crypto-js'
 
 import firebaseConfig, { firebaseVapidKey } from '@/config/firebase'
 import PushNotificationService from '@/services/PushNotificationService'
@@ -15,20 +16,42 @@ const isFirebaseConfigured = () => (
   && Boolean(firebaseVapidKey)
 )
 
+/** Roles que deben registrar device_token para push del navegador. */
 const PUSH_ENABLED_ROLES = ['ESTUDIANTE', 'SECRETARIA']
 
-const getUserRole = () => {
-  const rawUser = localStorage.getItem('user')
-  if (!rawUser) return null
+const getUserRole = (explicitRole = null) => {
+  if (explicitRole && typeof explicitRole === 'string') {
+    return explicitRole
+  }
 
   try {
-    return JSON.parse(rawUser)?.role ?? null
+    const rawUser = localStorage.getItem('user')
+    if (rawUser) {
+      const parsed = JSON.parse(rawUser)
+      if (parsed?.role && typeof parsed.role === 'string') {
+        return parsed.role
+      }
+    }
   } catch {
-    return null
+    // ignore
   }
+
+  try {
+    const roleKey = localStorage.getItem('r_key') || ''
+    const secretKey = import.meta.env.VITE_ROLE_KEY?.toString() || ''
+    if (roleKey && secretKey) {
+      const decrypted = CryptoJS.AES.decrypt(roleKey, secretKey).toString(CryptoJS.enc.Utf8)
+      if (decrypted) return decrypted
+    }
+  } catch {
+    // ignore
+  }
+
+  return null
 }
 
-const canRegisterPush = () => PUSH_ENABLED_ROLES.includes(getUserRole())
+const canRegisterPush = (explicitRole = null) =>
+  PUSH_ENABLED_ROLES.includes(getUserRole(explicitRole))
 
 const registerMessagingServiceWorker = async () => {
   if (!('serviceWorker' in navigator)) {
@@ -66,7 +89,8 @@ const getMessagingInstance = async () => {
 const showForegroundNotification = (payload) => {
   const title = payload?.notification?.title || payload?.data?.title || 'Notificación'
   const body = payload?.notification?.body || payload?.data?.body || ''
-  const clickPath = payload?.data?.click_action || '/assistances/alumno/reporte'
+  const clickPath = payload?.data?.click_action
+    || (getUserRole() === 'SECRETARIA' ? '/mesa-tramites' : '/myPaperworks')
 
   if (Notification.permission === 'granted') {
     const notification = new Notification(title, {
@@ -84,9 +108,13 @@ const showForegroundNotification = (payload) => {
   }
 }
 
-export const registerStudentPushNotifications = async () => {
-  if (!canRegisterPush()) {
-    return { registered: false, reason: 'role_not_allowed' }
+/**
+ * Solicita permiso del navegador y registra el token FCM en device_tokens.
+ * @param {string|null} explicitRole Rol conocido (p. ej. justo después del login).
+ */
+export const registerPushNotifications = async (explicitRole = null) => {
+  if (!canRegisterPush(explicitRole)) {
+    return { registered: false, reason: 'role_not_allowed', role: getUserRole(explicitRole) }
   }
 
   if (!('Notification' in window)) {
@@ -123,10 +151,14 @@ export const registerStudentPushNotifications = async () => {
     foregroundUnsubscribe = onMessage(messaging, showForegroundNotification)
   }
 
-  return { registered: true, token }
+  return { registered: true, token, role: getUserRole(explicitRole) }
 }
 
-export const unregisterStudentPushNotifications = async (token) => {
+/** @deprecated Usar registerPushNotifications */
+export const registerStudentPushNotifications = (explicitRole = null) =>
+  registerPushNotifications(explicitRole)
+
+export const unregisterPushNotifications = async (token) => {
   if (!token) return
 
   await PushNotificationService.deactivateDeviceToken(token)
@@ -137,11 +169,17 @@ export const unregisterStudentPushNotifications = async (token) => {
   }
 }
 
-export const ensureStudentPushRegistration = async () => {
+/** @deprecated Usar unregisterPushNotifications */
+export const unregisterStudentPushNotifications = unregisterPushNotifications
+
+export const ensurePushRegistration = async (explicitRole = null) => {
   try {
-    return await registerStudentPushNotifications()
+    return await registerPushNotifications(explicitRole)
   } catch (error) {
     console.error('No se pudo registrar notificaciones push:', error)
-    return { registered: false, reason: 'error' }
+    return { registered: false, reason: 'error', error }
   }
 }
+
+/** @deprecated Usar ensurePushRegistration */
+export const ensureStudentPushRegistration = ensurePushRegistration
