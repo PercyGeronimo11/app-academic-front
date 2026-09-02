@@ -425,6 +425,11 @@ const routes = [
             component: () => import('@/views/assistances/auxiliar/RegisterAssist.vue'),
           },
           {
+            path: 'carnets-qr',
+            name: 'Carnets QR',
+            component: () => import('@/views/assistances/auxiliar/DownloadQrCardsAssist.vue'),
+          },
+          {
             path: 'auxiliar/register-qr',
             redirect: (to) => ({
               path: '/assistances/registrar',

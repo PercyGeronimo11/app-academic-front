@@ -72,6 +72,12 @@ export default [
         icon: 'cil-pencil',
         to: '/assistances/justificar',
       },
+      {
+        component: 'CNavItem',
+        name: 'Carnets QR',
+        icon: 'cil-cloud-download',
+        to: '/assistances/carnets-qr',
+      },
 
     ],
   },

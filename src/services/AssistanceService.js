@@ -60,6 +60,32 @@ export default {
     return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/listar-alumnos/`, { params })
   },
 
+  // Carnets QR: secciones habilitadas segun el rol (el auxiliar solo ve sus aulas)
+  getSeccionesCarnetsQr() {
+    return axios.get(`${API_URL_DJANGO}/assistances/auxiliar/carnets-qr/secciones/`)
+  },
+
+  /** Descarga el PDF de carnets QR de una seccion y lo guarda en el dispositivo. */
+  async descargarCarnetsQr({ aula_id, grade, section }) {
+    const res = await axios.get(`${API_URL_DJANGO}/assistances/auxiliar/carnets-qr/`, {
+      params: { aula_id, grade, section },
+      responseType: 'blob',
+      timeout: 120000,
+    })
+
+    const blob = new Blob([res.data], { type: 'application/pdf' })
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `carnets_qr_${grade || ''}${section || ''}.pdf` || 'carnets_qr.pdf'
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    window.URL.revokeObjectURL(url)
+
+    return Number(res.headers['x-total-carnets']) || null
+  },
+
   listUnjustifiedAbsences(params = {}) {
     return axios.get(`${API_URL_DJANGO}/assistances/unjustified/`, { params })
   },
