@@ -1,17 +1,17 @@
 <template>
-  <CContainer fluid class="px-2 px-md-3">
+  <CContainer fluid :class="embedded ? 'px-0' : 'px-2 px-md-3'">
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
           <CCardBody class="py-3 px-4">
-            <div class="mb-3">
+            <div v-if="!embedded" class="mb-3">
               <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
                 <i class="fas fa-chalkboard-teacher me-2"></i>
                 Lista de docentes
               </h4>
             </div>
             <CRow class="g-2 align-items-end">
-              <CCol xs="12" md>
+              <CCol xs="12" :md="assignmentOnly ? 12 : true">
                 <CInputGroup>
                   <CFormInput
                     v-model="searchData"
@@ -23,13 +23,18 @@
                     type="button"
                     color="primary"
                     id="button-addon2"
-                    @click="listAdministrativeService(searchData)"
+                    @click="listTeacherService(searchData)"
                   >
                     Buscar
                   </CButton>
                 </CInputGroup>
               </CCol>
-              <CCol xs="12" md="auto" class="d-flex justify-content-md-end">
+              <CCol
+                v-if="!assignmentOnly"
+                xs="12"
+                md="auto"
+                class="d-flex justify-content-md-end"
+              >
                 <CButton color="info" class="text-white" @click="openCreateModal()">Nuevo</CButton>
               </CCol>
             </CRow>
@@ -47,25 +52,28 @@
                 :columns="listColumns"
                 :data="teachers"
                 empty-message="No hay docentes para mostrar."
-                empty-hint="Prueba otra búsqueda o usa «Nuevo» para registrar un docente."
+                :empty-hint="emptyHint"
                 empty-icon="👨‍🏫"
               >
               <template #actions="{ item }">
                 <div class="d-flex justify-content-center gap-2 flex-wrap">
                   <CButton
-                    color="success"
+                    v-if="assignmentOnly"
+                    color="warning"
                     class="text-white"
                     title="Asignar aulas y cursos"
                     @click="openClassroomsModal(item)"
                   >
-                    <CIcon :content="cilLayers" size="lg" />
+                    <CIcon :content="cilPencil" size="lg" />
                   </CButton>
-                  <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-                    <CIcon :content="cilPencil" size="lg"></CIcon>
-                  </CButton>
-                  <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-                    <CIcon :content="cilTrash" size="lg"></CIcon>
-                  </CButton>
+                  <template v-else>
+                    <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
+                      <CIcon :content="cilPencil" size="lg"></CIcon>
+                    </CButton>
+                    <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
+                      <CIcon :content="cilTrash" size="lg"></CIcon>
+                    </CButton>
+                  </template>
                 </div>
               </template>
             </ElegantCrudList>
@@ -164,11 +172,28 @@
 
 <script setup>
 import TeacherService from '@/services/TeacherService'
-import { ref, onMounted, watch } from 'vue';
+import { computed, ref, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2'
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
 import ModalTeacherClassrooms from './modals/ModalTeacherClassrooms.vue';
-import { cilPencil, cilTrash, cilLayers } from '@coreui/icons';
+import { cilPencil, cilTrash } from '@coreui/icons';
+
+const props = defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
+  },
+  assignmentOnly: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const emptyHint = computed(() =>
+  props.assignmentOnly
+    ? 'Prueba otra búsqueda o espera a que se registren docentes.'
+    : 'Prueba otra búsqueda o usa «Nuevo» para registrar un docente.'
+)
 
 const teachers = ref([]);
 const isModalOpen = ref(false);

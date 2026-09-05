@@ -86,6 +86,12 @@
       <div v-if="activeTab === 'horarios'">
         <SchedulesSettingsPanel />
       </div>
+
+      <!-- Asignación de aulas y cursos a docentes -->
+      <div v-if="activeTab === 'asignacion'">
+        <h5 class="mb-3">Docentes</h5>
+        <TeacherView embedded assignment-only />
+      </div>
     </CardComponent>
 
     <!-- Modal periodo -->
@@ -216,16 +222,18 @@ import CardComponent from '@/components/cruds/CardComponent.vue'
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue'
 import CourseView from '@/views/course/Course.vue'
 import SchedulesSettingsPanel from '@/views/settings/SchedulesSettingsPanel.vue'
+import TeacherView from '@/views/teachers/Teacher.vue'
 import PeriodService from '@/services/PeriodService'
 import BimesterService from '@/services/BimesterService'
 import { formatDate, toIsoDate } from '@/utils/time'
 
-const VALID_TABS = ['periodos', 'cursos', 'horarios']
+const VALID_TABS = ['periodos', 'cursos', 'horarios', 'asignacion']
 
 const tabs = [
   { id: 'periodos', label: 'Periodo escolar' },
   { id: 'cursos', label: 'Cursos' },
   { id: 'horarios', label: 'Horarios' },
+  { id: 'asignacion', label: 'Asignación' },
 ]
 
 const route = useRoute()
@@ -242,6 +250,9 @@ const activeIntro = computed(() => {
   }
   if (activeTab.value === 'horarios') {
     return 'Consulte los horarios registrados desde Docentes para el periodo académico activo.'
+  }
+  if (activeTab.value === 'asignacion') {
+    return 'Asigne aulas y cursos a cada docente del periodo académico activo.'
   }
   return 'Gestione los periodos escolares y sus 4 bimestres (inicio y fin).'
 })
