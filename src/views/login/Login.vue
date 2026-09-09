@@ -3,11 +3,15 @@
     <!-- Panel institucional: sólo en pantallas grandes -->
     <aside class="login-brand d-none d-lg-flex">
       <div class="login-brand__content">
-        <img src="/img/logo_rp.png" alt="" class="login-brand__logo" />
+        <img
+          src="/img/logo_rp.png"
+          alt="I.E. Ricardo Palma 80010"
+          class="login-brand__logo"
+        />
         <h1 class="login-brand__title">I.E. Ricardo Palma 80010</h1>
         <p class="login-brand__text">
-          Sistema de Gestión Académica: asistencias, calificaciones, comunicados
-          y trámites en un solo lugar.
+          Sistema de Gestión Académica: asistencias, calificaciones, comunicados oficiales,
+          predicciones académicas, asistente inteligente y trámites virtuales en un solo lugar.
         </p>
       </div>
       <p class="login-brand__footer">
@@ -18,7 +22,11 @@
     <!-- Panel de acceso -->
     <main class="login-form-panel">
       <div class="login-form">
-        <img src="/img/logo_rp.png" alt="" class="login-form__logo d-lg-none" />
+        <img
+          src="/img/logo_rp.png"
+          alt="I.E. Ricardo Palma 80010"
+          class="login-form__logo d-lg-none"
+        />
 
         <header class="login-form__header">
           <h2 class="login-form__title">Iniciar sesión</h2>
@@ -33,32 +41,69 @@
 
         <CForm novalidate @submit.prevent="handleLogin">
           <div class="mb-3">
-            <CFormLabel for="login-email">Correo electrónico</CFormLabel>
-            <CInputGroup>
+            <CFormLabel for="login-email">Correo institucional</CFormLabel>
+            <CInputGroup :class="{ 'is-invalid': !!errors.email }">
               <CInputGroupText>
                 <CIcon icon="cil-user" />
               </CInputGroupText>
-              <CFormInput id="login-email" v-model="email" type="email" placeholder="usuario@ejemplo.edu.pe"
-                autocomplete="username" required />
+              <CFormInput
+                id="login-email"
+                v-model="email"
+                type="email"
+                placeholder="usuario@ierp.edu.pe"
+                autocomplete="username"
+                :invalid="!!errors.email"
+                aria-describedby="login-email-error"
+                @input="clearFieldError('email')"
+              />
             </CInputGroup>
+            <div
+              v-if="errors.email"
+              id="login-email-error"
+              class="login-form__error"
+              role="alert"
+            >
+              {{ errors.email }}
+            </div>
           </div>
 
-          <div class="mb-4">
+          <div class="mb-3">
             <CFormLabel for="login-password">Contraseña</CFormLabel>
-            <CInputGroup>
+            <CInputGroup :class="{ 'is-invalid': !!errors.password }">
               <CInputGroupText>
                 <CIcon icon="cil-lock-locked" />
               </CInputGroupText>
-              <CFormInput id="login-password" v-model="password" :type="showPassword ? 'text' : 'password'"
-                placeholder="••••••••" autocomplete="current-password" required />
-              <CButton type="button" color="secondary" variant="outline"
+              <CFormInput
+                id="login-password"
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                :invalid="!!errors.password"
+                aria-describedby="login-password-error"
+                @input="clearFieldError('password')"
+              />
+              <CButton
+                type="button"
+                color="secondary"
+                variant="outline"
                 :aria-label="showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'"
-                @click="showPassword = !showPassword">
+                @click="showPassword = !showPassword"
+              >
                 <i :class="showPassword ? 'fas fa-eye-slash' : 'fas fa-eye'" aria-hidden="true"></i>
               </CButton>
             </CInputGroup>
+            <div
+              v-if="errors.password"
+              id="login-password-error"
+              class="login-form__error"
+              role="alert"
+            >
+              {{ errors.password }}
+            </div>
           </div>
 
+     
           <CButton color="primary" class="w-100 py-2" type="submit" :disabled="loadingLogin">
             <CSpinner v-if="loadingLogin" size="sm" class="me-2" />
             {{ loadingLogin ? 'Verificando...' : 'Iniciar sesión' }}
@@ -81,6 +126,8 @@ import Swal from "sweetalert2";
 import { getPeruTime } from "@/utils/time";
 import { BRAND_COLOR } from "@/utils/brand";
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default {
   data() {
     return {
@@ -90,19 +137,50 @@ export default {
       loadingLogin: false,
       sessionExpired: false,
       currentYear: new Date().getFullYear(),
+      errors: {
+        email: "",
+        password: "",
+      },
     };
   },
   mounted() {
     this.sessionExpired = this.$route.query.sessionExpired === '1';
   },
   methods: {
+    clearFieldError(field) {
+      if (this.errors[field]) {
+        this.errors[field] = "";
+      }
+    },
+    validateForm() {
+      const errors = { email: "", password: "" };
+      const email = this.email.trim();
+      const password = this.password;
+
+      if (!email) {
+        errors.email = "Ingrese su correo electrónico.";
+      } else if (!EMAIL_PATTERN.test(email)) {
+        errors.email = "Ingrese un correo electrónico válido.";
+      }
+
+      if (!password) {
+        errors.password = "Ingrese su contraseña.";
+      }
+
+      this.errors = errors;
+      return !errors.email && !errors.password;
+    },
     async handleLogin() {
+      if (!this.validateForm()) {
+        return;
+      }
+
       this.loadingLogin = true;
       try {
         const inicio = getPeruTime();
         localStorage.setItem("tiempoLogin", inicio);
 
-        const credentials = { email: this.email, password: this.password };
+        const credentials = { email: this.email.trim(), password: this.password };
         const response = await AuthService.loginService(credentials);
         const secretKey = import.meta.env.VITE_ROLE_KEY.toString();
         const role = response.data.user.role;
@@ -171,14 +249,31 @@ export default {
 /* --- Panel de marca ------------------------------------------------------- */
 
 .login-brand {
+  position: relative;
   flex-direction: column;
   justify-content: space-between;
   padding: var(--rp-space-12) var(--rp-space-10);
-  background: var(--rp-brand-600);
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 15%, rgba(255, 255, 255, 0.14), transparent 55%),
+    linear-gradient(160deg, var(--rp-brand-500) 0%, var(--rp-brand-600) 48%, var(--rp-brand-700) 100%);
   color: var(--rp-text-on-brand);
+  overflow: hidden;
+}
+
+.login-brand::after {
+  content: "";
+  position: absolute;
+  inset: auto -20% -30% auto;
+  width: 18rem;
+  height: 18rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  pointer-events: none;
 }
 
 .login-brand__content {
+  position: relative;
+  z-index: 1;
   margin-block: auto;
   max-width: 30rem;
 }
@@ -205,6 +300,8 @@ export default {
 }
 
 .login-brand__footer {
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-size: var(--rp-text-xs);
   color: var(--rp-text-on-brand-subtle);
@@ -245,6 +342,19 @@ export default {
   margin: 0;
   color: var(--rp-text-muted);
   font-size: var(--rp-text-base);
+}
+
+.login-form__error {
+  margin-top: var(--rp-space-1);
+  font-size: var(--rp-text-xs);
+  color: var(--rp-danger-500);
+}
+
+.login-form__help {
+  margin: 0 0 var(--rp-space-4);
+  font-size: var(--rp-text-xs);
+  color: var(--rp-text-subtle);
+  line-height: var(--rp-leading-normal);
 }
 
 .login-form__footer {

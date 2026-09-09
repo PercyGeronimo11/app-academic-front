@@ -202,6 +202,20 @@
   padding: var(--rp-space-4) var(--rp-space-5);
 }
 
+.modal-header.bg-primary {
+  background-color: var(--rp-brand-500) !important;
+  color: var(--rp-text-on-brand);
+}
+
+.modal-header.bg-primary .modal-title {
+  color: var(--rp-text-on-brand);
+}
+
+.modal-header.bg-primary .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+  opacity: 0.9;
+}
+
 .modal-body {
   padding: var(--rp-space-5);
 }

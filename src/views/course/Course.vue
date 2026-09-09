@@ -1,142 +1,92 @@
 <template>
-  <div :class="{ 'course-embedded': embedded }">
-    <CardComponent v-if="!embedded" title="Lista de Cursos" style="margin: 20px 10px;">
-      <div class="box-tools">
-        <CRow class="mb-3">
-          <CCol>
-            <CInputGroup>
-              <CFormInput
-                v-model="searchData"
-                placeholder="Buscar por nombre"
-                aria-label="Buscar por nombre"
-                aria-describedby="button-addon2"
-              />
-              <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">
-                Buscar
-              </CButton>
-            </CInputGroup>
-          </CCol>
-          <CCol></CCol>
-          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
-          </CCol>
-        </CRow>
-      </div>
-      <ElegantCrudList :columns="listColumns" :data="items">
-        <template #image="{ item }">
-          <img
-            v-if="item.image_url"
-            :src="item.image_url"
-            :alt="item.name"
-            class="course-thumb"
-          />
-          <span v-else class="course-thumb-placeholder">{{ (item.name || '?').charAt(0) }}</span>
-        </template>
-        <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-            <CIcon :content="cilPencil" size="lg" />
-          </CButton>
-          <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-            <CIcon :content="cilTrash" size="lg" />
-          </CButton>
-        </template>
-      </ElegantCrudList>
-    </CardComponent>
+  <div class="course-crud" :class="{ 'course-crud--embedded': embedded }">
+    <ElegantCrudList
+      :columns="listColumns"
+      :data="sortedItems"
+      empty-message="No hay cursos registrados."
+      empty-hint="Los cursos del catálogo aparecerán aquí."
+      empty-icon="📚"
+    >
+      <template #image="{ item }">
+        <img
+          v-if="item.image_url"
+          :src="item.image_url"
+          :alt="item.name"
+          class="course-thumb"
+        />
+        <span v-else class="course-thumb-placeholder">{{ (item.name || '?').charAt(0) }}</span>
+      </template>
 
-    <template v-else>
-      <div class="box-tools">
-        <CRow class="mb-3">
-          <CCol>
-            <CInputGroup>
-              <CFormInput
-                v-model="searchData"
-                placeholder="Buscar por nombre"
-                aria-label="Buscar por nombre"
-                aria-describedby="button-addon2"
-              />
-              <CButton type="button" color="primary" id="button-addon2" @click="ListItem(searchData)">
-                Buscar
-              </CButton>
-            </CInputGroup>
-          </CCol>
-          <CCol></CCol>
-          <CCol class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <CButton color="info text-white" @click="openCreateModal()">Nuevo</CButton>
-          </CCol>
-        </CRow>
-      </div>
-      <ElegantCrudList :columns="listColumns" :data="items">
-        <template #image="{ item }">
-          <img
-            v-if="item.image_url"
-            :src="item.image_url"
-            :alt="item.name"
-            class="course-thumb"
-          />
-          <span v-else class="course-thumb-placeholder">{{ (item.name || '?').charAt(0) }}</span>
-        </template>
-        <template #actions="{ item }">
-          <CButton color="warning" class="text-white" @click="openEditModal(item.id)">
-            <CIcon :content="cilPencil" size="lg" />
+      <template #description="{ item }">
+        <span class="course-description">{{ item.description || '—' }}</span>
+      </template>
+
+      <template #actions="{ item }">
+        <div class="course-actions">
+          <CButton
+            color="warning"
+            size="sm"
+            class="text-white course-actions__btn"
+            title="Editar"
+            @click.stop="openEditModal(item.id)"
+          >
+            <CIcon :content="cilPencil" />
           </CButton>
-          <CButton color="danger" class="text-white" @click="deleteItem(item.id)">
-            <CIcon :content="cilTrash" size="lg" />
-          </CButton>
-        </template>
-      </ElegantCrudList>
-    </template>
+        </div>
+      </template>
+    </ElegantCrudList>
 
     <CModal
       :visible="isModalOpen"
       scrollable
       size="lg"
-      @close="() => { isModalOpen = false }"
-      aria-labelledby="LiveDemoExampleLabel"
       alignment="center"
+      aria-labelledby="course-modal-title"
+      @close="closeModal"
     >
-      <CModalHeader>
-        <CModalTitle id="LiveDemoExampleLabel">
-          {{ isEditMode ? 'Editar curso' : 'Crear curso' }}
-        </CModalTitle>
+      <CModalHeader class="bg-primary text-white border-0">
+        <CModalTitle id="course-modal-title">Editar curso</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <CForm @submit.prevent="isEditMode ? submitToEdit() : submitToCreate()">
-          <CContainer>
-            <CRow class="mb-3">
-              <CCol>
-                <CFormInput v-model="itemData.name" label="Nombre" placeholder="nombre..." required />
-              </CCol>
-              <CCol>
-                <CFormInput
-                  v-model="itemData.description"
-                  label="Descripcion"
-                  placeholder="descripcion..."
-                  required
-                />
-              </CCol>
-            </CRow>
-            <CRow class="mb-3">
-              <CCol>
-                <label class="form-label">Imagen del curso</label>
-                <CFormInput
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
-                  @change="onImageSelected"
-                />
-                <small class="text-body-secondary">JPG, PNG, WEBP o GIF. Máx. 4 MB.</small>
-                <div v-if="imagePreview" class="mt-3">
-                  <img :src="imagePreview" alt="Vista previa" class="course-preview" />
-                </div>
-              </CCol>
-            </CRow>
-          </CContainer>
+        <CForm @submit.prevent="submitToEdit">
+          <div class="course-form-field mb-3">
+            <CFormInput
+              v-model="itemData.name"
+              label="Nombre"
+              placeholder="Nombre del curso"
+              required
+            />
+          </div>
+          <div class="course-form-field mb-3">
+            <CFormLabel for="course-description">Descripción</CFormLabel>
+            <CFormTextarea
+              id="course-description"
+              v-model="itemData.description"
+              rows="5"
+              placeholder="Descripción del curso"
+              required
+            />
+          </div>
+          <div class="course-form-field mb-0">
+            <CFormLabel for="course-image">Imagen del curso</CFormLabel>
+            <CFormInput
+              id="course-image"
+              type="file"
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              @change="onImageSelected"
+            />
+            <small class="text-body-secondary d-block mt-1">
+              JPG, PNG, WEBP o GIF. Máx. 4 MB.
+            </small>
+            <div v-if="imagePreview" class="mt-3">
+              <img :src="imagePreview" alt="Vista previa" class="course-preview" />
+            </div>
+          </div>
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="closeModal()">Cancelar</CButton>
-        <CButton color="primary" @click="isEditMode ? submitToEdit() : submitToCreate()">
-          {{ isEditMode ? 'Actualizar' : 'Registrar' }}
-        </CButton>
+        <CButton color="secondary" @click="closeModal">Cancelar</CButton>
+        <CButton color="primary" @click="submitToEdit">Actualizar</CButton>
       </CModalFooter>
     </CModal>
   </div>
@@ -144,11 +94,11 @@
 
 <script setup>
 import CourseService from '@/services/CourseService'
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Swal from 'sweetalert2'
-import CardComponent from '@/components/cruds/CardComponent.vue'
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue'
-import { cilPencil, cilTrash } from '@coreui/icons'
+import { cilPencil } from '@coreui/icons'
+import { BRAND_COLOR } from '@/utils/brand'
 
 defineProps({
   embedded: {
@@ -159,9 +109,7 @@ defineProps({
 
 const items = ref([])
 const isModalOpen = ref(false)
-const isEditMode = ref(false)
 const idItemSelected = ref(0)
-const searchData = ref('')
 const imagePreview = ref(null)
 const itemData = ref({
   name: '',
@@ -169,25 +117,30 @@ const itemData = ref({
   image: null,
   image_url: null,
 })
-const listColumns = ref([
+
+const listColumns = computed(() => [
   { key: 'id', label: 'N°' },
   { key: 'image', label: 'Imagen' },
   { key: 'name', label: 'Nombre' },
-  { key: 'description', label: 'Descripcion' },
-  { key: 'actions', label: 'OPCIONES' },
+  { key: 'description', label: 'Descripción', hideOnMobile: true },
+  { key: 'actions', label: 'Opciones', center: true },
 ])
+
+const sortedItems = computed(() =>
+  [...items.value].sort((a, b) => Number(a.id) - Number(b.id)),
+)
 
 onMounted(async () => {
   try {
-    await ListItem()
+    await listItems()
   } catch (error) {
     console.error(error)
   }
 })
 
-const ListItem = async (data) => {
-  const response = await CourseService.getItems(data)
-  items.value = response.data.data
+const listItems = async () => {
+  const response = await CourseService.getItems()
+  items.value = response.data.data || []
 }
 
 const onImageSelected = (event) => {
@@ -197,12 +150,6 @@ const onImageSelected = (event) => {
     URL.revokeObjectURL(imagePreview.value)
   }
   imagePreview.value = file ? URL.createObjectURL(file) : itemData.value.image_url
-}
-
-const openCreateModal = () => {
-  clearDataModal()
-  isEditMode.value = false
-  isModalOpen.value = true
 }
 
 const openEditModal = async (id) => {
@@ -215,7 +162,6 @@ const openEditModal = async (id) => {
     image_url: response.data.data.image_url || null,
   }
   imagePreview.value = response.data.data.image_url || null
-  isEditMode.value = true
   isModalOpen.value = true
 }
 
@@ -237,39 +183,17 @@ const closeModal = () => {
   clearDataModal()
 }
 
-const submitToCreate = async () => {
-  try {
-    await CourseService.createItem(itemData.value)
-    ListItem()
-    closeModal()
-    Swal.fire({
-      icon: 'success',
-      title: 'Registro exitoso',
-      text: 'Curso registrado con éxito.',
-    })
-  } catch (error) {
-    const message =
-      error.response?.data?.message ||
-      error.response?.data?.errors?.image?.[0] ||
-      'No se pudo registrar el curso.'
-    Swal.fire({
-      icon: 'error',
-      title: 'Error al Guardar',
-      text: typeof message === 'string' ? message : message[0] || 'Error al guardar',
-    })
-  }
-}
-
 const submitToEdit = async () => {
   itemData.value.id = idItemSelected.value
   try {
     await CourseService.updateItem(itemData.value)
-    ListItem()
+    await listItems()
     closeModal()
     Swal.fire({
       icon: 'success',
       title: 'Actualización exitosa',
       text: 'Curso actualizado con éxito.',
+      confirmButtonColor: BRAND_COLOR,
     })
   } catch (error) {
     const message =
@@ -280,49 +204,17 @@ const submitToEdit = async () => {
       icon: 'error',
       title: 'Error al Guardar',
       text: typeof message === 'string' ? message : message[0] || 'Error al guardar',
+      confirmButtonColor: BRAND_COLOR,
     })
   }
 }
-
-const deleteItem = async (id) => {
-  try {
-    const confirmResult = await Swal.fire({
-      icon: 'question',
-      iconColor: '#E55353',
-      title: 'Eliminar Curso',
-      text: '¿Estás seguro que desea eliminar este curso?',
-      confirmButtonText: 'Eliminar',
-      confirmButtonColor: '#E55353',
-      showCancelButton: true,
-      cancelButtonText: 'Cancelar',
-      cancelButtonColor: '#39F',
-      reverseButtons: true,
-    })
-    if (confirmResult.isConfirmed) {
-      await CourseService.deleteItem(id)
-      ListItem()
-      Swal.fire({
-        icon: 'success',
-        title: 'Curso eliminado',
-        text: 'El curso ha sido eliminado exitosamente.',
-      })
-    }
-  } catch (error) {
-    console.error(error)
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'Ocurrió un error al eliminar el Curso. Por favor, inténtalo de nuevo.',
-    })
-  }
-}
-
-watch(searchData, (newVal) => {
-  ListItem(newVal)
-})
 </script>
 
 <style scoped>
+.course-crud {
+  width: 100%;
+}
+
 .course-thumb,
 .course-thumb-placeholder {
   width: 2.5rem;
@@ -345,11 +237,45 @@ watch(searchData, (newVal) => {
   font-weight: var(--rp-weight-semibold);
 }
 
+.course-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  max-width: 28rem;
+  font-size: var(--rp-text-sm);
+  line-height: var(--rp-leading-snug);
+  color: var(--rp-text);
+}
+
+.course-actions {
+  display: inline-flex;
+  justify-content: center;
+}
+
+.course-actions__btn {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.4rem;
+}
+
+.course-form-field {
+  min-width: 0;
+}
+
 .course-preview {
   max-width: min(100%, 15rem);
   max-height: 10rem;
+  width: 100%;
   object-fit: cover;
   border-radius: var(--rp-radius-md);
   border: 1px solid var(--rp-border);
+}
+
+@media (min-width: 768px) {
+  .course-actions__btn {
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+  }
 }
 </style>

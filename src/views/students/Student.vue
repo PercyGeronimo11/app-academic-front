@@ -1,23 +1,37 @@
 <template>
-  <CContainer fluid class="px-2 px-md-3">
-    <!-- Tarjeta: título y filtros -->
+  <CContainer fluid class="px-2 px-md-3 student-crud">
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
-          <CCardBody class="py-3 px-4">
-            <div class="mb-3">
-              <h4 class="fw-bold text-primary mb-0 d-flex align-items-center">
-                <i class="fas fa-users me-2"></i>
-                Lista de alumnos
-              </h4>
+          <CCardBody class="py-3 px-3 px-md-4">
+            <div class="student-crud__intro mb-3">
+              <div class="student-crud__intro-text">
+                <h4 class="student-crud__title mb-1">
+                  <i class="fas fa-users" aria-hidden="true"></i>
+                  Lista de alumnos
+                </h4>
+                <p class="student-crud__subtitle mb-0">
+                  Alta, edición, importación y búsqueda de estudiantes.
+                </p>
+              </div>
+              <div class="student-crud__header-actions d-none d-lg-flex">
+                <CButton color="primary" @click="goNewStudent">
+                  <i class="fas fa-plus me-2" aria-hidden="true"></i>
+                  Nuevo
+                </CButton>
+                <CButton color="info" class="text-white" @click="openImportStudentsModal">
+                  Importar
+                </CButton>
+              </div>
             </div>
+
             <CRow class="g-2 align-items-end">
-              <CCol xs="12" md="6" lg="3">
+              <CCol xs="12" md="6" lg="4">
                 <CFormInput
                   v-model="searchData"
                   label="Buscar"
-                  placeholder="Nombres, apellidos, DNI o código"
-                  aria-label="Buscar por nombres, apellidos, DNI o código"
+                  placeholder="Nombres, apellidos o DNI"
+                  aria-label="Buscar por nombres, apellidos o DNI"
                   @keyup.enter="applyFilters"
                 />
               </CCol>
@@ -55,7 +69,7 @@
                   </option>
                 </CFormSelect>
               </CCol>
-              <CCol xs="12" md="6" lg="3" class="d-flex flex-wrap gap-2">
+              <CCol xs="12" md="12" lg="4" class="d-flex flex-wrap gap-2">
                 <CButton type="button" color="primary" @click="applyFilters">
                   Buscar
                 </CButton>
@@ -63,15 +77,12 @@
                   Limpiar
                 </CButton>
               </CCol>
-              <CCol
-                xs="12"
-                lg="2"
-                class="d-flex flex-wrap gap-2 justify-content-lg-end"
-              >
-                <CButton color="success" class="text-white" @click="goNewStudent">
-                  Nuevo estudiante
+              <CCol xs="12" class="d-lg-none d-flex flex-wrap gap-2">
+                <CButton color="primary" class="flex-grow-1" @click="goNewStudent">
+                  <i class="fas fa-plus me-2" aria-hidden="true"></i>
+                  Nuevo
                 </CButton>
-                <CButton color="info" class="text-white" @click="openImportStudentsModal">
+                <CButton color="info" class="text-white flex-grow-1" @click="openImportStudentsModal">
                   Importar
                 </CButton>
               </CCol>
@@ -81,7 +92,6 @@
       </CCol>
     </CRow>
 
-    <!-- Tarjeta: tabla y paginación -->
     <CRow class="mb-3">
       <CCol>
         <CCard class="shadow-sm border-0">
@@ -94,13 +104,42 @@
                 empty-hint="Ajusta los criterios, limpia los filtros o registra un nuevo estudiante."
                 empty-icon="👥"
               >
+                <template #full_name="{ item }">
+                  <div class="student-name">
+                    <span class="student-name__given">{{ item.name || '—' }}</span>
+                    <span class="student-name__surnames">{{ fullSurnames(item) }}</span>
+                  </div>
+                </template>
+
+                <template #aula="{ item }">
+                  <span class="student-aula">{{ formatAula(item) }}</span>
+                </template>
+
+                <template #apoderado="{ item }">
+                  <span class="student-apoderado">{{ apoderadoName(item) }}</span>
+                </template>
+
                 <template #actions="{ item }">
-                  <CButton color="warning" class="text-white" @click.stop="navigateToEditStudent(item.id)">
-                    <CIcon :content="cilPencil" size="lg"></CIcon>
-                  </CButton>
-                  <!-- <CButton color="danger" class="text-white" @click.stop="deleteItem(item.id)">
-                    <CIcon :content="cilTrash" size="lg"></CIcon>
-                  </CButton> -->
+                  <div class="student-actions">
+                    <CButton
+                      color="warning"
+                      size="sm"
+                      class="text-white student-actions__btn"
+                      title="Editar"
+                      @click.stop="navigateToEditStudent(item.id)"
+                    >
+                      <CIcon :content="cilPencil" />
+                    </CButton>
+                    <CButton
+                      color="danger"
+                      size="sm"
+                      class="text-white student-actions__btn"
+                      title="Eliminar"
+                      @click.stop="deleteItem(item)"
+                    >
+                      <CIcon :content="cilTrash" />
+                    </CButton>
+                  </div>
                 </template>
               </ElegantCrudList>
 
@@ -108,36 +147,36 @@
                 v-if="meta.total > 0"
                 class="modern-list-pagination-bar d-flex flex-wrap justify-content-between align-items-center gap-2"
               >
-              <small class="text-body-secondary">
-                Mostrando {{ rangeStart }}–{{ rangeEnd }} de {{ meta.total }}
-              </small>
-              <CPagination class="mb-0 flex-wrap" aria-label="Paginación de estudiantes">
-                <CPaginationItem
-                  href="#"
-                  :disabled="meta.current_page <= 1"
-                  aria-label="Anterior"
-                  @click.prevent="goPage(meta.current_page - 1)"
-                >
-                  ‹
-                </CPaginationItem>
-                <CPaginationItem
-                  v-for="p in visiblePages"
-                  :key="p"
-                  href="#"
-                  :active="p === meta.current_page"
-                  @click.prevent="goPage(p)"
-                >
-                  {{ p }}
-                </CPaginationItem>
-                <CPaginationItem
-                  href="#"
-                  :disabled="meta.current_page >= meta.last_page"
-                  aria-label="Siguiente"
-                  @click.prevent="goPage(meta.current_page + 1)"
-                >
-                  ›
-                </CPaginationItem>
-              </CPagination>
+                <small class="text-body-secondary">
+                  Mostrando {{ rangeStart }}–{{ rangeEnd }} de {{ meta.total }}
+                </small>
+                <CPagination class="mb-0 flex-wrap" aria-label="Paginación de estudiantes">
+                  <CPaginationItem
+                    href="#"
+                    :disabled="meta.current_page <= 1"
+                    aria-label="Anterior"
+                    @click.prevent="goPage(meta.current_page - 1)"
+                  >
+                    ‹
+                  </CPaginationItem>
+                  <CPaginationItem
+                    v-for="p in visiblePages"
+                    :key="p"
+                    href="#"
+                    :active="p === meta.current_page"
+                    @click.prevent="goPage(p)"
+                  >
+                    {{ p }}
+                  </CPaginationItem>
+                  <CPaginationItem
+                    href="#"
+                    :disabled="meta.current_page >= meta.last_page"
+                    aria-label="Siguiente"
+                    @click.prevent="goPage(meta.current_page + 1)"
+                  >
+                    ›
+                  </CPaginationItem>
+                </CPagination>
               </div>
             </div>
           </CCardBody>
@@ -150,14 +189,15 @@
 </template>
 
 <script setup>
-import StudentService from '@/services/StudentService'
-import GradeSectionService from '@/services/GradeSectionService'
+import StudentService from '@/services/StudentService';
+import GradeSectionService from '@/services/GradeSectionService';
 import { useRouter } from 'vue-router';
 import { ref, onMounted, computed } from 'vue';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 import ImportStudents from './ImportStudents.vue';
 import ElegantCrudList from '@/components/cruds/ElegantCrudList.vue';
 import { cilPencil, cilTrash } from '@coreui/icons';
+import { BRAND_COLOR, DANGER_COLOR } from '@/utils/brand';
 
 const isOpenModalImportStudents = ref(false);
 const alumnos = ref([]);
@@ -176,16 +216,31 @@ const meta = ref({
 });
 
 const router = useRouter();
-const listColumns = ref([
+const listColumns = computed(() => [
   { key: 'id', label: 'N°' },
-  { key: 'surnames', label: 'Apellidos' },
-  { key: 'name', label: 'Nombres' },
-  { key: 'student_code', label: 'Código' },
-  { key: 'dni', label: 'DNI' },
-  { key: 'grade_section.grade', label: 'Grado' },
-  { key: 'grade_section.section', label: 'Sección' },
-  { key: 'actions', label: 'OPCIONES' },
+  { key: 'full_name', label: 'Nombre y apellidos' },
+  { key: 'dni', label: 'DNI', hideOnMobile: true },
+  { key: 'aula', label: 'Grado' },
+  { key: 'apoderado', label: 'Apoderado', hideOnMobile: true },
+  { key: 'actions', label: 'Opciones', center: true },
 ]);
+
+const fullSurnames = (item) => {
+  const value = [item?.surname_father, item?.surname_mother].filter(Boolean).join(' ');
+  return value || '—';
+};
+
+const apoderadoName = (item) => {
+  const value = String(item?.representative_name || '').trim();
+  return value || '—';
+};
+
+const formatAula = (item) => {
+  const grade = item?.grade_section?.grade ?? item?.grade ?? '';
+  const section = item?.grade_section?.section ?? item?.section ?? '';
+  if (!grade && !section) return '—';
+  return `${grade || '—'}° ${section || '—'}`.trim();
+};
 
 onMounted(async () => {
   try {
@@ -234,10 +289,7 @@ const buildListParams = () => {
 const listStudentService = async () => {
   const response = await StudentService.getItems(buildListParams());
   const rows = response.data.data || [];
-  alumnos.value = rows.map((row) => ({
-    ...row,
-    surnames: [row.surname_father, row.surname_mother].filter(Boolean).join(' ').trim() || '—',
-  }));
+  alumnos.value = rows;
   if (response.data.meta) {
     meta.value = response.data.meta;
   } else {
@@ -300,34 +352,45 @@ const goNewStudent = () => {
   router.push({ name: 'NuevoEstudiante' });
 };
 
-const navigateToEditStudent = async (id) => {
+const navigateToEditStudent = (id) => {
   return router.push({
     name: 'editStudent',
-    params: { id }
+    params: { id },
   });
 };
 
-const deleteItem = async (id) => {
+const deleteItem = async (item) => {
+  const fullName = [item?.name, item?.surname_father, item?.surname_mother]
+    .filter(Boolean)
+    .join(' ');
+  const label = fullName || 'este alumno';
+  const safeLabel = String(label)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
   try {
     const confirmResult = await Swal.fire({
       icon: 'question',
-      iconColor: '#E55353',
+      iconColor: DANGER_COLOR,
       title: 'Eliminar Alumno',
-      text: '¿Estás seguro que desea eliminar este alumno?',
+      html: `¿Está seguro de eliminar a <strong>${safeLabel}</strong>?`,
       confirmButtonText: 'Eliminar',
-      confirmButtonColor: '#E55353',
+      confirmButtonColor: DANGER_COLOR,
       showCancelButton: true,
       cancelButtonText: 'Cancelar',
-      cancelButtonColor: '#39F',
+      cancelButtonColor: BRAND_COLOR,
       reverseButtons: true,
     });
     if (confirmResult.isConfirmed) {
-      await StudentService.deleteItem(id);
+      await StudentService.deleteItem(item.id);
       await listStudentService();
       Swal.fire({
         icon: 'success',
         title: 'Alumno eliminado',
-        text: 'El alumno ha sido eliminado exitosamente.',
+        text: `${label} ha sido eliminado exitosamente.`,
+        confirmButtonColor: BRAND_COLOR,
       });
     }
   } catch (error) {
@@ -336,32 +399,142 @@ const deleteItem = async (id) => {
       icon: 'error',
       title: 'Error',
       text: 'Ocurrió un error al eliminar el Alumno. Por favor, inténtalo de nuevo.',
+      confirmButtonColor: BRAND_COLOR,
     });
   }
 };
 </script>
 
-<style>
-.input-group-text {
-  background-color: var(--rp-surface-sunken);
-  border-left: none;
-  font-weight: bold;
+<style scoped>
+.student-crud__intro {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--rp-space-3);
 }
 
-.form-control {
-  border-right: none;
-}
-
-.input-group {
+.student-crud__title {
   display: flex;
   align-items: center;
+  gap: var(--rp-space-2);
+  margin: 0;
+  font-weight: var(--rp-weight-bold);
+  color: var(--rp-brand-500);
+  font-size: var(--rp-text-lg);
+  line-height: var(--rp-leading-tight);
 }
 
-.input-group .form-control {
-  border-radius: 0.25rem 0 0 0.25rem;
+.student-crud__subtitle {
+  color: var(--rp-text-muted);
+  font-size: var(--rp-text-sm);
+  line-height: var(--rp-leading-normal);
 }
 
-.input-group .input-group-text {
-  border-radius: 0 0.25rem 0.25rem 0;
+.student-crud__header-actions {
+  gap: var(--rp-space-2);
+  flex-wrap: wrap;
+}
+
+.student-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+  max-width: 14rem;
+  text-align: left;
+}
+
+.student-name__given {
+  font-weight: var(--rp-weight-semibold);
+  color: var(--rp-text-heading);
+  line-height: var(--rp-leading-snug);
+  overflow-wrap: anywhere;
+}
+
+.student-name__surnames {
+  font-size: var(--rp-text-sm);
+  color: var(--rp-text-muted);
+  line-height: var(--rp-leading-snug);
+  overflow-wrap: anywhere;
+}
+
+.student-aula {
+  display: block;
+  font-weight: var(--rp-weight-semibold);
+  white-space: nowrap;
+  text-align: left;
+}
+
+.student-apoderado {
+  display: block;
+  max-width: 14rem;
+  font-size: var(--rp-text-sm);
+  color: var(--rp-text);
+  line-height: var(--rp-leading-snug);
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.student-actions {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--rp-space-1);
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  max-width: 5.5rem;
+  margin-inline: auto;
+}
+
+.student-actions__btn {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0.25rem 0.4rem;
+}
+
+@media (min-width: 768px) {
+  .student-crud__title {
+    font-size: var(--rp-text-xl);
+  }
+
+  .student-name {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem;
+    max-width: none;
+  }
+
+  .student-name__given,
+  .student-name__surnames {
+    font-size: inherit;
+    line-height: var(--rp-leading-normal);
+    overflow-wrap: normal;
+    white-space: nowrap;
+  }
+
+  .student-name__surnames {
+    color: var(--rp-text-heading);
+    font-weight: var(--rp-weight-semibold);
+  }
+
+  .student-apoderado {
+    max-width: 16rem;
+  }
+
+  .student-actions {
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: var(--rp-space-2);
+    width: auto;
+    max-width: none;
+  }
+
+  .student-actions__btn {
+    min-width: 2.25rem;
+    min-height: 2.25rem;
+  }
 }
 </style>

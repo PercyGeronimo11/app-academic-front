@@ -13,7 +13,7 @@
         <div
           v-for="column in columns"
           :key="column.key"
-          :class="{ 'table-cell': true, 'center-cell': column.center||false}"
+          :class="cellClass(column)"
           role="columnheader"
         >
           {{ column.label }}
@@ -35,7 +35,7 @@
         <div
           v-for="column in columns"
           :key="column.key"
-          class="table-cell"
+          :class="cellClass(column)"
         >
           <!-- Slot para acciones -->
           <slot
@@ -146,6 +146,14 @@ function isSelected(item) {
 
 function onRowClick(item) {
   emit('row-click', item)
+}
+
+function cellClass(column) {
+  return {
+    'table-cell': true,
+    'center-cell': Boolean(column?.center),
+    'd-none d-md-table-cell': Boolean(column?.hideOnMobile),
+  }
 }
 
 function statusColor(status) {
