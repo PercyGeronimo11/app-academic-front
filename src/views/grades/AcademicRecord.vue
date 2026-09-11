@@ -171,6 +171,7 @@ const period = ref(null)
 const bimesters = ref([])
 const courses = ref([])
 const institution = ref({})
+const attendance = ref([])
 
 const gradeLabel = computed(() => studentInfo.value?.grade_section?.label || '')
 
@@ -221,6 +222,7 @@ const loadRecord = async () => {
       bimesters.value = data.bimesters || []
       courses.value = data.courses || []
       institution.value = data.institution || {}
+      attendance.value = data.attendance || []
     } else {
       loadError.value = response.data?.message || 'No se pudo cargar el record académico.'
     }
@@ -232,13 +234,14 @@ const loadRecord = async () => {
   }
 }
 
-const downloadPdf = () => {
-  generateAcademicRecordPdf({
+const downloadPdf = async () => {
+  await generateAcademicRecordPdf({
     student: studentInfo.value,
     period: period.value,
     bimesters: bimesters.value,
     courses: courses.value,
     institution: institution.value,
+    attendance: attendance.value,
   })
 }
 
