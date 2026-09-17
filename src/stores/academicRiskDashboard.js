@@ -89,9 +89,7 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
   const isAllClassrooms = computed(() => filters.value.gradeSectionId == null)
 
   const currentWritableBimester = computed(() => {
-    if (!activeSchoolYear.value || Number(filters.value.schoolYear) !== Number(activeSchoolYear.value)) {
-      return null
-    }
+    if (!activeSchoolYear.value) return null
     return resolveDefaultBimester(bimesters.value, { maxNumber: 3 })
   })
 
@@ -99,7 +97,6 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     const current = currentWritableBimester.value
     return Boolean(
       current
-      && Number(filters.value.schoolYear) === Number(activeSchoolYear.value)
       && Number(filters.value.bimester) === Number(current.number),
     )
   })
@@ -125,9 +122,8 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
   const loadSchoolYears = async () => {
     schoolYears.value = await loadSchoolYearOptions()
     activeSchoolYear.value = await resolveActiveSchoolYear(schoolYears.value)
-    if (!filters.value.schoolYear) {
-      filters.value.schoolYear = activeSchoolYear.value
-    }
+    // Siempre periodo activo (Configuraciones); no hay filtro de año.
+    filters.value.schoolYear = activeSchoolYear.value
   }
 
   const loadBimesters = async () => {
@@ -297,13 +293,6 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     return bootstrapPromise
   }
 
-  const onSchoolYearChange = async (year) => {
-    filters.value.schoolYear = year
-    filters.value.gradeSectionId = null
-    lastOverviewKey = null
-    await loadYearDependentMeta()
-  }
-
   const onBimesterChange = (bimester) => {
     filters.value.bimester = bimester
   }
@@ -369,7 +358,6 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     canUpdatePredictions,
     bootstrapOverview,
     loadOverview,
-    onSchoolYearChange,
     onBimesterChange,
     onGradeSectionChange,
     updatePredictions,

@@ -2,17 +2,16 @@
   <CCard class="shadow-sm border-0 mb-3 academic-risk-filters">
     <CCardBody class="p-3 p-md-4">
       <div class="academic-risk-filters__row">
-        <div class="academic-risk-filters__field">
+        <div
+          v-if="store.activeSchoolYear"
+          class="academic-risk-filters__field academic-risk-filters__field--year"
+        >
           <CFormLabel class="academic-risk-filters__label">Año escolar</CFormLabel>
-          <CFormSelect
-            :model-value="store.filters.schoolYear"
-            :disabled="store.loading || store.updating"
-            @change="handleSchoolYearChange"
-          >
-            <option v-for="year in store.schoolYears" :key="year" :value="year">
-              {{ year }}
-            </option>
-          </CFormSelect>
+          <div class="academic-risk-filters__year-badge" title="Periodo activo en Configuraciones">
+            <i class="fas fa-calendar-alt" aria-hidden="true"></i>
+            <span>{{ store.activeSchoolYear }}</span>
+            <small>activo</small>
+          </div>
         </div>
 
         <div class="academic-risk-filters__field">
@@ -73,10 +72,6 @@ defineEmits(['update-predictions'])
 
 const store = useAcademicRiskStore()
 
-const handleSchoolYearChange = (event) => {
-  store.onSchoolYearChange(Number(event.target.value))
-}
-
 const handleBimesterChange = (event) => {
   store.onBimesterChange(Number(event.target.value))
 }
@@ -85,3 +80,37 @@ const handleGradeSectionChange = (event) => {
   store.onGradeSectionChange(Number(event.target.value))
 }
 </script>
+
+<style scoped>
+.academic-risk-filters__field--year {
+  flex: 0 1 auto;
+  min-width: 8.5rem;
+}
+
+.academic-risk-filters__year-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 38px;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--rp-radius-md);
+  background: var(--rp-surface-brand-soft);
+  border: 1px solid var(--rp-border-brand);
+  color: var(--rp-text-brand);
+  font-size: 0.9rem;
+  font-weight: var(--rp-weight-semibold);
+  white-space: nowrap;
+}
+
+.academic-risk-filters__year-badge i {
+  color: var(--rp-brand-500);
+}
+
+.academic-risk-filters__year-badge small {
+  font-size: 0.65rem;
+  font-weight: var(--rp-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--rp-text-muted);
+}
+</style>

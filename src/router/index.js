@@ -189,6 +189,12 @@ const routes = [
             component: () => import('@/views/grades/CourseGradesView.vue'),
           },
           {
+            path: 'merit',
+            name: 'OrdenMeritoProfesor',
+            meta: { title: 'Orden mérito' },
+            component: () => import('@/views/grades/CourseMeritRankingView.vue'),
+          },
+          {
             path: 'import',
             redirect: (to) => `/courses/teacher/${to.params.courseClass}/grades`,
           },
@@ -231,10 +237,14 @@ const routes = [
             component: () => import('@/views/main_area_student/CourseScheduleView.vue'),
           },
           {
+            path: 'merit',
+            name: 'OrdenMeritoAlumno',
+            meta: { title: 'Orden mérito' },
+            component: () => import('@/views/main_area_student/CourseMeritView.vue'),
+          },
+          {
             path: 'competencies',
-            name: 'Competencias del curso',
-            meta: { title: 'Competencias' },
-            component: () => import('@/views/main_area_student/CourseCompetenciesView.vue'),
+            redirect: (to) => `/courses/student/${to.params.courseClass}/merit`,
           },
           {
             path: 'conduct',

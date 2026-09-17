@@ -59,10 +59,10 @@ const tabs = computed(() => {
       icon: 'fas fa-clock',
     },
     {
-      label: 'Competencias',
-      to: `/courses/student/${id}/competencies`,
-      match: 'competencies',
-      icon: 'fas fa-list-ul',
+      label: 'Orden mérito',
+      to: `/courses/student/${id}/merit`,
+      match: 'merit',
+      icon: 'fas fa-medal',
     },
     {
       label: 'Conducta',

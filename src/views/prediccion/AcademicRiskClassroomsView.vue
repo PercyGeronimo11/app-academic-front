@@ -103,7 +103,6 @@ const goDashboard = () => {
   router.push({
     path: '/prediccion/dashboard',
     query: {
-      school_year: store.filters.schoolYear || undefined,
       bimester: store.filters.bimester || undefined,
     },
   })
@@ -113,7 +112,6 @@ const goOperational = (classroom = null) => {
   router.push({
     path: '/prediccion/academic-risk',
     query: {
-      school_year: store.filters.schoolYear || undefined,
       bimester: store.filters.bimester || undefined,
       grade_section_id: classroom?.grade_section_id || undefined,
     },
@@ -179,9 +177,6 @@ const confirmUpdateAll = async () => {
 }
 
 onMounted(async () => {
-  if (route.query.school_year) {
-    store.filters.schoolYear = Number(route.query.school_year)
-  }
   if (route.query.bimester) {
     store.filters.bimester = Number(route.query.bimester)
   }

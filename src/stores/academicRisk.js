@@ -71,9 +71,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   })
 
   const isWritableWindow = computed(() => {
-    if (!activeSchoolYear.value || Number(filters.value.schoolYear) !== Number(activeSchoolYear.value)) {
-      return false
-    }
+    if (!activeSchoolYear.value) return false
     const current = resolveDefaultBimester(bimesters.value, { maxNumber: 3 })
     return Boolean(current && Number(filters.value.bimester) === Number(current.number))
   })
@@ -132,9 +130,8 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const loadSchoolYears = async () => {
     schoolYears.value = await loadSchoolYearOptions()
     activeSchoolYear.value = await resolveActiveSchoolYear(schoolYears.value)
-    if (!filters.value.schoolYear) {
-      filters.value.schoolYear = activeSchoolYear.value
-    }
+    // Siempre periodo activo (Configuraciones); no hay filtro de año.
+    filters.value.schoolYear = activeSchoolYear.value
   }
 
   const loadBimesters = async () => {
@@ -288,26 +285,6 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     }
   }
 
-  const onSchoolYearChange = async (schoolYear) => {
-    filters.value.schoolYear = schoolYear
-    filters.value.bimester = null
-    filters.value.studentId = null
-    loading.value = true
-    error.value = null
-
-    try {
-      await loadScope()
-      await loadBimesters()
-      await loadGradeSections()
-      await loadStudents()
-      await buildRows()
-    } catch (err) {
-      error.value = err.response?.data?.message || 'No se pudieron actualizar los bimestres.'
-    } finally {
-      loading.value = false
-    }
-  }
-
   const onBimesterChange = async (bimester) => {
     filters.value.bimester = bimester
     filters.value.studentId = null
@@ -428,6 +405,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     rows,
     filteredRows,
     summary,
+    activeSchoolYear,
     loading,
     updating,
     predictingStudentId,
@@ -441,7 +419,6 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     selectedGradeSection,
     selectedBimester,
     initializeFilters,
-    onSchoolYearChange,
     onBimesterChange,
     onGradeSectionChange,
     onStudentChange,

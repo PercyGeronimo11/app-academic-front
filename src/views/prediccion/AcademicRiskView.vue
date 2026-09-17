@@ -96,7 +96,6 @@ const goToDashboard = () => {
   router.push({
     path: '/prediccion/dashboard',
     query: {
-      school_year: store.filters.schoolYear || undefined,
       bimester: store.filters.bimester || undefined,
       grade_section_id: store.filters.gradeSectionId || undefined,
     },
@@ -226,9 +225,6 @@ const confirmPredictStudent = async (row) => {
 }
 
 onMounted(() => {
-  if (route.query.school_year) {
-    store.filters.schoolYear = Number(route.query.school_year)
-  }
   if (route.query.bimester) {
     store.filters.bimester = Number(route.query.bimester)
   }

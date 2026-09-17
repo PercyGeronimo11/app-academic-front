@@ -41,6 +41,24 @@ export default {
     });
   },
 
+  meritRanking(courseClassId, period = null) {
+    return axios.get(`${API_URL}/competency-scores/merit-ranking`, {
+      params: {
+        course_class_id: courseClassId,
+        period: period || undefined,
+      },
+    });
+  },
+
+  myMerit(courseClassId, period = null) {
+    return axios.get(`${API_URL}/competency-scores/my-merit`, {
+      params: {
+        course_class_id: courseClassId,
+        period: period || undefined,
+      },
+    });
+  },
+
   previewSiagie(file, courseClassId = null, bimesterId = null) {
     const formData = new FormData();
     formData.append('file', file);

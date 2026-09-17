@@ -236,6 +236,12 @@ const tabs = computed(() => {
       match: 'grades',
       icon: 'fas fa-chart-bar',
     },
+    {
+      label: 'Orden mérito',
+      to: `/courses/teacher/${id}/merit`,
+      match: 'merit',
+      icon: 'fas fa-medal',
+    },
   ]
 })
 
