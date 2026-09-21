@@ -1,3 +1,12 @@
+export function getPeruDateISO(date = new Date()) {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Lima',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(date)
+}
+
 export function getPeruTime() {
     const now = new Date();
     const peruTime = new Date(now.toLocaleString("en-US", { timeZone: "America/Lima" }));

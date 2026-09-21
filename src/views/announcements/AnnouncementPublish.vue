@@ -345,6 +345,7 @@ import AnnouncementAvisoOverlay from '@/components/announcements/AnnouncementAvi
 import TablePagination from '@/components/academic/TablePagination.vue'
 import { useClientPagination } from '@/composables/useClientPagination'
 import { toastError, toastSuccess, toastWarning } from '@/utils/alerts'
+import { getPeruDateISO } from '@/utils/time'
 
 const router = useRouter()
 
@@ -374,11 +375,7 @@ const headerSubtitle = computed(() =>
     : 'Borradores y publicados de sus aulas. Al finalizar la vigencia pasan a Historial.'
 )
 
-const today = () => {
-  const now = new Date()
-  const tzOffset = now.getTimezoneOffset() * 60000
-  return new Date(now.getTime() - tzOffset).toISOString().slice(0, 10)
-}
+const today = () => getPeruDateISO()
 
 const gradeOptions = ref([])
 const publishedList = ref([])

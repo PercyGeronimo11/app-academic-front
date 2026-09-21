@@ -1,7 +1,7 @@
 <template>
   <div class="module-page course-conduct">
-    <div class="module-filter-bar">
-      <div style="max-width: 280px">
+    <div class="module-filter-bar course-conduct__filters">
+      <div class="course-conduct__field">
         <CFormLabel for="conduct-bimester">Bimestre</CFormLabel>
         <CFormSelect
           id="conduct-bimester"
@@ -10,6 +10,23 @@
         >
           <option v-for="item in bimesters" :key="item.id" :value="Number(item.id)">
             {{ item.name }}
+          </option>
+        </CFormSelect>
+      </div>
+      <div class="course-conduct__field">
+        <CFormLabel for="conduct-date-from">Desde</CFormLabel>
+        <CFormInput id="conduct-date-from" v-model="dateFrom" type="date" />
+      </div>
+      <div class="course-conduct__field">
+        <CFormLabel for="conduct-date-to">Hasta</CFormLabel>
+        <CFormInput id="conduct-date-to" v-model="dateTo" type="date" />
+      </div>
+      <div class="course-conduct__field course-conduct__field--grow">
+        <CFormLabel for="conduct-type">Tipo de incidencia</CFormLabel>
+        <CFormSelect id="conduct-type" v-model="incidentType">
+          <option value="">Todos</option>
+          <option v-for="opt in incidentTypeOptions" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
           </option>
         </CFormSelect>
       </div>
@@ -24,7 +41,7 @@
       v-else-if="!incidents.length"
       icon="✅"
       title="Sin incidentes de conducta"
-      hint="No hay registros de conducta para este curso en el bimestre seleccionado."
+      hint="No hay incidentes de conducta propios que coincidan con los filtros."
     />
 
     <div v-else class="modern-table-shell">
@@ -57,7 +74,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ConductIncidentService from '@/services/ConductIncidentService'
 import CompetencyScoreService from '@/services/CompetencyScoreService'
@@ -80,6 +97,14 @@ const severityLabels = {
   critico: 'Crítico',
 }
 
+const incidentTypeOptions = [
+  { value: 'comportamiento_inadecuado', label: 'Comportamiento inadecuado' },
+  { value: 'agresion', label: 'Agresión' },
+  { value: 'irrespeto', label: 'Irrespeto' },
+  { value: 'uso_celular', label: 'Uso de celular' },
+  { value: 'otro', label: 'Otro' },
+]
+
 const route = useRoute()
 const courseClassId = Number(route.params.courseClass)
 
@@ -88,6 +113,9 @@ const loadError = ref('')
 const incidents = ref([])
 const bimesters = ref([])
 const selectedBimesterId = ref(null)
+const dateFrom = ref('')
+const dateTo = ref('')
+const incidentType = ref('')
 
 const typeLabel = (v) => typeLabels[v] || v
 const severityLabel = (v) => severityLabels[v] || v
@@ -112,7 +140,12 @@ const loadIncidents = async () => {
   try {
     const response = await ConductIncidentService.myHistory(
       selectedBimesterId.value,
-      courseClassId
+      courseClassId,
+      {
+        dateFrom: dateFrom.value || null,
+        dateTo: dateTo.value || null,
+        incidentType: incidentType.value || null,
+      }
     )
     incidents.value = Array.isArray(response.data?.data) ? response.data.data : []
   } catch (error) {
@@ -138,4 +171,28 @@ onMounted(async () => {
   }
   await loadIncidents()
 })
+
+watch([dateFrom, dateTo, incidentType], () => {
+  loadIncidents()
+})
 </script>
+
+<style scoped>
+.course-conduct__filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.course-conduct__field,
+.course-conduct__field--grow {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .course-conduct__filters {
+    grid-template-columns: minmax(0, 180px) minmax(0, 150px) minmax(0, 150px) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+</style>
