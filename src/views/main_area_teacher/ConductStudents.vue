@@ -1,5 +1,34 @@
 <template>
   <div class="conduct-page">
+    <div class="module-filter-bar conduct-filters">
+      <div class="conduct-filters__field">
+        <CFormLabel for="conduct-date-from">Desde</CFormLabel>
+        <CFormInput id="conduct-date-from" v-model="dateFrom" type="date" />
+      </div>
+      <div class="conduct-filters__field">
+        <CFormLabel for="conduct-date-to">Hasta</CFormLabel>
+        <CFormInput id="conduct-date-to" v-model="dateTo" type="date" />
+      </div>
+      <div class="conduct-filters__field">
+        <CFormLabel for="conduct-type">Tipo de incidencia</CFormLabel>
+        <CFormSelect id="conduct-type" v-model="incidentType">
+          <option value="">Todos</option>
+          <option v-for="opt in incidentTypeOptions" :key="opt.value" :value="opt.value">
+            {{ opt.label }}
+          </option>
+        </CFormSelect>
+      </div>
+      <div class="conduct-filters__field conduct-filters__field--grow">
+        <CFormLabel for="conduct-student">Alumno</CFormLabel>
+        <CFormSelect id="conduct-student" v-model="studentId">
+          <option value="">Todos</option>
+          <option v-for="student in students" :key="student.student_id" :value="String(student.student_id)">
+            {{ student.student_name }}
+          </option>
+        </CFormSelect>
+      </div>
+    </div>
+
     <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
 
     <div v-if="loading" class="module-loading">
@@ -11,7 +40,7 @@
         v-if="!incidents.length"
         icon="✅"
         title="Sin incidentes registrados"
-        hint="Los incidentes que registre en este curso aparecerán aquí."
+        hint="No hay incidentes que coincidan con los filtros seleccionados."
         compact
       />
       <div v-else class="modern-table-shell mb-4">
@@ -88,11 +117,25 @@ const conductRegisterSignal = inject('conductRegisterSignal', ref(0))
 const setCourseStudentsCount = inject('setCourseStudentsCount', null)
 
 const incidents = ref([])
+const students = ref([])
 const loading = ref(false)
 const loadError = ref('')
 const isRegisterOpen = ref(false)
 const isDetailOpen = ref(false)
 const selectedIncident = ref(null)
+
+const dateFrom = ref('')
+const dateTo = ref('')
+const incidentType = ref('')
+const studentId = ref('')
+
+const incidentTypeOptions = [
+  { value: 'comportamiento_inadecuado', label: 'Comportamiento inadecuado' },
+  { value: 'agresion', label: 'Agresión' },
+  { value: 'irrespeto', label: 'Irrespeto' },
+  { value: 'uso_celular', label: 'Uso de celular' },
+  { value: 'otro', label: 'Otro' },
+]
 
 const activeBimesterId = computed(() => {
   const value = conductBimesterId?.value
@@ -123,13 +166,21 @@ const severityBadgeClass = (v) => {
   return 'priority-badge--normal'
 }
 
+const currentFilters = () => ({
+  dateFrom: dateFrom.value || null,
+  dateTo: dateTo.value || null,
+  incidentType: incidentType.value || null,
+  studentId: studentId.value ? Number(studentId.value) : null,
+})
+
 const fetchIncidents = async () => {
   loading.value = true
   loadError.value = ''
   try {
     const response = await ConductIncidentService.listByCourse(
       courseClassId,
-      activeBimesterId.value
+      activeBimesterId.value,
+      currentFilters()
     )
     if (response.data?.success) {
       incidents.value = response.data.data ?? []
@@ -149,9 +200,10 @@ const syncStudentsCount = async () => {
   try {
     const response = await ConductIncidentService.listStudentsByCourse(courseClassId)
     const rows = response.data?.data?.students ?? []
+    students.value = rows
     setCourseStudentsCount?.(rows.length)
   } catch {
-    /* ignore */
+    students.value = []
   }
 }
 
@@ -181,6 +233,10 @@ watch(
   { immediate: true }
 )
 
+watch([dateFrom, dateTo, incidentType, studentId], () => {
+  if (activeBimesterId.value) fetchIncidents()
+})
+
 watch(
   () => conductRegisterSignal?.value,
   (signal, prev) => {
@@ -190,3 +246,24 @@ watch(
 
 onMounted(syncStudentsCount)
 </script>
+
+<style scoped>
+.conduct-filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.conduct-filters__field,
+.conduct-filters__field--grow {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .conduct-filters {
+    grid-template-columns: minmax(0, 140px) minmax(0, 140px) minmax(0, 200px) minmax(0, 1fr);
+    align-items: end;
+  }
+}
+</style>

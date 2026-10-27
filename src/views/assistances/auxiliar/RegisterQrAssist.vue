@@ -58,6 +58,7 @@
 <script setup>
 import { ref, onBeforeUnmount, onMounted } from 'vue'
 import { BrowserQRCodeReader } from '@zxing/browser'
+import { BarcodeFormat, DecodeHintType } from '@zxing/library'
 import AssistanceService from '@/services/AssistanceService'
 import { toastSuccess, toastError } from '@/utils/alerts'
 
@@ -83,6 +84,19 @@ const asistenciasHoy = ref(0)
 const totalAlumnos = ref(0)
 const videoRef = ref(null)
 
+const parseQrPayload = (raw) => {
+  const text = String(raw || '').trim()
+  if (!text) return ''
+  try {
+    const url = new URL(text)
+    const last = url.pathname.split('/').filter(Boolean).pop()
+    if (last) return decodeURIComponent(last).trim()
+  } catch {
+    /* texto plano: código o DNI */
+  }
+  return text
+}
+
 const loadTotalAsistencias = async () => {
   try {
     const res = await AssistanceService.VAuxiliar_totalesAsistencias()
@@ -99,46 +113,47 @@ async function empezarScan() {
   lastResult.value = null
 
   try {
-    codeReader = new BrowserQRCodeReader()
-    const devices = await BrowserQRCodeReader.listVideoInputDevices()
+    const hints = new Map()
+    hints.set(DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE])
+    hints.set(DecodeHintType.TRY_HARDER, true)
+    codeReader = new BrowserQRCodeReader(hints)
 
+    const devices = await BrowserQRCodeReader.listVideoInputDevices()
     if (devices.length === 0) {
       toastError('No se encontró cámara')
       scanning.value = false
       return
     }
 
-    let backCamera = devices.find((d) => {
+    const backCamera = devices.find((d) => {
       const label = (d.label || '').toLowerCase()
       return label.includes('back') || label.includes('environment') || label.includes('trasera')
     })
-
-    if (!backCamera && devices.length > 1) {
-      backCamera = devices[1]
-    }
-
-    selectedDeviceId = backCamera ? backCamera.deviceId : devices[0].deviceId
-
-    const constraints = {
-      video: selectedDeviceId
-        ? { deviceId: { exact: selectedDeviceId }, facingMode: { ideal: 'environment' } }
-        : { facingMode: { ideal: 'environment' } },
-    }
+    selectedDeviceId = backCamera?.deviceId || devices[0].deviceId
 
     try {
-      stream = await navigator.mediaDevices.getUserMedia(constraints)
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+      })
     } catch {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
+        video: { facingMode: { ideal: 'environment' } },
       })
     }
 
-    videoRef.value.srcObject = stream
-    await videoRef.value.play()
+    if (!videoRef.value) {
+      scanning.value = false
+      return
+    }
 
-    decodeControl = codeReader.decodeFromVideoDevice(selectedDeviceId, videoRef.value, async (result, err) => {
+    decodeControl = await codeReader.decodeFromStream(stream, videoRef.value, async (result, err) => {
       if (result) {
-        const student_code = result.text.trim()
+        const student_code = parseQrPayload(result.text)
+        if (!student_code) return
         const now = Date.now()
         if (registering.value) return
         if (student_code === codeStudentDetectado.value && now - lastScanAt < SCAN_COOLDOWN_MS) {

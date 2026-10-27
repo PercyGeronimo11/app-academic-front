@@ -9,9 +9,16 @@ export default {
     });
   },
 
-  listByCourse(courseClassId, bimesterId = null) {
+  listByCourse(courseClassId, bimesterId = null, filters = {}) {
     return axios.get(`${API_URL}/conduct-incidents/by-course`, {
-      params: { course_class_id: courseClassId, bimester_id: bimesterId },
+      params: {
+        course_class_id: courseClassId,
+        bimester_id: bimesterId,
+        date_from: filters.dateFrom || undefined,
+        date_to: filters.dateTo || undefined,
+        incident_type: filters.incidentType || undefined,
+        student_id: filters.studentId || undefined,
+      },
     });
   },
 
@@ -19,11 +26,14 @@ export default {
     return axios.post(`${API_URL}/conduct-incidents`, data);
   },
 
-  myHistory(bimesterId = null, courseClassId = null) {
+  myHistory(bimesterId = null, courseClassId = null, filters = {}) {
     return axios.get(`${API_URL}/conduct-incidents/my-history`, {
       params: {
         bimester_id: bimesterId,
         course_class_id: courseClassId,
+        date_from: filters.dateFrom || undefined,
+        date_to: filters.dateTo || undefined,
+        incident_type: filters.incidentType || undefined,
       },
     });
   },
