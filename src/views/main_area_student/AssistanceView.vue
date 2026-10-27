@@ -1,50 +1,5 @@
 <template>
   <div class="module-page student-assistance">
-    <div class="summary-grid">
-      <div class="summary-card summary-card--present">
-        <span class="summary-card__label">Presentes</span>
-        <strong class="summary-card__value">{{ summary.present }}</strong>
-      </div>
-      <div class="summary-card summary-card--late">
-        <span class="summary-card__label">Tardanzas</span>
-        <strong class="summary-card__value">{{ summary.late }}</strong>
-      </div>
-      <div class="summary-card summary-card--absent">
-        <span class="summary-card__label">Faltas</span>
-        <strong class="summary-card__value">{{ summary.absent }}</strong>
-      </div>
-      <div class="summary-card summary-card--link">
-        <span class="summary-card__label">Notas</span>
-        <router-link class="summary-card__cta" to="/courses/student/academic-record">
-          Ver Record Académico
-          <i class="fas fa-arrow-right"></i>
-        </router-link>
-      </div>
-    </div>
-
-    <div class="module-filter-bar">
-      <div style="max-width: 240px">
-        <CFormLabel for="assist-bimester">Bimestre</CFormLabel>
-        <CFormSelect
-          id="assist-bimester"
-          :model-value="selectedBimesterId"
-          @update:model-value="onBimesterChange"
-        >
-          <option v-for="item in bimesters" :key="item.id" :value="Number(item.id)">
-            {{ item.name }}
-          </option>
-        </CFormSelect>
-      </div>
-      <div style="max-width: 180px">
-        <CFormLabel for="date-from">Desde</CFormLabel>
-        <CFormInput id="date-from" v-model="dateFrom" type="date" />
-      </div>
-      <div style="max-width: 180px">
-        <CFormLabel for="date-to">Hasta</CFormLabel>
-        <CFormInput id="date-to" v-model="dateTo" type="date" />
-      </div>
-    </div>
-
     <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
     <div v-if="loading" class="module-loading">
       <i class="fas fa-spinner fa-spin"></i> Cargando asistencias...
@@ -111,27 +66,23 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, inject, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import AssistanceService from '@/services/AssistanceService'
-import CompetencyScoreService from '@/services/CompetencyScoreService'
-import { textoEstado, colorEstado, esFalta, ESTADOS_ASISTENCIA } from '@/utils/utils'
-import {
-  filterActivePeriodBimesters,
-  isDateInBimester,
-  pickCurrentBimesterId,
-} from '@/utils/bimester'
+import { textoEstado, colorEstado } from '@/utils/utils'
+import { isDateInBimester } from '@/utils/bimester'
 
 const route = useRoute()
 const courseClassId = Number(route.params.courseClass)
 
+const bimesters = inject('studentBimesters', ref([]))
+const selectedBimesterId = inject('studentBimesterId', ref(null))
+const dateFrom = inject('assistanceDateFrom', ref(''))
+const dateTo = inject('assistanceDateTo', ref(''))
+
 const loading = ref(true)
 const loadError = ref('')
 const allRows = ref([])
-const bimesters = ref([])
-const selectedBimesterId = ref(null)
-const dateFrom = ref('')
-const dateTo = ref('')
 const currentPage = ref(1)
 const pageSize = 10
 
@@ -147,32 +98,6 @@ const filteredRows = computed(() => {
     if (dateTo.value && date > dateTo.value) return false
     return true
   })
-})
-
-const summary = computed(() => {
-  let present = 0
-  let late = 0
-  let absent = 0
-  for (const row of filteredRows.value) {
-    const status = row.status
-    if (status === ESTADOS_ASISTENCIA.ASISTENCIA || status === 'asistio') {
-      present += 1
-    } else if (esFalta(status)) {
-      absent += 1
-    } else if (
-      [
-        ESTADOS_ASISTENCIA.TARDANZA_LEVE,
-        ESTADOS_ASISTENCIA.TARDANZA_MODERADA,
-        ESTADOS_ASISTENCIA.TARDANZA_GRAVE,
-        ESTADOS_ASISTENCIA.TARDANZA_EXTREMA,
-        'T',
-        'tardanza',
-      ].includes(status)
-    ) {
-      late += 1
-    }
-  }
-  return { present, late, absent }
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(filteredRows.value.length / pageSize)))
@@ -201,15 +126,7 @@ const formatDate = (value) => {
   }
 }
 
-const onBimesterChange = (value) => {
-  selectedBimesterId.value = value != null && value !== '' ? Number(value) : null
-  currentPage.value = 1
-  const b = selectedBimester.value
-  dateFrom.value = b?.start_date ? String(b.start_date).slice(0, 10) : ''
-  dateTo.value = b?.end_date ? String(b.end_date).slice(0, 10) : ''
-}
-
-watch([dateFrom, dateTo], () => {
+watch([dateFrom, dateTo, selectedBimesterId], () => {
   currentPage.value = 1
 })
 
@@ -221,16 +138,7 @@ const load = async () => {
   loading.value = true
   loadError.value = ''
   try {
-    const [bimesterRes, assistRes] = await Promise.all([
-      CompetencyScoreService.listBimesters(),
-      AssistanceService.listAssistanceFromStudent(courseClassId),
-    ])
-    bimesters.value = filterActivePeriodBimesters(bimesterRes.data?.data || [])
-    selectedBimesterId.value = pickCurrentBimesterId(bimesters.value)
-    const b = selectedBimester.value
-    dateFrom.value = b?.start_date ? String(b.start_date).slice(0, 10) : ''
-    dateTo.value = b?.end_date ? String(b.end_date).slice(0, 10) : ''
-
+    const assistRes = await AssistanceService.listAssistanceFromStudent(courseClassId)
     const rows = Array.isArray(assistRes.data?.data) ? assistRes.data.data : []
     allRows.value = rows
       .slice()
@@ -244,61 +152,3 @@ const load = async () => {
 
 onMounted(load)
 </script>
-
-<style scoped>
-.summary-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  gap: var(--rp-space-3);
-  margin-bottom: var(--rp-space-4);
-}
-
-.summary-card {
-  border: 1px solid var(--rp-border);
-  border-radius: var(--rp-radius-lg);
-  background: var(--rp-surface);
-  padding: 0.85rem 1rem;
-  box-shadow: var(--rp-shadow-xs);
-}
-
-.summary-card__label {
-  display: block;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  color: var(--rp-text-subtle);
-  margin-bottom: 0.25rem;
-}
-
-.summary-card__value {
-  font-size: 1.5rem;
-  color: var(--rp-text-heading);
-  line-height: 1.1;
-}
-
-.summary-card--present {
-  border-color: #86efac;
-}
-
-.summary-card--late {
-  border-color: #fdba74;
-}
-
-.summary-card--absent {
-  border-color: #fca5a5;
-}
-
-.summary-card__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-weight: var(--rp-weight-semibold);
-  color: var(--rp-brand-600);
-  text-decoration: none;
-  margin-top: 0.2rem;
-}
-
-.summary-card__cta:hover {
-  text-decoration: underline;
-}
-</style>

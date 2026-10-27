@@ -3,8 +3,9 @@
     {{ emptyMessage }}
   </div>
   <div v-else class="risk-factor-list">
-    <p v-if="isLowRisk" class="risk-detail-hint mb-3">
-      Estos son puntos de vigilancia (no indican necesariamente un problema grave).
+    <p class="risk-detail-hint mb-3">
+      Variables que más influyeron en este nivel de predicción
+      <template v-if="isLowRisk"> (pueden incluir señales positivas).</template>
     </p>
     <article
       v-for="factor in presentedFactors"
@@ -52,7 +53,7 @@ const isLowRisk = computed(() => (
 
 const emptyMessage = computed(() => (
   isLowRisk.value
-    ? 'Sin señales fuertes de riesgo en los factores del modelo.'
+    ? 'No hay factores con influencia registrada para esta predicción.'
     : 'No hay factores registrados.'
 ))
 </script>

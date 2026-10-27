@@ -187,8 +187,18 @@ export const presentFactorsForDisplay = (factors = [], riskLevel = null) => {
   return rows
 }
 
+/** Cupos alineados al motor Django (RecommendationEngine.CAP_BY_RISK). */
+const REC_CAP_BY_RISK = {
+  [RISK_LEVELS.VERY_LOW]: 2,
+  [RISK_LEVELS.LOW]: 2,
+  [RISK_LEVELS.MEDIUM]: 3,
+  [RISK_LEVELS.HIGH]: 4,
+  [RISK_LEVELS.CRITICAL]: 4,
+}
+
 /**
- * Filtra recomendaciones según nivel de riesgo para no saturar alumnos de buen desempeño.
+ * Presenta recomendaciones ya filtradas por el backend.
+ * Solo añade tono/etiqueta y aplica el mismo cupo como red de seguridad.
  */
 export const presentRecommendationsForDisplay = (recommendations = [], riskLevel = null) => {
   const level = Number(riskLevel)
@@ -197,31 +207,32 @@ export const presentRecommendationsForDisplay = (recommendations = [], riskLevel
     (a, b) => (priorityRank[a.priority] ?? 9) - (priorityRank[b.priority] ?? 9),
   )
 
+  const cap = REC_CAP_BY_RISK[level]
+  if (cap != null) {
+    items = items.slice(0, cap)
+  }
+
   if (level === RISK_LEVELS.VERY_LOW || level === RISK_LEVELS.LOW) {
-    // Solo correctivas claras; máximo 3
-    items = items
-      .filter((item) => item.priority === 'HIGH' || item.priority === 'MEDIUM')
-      .slice(0, 3)
-      .map((item) => ({
-        ...item,
-        tone: item.priority === 'HIGH' ? 'corrective' : 'preventive',
-        toneLabel: item.priority === 'HIGH' ? 'Seguimiento' : 'Preventiva',
-      }))
-  } else if (level === RISK_LEVELS.MEDIUM) {
-    items = items.slice(0, 5).map((item) => ({
+    return items.map((item) => ({
+      ...item,
+      tone: item.priority === 'HIGH' ? 'corrective' : 'preventive',
+      toneLabel: item.priority === 'HIGH' ? 'Seguimiento' : 'Preventiva',
+    }))
+  }
+
+  if (level === RISK_LEVELS.MEDIUM) {
+    return items.map((item) => ({
       ...item,
       tone: item.priority === 'HIGH' ? 'corrective' : 'preventive',
       toneLabel: item.priority === 'HIGH' ? 'Prioritaria' : 'Preventiva',
     }))
-  } else {
-    items = items.map((item) => ({
-      ...item,
-      tone: 'corrective',
-      toneLabel: item.priority === 'HIGH' ? 'Urgente' : 'Importante',
-    }))
   }
 
-  return items
+  return items.map((item) => ({
+    ...item,
+    tone: 'corrective',
+    toneLabel: item.priority === 'HIGH' ? 'Urgente' : 'Importante',
+  }))
 }
 
 export const buildRiskGuideMessage = (riskLevel, factorsCount = 0, recommendationsCount = 0) => {
@@ -234,11 +245,11 @@ export const buildRiskGuideMessage = (riskLevel, factorsCount = 0, recommendatio
 
   if (level === RISK_LEVELS.VERY_LOW || level === RISK_LEVELS.LOW) {
     if (factorsCount === 0 && recommendationsCount === 0) {
-      return `Riesgo ${label}: buen desempeño general. No hay puntos críticos de seguimiento.`
+      return `Riesgo ${label}: buen desempeño general. Sin acciones pendientes.`
     }
     const parts = []
-    if (factorsCount > 0) parts.push(`${factorsCount} punto(s) a vigilar`)
-    if (recommendationsCount > 0) parts.push(`${recommendationsCount} acción(es) preventiva(s)`)
+    if (factorsCount > 0) parts.push(`${factorsCount} factor(es) que influyeron en la predicción`)
+    if (recommendationsCount > 0) parts.push(`${recommendationsCount} acción(es) sugerida(s)`)
     return `Riesgo ${label}: buen desempeño general. ${parts.join(' y ')}.`
   }
 

@@ -7,8 +7,8 @@ export default {
     return axios.post(`${API_URL}/ml/predictions/update/`, payload)
   },
 
-  getPredictionsByStudent(studentId) {
-    return axios.get(`${API_URL}/ml/predictions/student/${studentId}/`)
+  getPredictionsByStudent(studentId, params = {}) {
+    return axios.get(`${API_URL}/ml/predictions/student/${studentId}/`, { params })
   },
 
   getPredictionsByClassroom({ gradeSectionId, schoolYear, bimester }) {

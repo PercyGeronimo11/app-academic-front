@@ -19,6 +19,20 @@
     </COffcanvasHeader>
 
     <COffcanvasBody v-if="row" class="risk-detail-drawer__body pt-0">
+      <div v-if="row.byBimester" class="d-flex flex-wrap gap-2 mb-3">
+        <CButton
+          v-for="n in [1, 2, 3]"
+          :key="`detail-b${n}`"
+          size="sm"
+          :color="detailBimester === n ? 'primary' : 'secondary'"
+          :variant="detailBimester === n ? undefined : 'outline'"
+          :disabled="!row.byBimester?.[n]?.prediction"
+          @click="store.setDetailBimester(n)"
+        >
+          B{{ n }}
+        </CButton>
+      </div>
+
       <div class="risk-detail-layout">
         <nav class="risk-detail-nav" aria-label="Secciones del detalle">
           <button
@@ -122,6 +136,7 @@ import { computed, ref, watch } from 'vue'
 
 import AcademicRiskFactors from '@/components/academic-risk/AcademicRiskFactors.vue'
 import AcademicRiskRecommendations from '@/components/academic-risk/AcademicRiskRecommendations.vue'
+import { useAcademicRiskStore } from '@/stores/academicRisk'
 import { RISK_LEVELS } from '@/types/academicRisk'
 import {
   formatConfidence,
@@ -151,7 +166,12 @@ const props = defineProps({
 
 defineEmits(['close'])
 
+const store = useAcademicRiskStore()
 const activeSection = ref('summary')
+
+const detailBimester = computed(() => (
+  store.selectedDetailBimester || props.row?.detailBimester || 1
+))
 
 watch(
   () => [props.visible, props.row?.studentId, props.initialSection],

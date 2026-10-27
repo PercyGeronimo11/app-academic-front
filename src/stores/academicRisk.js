@@ -14,33 +14,69 @@ import {
 import {
   loadSchoolYearOptions,
   resolveActiveSchoolYear,
-  resolveDefaultBimesterNumber,
 } from '@/utils/academicRiskFilters'
-import { resolveDefaultBimester } from '@/utils/schoolPeriodDefaults'
+
+const BIMESTER_COLUMNS = [1, 2, 3]
+
+const emptyBimesterCounts = () => ({ 1: 0, 2: 0, 3: 0 })
 
 const EMPTY_SUMMARY = {
   totalStudents: 0,
-  veryLow: 0,
-  low: 0,
-  medium: 0,
-  high: 0,
-  critical: 0,
+  veryLow: emptyBimesterCounts(),
+  low: emptyBimesterCounts(),
+  medium: emptyBimesterCounts(),
+  high: emptyBimesterCounts(),
+  critical: emptyBimesterCounts(),
   lastUpdated: null,
 }
 
 const extractLaravelData = (response) => response?.data?.data ?? []
 
-const buildRowStatus = (prediction) => {
-  if (!prediction) return PREDICTION_STATUS.PENDING
-  return PREDICTION_STATUS.UPDATED
+const mapPredictionSlot = (prediction) => {
+  if (!prediction) {
+    return {
+      riskLevel: null,
+      riskLabel: null,
+      confidence: null,
+      status: PREDICTION_STATUS.PENDING,
+      lastUpdated: null,
+      prediction: null,
+    }
+  }
+  return {
+    riskLevel: prediction.risk_level ?? null,
+    riskLabel: prediction.risk_label ?? null,
+    confidence: prediction.confidence ?? null,
+    status: PREDICTION_STATUS.UPDATED,
+    lastUpdated: prediction.prediction_date ?? null,
+    prediction,
+  }
+}
+
+const buildObservation = (byBimester, predictableBimesters, skipHints = {}) => {
+  const parts = []
+  for (const n of BIMESTER_COLUMNS) {
+    const slot = byBimester[n]
+    const hint = skipHints[n]
+    if (hint) {
+      parts.push(`B${n}: ${hint}`)
+      continue
+    }
+    if (predictableBimesters.includes(n) && !slot?.prediction) {
+      parts.push(`B${n}: sin predicción`)
+    }
+  }
+  return parts.join(' · ') || '—'
 }
 
 export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const filters = ref({
     schoolYear: null,
-    bimester: null,
+    grade: null,
+    section: null,
     gradeSectionId: null,
     studentId: null,
+    bimester: null, // legado / dashboard query
   })
 
   const schoolYears = ref([])
@@ -48,14 +84,18 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const gradeSections = ref([])
   const students = ref([])
   const rows = ref([])
-  const summary = ref({ ...EMPTY_SUMMARY })
+  const summary = ref({ ...EMPTY_SUMMARY, veryLow: emptyBimesterCounts(), low: emptyBimesterCounts(), medium: emptyBimesterCounts(), high: emptyBimesterCounts(), critical: emptyBimesterCounts() })
   const activeSchoolYear = ref(null)
+  const currentBimester = ref(null)
+  const predictableBimesters = ref([])
+  const lastSkipHints = ref({}) // studentId -> { 1: 'datos incompletos', ... }
 
   const loading = ref(false)
   const updating = ref(false)
   const predictingStudentId = ref(null)
   const drawerVisible = ref(false)
   const selectedRow = ref(null)
+  const selectedDetailBimester = ref(null)
   const error = ref(null)
   const connectionError = ref(false)
   const scope = ref({
@@ -70,17 +110,23 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     return rows.value.filter((row) => row.studentId === filters.value.studentId)
   })
 
-  const isWritableWindow = computed(() => {
-    if (!activeSchoolYear.value) return false
-    const current = resolveDefaultBimester(bimesters.value, { maxNumber: 3 })
-    return Boolean(current && Number(filters.value.bimester) === Number(current.number))
+  const gradeOptions = computed(() => {
+    const set = new Set(gradeSections.value.map((g) => String(g.grade)))
+    return [...set].sort((a, b) => Number(a) - Number(b))
+  })
+
+  const sectionOptions = computed(() => {
+    if (!filters.value.grade) return []
+    return gradeSections.value
+      .filter((g) => String(g.grade) === String(filters.value.grade))
+      .map((g) => String(g.section))
+      .sort()
   })
 
   const canUpdate = computed(() => (
     scope.value.canUpdatePredictions
-    && isWritableWindow.value
+    && predictableBimesters.value.length > 0
     && Boolean(filters.value.schoolYear)
-    && Boolean(filters.value.bimester)
     && Boolean(filters.value.gradeSectionId)
     && !updating.value
     && !predictingStudentId.value
@@ -88,9 +134,8 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
   const canPredictIndividual = computed(() => (
     scope.value.canUpdatePredictions
-    && isWritableWindow.value
+    && predictableBimesters.value.length > 0
     && Boolean(filters.value.schoolYear)
-    && Boolean(filters.value.bimester)
     && !updating.value
   ))
 
@@ -98,39 +143,62 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     gradeSections.value.find((item) => item.id === filters.value.gradeSectionId) || null
   ))
 
-  const selectedBimester = computed(() => (
-    bimesters.value.find((item) => item.number === filters.value.bimester) || null
-  ))
-
   const resetSummary = () => {
-    summary.value = { ...EMPTY_SUMMARY }
+    summary.value = {
+      totalStudents: 0,
+      veryLow: emptyBimesterCounts(),
+      low: emptyBimesterCounts(),
+      medium: emptyBimesterCounts(),
+      high: emptyBimesterCounts(),
+      critical: emptyBimesterCounts(),
+      lastUpdated: null,
+    }
   }
 
   const computeSummary = (items) => {
-    const next = { ...EMPTY_SUMMARY, totalStudents: items.length }
+    const next = {
+      totalStudents: items.length,
+      veryLow: emptyBimesterCounts(),
+      low: emptyBimesterCounts(),
+      medium: emptyBimesterCounts(),
+      high: emptyBimesterCounts(),
+      critical: emptyBimesterCounts(),
+      lastUpdated: null,
+    }
     let latestDate = null
 
     items.forEach((row) => {
-      if (row.riskLevel === RISK_LEVELS.VERY_LOW) next.veryLow += 1
-      if (row.riskLevel === RISK_LEVELS.LOW) next.low += 1
-      if (row.riskLevel === RISK_LEVELS.MEDIUM) next.medium += 1
-      if (row.riskLevel === RISK_LEVELS.HIGH) next.high += 1
-      if (row.riskLevel === RISK_LEVELS.CRITICAL) next.critical += 1
+      BIMESTER_COLUMNS.forEach((n) => {
+        const level = row.byBimester?.[n]?.riskLevel
+        if (level === RISK_LEVELS.VERY_LOW) next.veryLow[n] += 1
+        if (level === RISK_LEVELS.LOW) next.low[n] += 1
+        if (level === RISK_LEVELS.MEDIUM) next.medium[n] += 1
+        if (level === RISK_LEVELS.HIGH) next.high[n] += 1
+        if (level === RISK_LEVELS.CRITICAL) next.critical[n] += 1
 
-      if (row.lastUpdated) {
-        const current = new Date(row.lastUpdated)
-        if (!latestDate || current > latestDate) latestDate = current
-      }
+        const updated = row.byBimester?.[n]?.lastUpdated
+        if (updated) {
+          const current = new Date(updated)
+          if (!latestDate || current > latestDate) latestDate = current
+        }
+      })
     })
 
     next.lastUpdated = latestDate ? latestDate.toISOString() : null
     summary.value = next
   }
 
+  const syncGradeSectionIdFromParts = () => {
+    const match = gradeSections.value.find(
+      (g) => String(g.grade) === String(filters.value.grade)
+        && String(g.section) === String(filters.value.section),
+    )
+    filters.value.gradeSectionId = match?.id ?? null
+  }
+
   const loadSchoolYears = async () => {
     schoolYears.value = await loadSchoolYearOptions()
     activeSchoolYear.value = await resolveActiveSchoolYear(schoolYears.value)
-    // Siempre periodo activo (Configuraciones); no hay filtro de año.
     filters.value.schoolYear = activeSchoolYear.value
   }
 
@@ -141,12 +209,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     }
     const response = await BimesterService.list(filters.value.schoolYear)
     bimesters.value = extractLaravelData(response)
-      .filter((item) => item.number <= 3)
       .sort((a, b) => a.number - b.number)
-
-    if (!bimesters.value.some((item) => item.number === filters.value.bimester)) {
-      filters.value.bimester = resolveDefaultBimesterNumber(bimesters.value, { maxNumber: 3 })
-    }
   }
 
   const loadScope = async () => {
@@ -158,6 +221,10 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       canUpdatePredictions: Boolean(data.can_generate_predictions ?? data.can_update_predictions),
       isStudentView: data.role === 'ESTUDIANTE',
     }
+    currentBimester.value = data.current_bimester ?? null
+    predictableBimesters.value = Array.isArray(data.predictable_bimesters)
+      ? data.predictable_bimesters.map(Number)
+      : []
   }
 
   const loadGradeSections = async () => {
@@ -172,9 +239,24 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       section: item.section_name || item.section,
     }))
 
-    if (!gradeSections.value.some((item) => item.id === filters.value.gradeSectionId)) {
-      filters.value.gradeSectionId = gradeSections.value[0]?.id ?? null
+    if (filters.value.gradeSectionId) {
+      const current = gradeSections.value.find((g) => g.id === filters.value.gradeSectionId)
+      if (current) {
+        filters.value.grade = String(current.grade)
+        filters.value.section = String(current.section)
+      }
     }
+
+    if (!filters.value.grade || !gradeOptions.value.includes(String(filters.value.grade))) {
+      filters.value.grade = gradeOptions.value[0] ?? null
+    }
+    const sections = gradeSections.value
+      .filter((g) => String(g.grade) === String(filters.value.grade))
+      .map((g) => String(g.section))
+    if (!filters.value.section || !sections.includes(String(filters.value.section))) {
+      filters.value.section = sections[0] ?? null
+    }
+    syncGradeSectionIdFromParts()
   }
 
   const loadStudents = async () => {
@@ -192,11 +274,11 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     students.value = extractLaravelData(response)
       .filter((student) => student.status !== false && student.status !== 0)
       .map((student) => ({
-      id: student.id,
-      label: buildStudentFullName(student),
-      studentCode: student.student_code || student.codigo || `ID-${student.id}`,
-      raw: student,
-    }))
+        id: student.id,
+        label: buildStudentFullName(student),
+        studentCode: student.student_code || student.codigo || `ID-${student.id}`,
+        raw: student,
+      }))
 
     if (filters.value.studentId && !students.value.some((item) => item.id === filters.value.studentId)) {
       filters.value.studentId = null
@@ -207,8 +289,21 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     }
   }
 
+  const fetchPredictionsForBimester = async (bimesterNumber) => {
+    try {
+      const response = await MLService.getPredictionsByClassroom({
+        gradeSectionId: filters.value.gradeSectionId,
+        schoolYear: filters.value.schoolYear,
+        bimester: bimesterNumber,
+      })
+      return response.data?.predictions_by_student || {}
+    } catch {
+      return {}
+    }
+  }
+
   const buildRows = async () => {
-    if (!filters.value.gradeSectionId || !filters.value.bimester) {
+    if (!filters.value.gradeSectionId) {
       rows.value = []
       resetSummary()
       return
@@ -216,9 +311,7 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
     const classroom = selectedGradeSection.value
     const classroomLabel = classroom?.label || '—'
-    const studentItems = students.value.length
-      ? students.value
-      : []
+    const studentItems = students.value
 
     if (!studentItems.length) {
       rows.value = []
@@ -226,40 +319,72 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
       return
     }
 
-    let predictionsByStudent = {}
-    try {
-      const response = await MLService.getPredictionsByClassroom({
-        gradeSectionId: filters.value.gradeSectionId,
-        schoolYear: filters.value.schoolYear,
-        bimester: filters.value.bimester,
-      })
-      predictionsByStudent = response.data?.predictions_by_student || {}
-    } catch {
-      predictionsByStudent = {}
-    }
+    const maps = await Promise.all(
+      BIMESTER_COLUMNS.map((n) => fetchPredictionsForBimester(n)),
+    )
 
     const builtRows = studentItems.map((student) => {
-      const prediction = predictionsByStudent[String(student.id)]
-        || predictionsByStudent[student.id]
-        || null
-      const status = buildRowStatus(prediction)
+      const byBimester = {}
+      BIMESTER_COLUMNS.forEach((n, idx) => {
+        const map = maps[idx]
+        const prediction = map[String(student.id)] || map[student.id] || null
+        byBimester[n] = mapPredictionSlot(prediction)
+      })
+
+      const preferred = [...BIMESTER_COLUMNS].reverse().find((n) => byBimester[n].prediction)
+        || BIMESTER_COLUMNS[0]
+      const primary = byBimester[preferred]
+      const hints = lastSkipHints.value[student.id] || {}
 
       return {
         studentId: student.id,
         studentCode: student.studentCode,
         fullName: student.label,
         classroomLabel,
-        riskLevel: prediction?.risk_level ?? null,
-        riskLabel: prediction?.risk_label ?? null,
-        confidence: prediction?.confidence ?? null,
-        status,
-        lastUpdated: prediction?.prediction_date ?? null,
-        prediction,
+        byBimester,
+        observation: buildObservation(byBimester, predictableBimesters.value, hints),
+        // compat drawer / acciones
+        riskLevel: primary.riskLevel,
+        riskLabel: primary.riskLabel,
+        confidence: primary.confidence,
+        status: primary.status,
+        lastUpdated: primary.lastUpdated,
+        prediction: primary.prediction,
+        detailBimester: preferred,
       }
     })
 
     rows.value = builtRows
     computeSummary(filteredRows.value)
+  }
+
+  const ingestSkipHints = (skippedStudents = []) => {
+    const next = { ...lastSkipHints.value }
+    skippedStudents.forEach((item) => {
+      if (!item?.id) return
+      const id = item.id
+      if (!next[id]) next[id] = {}
+      const b = Number(item.bimester)
+      if (b >= 1 && b <= 3) {
+        next[id][b] = 'datos incompletos'
+      }
+    })
+    lastSkipHints.value = next
+  }
+
+  const ingestMissingByBimester = (studentId, missingByBimester = {}) => {
+    const next = { ...lastSkipHints.value }
+    next[studentId] = { ...(next[studentId] || {}) }
+    Object.entries(missingByBimester).forEach(([b, fields]) => {
+      const n = Number(b)
+      if (n >= 1 && n <= 3) {
+        next[studentId][n] = Array.isArray(fields) && fields.length
+          ? 'datos incompletos'
+          : 'falló'
+      }
+    })
+    // Also mark failed bimestres from by_bimester without success
+    lastSkipHints.value = next
   }
 
   const initializeFilters = async () => {
@@ -285,18 +410,37 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     }
   }
 
-  const onBimesterChange = async (bimester) => {
-    filters.value.bimester = bimester
+  const onGradeChange = async (grade) => {
+    filters.value.grade = grade
+    const sections = gradeSections.value
+      .filter((g) => String(g.grade) === String(grade))
+      .map((g) => String(g.section))
+    filters.value.section = sections[0] ?? null
+    syncGradeSectionIdFromParts()
     filters.value.studentId = null
     loading.value = true
     error.value = null
-
     try {
-      await loadGradeSections()
       await loadStudents()
       await buildRows()
     } catch (err) {
-      error.value = err.response?.data?.message || 'No se pudieron actualizar las aulas.'
+      error.value = err.response?.data?.message || 'No se pudieron actualizar los alumnos.'
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const onSectionChange = async (section) => {
+    filters.value.section = section
+    syncGradeSectionIdFromParts()
+    filters.value.studentId = null
+    loading.value = true
+    error.value = null
+    try {
+      await loadStudents()
+      await buildRows()
+    } catch (err) {
+      error.value = err.response?.data?.message || 'No se pudieron actualizar los alumnos.'
     } finally {
       loading.value = false
     }
@@ -304,10 +448,14 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
 
   const onGradeSectionChange = async (gradeSectionId) => {
     filters.value.gradeSectionId = gradeSectionId
+    const current = gradeSections.value.find((g) => g.id === gradeSectionId)
+    if (current) {
+      filters.value.grade = String(current.grade)
+      filters.value.section = String(current.section)
+    }
     filters.value.studentId = null
     loading.value = true
     error.value = null
-
     try {
       await loadStudents()
       await buildRows()
@@ -327,7 +475,6 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     loading.value = true
     error.value = null
     connectionError.value = false
-
     try {
       await buildRows()
     } catch (err) {
@@ -341,21 +488,35 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const updatePredictions = async () => {
     updating.value = true
     connectionError.value = false
-
     try {
       const response = await AcademicRiskService.updatePredictions({
         school_year: filters.value.schoolYear,
-        bimester: filters.value.bimester,
         grade_section_id: filters.value.gradeSectionId,
       })
-
+      ingestSkipHints(response.data?.skipped_students || [])
+      // Clear OK bimestres hints from successful by_bimester
+      const byB = response.data?.by_bimester || {}
+      Object.entries(byB).forEach(([b, body]) => {
+        const n = Number(b)
+        const skippedIds = new Set((body.skipped_students || []).map((s) => s.id))
+        students.value.forEach((st) => {
+          if (!skippedIds.has(st.id) && body.success !== false) {
+            if (lastSkipHints.value[st.id]?.[n]) {
+              const copy = { ...lastSkipHints.value }
+              copy[st.id] = { ...copy[st.id] }
+              delete copy[st.id][n]
+              lastSkipHints.value = copy
+            }
+          }
+        })
+      })
       await buildRows()
       return response.data
     } catch (err) {
       if (!err.response) connectionError.value = true
       const data = err.response?.data ?? {}
       err.validationPayload = data
-      // No asignar error de tabla: el modal/toast muestra el detalle y la lista debe permanecer.
+      ingestSkipHints(data.skipped_students || [])
       throw err
     } finally {
       updating.value = false
@@ -365,35 +526,73 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
   const predictStudent = async (studentId) => {
     predictingStudentId.value = studentId
     connectionError.value = false
-
     try {
       const response = await AcademicRiskService.predictStudent({
         school_year: filters.value.schoolYear,
-        bimester: filters.value.bimester,
         student_id: studentId,
       })
-
+      ingestMissingByBimester(studentId, response.data?.missing_by_bimester || {})
+      const byB = response.data?.by_bimester || {}
+      Object.entries(byB).forEach(([b, body]) => {
+        const n = Number(b)
+        if (body?.success) {
+          const copy = { ...lastSkipHints.value }
+          if (copy[studentId]) {
+            copy[studentId] = { ...copy[studentId] }
+            delete copy[studentId][n]
+            lastSkipHints.value = copy
+          }
+        } else if (body?.code === 'incomplete_data') {
+          ingestMissingByBimester(studentId, { [n]: body.missing_fields || [] })
+        }
+      })
       await buildRows()
       return response.data
     } catch (err) {
       if (!err.response) connectionError.value = true
       const data = err.response?.data ?? {}
       err.validationPayload = data
-      // No asignar error de tabla: Swal muestra faltantes y la lista permanece visible.
+      if (data.missing_by_bimester) {
+        ingestMissingByBimester(studentId, data.missing_by_bimester)
+      }
+      Object.entries(data.by_bimester || {}).forEach(([b, body]) => {
+        if (body?.missing_fields?.length) {
+          ingestMissingByBimester(studentId, { [b]: body.missing_fields })
+        }
+      })
+      await buildRows()
       throw err
     } finally {
       predictingStudentId.value = null
     }
   }
 
-  const openDetail = (row) => {
-    selectedRow.value = row
+  const openDetail = (row, bimesterNumber = null) => {
+    const n = bimesterNumber || row.detailBimester || 1
+    const slot = row.byBimester?.[n] || mapPredictionSlot(null)
+    selectedDetailBimester.value = n
+    selectedRow.value = {
+      ...row,
+      riskLevel: slot.riskLevel,
+      riskLabel: slot.riskLabel,
+      confidence: slot.confidence,
+      status: slot.status,
+      lastUpdated: slot.lastUpdated,
+      prediction: slot.prediction,
+      detailBimester: n,
+    }
     drawerVisible.value = true
+  }
+
+  const setDetailBimester = (n) => {
+    if (!selectedRow.value) return
+    openDetail(selectedRow.value, n)
   }
 
   const closeDetail = () => {
     drawerVisible.value = false
     selectedRow.value = null
+    selectedDetailBimester.value = null
   }
 
   return {
@@ -401,31 +600,37 @@ export const useAcademicRiskStore = defineStore('academicRisk', () => {
     schoolYears,
     bimesters,
     gradeSections,
+    gradeOptions,
+    sectionOptions,
     students,
     rows,
     filteredRows,
     summary,
     activeSchoolYear,
+    currentBimester,
+    predictableBimesters,
     loading,
     updating,
     predictingStudentId,
     drawerVisible,
     selectedRow,
+    selectedDetailBimester,
     error,
     connectionError,
     scope,
     canUpdate,
     canPredictIndividual,
     selectedGradeSection,
-    selectedBimester,
     initializeFilters,
-    onBimesterChange,
+    onGradeChange,
+    onSectionChange,
     onGradeSectionChange,
     onStudentChange,
     refreshRows,
     updatePredictions,
     predictStudent,
     openDetail,
+    setDetailBimester,
     closeDetail,
   }
 })

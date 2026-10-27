@@ -6,107 +6,111 @@
           <div class="my-risk-header__intro">
             <h1 class="my-risk-header__title mb-1">Mi riesgo académico</h1>
             <p class="my-risk-header__subtitle mb-0">
-              Consulta tu nivel de riesgo académico, los factores que más influyen y las recomendaciones.
+              Consulta tu nivel de riesgo, los factores que más influyen y las recomendaciones del bimestre que elijas.
             </p>
           </div>
 
-          <div class="my-risk-header__meta">
-            <div class="my-risk-meta-item">
-              <span class="my-risk-meta-item__label">Año escolar</span>
-              <span class="my-risk-meta-item__value">{{ schoolYearLabel }}</span>
+          <div class="my-risk-filters">
+            <div class="my-risk-filters__field">
+              <span class="my-risk-filters__label">Periodo activo</span>
+              <div class="my-risk-period">{{ schoolYearLabel }}</div>
             </div>
-            <div class="my-risk-meta-item">
-              <span class="my-risk-meta-item__label">Bimestre de predicción</span>
-              <span class="my-risk-meta-item__value">{{ bimesterLabel }}</span>
+            <div class="my-risk-filters__field">
+              <label class="my-risk-filters__label" for="my-risk-bimester">Bimestre</label>
+              <CFormSelect
+                id="my-risk-bimester"
+                v-model="selectedBimester"
+                :disabled="loading || !bimesterOptions.length"
+              >
+                <option v-if="!bimesterOptions.length" value="">Sin bimestres</option>
+                <option
+                  v-for="item in bimesterOptions"
+                  :key="item.id"
+                  :value="String(item.number)"
+                >
+                  {{ item.name || `Bimestre ${item.number}` }}
+                </option>
+              </CFormSelect>
             </div>
           </div>
         </div>
       </CCardBody>
     </CCard>
 
-    <div v-if="store.loading" class="my-risk-state">
-      <CSpinner color="primary" class="me-2" />
-      Cargando tu predicción...
-    </div>
-
-    <div v-else-if="store.error" class="alert alert-warning mb-0">
-      {{ store.error }}
-    </div>
-
-    <template v-else-if="!row || !row.riskLevel">
-      <section class="my-risk-empty">
-        <div class="my-risk-empty__icon" aria-hidden="true">
-          <i class="fas fa-hourglass-half"></i>
+    <CCard class="shadow-sm border-0">
+      <CCardBody class="py-3 px-3 px-md-4">
+        <div v-if="loading" class="my-risk-state">
+          <CSpinner color="primary" class="me-2" />
+          Cargando tu predicción...
         </div>
-        <h2>Aún no hay predicción</h2>
-        <p>
-          Para este bimestre todavía no se ha generado tu nivel de riesgo.
-          Cuando dirección o tu docente actualicen las predicciones, aparecerá aquí el detalle.
-        </p>
-      </section>
-    </template>
 
-    <template v-else>
-      <section class="my-risk-summary mb-4" :class="summaryToneClass">
-        <div class="my-risk-summary__icon" aria-hidden="true">
-          <i class="fas" :class="summaryIcon"></i>
+        <div v-else-if="error" class="alert alert-warning mb-0">
+          {{ error }}
         </div>
-        <div class="my-risk-summary__body">
-          <p class="my-risk-summary__label mb-1">Tu nivel de riesgo</p>
-          <h2 class="my-risk-summary__value mb-2">
-            {{ row.riskLabel || getRiskLabel(row.riskLevel) }}
-          </h2>
-          <p class="my-risk-summary__meta mb-0">
-            Confianza {{ formatConfidence(row.confidence) }}
-            <span v-if="row.lastUpdated"> · Actualizado {{ formatDateTime(row.lastUpdated) }}</span>
+
+        <section v-else-if="!prediction" class="my-risk-empty">
+          <div class="my-risk-empty__icon" aria-hidden="true">
+            <i class="fas fa-hourglass-half"></i>
+          </div>
+          <h2>Aún no hay predicción</h2>
+          <p>
+            Para este bimestre todavía no se ha generado tu nivel de riesgo.
+            Cuando dirección o tu docente actualicen las predicciones, aparecerá aquí el detalle.
           </p>
-          <p class="my-risk-summary__guide mb-0 mt-2">{{ guideMessage }}</p>
-        </div>
-      </section>
+        </section>
 
-      <nav class="my-risk-tabs mb-3" aria-label="Secciones del detalle">
-        <button
-          v-for="tab in tabs"
-          :key="tab.id"
-          type="button"
-          class="my-risk-tabs__item"
-          :class="{ 'is-active': activeTab === tab.id }"
-          @click="activeTab = tab.id"
-        >
-          <i :class="tab.icon" aria-hidden="true"></i>
-          <span>{{ tab.label }}</span>
-          <span v-if="tab.count != null" class="my-risk-tabs__count">{{ tab.count }}</span>
-        </button>
-      </nav>
+        <template v-else>
+          <section class="my-risk-summary mb-4" :class="summaryToneClass">
+            <div class="my-risk-summary__icon" aria-hidden="true">
+              <i class="fas" :class="summaryIcon"></i>
+            </div>
+            <div class="my-risk-summary__body">
+              <p class="my-risk-summary__label mb-1">Tu nivel de riesgo</p>
+              <h2 class="my-risk-summary__value mb-2">
+                {{ prediction.risk_label || getRiskLabel(prediction.risk_level) }}
+              </h2>
+              <p class="my-risk-summary__meta mb-0">
+                Confianza {{ formatConfidence(prediction.confidence) }}
+                <span v-if="prediction.prediction_date">
+                  · Actualizado {{ formatDateTime(prediction.prediction_date) }}
+                </span>
+              </p>
+              <p class="my-risk-summary__guide mb-0 mt-2">{{ guideMessage }}</p>
+            </div>
+          </section>
 
-      <section v-show="activeTab === 'factors'" class="my-risk-panel">
-        <div class="my-risk-panel__head">
-          <h3>
-            <i class="fas fa-flask me-2" aria-hidden="true"></i>
-            Factores
-          </h3>
-          <p>Aspectos que más influyeron en tu predicción.</p>
-        </div>
-        <AcademicRiskFactors
-          :factors="row.prediction?.factors || []"
-          :risk-level="row.riskLevel"
-        />
-      </section>
+          <div class="my-risk-columns">
+            <section class="my-risk-panel">
+              <div class="my-risk-panel__head">
+                <h3>
+                  <i class="fas fa-flask me-2" aria-hidden="true"></i>
+                  Factores
+                </h3>
+                <p>Aspectos que más influyeron en tu predicción.</p>
+              </div>
+              <AcademicRiskFactors
+                :factors="prediction.factors || []"
+                :risk-level="prediction.risk_level"
+              />
+            </section>
 
-      <section v-show="activeTab === 'recommendations'" class="my-risk-panel">
-        <div class="my-risk-panel__head">
-          <h3>
-            <i class="fas fa-lightbulb me-2" aria-hidden="true"></i>
-            Recomendaciones
-          </h3>
-          <p>Acciones sugeridas según tu nivel de riesgo.</p>
-        </div>
-        <AcademicRiskRecommendations
-          :recommendations="row.prediction?.recommendations || []"
-          :risk-level="row.riskLevel"
-        />
-      </section>
-    </template>
+            <section class="my-risk-panel">
+              <div class="my-risk-panel__head">
+                <h3>
+                  <i class="fas fa-lightbulb me-2" aria-hidden="true"></i>
+                  Recomendaciones
+                </h3>
+                <p>Acciones sugeridas según tu nivel de riesgo.</p>
+              </div>
+              <AcademicRiskRecommendations
+                :recommendations="prediction.recommendations || []"
+                :risk-level="prediction.risk_level"
+              />
+            </section>
+          </div>
+        </template>
+      </CCardBody>
+    </CCard>
   </div>
 </template>
 
@@ -115,7 +119,9 @@ import { computed, onMounted, ref } from 'vue'
 
 import AcademicRiskFactors from '@/components/academic-risk/AcademicRiskFactors.vue'
 import AcademicRiskRecommendations from '@/components/academic-risk/AcademicRiskRecommendations.vue'
-import { useAcademicRiskStore } from '@/stores/academicRisk'
+import BimesterService from '@/services/BimesterService'
+import MLService from '@/services/MLService'
+import StudentService from '@/services/StudentService'
 import { RISK_LEVELS } from '@/types/academicRisk'
 import {
   formatConfidence,
@@ -127,76 +133,114 @@ import {
   presentFactorsForDisplay,
   presentRecommendationsForDisplay,
 } from '@/utils/academicRiskPresentation'
+import { resolveActivePeriod } from '@/utils/schoolPeriodDefaults'
 
-const store = useAcademicRiskStore()
-const activeTab = ref('factors')
+const PREDICTABLE_NUMBERS = [1, 2, 3]
 
-const row = computed(() => store.filteredRows[0] || store.rows[0] || null)
+const loading = ref(true)
+const error = ref('')
+const schoolYear = ref(null)
+const periodName = ref('')
+const bimesterOptions = ref([])
+const selectedBimester = ref('')
+const predictionsByNumber = ref({})
 
 const schoolYearLabel = computed(() => {
-  const year = store.filters.schoolYear
-  return year ? String(year) : '—'
+  if (periodName.value) return periodName.value
+  return schoolYear.value ? String(schoolYear.value) : '—'
 })
 
-const bimesterLabel = computed(() => {
-  const item = store.selectedBimester
-  if (item?.name) return item.name
-  if (item?.number) return `Bimestre ${item.number}`
-  if (store.filters.bimester) return `Bimestre ${store.filters.bimester}`
-  return '—'
+const prediction = computed(() => {
+  const number = Number(selectedBimester.value)
+  return predictionsByNumber.value[number] || null
 })
 
 const presentedFactors = computed(() => (
-  presentFactorsForDisplay(row.value?.prediction?.factors || [], row.value?.riskLevel)
+  presentFactorsForDisplay(prediction.value?.factors || [], prediction.value?.risk_level)
 ))
 
 const presentedRecommendations = computed(() => (
   presentRecommendationsForDisplay(
-    row.value?.prediction?.recommendations || [],
-    row.value?.riskLevel,
+    prediction.value?.recommendations || [],
+    prediction.value?.risk_level,
   )
 ))
 
 const guideMessage = computed(() => (
   buildRiskGuideMessage(
-    row.value?.riskLevel,
+    prediction.value?.risk_level,
     presentedFactors.value.length,
     presentedRecommendations.value.length,
   )
 ))
 
 const summaryToneClass = computed(() => {
-  const level = Number(row.value?.riskLevel)
+  const level = Number(prediction.value?.risk_level)
   if (level === RISK_LEVELS.VERY_LOW || level === RISK_LEVELS.LOW) return 'my-risk-summary--ok'
   if (level === RISK_LEVELS.MEDIUM) return 'my-risk-summary--watch'
   return 'my-risk-summary--alert'
 })
 
 const summaryIcon = computed(() => {
-  const level = Number(row.value?.riskLevel)
+  const level = Number(prediction.value?.risk_level)
   if (level === RISK_LEVELS.VERY_LOW || level === RISK_LEVELS.LOW) return 'fa-shield-alt'
   if (level === RISK_LEVELS.MEDIUM) return 'fa-exclamation-circle'
   return 'fa-exclamation-triangle'
 })
 
-const tabs = computed(() => [
-  {
-    id: 'factors',
-    label: 'Factores',
-    icon: 'fas fa-flask',
-    count: presentedFactors.value.length,
-  },
-  {
-    id: 'recommendations',
-    label: 'Recomendaciones',
-    icon: 'fas fa-lightbulb',
-    count: presentedRecommendations.value.length,
-  },
-])
+const extractList = (response) => {
+  const payload = response?.data?.data ?? response?.data
+  return Array.isArray(payload) ? payload : []
+}
 
-onMounted(() => {
-  store.initializeFilters()
-})
+const loadPage = async () => {
+  loading.value = true
+  error.value = ''
+  try {
+    const period = await resolveActivePeriod()
+    const year = Number(period?.year) || new Date().getFullYear()
+    schoolYear.value = year
+    periodName.value = period?.name ? String(period.name) : String(year)
+
+    const [profileResponse, bimesterResponse] = await Promise.all([
+      StudentService.getProfile(),
+      BimesterService.list(year),
+    ])
+
+    const studentId = profileResponse?.data?.data?.id
+    if (!studentId) {
+      error.value = 'No se encontró tu ficha de estudiante.'
+      return
+    }
+
+    bimesterOptions.value = extractList(bimesterResponse)
+      .filter((item) => PREDICTABLE_NUMBERS.includes(Number(item.number)))
+      .sort((a, b) => Number(a.number) - Number(b.number))
+
+    const predictionResponse = await MLService.getPredictionsByStudent(studentId, {
+      school_year: year,
+    })
+    const grouped = {}
+    extractList(predictionResponse).forEach((item) => {
+      const number = Number(item.bimester_number)
+      if (!PREDICTABLE_NUMBERS.includes(number) || grouped[number]) return
+      grouped[number] = item
+    })
+    predictionsByNumber.value = grouped
+
+    const withResult = Object.keys(grouped).map(Number)
+    const fallback = bimesterOptions.value.at(-1)?.number
+    const chosen = withResult.length ? Math.max(...withResult) : fallback
+    selectedBimester.value = chosen != null ? String(chosen) : ''
+  } catch (err) {
+    error.value = err?.response?.data?.error
+      || 'No se pudo cargar tu predicción. Inténtalo de nuevo.'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(loadPage)
 </script>
 
 <style scoped>
@@ -204,14 +248,6 @@ onMounted(() => {
   margin-bottom: 0.85rem;
   padding-bottom: 0.85rem;
   border-bottom: 1px solid var(--cui-border-color, #d8dbe0);
-}
-
-.my-risk-header__eyebrow {
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--cui-secondary-color, #64748b);
-  font-weight: 700;
 }
 
 .my-risk-header__title {
@@ -227,20 +263,19 @@ onMounted(() => {
   max-width: 42rem;
 }
 
-.my-risk-header__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem 2rem;
+.my-risk-filters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.85rem;
 }
 
-.my-risk-meta-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 8rem;
+.my-risk-filters__field {
+  min-width: 0;
 }
 
-.my-risk-meta-item__label {
+.my-risk-filters__label {
+  display: block;
+  margin-bottom: 0.35rem;
   font-size: 0.78rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -248,10 +283,20 @@ onMounted(() => {
   color: var(--cui-secondary-color, #64748b);
 }
 
-.my-risk-meta-item__value {
-  font-size: 1rem;
+.my-risk-period {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--cui-border-color, #d8dbe0);
+  border-radius: 0.375rem;
+  background: #f8fafc;
+  color: #0f172a;
   font-weight: 700;
-  color: var(--cui-body-color, #212529);
+}
+
+.my-risk-filters :deep(.form-select) {
+  min-height: 44px;
 }
 
 .my-risk-state {
@@ -263,10 +308,7 @@ onMounted(() => {
 
 .my-risk-empty {
   text-align: center;
-  background: #fff;
-  border: 1px solid var(--cui-border-color, #e2e8f0);
-  border-radius: 1rem;
-  padding: 2.25rem 1.5rem;
+  padding: 1.5rem 0.5rem;
 }
 
 .my-risk-empty__icon {
@@ -366,53 +408,18 @@ onMounted(() => {
   color: #64748b;
 }
 
-.my-risk-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.my-risk-tabs__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  border: 1px solid #e2e8f0;
-  background: #fff;
-  color: #475569;
-  border-radius: 999px;
-  padding: 0.45rem 0.85rem;
-  font-size: 0.86rem;
-  font-weight: 700;
-}
-
-.my-risk-tabs__item.is-active {
-  border-color: #93c5fd;
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.my-risk-tabs__count {
-  min-width: 1.35rem;
-  height: 1.35rem;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #e2e8f0;
-  color: #334155;
-  font-size: 0.72rem;
-}
-
-.my-risk-tabs__item.is-active .my-risk-tabs__count {
-  background: #dbeafe;
-  color: #1e40af;
+.my-risk-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
 }
 
 .my-risk-panel {
-  background: #fff;
+  min-width: 0;
   border: 1px solid #e2e8f0;
   border-radius: 1rem;
-  padding: 1rem 1.15rem 1.25rem;
+  padding: 1rem 1rem 1.15rem;
+  background: #fff;
 }
 
 .my-risk-panel__head {
@@ -432,19 +439,19 @@ onMounted(() => {
   color: #64748b;
 }
 
-@media (max-width: 767.98px) {
-  .my-risk-header__title {
-    font-size: 1.45rem;
-  }
-
-  .my-risk-header__meta {
-    gap: 0.85rem 1.25rem;
-  }
-}
-
 @media (min-width: 768px) {
   .my-risk-header__title {
     font-size: 1.5rem;
+  }
+
+  .my-risk-filters {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    max-width: 40rem;
+  }
+
+  .my-risk-columns {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
   }
 }
 </style>

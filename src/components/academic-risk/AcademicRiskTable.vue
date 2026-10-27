@@ -45,17 +45,20 @@
                 <CTableRow>
                   <CTableHeaderCell class="text-start">Alumno</CTableHeaderCell>
                   <CTableHeaderCell class="academic-risk-col-aula">Aula</CTableHeaderCell>
-                  <CTableHeaderCell>Nivel</CTableHeaderCell>
-                  <CTableHeaderCell class="academic-risk-col-desktop">Confianza</CTableHeaderCell>
-                  <CTableHeaderCell class="academic-risk-col-desktop">Estado</CTableHeaderCell>
-                  <CTableHeaderCell class="academic-risk-col-desktop">Actualizado</CTableHeaderCell>
+                  <CTableHeaderCell>B1 nivel</CTableHeaderCell>
+                  <CTableHeaderCell>B1 conf.</CTableHeaderCell>
+                  <CTableHeaderCell>B2 nivel</CTableHeaderCell>
+                  <CTableHeaderCell>B2 conf.</CTableHeaderCell>
+                  <CTableHeaderCell>B3 nivel</CTableHeaderCell>
+                  <CTableHeaderCell>B3 conf.</CTableHeaderCell>
+                  <CTableHeaderCell class="academic-risk-col-obs">Observación</CTableHeaderCell>
                   <CTableHeaderCell>Acciones</CTableHeaderCell>
                 </CTableRow>
               </CTableHead>
 
               <CTableBody>
                 <CTableRow v-if="!rows.length">
-                  <CTableDataCell colspan="7" class="list-empty-message py-4 text-center">
+                  <CTableDataCell colspan="10" class="list-empty-message py-4 text-center">
                     No hay registros para mostrar con los filtros seleccionados.
                   </CTableDataCell>
                 </CTableRow>
@@ -63,30 +66,33 @@
                 <CTableRow v-for="row in rows" :key="row.studentId">
                   <CTableDataCell class="text-start academic-risk-student-cell">
                     <div class="fw-semibold">{{ row.fullName }}</div>
-                    <div class="academic-risk-student-cell__aula text-body-secondary small">
+                    <div class="academic-risk-student-cell__aula text-body-secondary small d-md-none">
                       {{ row.classroomLabel || 'Sin aula' }}
                     </div>
                   </CTableDataCell>
                   <CTableDataCell class="academic-risk-col-aula text-center">
                     {{ row.classroomLabel }}
                   </CTableDataCell>
-                  <CTableDataCell class="text-center">
-                    <span v-if="row.riskLevel" :class="getRiskChipClass(row.riskLevel)">
-                      {{ getRiskLabel(row.riskLevel) }}
-                    </span>
-                    <span v-else class="text-body-secondary">—</span>
+
+                  <template v-for="n in [1, 2, 3]" :key="`${row.studentId}-b${n}`">
+                    <CTableDataCell class="text-center">
+                      <span
+                        v-if="row.byBimester?.[n]?.riskLevel"
+                        :class="getRiskChipClass(row.byBimester[n].riskLevel)"
+                      >
+                        {{ getRiskLabel(row.byBimester[n].riskLevel) }}
+                      </span>
+                      <span v-else class="text-body-secondary">—</span>
+                    </CTableDataCell>
+                    <CTableDataCell class="text-center small">
+                      {{ formatConfidence(row.byBimester?.[n]?.confidence) }}
+                    </CTableDataCell>
+                  </template>
+
+                  <CTableDataCell class="academic-risk-col-obs small text-start">
+                    {{ row.observation || '—' }}
                   </CTableDataCell>
-                  <CTableDataCell class="academic-risk-col-desktop text-center">
-                    {{ formatConfidence(row.confidence) }}
-                  </CTableDataCell>
-                  <CTableDataCell class="academic-risk-col-desktop text-center">
-                    <CBadge :color="getStatusBadge(row.status).color">
-                      {{ getStatusBadge(row.status).label }}
-                    </CBadge>
-                  </CTableDataCell>
-                  <CTableDataCell class="academic-risk-col-desktop text-center">
-                    {{ formatDateTime(row.lastUpdated) }}
-                  </CTableDataCell>
+
                   <CTableDataCell>
                     <div class="academic-risk-actions">
                       <CButton
@@ -96,7 +102,7 @@
                         size="sm"
                         class="academic-risk-predict-btn"
                         :disabled="predictDisabled || predictingStudentId === row.studentId"
-                        title="Calcular predicción individual"
+                        title="Calcular predicción individual (bimestres cerrados)"
                         @click="$emit('predict-student', row)"
                       >
                         <CSpinner
@@ -121,7 +127,7 @@
                         color="primary"
                         class="academic-risk-detail-btn"
                         size="sm"
-                        :disabled="!row.prediction"
+                        :disabled="!hasAnyPrediction(row)"
                         title="Ver detalle"
                         @click="$emit('view-detail', row)"
                       >
@@ -143,42 +149,23 @@
 <script setup>
 import {
   formatConfidence,
-  formatDateTime,
   getRiskChipClass,
   getRiskLabel,
-  getStatusBadge,
 } from '@/utils/academicRisk'
 
 defineProps({
-  rows: {
-    type: Array,
-    default: () => [],
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  error: {
-    type: String,
-    default: null,
-  },
-  connectionError: {
-    type: Boolean,
-    default: false,
-  },
-  canPredict: {
-    type: Boolean,
-    default: false,
-  },
-  predictingStudentId: {
-    type: [Number, String],
-    default: null,
-  },
-  predictDisabled: {
-    type: Boolean,
-    default: false,
-  },
+  rows: { type: Array, default: () => [] },
+  loading: { type: Boolean, default: false },
+  error: { type: String, default: null },
+  connectionError: { type: Boolean, default: false },
+  canPredict: { type: Boolean, default: false },
+  predictingStudentId: { type: [Number, String], default: null },
+  predictDisabled: { type: Boolean, default: false },
 })
 
 defineEmits(['view-detail', 'predict-student', 'go-to-profile'])
+
+const hasAnyPrediction = (row) => (
+  [1, 2, 3].some((n) => Boolean(row.byBimester?.[n]?.prediction))
+)
 </script>

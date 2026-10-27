@@ -8,7 +8,12 @@
         :class="item.className"
       >
         <span class="risk-dist__label">{{ item.label }}</span>
-        <strong class="risk-dist__value">{{ item.value }}</strong>
+        <div class="risk-dist__triple">
+          <span v-for="n in [1, 2, 3]" :key="`${item.key}-b${n}`" class="risk-dist__bim">
+            <small>B{{ n }}</small>
+            <strong>{{ item.counts[n] ?? 0 }}</strong>
+          </span>
+        </div>
       </div>
     </div>
   </div>
@@ -28,32 +33,59 @@ const distribution = computed(() => [
   {
     key: 'very_low',
     label: 'Muy bajo',
-    value: props.summary.veryLow || 0,
+    counts: props.summary.veryLow || {},
     className: 'risk-dist--very-low',
   },
   {
     key: 'low',
     label: 'Bajo',
-    value: props.summary.low || 0,
+    counts: props.summary.low || {},
     className: 'risk-dist--low',
   },
   {
     key: 'medium',
     label: 'Medio',
-    value: props.summary.medium || 0,
+    counts: props.summary.medium || {},
     className: 'risk-dist--medium',
   },
   {
     key: 'high',
     label: 'Alto',
-    value: props.summary.high || 0,
+    counts: props.summary.high || {},
     className: 'risk-dist--high',
   },
   {
     key: 'critical',
     label: 'Crítico',
-    value: props.summary.critical || 0,
+    counts: props.summary.critical || {},
     className: 'risk-dist--critical',
   },
 ])
 </script>
+
+<style scoped>
+.risk-dist__triple {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.risk-dist__bim {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 2.25rem;
+  line-height: 1.15;
+}
+
+.risk-dist__bim small {
+  font-size: 0.65rem;
+  opacity: 0.85;
+  font-weight: 600;
+}
+
+.risk-dist__bim strong {
+  font-size: 1.05rem;
+}
+</style>

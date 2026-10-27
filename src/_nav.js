@@ -18,6 +18,28 @@ export default [
   },
   {
     component: 'CNavGroup',
+    name: 'Notas',
+    icon: 'cil-star',
+    roles: ['DIRECCION', 'SECRETARIA', 'PROFESOR', 'AUXILIAR'],
+    items: [
+      {
+        component: 'CNavItem',
+        name: 'Reportes',
+        icon: 'cil-chart-pie',
+        to: '/notas/reportes',
+        roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR'],
+      },
+      {
+        component: 'CNavItem',
+        name: 'Orden mérito',
+        icon: 'cil-star',
+        to: '/notas/records',
+        roles: ['DIRECCION', 'SECRETARIA'],
+      },
+    ],
+  },
+  {
+    component: 'CNavGroup',
     name: 'Riesgo Académico',
     icon: 'cil-warning',
     roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR'],

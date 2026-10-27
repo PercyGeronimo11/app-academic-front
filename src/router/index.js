@@ -139,7 +139,20 @@ const routes = [
       {
         path: '/prediccion/dashboard',
         name: 'PrediccionDashboard',
+        meta: { title: 'Dashboard de predicción' },
         component: () => import('@/views/prediccion/AcademicRiskDashboardView.vue'),
+      },
+      {
+        path: '/notas/reportes',
+        name: 'NotasReportes',
+        meta: { title: 'Reportes de notas' },
+        component: () => import('@/views/notas/NotesReportView.vue'),
+      },
+      {
+        path: '/notas/records',
+        name: 'NotasRecords',
+        meta: { title: 'Orden de mérito' },
+        component: () => import('@/views/notas/NotesRecordsView.vue'),
       },
       {
         path: '/prediccion/aulas',
@@ -151,6 +164,7 @@ const routes = [
       {
         path: '/prediccion/academic-risk',
         name: 'PrediccionAcademicRisk',
+        meta: { title: 'Vista operativa' },
         component: () => import('@/views/prediccion/AcademicRiskView.vue'),
       },
 
@@ -232,9 +246,7 @@ const routes = [
           },
           {
             path: 'schedule',
-            name: 'Horario del curso',
-            meta: { title: 'Horario' },
-            component: () => import('@/views/main_area_student/CourseScheduleView.vue'),
+            redirect: (to) => `/courses/student/${to.params.courseClass}/assistance`,
           },
           {
             path: 'merit',

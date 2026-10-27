@@ -30,8 +30,10 @@ const EMPTY_SUMMARY = {
 
 const EMPTY_ALERTS = {
   high_risk: [],
+  low_risk: [],
   pending: [],
   high_risk_total: 0,
+  low_risk_total: 0,
   pending_total: 0,
 }
 
@@ -41,13 +43,16 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
   const filters = ref({
     schoolYear: null,
     bimester: null,
-    gradeSectionId: null, // null = Todas
+    grade: null, // null | 'all' | '2'
+    section: null, // null | 'all' | 'A'
+    gradeSectionId: null, // legacy / single aula when resolved
   })
 
   const schoolYears = ref([])
   const bimesters = ref([])
   const gradeSections = ref([])
   const activeSchoolYear = ref(null)
+  const currentBimester = ref(null)
 
   const summary = ref({ ...EMPTY_SUMMARY })
   const alerts = ref({ ...EMPTY_ALERTS })
@@ -62,7 +67,6 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
   })
 
   const loading = ref(false)
-  const updating = ref(false)
   const error = ref(null)
   const connectionError = ref(false)
   const scope = ref({
@@ -72,57 +76,40 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     isStudentView: false,
   })
 
-  /** Evita bootstrap / overview duplicados (remount HMR, doble navigate). */
   let bootstrapPromise = null
   let overviewPromise = null
   let lastOverviewKey = null
+
+  const gradeOptions = computed(() => {
+    const set = new Set(gradeSections.value.map((g) => String(g.grade)))
+    return [...set].sort((a, b) => Number(a) - Number(b))
+  })
+
+  const sectionOptions = computed(() => {
+    const grade = filters.value.grade
+    const list = grade && grade !== 'all'
+      ? gradeSections.value.filter((g) => String(g.grade) === String(grade))
+      : gradeSections.value
+    const set = new Set(list.map((g) => String(g.section)))
+    return [...set].sort()
+  })
 
   const selectedBimester = computed(() => (
     bimesters.value.find((item) => item.number === filters.value.bimester) || null
   ))
 
-  const selectedGradeSection = computed(() => {
-    if (!filters.value.gradeSectionId) return null
-    return gradeSections.value.find((item) => item.id === filters.value.gradeSectionId) || null
-  })
-
-  const isAllClassrooms = computed(() => filters.value.gradeSectionId == null)
-
-  const currentWritableBimester = computed(() => {
-    if (!activeSchoolYear.value) return null
-    return resolveDefaultBimester(bimesters.value, { maxNumber: 3 })
-  })
-
-  const isWritableWindow = computed(() => {
-    const current = currentWritableBimester.value
-    return Boolean(
-      current
-      && Number(filters.value.bimester) === Number(current.number),
-    )
-  })
-
   const canQuery = computed(() => (
     Boolean(filters.value.schoolYear) && Boolean(filters.value.bimester)
   ))
 
-  const canUpdatePredictions = computed(() => (
-    scope.value.canUpdatePredictions
-    && isWritableWindow.value
-    && Boolean(filters.value.schoolYear)
-    && Boolean(filters.value.bimester)
-    && !updating.value
-    && !loading.value
-  ))
-
   const overviewKey = () => {
     const f = filters.value
-    return `${f.schoolYear ?? ''}|${f.bimester ?? ''}|${f.gradeSectionId ?? 'all'}`
+    return `${f.schoolYear ?? ''}|${f.bimester ?? ''}|${f.grade ?? 'all'}|${f.section ?? 'all'}`
   }
 
   const loadSchoolYears = async () => {
     schoolYears.value = await loadSchoolYearOptions()
     activeSchoolYear.value = await resolveActiveSchoolYear(schoolYears.value)
-    // Siempre periodo activo (Configuraciones); no hay filtro de año.
     filters.value.schoolYear = activeSchoolYear.value
   }
 
@@ -150,6 +137,11 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
       canUpdatePredictions: Boolean(data.can_generate_predictions ?? data.can_update_predictions),
       isStudentView: data.role === 'ESTUDIANTE',
     }
+    currentBimester.value = data.current_bimester ?? null
+    if (currentBimester.value == null) {
+      const current = resolveDefaultBimester(bimesters.value, { maxNumber: 4 })
+      currentBimester.value = current?.number ?? null
+    }
   }
 
   const loadGradeSections = async () => {
@@ -162,20 +154,15 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     })
     gradeSections.value = extractLaravelData(response).map((item) => ({
       id: Number(item.id),
-      label: item.label || `${item.grade} ${item.section}`,
-      grade: item.grade,
-      section: item.section,
+      label: item.label || `${item.grade}° ${item.section}`,
+      grade: item.grade_name || item.grade,
+      section: item.section_name || item.section,
     }))
 
-    if (
-      filters.value.gradeSectionId != null
-      && !gradeSections.value.some((item) => item.id === filters.value.gradeSectionId)
-    ) {
-      filters.value.gradeSectionId = null
-    }
+    if (filters.value.grade == null) filters.value.grade = 'all'
+    if (filters.value.section == null) filters.value.section = 'all'
   }
 
-  /** Tras tener año: bimestres + scope + aulas en paralelo. */
   const loadYearDependentMeta = async () => {
     await Promise.all([
       loadBimesters(),
@@ -189,8 +176,11 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
       school_year: filters.value.schoolYear,
       bimester: filters.value.bimester,
     }
-    if (filters.value.gradeSectionId != null) {
-      params.grade_section_id = filters.value.gradeSectionId
+    if (filters.value.grade && filters.value.grade !== 'all') {
+      params.grade = filters.value.grade
+    }
+    if (filters.value.section && filters.value.section !== 'all') {
+      params.section = filters.value.section
     }
     return params
   }
@@ -223,21 +213,16 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     }
   }
 
-  /**
-   * @param {{ force?: boolean }} [options]
-   */
   const loadOverview = async (options = {}) => {
     const force = Boolean(options?.force)
     if (!canQuery.value) return
 
     const key = overviewKey()
 
-    // Misma consulta ya en vuelo → reutilizar
     if (overviewPromise && lastOverviewKey === key) {
       return overviewPromise
     }
 
-    // Misma clave recién cargada y no force → no repetir
     if (!force && !overviewPromise && lastOverviewKey === key && !error.value && !connectionError.value) {
       return
     }
@@ -250,7 +235,6 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     overviewPromise = (async () => {
       try {
         const response = await AcademicRiskService.getDashboard(queryParams())
-        // Si el usuario cambió filtros mientras tanto, descartar resultado viejo
         if (overviewKey() !== key) return
         applyOverviewPayload(response.data?.data ?? {})
       } catch (err) {
@@ -297,40 +281,15 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     filters.value.bimester = bimester
   }
 
-  const onGradeSectionChange = (gradeSectionId) => {
-    filters.value.gradeSectionId = gradeSectionId == null || gradeSectionId === ''
-      ? null
-      : Number(gradeSectionId)
+  const onGradeChange = (grade) => {
+    filters.value.grade = grade || 'all'
+    filters.value.section = 'all'
+    filters.value.gradeSectionId = null
   }
 
-  const updatePredictions = async () => {
-    updating.value = true
-    connectionError.value = false
-
-    try {
-      let response
-      if (filters.value.gradeSectionId == null) {
-        response = await AcademicRiskService.updatePredictionsAll({
-          school_year: filters.value.schoolYear,
-          bimester: filters.value.bimester,
-        })
-      } else {
-        response = await AcademicRiskService.updatePredictions({
-          school_year: filters.value.schoolYear,
-          bimester: filters.value.bimester,
-          grade_section_id: filters.value.gradeSectionId,
-        })
-      }
-      await loadOverview({ force: true })
-      return response.data
-    } catch (err) {
-      if (!err.response) connectionError.value = true
-      const data = err.response?.data ?? {}
-      err.validationPayload = data
-      throw err
-    } finally {
-      updating.value = false
-    }
+  const onSectionChange = (section) => {
+    filters.value.section = section || 'all'
+    filters.value.gradeSectionId = null
   }
 
   return {
@@ -338,7 +297,10 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     schoolYears,
     bimesters,
     gradeSections,
+    gradeOptions,
+    sectionOptions,
     activeSchoolYear,
+    currentBimester,
     summary,
     alerts,
     topClassrooms,
@@ -346,20 +308,15 @@ export const useAcademicRiskDashboardStore = defineStore('academicRiskDashboard'
     students,
     insights,
     loading,
-    updating,
     error,
     connectionError,
     scope,
     selectedBimester,
-    selectedGradeSection,
-    isAllClassrooms,
-    isWritableWindow,
     canQuery,
-    canUpdatePredictions,
     bootstrapOverview,
     loadOverview,
     onBimesterChange,
-    onGradeSectionChange,
-    updatePredictions,
+    onGradeChange,
+    onSectionChange,
   }
 })

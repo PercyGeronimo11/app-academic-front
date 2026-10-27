@@ -663,6 +663,153 @@
 }
 
 /* ===== Dashboard / Aulas ===== */
+
+/* Tarjeta unificada ML (ops / dashboard / récords) */
+.academic-risk-ops-card {
+  border: 1px solid var(--rp-border, #d8dbe0) !important;
+  background:
+    linear-gradient(135deg, rgba(50, 31, 219, 0.04) 0%, transparent 42%),
+    var(--cui-body-bg, #fff);
+}
+
+.academic-risk-ops-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem 1.25rem;
+}
+
+.academic-risk-ops-card__intro {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  min-width: min(100%, 18rem);
+  flex: 1 1 16rem;
+}
+
+.academic-risk-ops-card__icon {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 0.65rem;
+  display: grid;
+  place-items: center;
+  background: var(--rp-surface-brand-soft, #e7e7ff);
+  border: 1px solid var(--rp-border-brand, #c5c5f5);
+  color: var(--rp-brand-500, #321fdb);
+  font-size: 1.15rem;
+}
+
+.academic-risk-ops-card__eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--rp-text-brand, #321fdb);
+  margin: 0;
+}
+
+.academic-risk-ops-card__title {
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--cui-body-color, #1a1d21);
+}
+
+.academic-risk-ops-card__desc {
+  font-size: 0.9rem;
+  color: var(--cui-secondary-color, #6b7280);
+  max-width: 36rem;
+  line-height: 1.45;
+}
+
+.academic-risk-ops-card__aside {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: 0.65rem;
+}
+
+.academic-risk-ops-card__context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.academic-risk-ops-chip {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-height: 44px;
+  padding: 0.45rem 0.75rem;
+  border-radius: 0.55rem;
+  background: var(--cui-tertiary-bg, #f8f9fa);
+  border: 1px solid var(--rp-border, #d8dbe0);
+}
+
+.academic-risk-ops-chip > i {
+  margin-top: 0.15rem;
+  color: var(--rp-brand-500, #321fdb);
+}
+
+.academic-risk-ops-chip__label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--cui-secondary-color, #6b7280);
+  line-height: 1.2;
+}
+
+.academic-risk-ops-chip strong {
+  display: inline;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-right: 0.35rem;
+}
+
+.academic-risk-ops-chip small {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--cui-secondary-color, #6b7280);
+}
+
+.academic-risk-ops-card__dash-btn {
+  min-height: 44px;
+  align-self: center;
+}
+
+.academic-risk-ops-card__divider {
+  margin: 1rem 0;
+  opacity: 0.55;
+  border-style: solid;
+}
+
+.academic-risk-ops-card__update-btn {
+  min-height: 44px;
+  font-weight: 600;
+}
+
+@media (max-width: 575.98px) {
+  .academic-risk-ops-card__aside {
+    width: 100%;
+  }
+
+  .academic-risk-ops-card__context {
+    width: 100%;
+  }
+
+  .academic-risk-ops-chip {
+    flex: 1 1 calc(50% - 0.25rem);
+  }
+
+  .academic-risk-ops-card__dash-btn {
+    width: 100%;
+  }
+}
+
 .risk-hero-card {
   background: var(--rp-surface);
   border: 1px solid var(--rp-border) !important;
@@ -810,6 +957,14 @@
   margin-top: var(--rp-space-4);
 }
 
+.risk-alert-list--scroll {
+  max-height: 22rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.25rem;
+  -webkit-overflow-scrolling: touch;
+}
+
 .risk-alert-item,
 .risk-rank-item {
   width: 100%;
@@ -831,12 +986,42 @@
   background: var(--rp-surface-hover);
 }
 
+.risk-alert-item--static {
+  cursor: default;
+}
+
+.risk-alert-item--static:hover {
+  border-color: var(--rp-border);
+  background: var(--rp-surface);
+}
+
 .risk-alert-item__main,
 .risk-rank-item__left {
   display: flex;
   flex-direction: column;
   gap: 0.1rem;
   min-width: 0;
+}
+
+.risk-alert-item__main--ranked {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--rp-space-3);
+}
+
+.risk-alert-item__side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.risk-alert-item__conf {
+  font-size: var(--rp-text-xs, 0.75rem);
+  font-weight: 600;
+  color: var(--rp-text-muted, #6b7280);
+  white-space: nowrap;
 }
 
 .risk-alert-item__main span,

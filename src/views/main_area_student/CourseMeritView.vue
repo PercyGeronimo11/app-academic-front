@@ -1,35 +1,18 @@
 <template>
   <div class="module-page student-merit">
-    <div class="module-filter-bar student-merit__filters">
-      <div class="student-merit__period-field">
-        <CFormLabel for="student-merit-period">Periodo</CFormLabel>
-        <CFormSelect
-          id="student-merit-period"
-          :model-value="selectedPeriod"
-          :disabled="loading || !periodOptions.length"
-          @update:model-value="onPeriodChange"
-        >
-          <option
-            v-for="opt in periodOptions"
-            :key="opt.key"
-            :value="opt.key"
-            :disabled="opt.available === false"
-          >
-            {{ opt.label }}
-          </option>
-        </CFormSelect>
-      </div>
-    </div>
-
     <div v-if="loadError" class="module-alert module-alert--error">{{ loadError }}</div>
     <div v-if="loading" class="module-loading">
       <i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Cargando orden de mérito...
     </div>
 
-    <template v-else-if="me">
-      <div class="module-card student-merit__summary mb-4">
+    <div v-else-if="me" class="student-merit__columns">
+      <section class="module-card student-merit__summary">
+        <div class="module-card__header">
+          <i class="fas fa-medal me-2" aria-hidden="true"></i>
+          Tu resultado
+        </div>
         <div class="module-card__body">
-          <p class="student-merit__eyebrow mb-2">{{ selectedLabel || 'Periodo seleccionado' }}</p>
+          <p class="student-merit__eyebrow mb-3">{{ selectedLabel || 'Bimestre seleccionado' }}</p>
           <div class="student-merit__grid">
             <div class="student-merit__stat">
               <span class="student-merit__stat-label">Tu posición</span>
@@ -41,7 +24,7 @@
                 <template v-else>—</template>
               </strong>
               <span v-if="me.rank == null" class="student-merit__stat-hint">
-                Aún sin notas en este periodo
+                Aún sin notas en este bimestre
               </span>
             </div>
 
@@ -73,7 +56,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
       <section class="module-card">
         <div class="module-card__header">
@@ -105,12 +88,12 @@
           </div>
         </div>
       </section>
-    </template>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import CompetencyScoreService from '@/services/CompetencyScoreService'
 import EmptyState from '@/components/academic/EmptyState.vue'
@@ -119,14 +102,23 @@ import ScoreLevelBadge from '@/components/academic/ScoreLevelBadge.vue'
 const route = useRoute()
 const courseClassId = computed(() => Number(route.params.courseClass))
 
+const bimesters = inject('studentBimesters', ref([]))
+const selectedBimesterId = inject('studentBimesterId', ref(null))
+
 const loading = ref(true)
 const loadError = ref('')
 const me = ref(null)
 const competencies = ref([])
-const periodOptions = ref([])
-const selectedPeriod = ref('')
 const selectedLabel = ref('')
 const rankedCount = ref(0)
+
+const periodKey = computed(() => {
+  const selected = bimesters.value.find(
+    (item) => Number(item.id) === Number(selectedBimesterId.value)
+  )
+  if (selected?.number == null) return ''
+  return String(selected.number)
+})
 
 const formatScore = (value) => {
   if (value == null || Number.isNaN(Number(value))) return '—'
@@ -134,23 +126,21 @@ const formatScore = (value) => {
 }
 
 const applyPayload = (data) => {
-  periodOptions.value = data.period_options || []
-  selectedPeriod.value = data.selected?.key || data.default_key || ''
   selectedLabel.value = data.selected?.label || ''
   competencies.value = data.competencies || []
   rankedCount.value = Number(data.ranked_count || 0)
   me.value = data.me || null
 }
 
-const loadMyMerit = async (periodKey = null) => {
-  if (!courseClassId.value) return
+const loadMyMerit = async (key) => {
+  if (!courseClassId.value || !key) {
+    loading.value = false
+    return
+  }
   loading.value = true
   loadError.value = ''
   try {
-    const response = await CompetencyScoreService.myMerit(
-      courseClassId.value,
-      periodKey,
-    )
+    const response = await CompetencyScoreService.myMerit(courseClassId.value, key)
     if (response.data?.success) {
       applyPayload(response.data.data || {})
     } else {
@@ -158,34 +148,24 @@ const loadMyMerit = async (periodKey = null) => {
       me.value = null
     }
   } catch (error) {
-    loadError.value =
-      error.response?.data?.message || 'Error al cargar tu orden de mérito.'
+    loadError.value = error.response?.data?.message || 'Error al cargar tu orden de mérito.'
     me.value = null
   } finally {
     loading.value = false
   }
 }
 
-const onPeriodChange = async (value) => {
-  selectedPeriod.value = String(value)
-  await loadMyMerit(selectedPeriod.value)
-}
-
-watch(courseClassId, (id) => {
-  if (id) loadMyMerit(null)
-})
-
-onMounted(() => loadMyMerit(null))
+watch(periodKey, (key) => {
+  if (key) loadMyMerit(key)
+}, { immediate: true })
 </script>
 
 <style scoped>
-.student-merit__filters {
-  align-items: flex-end;
-}
-
-.student-merit__period-field {
-  flex: 0 1 16rem;
-  max-width: 100%;
+.student-merit__columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--rp-space-4);
+  align-items: start;
 }
 
 .student-merit__eyebrow {
@@ -312,6 +292,7 @@ onMounted(() => loadMyMerit(null))
   font-weight: var(--rp-weight-semibold);
   color: var(--rp-text-heading);
   line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .competency-card__description {
@@ -322,8 +303,8 @@ onMounted(() => loadMyMerit(null))
 }
 
 @media (min-width: 768px) {
-  .student-merit__grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .student-merit__columns {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   }
 }
 </style>

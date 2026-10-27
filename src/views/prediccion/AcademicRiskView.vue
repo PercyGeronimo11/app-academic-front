@@ -1,36 +1,8 @@
 <template>
   <div class="academic-risk-view">
-    <CRow class="mb-3">
-      <CCol>
-        <CCard class="shadow-sm border-0 risk-hero-card">
-          <CCardBody class="py-4 px-4">
-            <div class="d-flex flex-wrap justify-content-between align-items-start gap-3">
-              <div>
-                <p class="risk-hero-card__eyebrow mb-2">Alerta temprana</p>
-                <h4 class="fw-bold mb-2">Vista operativa</h4>
-                <p class="mb-0 text-body-secondary">
-                  Predicciones por alumno del aula seleccionada: detalle, factores y acciones.
-                </p>
-                <p class="risk-hero-card__meta mb-0 mt-2">
-                  <i class="fas fa-clock me-1"></i>
-                  Última actualización:
-                  <strong>{{ formatDateTime(store.summary.lastUpdated) }}</strong>
-                </p>
-              </div>
-              <div class="d-flex flex-wrap gap-2">
-                <CButton color="secondary" variant="outline" @click="goToDashboard">
-                  <i class="fas fa-chart-line me-2"></i>
-                  Dashboard
-                </CButton>
-              </div>
-            </div>
-          </CCardBody>
-        </CCard>
-      </CCol>
-    </CRow>
-
     <AcademicRiskFilters
       @update-predictions="confirmUpdate"
+      @go-dashboard="goToDashboard"
     />
 
     <AcademicRiskSummary v-if="!store.scope.isStudentView" :summary="store.summary" />
@@ -63,8 +35,8 @@
         <p class="text-white-50 mb-3">
           {{
             store.predictingStudentId
-              ? 'El modelo de Machine Learning está procesando al alumno seleccionado.'
-              : 'El modelo de Machine Learning está procesando el aula seleccionada.'
+              ? 'Procesando bimestres cerrados del alumno seleccionado.'
+              : 'Procesando bimestres cerrados del aula (puede tardar varios minutos).'
           }}
         </p>
         <CProgress animated :value="100" color="light" class="academic-risk-overlay__progress" />
@@ -85,7 +57,6 @@ import AcademicRiskTable from '@/components/academic-risk/AcademicRiskTable.vue'
 import { useAcademicRiskStore } from '@/stores/academicRisk'
 import { BRAND_COLOR } from '@/utils/brand'
 import { toastError, toastSuccess } from '@/utils/alerts'
-import { formatDateTime } from '@/utils/academicRisk'
 import { formatSkippedStudentLabel } from '@/utils/academicRiskFilters'
 
 const store = useAcademicRiskStore()
@@ -96,7 +67,6 @@ const goToDashboard = () => {
   router.push({
     path: '/prediccion/dashboard',
     query: {
-      bimester: store.filters.bimester || undefined,
       grade_section_id: store.filters.gradeSectionId || undefined,
     },
   })
@@ -117,17 +87,51 @@ const buildMissingFieldsHtml = (missingFields = []) => {
 const buildSkippedStudentsHtml = (skippedStudents = []) => {
   if (!skippedStudents.length) return ''
   const items = skippedStudents
-    .map((item) => `<li>${formatSkippedStudentLabel(item)}</li>`)
+    .map((item) => {
+      const base = formatSkippedStudentLabel(item)
+      return item.bimester ? `<li>${base} <em>(B${item.bimester})</em></li>` : `<li>${base}</li>`
+    })
     .join('')
   return `<p class="mb-2 mt-3">No se pudo calcular la predicción de:</p><ul class="text-start mb-0">${items}</ul>`
+}
+
+const buildMissingByBimesterHtml = (missingByBimester = {}) => {
+  const entries = Object.entries(missingByBimester)
+  if (!entries.length) return ''
+  const blocks = entries.map(([b, fields]) => {
+    const list = (fields || []).map((f) => `<li>${f}</li>`).join('')
+    return `<p class="mb-1 mt-2 fw-semibold">B${b}</p><ul class="text-start mb-0">${list || '<li>Datos incompletos</li>'}</ul>`
+  })
+  return blocks.join('')
 }
 
 const showPredictionError = async (err, studentId = null) => {
   const payload = err.validationPayload || err.response?.data || {}
   const missingFields = payload.missing_fields || []
+  const missingByBimester = payload.missing_by_bimester || {}
   const skippedStudents = payload.skipped_students || []
   const message = payload.message || store.error || 'No se pudieron actualizar las predicciones.'
   const targetStudentId = studentId || payload.student_id || null
+
+  // Individual: faltantes por bimestre
+  if (Object.keys(missingByBimester).length) {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: 'Datos incompletos por bimestre',
+      html: `<p>${message}</p>${buildMissingByBimesterHtml(missingByBimester)}`,
+      showCancelButton: Boolean(targetStudentId),
+      confirmButtonText: 'Entendido',
+      cancelButtonText: 'Ir a completar información',
+      confirmButtonColor: BRAND_COLOR,
+      cancelButtonColor: '#39f',
+      reverseButtons: true,
+    })
+
+    if (result.dismiss === Swal.DismissReason.cancel && targetStudentId) {
+      goToStudentProfile(targetStudentId)
+    }
+    return
+  }
 
   if (missingFields.length) {
     const result = await Swal.fire({
@@ -181,9 +185,10 @@ const showBatchResult = (payload = {}) => {
 }
 
 const confirmUpdate = async () => {
+  const pred = store.predictableBimesters.map((n) => `B${n}`).join(', ') || 'ninguno'
   const result = await Swal.fire({
     title: '¿Desea actualizar las predicciones?',
-    html: 'Se ejecutará el modelo de Machine Learning para el aula y bimestre seleccionados.<br><br>Se calculará solo para alumnos con datos ML completos; el resto se listará al final.',
+    html: `Se ejecutará el modelo para el aula seleccionada en los bimestres cerrados (<strong>${pred}</strong>; vigente B${store.currentBimester}).<br><br>Los alumnos sin datos completos se omiten y quedan en Observación.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Actualizar',
@@ -203,9 +208,10 @@ const confirmUpdate = async () => {
 }
 
 const confirmPredictStudent = async (row) => {
+  const pred = store.predictableBimesters.map((n) => `B${n}`).join(', ') || 'ninguno'
   const result = await Swal.fire({
     title: '¿Calcular predicción individual?',
-    html: `Se ejecutará el modelo para <strong>${row.fullName}</strong>.<br><br>El alumno debe tener completos los datos ML.`,
+    html: `Se ejecutará el modelo para <strong>${row.fullName}</strong> en ${pred}.<br><br>Si falta información, se detallará por bimestre.`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Calcular',
@@ -217,17 +223,21 @@ const confirmPredictStudent = async (row) => {
   if (!result.isConfirmed) return
 
   try {
-    await store.predictStudent(row.studentId)
-    toastSuccess(`Predicción actualizada para ${row.fullName}.`)
+    const payload = await store.predictStudent(row.studentId)
+    if (payload?.missing_by_bimester && Object.keys(payload.missing_by_bimester).length) {
+      await showPredictionError({ validationPayload: payload }, row.studentId)
+      if (payload.success) {
+        toastSuccess(payload.message || `Predicción parcial para ${row.fullName}.`)
+      }
+      return
+    }
+    toastSuccess(payload?.message || `Predicción actualizada para ${row.fullName}.`)
   } catch (err) {
     showPredictionError(err, row.studentId)
   }
 }
 
 onMounted(() => {
-  if (route.query.bimester) {
-    store.filters.bimester = Number(route.query.bimester)
-  }
   if (route.query.grade_section_id) {
     store.filters.gradeSectionId = Number(route.query.grade_section_id)
   }

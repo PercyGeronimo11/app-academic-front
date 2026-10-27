@@ -19,7 +19,10 @@
         @change="handleFiles"
       />
 
-      <div v-if="internalItems.length === 0">
+      <div v-if="internalItems.length === 0" class="dropzone__empty">
+        <span class="dropzone__icon" aria-hidden="true">
+          <i class="fas fa-file-pdf"></i>
+        </span>
         <p>Arrastre archivos aquí o haga clic para seleccionar</p>
         <small>{{ helperText }}</small>
       </div>
@@ -38,10 +41,12 @@
             </span>
             <button
               type="button"
-              class="btn btn-sm btn-danger"
+              class="file-item__remove"
+              aria-label="Quitar documento"
+              title="Quitar documento"
               @click="removeFile(index)"
             >
-              X
+              <i class="fas fa-trash-alt" aria-hidden="true"></i>
             </button>
           </div>
           <div class="file-item__name">
@@ -239,6 +244,26 @@ const removeFile = (index) => {
   background-color: var(--rp-surface-selected);
 }
 
+.dropzone__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.dropzone__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0.75rem;
+  background: var(--rp-surface-brand-soft, #e7f3fb);
+  color: var(--rp-brand-600, #1d6fad);
+  font-size: 1.1rem;
+}
+
 .dropzone p {
   margin: 0;
   font-size: var(--rp-text-base);
@@ -264,6 +289,7 @@ const removeFile = (index) => {
 .file-item {
   padding: var(--rp-space-3);
   border: 1px solid var(--rp-border);
+  border-left: 3px solid var(--rp-brand-500, #1d6fad);
   border-radius: var(--rp-radius-md);
   background: var(--rp-surface);
 }
@@ -288,9 +314,26 @@ const removeFile = (index) => {
   padding: 0.1rem 0.45rem;
   border-radius: 999px;
   font-size: 0.68rem;
-  font-weight: 600;
-  color: var(--rp-brand-700, #0b5a8c);
-  background: var(--rp-surface-brand-soft, #e7f3fb);
+  font-weight: 700;
+  color: var(--rp-success-800, #166534);
+  background: var(--rp-success-100, #dcfce7);
+}
+
+.file-item__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #fecaca;
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #b91c1c;
+}
+
+.file-item__remove:hover {
+  background: #fef2f2;
 }
 
 .file-item__name .form-label {

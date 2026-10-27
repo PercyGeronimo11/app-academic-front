@@ -23,7 +23,9 @@ export default {
   },
 
   updatePredictions(payload) {
-    return axios.post(`${API_URL}/academic-risk/predictions/update`, payload)
+    return axios.post(`${API_URL}/academic-risk/predictions/update`, payload, {
+      timeout: 600000,
+    })
   },
 
   updatePredictionsAll(payload) {
@@ -33,7 +35,9 @@ export default {
   },
 
   predictStudent(payload) {
-    return axios.post(`${API_URL}/academic-risk/predictions/student`, payload)
+    return axios.post(`${API_URL}/academic-risk/predictions/student`, payload, {
+      timeout: 300000,
+    })
   },
 
   getDashboard(params) {

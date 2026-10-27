@@ -1,9 +1,20 @@
 <template>
-  <CForm :key="formKey" @submit.prevent="savePaperwork">
-    <CContainer class="px-0">
-      <CRow class="mb-3">
-        <CCol md="4">
-          <label class="form-label" for="paperwork-subject">Asunto</label>
+  <CForm :key="formKey" class="pw-form" @submit.prevent="savePaperwork">
+    <section class="pw-section">
+      <header class="pw-section__head">
+        <span class="pw-section__icon" aria-hidden="true"><i class="fas fa-file-alt"></i></span>
+        <div>
+          <h2 class="pw-section__title">Solicitud</h2>
+          <p class="pw-section__hint">Indique el asunto y describa el motivo de su trámite.</p>
+        </div>
+      </header>
+
+      <div class="pw-grid">
+        <div class="pw-field">
+          <label class="pw-label" for="paperwork-subject">
+            <i class="fas fa-tag" aria-hidden="true"></i>
+            Asunto
+          </label>
           <select
             id="paperwork-subject"
             v-model="form.subject"
@@ -19,79 +30,123 @@
               {{ option }}
             </option>
           </select>
-        </CCol>
+        </div>
 
-        <CCol md="4">
-          <CFormInput v-model="form.recipient" label="Destinatario" required readonly />
-        </CCol>
-      </CRow>
-
-      <CRow class="mb-3">
-        <CCol>
-          <CFormTextarea
-            v-model="form.reason"
-            label="Motivo"
-            rows="3"
-            required
-          />
-        </CCol>
-      </CRow>
-
-      <CRow class="mb-3">
-        <CCol md="8">
-          <CFormInput
-            :model-value="displayGuardianValue(guardianData.address)"
-            label="Dirección del apoderado"
-            readonly
-          />
-        </CCol>
-        <CCol md="4">
-          <CFormInput
-            :model-value="displayGuardianValue(guardianData.phone)"
-            label="Teléfono del apoderado"
-            readonly
-          />
-        </CCol>
-      </CRow>
-
-      <CRow class="mb-3">
-        <CCol>
-          <CFormInput
-            label="Firma"
-            type="file"
-            accept="image/*"
-            @change="handleSignature"
-          />
-          <div v-if="existingSignatureUrl && !form.signature" class="mt-2 signature-preview">
-            <small class="text-body-secondary d-block mb-1">
-              Firma actual (se conserva si no sube otra):
-            </small>
-            <img :src="existingSignatureUrl" alt="Firma actual" class="signature-preview__img" />
-          </div>
-        </CCol>
-      </CRow>
-
-      <CRow class="mb-3">
-        <CCol>
-          <FileDropzone
-            v-model="files"
-            :maxFiles="5"
-            accept=".pdf,application/pdf"
-            label="Documentos anexos (Maximo 5 archivos PDF)"
-            helperText="Solo archivos PDF (máximo 5). Debe indicar un nombre para cada documento. Al subsanar se recuperan los ya subidos; puede quitarlos, renombrarlos o agregar nuevos."
-          />
-        </CCol>
-      </CRow>
-
-      <div class="d-flex flex-wrap gap-2 justify-content-end">
-        <CButton type="button" color="secondary" @click="onCancel">
-          Cancelar
-        </CButton>
-        <CButton type="button" color="primary" :disabled="isSaving" @click="savePaperwork">
-          {{ isEditMode ? 'Actualizar Trámite' : 'Guardar Trámite' }}
-        </CButton>
+        <div class="pw-lock">
+          <span class="pw-label">
+            <i class="fas fa-user-tie" aria-hidden="true"></i>
+            Destinatario
+          </span>
+          <strong class="pw-lock__value">
+            <i class="fas fa-lock" aria-hidden="true"></i>
+            {{ form.recipient || 'Director(a) de la I.E.' }}
+          </strong>
+        </div>
       </div>
-    </CContainer>
+
+      <div class="pw-field">
+        <label class="pw-label" for="paperwork-reason">
+          <i class="fas fa-align-left" aria-hidden="true"></i>
+          Motivo
+        </label>
+        <textarea
+          id="paperwork-reason"
+          v-model="form.reason"
+          class="form-control"
+          rows="3"
+          required
+          placeholder="Describa el motivo de la solicitud"
+        ></textarea>
+      </div>
+    </section>
+
+    <section class="pw-section pw-section--soft">
+      <header class="pw-section__head">
+        <span class="pw-section__icon pw-section__icon--muted" aria-hidden="true">
+          <i class="fas fa-id-card"></i>
+        </span>
+        <div>
+          <h2 class="pw-section__title">Apoderado</h2>
+          <p class="pw-section__hint">Se toman de su perfil. Para cambiarlos, actualice sus datos personales.</p>
+        </div>
+      </header>
+
+      <div class="pw-grid">
+        <div class="pw-lock">
+          <span class="pw-label">
+            <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
+            Dirección del apoderado
+          </span>
+          <strong class="pw-lock__value">{{ displayGuardianValue(guardianData.address) }}</strong>
+        </div>
+        <div class="pw-lock">
+          <span class="pw-label">
+            <i class="fas fa-phone" aria-hidden="true"></i>
+            Teléfono del apoderado
+          </span>
+          <strong class="pw-lock__value">{{ displayGuardianValue(guardianData.phone) }}</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="pw-section">
+      <header class="pw-section__head">
+        <span class="pw-section__icon" aria-hidden="true"><i class="fas fa-signature"></i></span>
+        <div>
+          <h2 class="pw-section__title">Firma</h2>
+          <p class="pw-section__hint">
+            {{ isEditMode ? 'Si no elige otra imagen, se conserva la firma actual.' : 'Adjunte una imagen de su firma.' }}
+          </p>
+        </div>
+      </header>
+
+      <div class="pw-sign">
+        <label class="pw-sign__pick" for="paperwork-signature">
+          <i class="fas fa-image" aria-hidden="true"></i>
+          <span>{{ signatureLabel }}</span>
+        </label>
+        <input
+          id="paperwork-signature"
+          class="pw-sign__input"
+          type="file"
+          accept="image/*"
+          @change="handleSignature"
+        />
+
+        <div v-if="existingSignatureUrl && !form.signature" class="pw-sign__preview">
+          <span class="pw-sign__caption">Firma actual</span>
+          <img :src="existingSignatureUrl" alt="Firma actual" class="pw-sign__img" />
+        </div>
+      </div>
+    </section>
+
+    <section class="pw-section">
+      <header class="pw-section__head">
+        <span class="pw-section__icon" aria-hidden="true"><i class="fas fa-paperclip"></i></span>
+        <div>
+          <h2 class="pw-section__title">Documentos anexos</h2>
+          <p class="pw-section__hint">Hasta 5 PDF. Cada archivo debe tener un nombre.</p>
+        </div>
+      </header>
+
+      <FileDropzone
+        v-model="files"
+        :maxFiles="5"
+        accept=".pdf,application/pdf"
+        helperText="Solo archivos PDF. Puede quitar, renombrar o agregar documentos."
+      />
+    </section>
+
+    <div class="pw-actions">
+      <CButton type="button" color="secondary" variant="outline" class="pw-actions__btn" @click="onCancel">
+        <i class="fas fa-times me-2" aria-hidden="true"></i>
+        Cancelar
+      </CButton>
+      <CButton type="button" color="primary" class="pw-actions__btn" :disabled="isSaving" @click="savePaperwork">
+        <i class="fas fa-save me-2" aria-hidden="true"></i>
+        {{ isEditMode ? 'Actualizar trámite' : 'Guardar trámite' }}
+      </CButton>
+    </div>
   </CForm>
 </template>
 
@@ -381,6 +436,11 @@ const handleSignature = (event) => {
   form.value.signature = event.target.files?.[0] || null;
 };
 
+const signatureLabel = computed(() => {
+  if (form.value.signature instanceof File) return form.value.signature.name;
+  return 'Elegir imagen de la firma';
+});
+
 const onCancel = () => {
   if (isShowingAlert.value) return;
   emit('cancel');
@@ -388,13 +448,204 @@ const onCancel = () => {
 </script>
 
 <style scoped>
-.signature-preview__img {
-  max-height: 90px;
-  max-width: 100%;
-  border: 1px solid var(--rp-border, #dee2e6);
-  border-radius: 0.375rem;
+.pw-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.pw-section {
+  padding: 0.9rem;
+  border: 1px solid var(--rp-border, #e2e8f0);
+  border-radius: 0.9rem;
   background: #fff;
-  padding: 0.25rem;
+}
+
+.pw-section--soft {
+  background: var(--rp-surface-muted, #f8fafc);
+}
+
+.pw-section__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  margin-bottom: 0.85rem;
+}
+
+.pw-section__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.7rem;
+  background: var(--rp-brand-500, #1d6fad);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.pw-section__icon--muted {
+  background: var(--rp-surface-brand-soft, #e8f3fb);
+  color: var(--rp-text-brand, #1d4f91);
+}
+
+.pw-section__title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--rp-text-heading, #1e293b);
+}
+
+.pw-section__hint {
+  margin: 0.15rem 0 0;
+  font-size: 0.82rem;
+  color: var(--rp-text-muted, #64748b);
+}
+
+.pw-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.pw-section > .pw-field {
+  margin-top: 0.15rem;
+}
+
+.pw-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--rp-text-muted, #64748b);
+}
+
+.pw-label i {
+  color: var(--rp-text-brand, #1d4f91);
+}
+
+.pw-lock {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--rp-border, #e2e8f0);
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.pw-lock__value {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--rp-text-heading, #1e293b);
+  overflow-wrap: anywhere;
+}
+
+.pw-lock__value i {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--rp-text-subtle, #94a3b8);
+}
+
+.pw-sign {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pw-sign__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.pw-sign__pick {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  border: 1px dashed var(--rp-border-brand, #93c5fd);
+  border-radius: 0.75rem;
+  background: var(--rp-surface-brand-soft, #f4f8ff);
+  color: var(--rp-text-brand, #1d4f91);
+  font-weight: 600;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.pw-sign__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.65rem;
+  border-radius: 0.75rem;
+  background: var(--rp-surface-muted, #f8fafc);
+  border: 1px solid var(--rp-border, #e2e8f0);
+}
+
+.pw-sign__caption {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rp-text-muted, #64748b);
+}
+
+.pw-sign__img {
+  max-height: 96px;
+  max-width: 100%;
   object-fit: contain;
+  background: #fff;
+  border-radius: 0.5rem;
+  padding: 0.35rem;
+}
+
+.pw-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pw-actions__btn {
+  min-height: 44px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .pw-section {
+    padding: 1rem 1.1rem;
+  }
+
+  .pw-grid {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+  }
+
+  .pw-sign__pick {
+    width: auto;
+    max-width: 100%;
+  }
+
+  .pw-actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+
+  .pw-actions__btn {
+    width: auto;
+    min-width: 10rem;
+  }
 }
 </style>
