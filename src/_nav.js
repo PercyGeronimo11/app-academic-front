@@ -20,14 +20,14 @@ export default [
     component: 'CNavGroup',
     name: 'Notas',
     icon: 'cil-star',
-    roles: ['DIRECCION', 'SECRETARIA', 'PROFESOR', 'AUXILIAR'],
+    roles: ['DIRECCION', 'SECRETARIA', 'PROFESOR'],
     items: [
       {
         component: 'CNavItem',
         name: 'Reportes',
         icon: 'cil-chart-pie',
         to: '/notas/reportes',
-        roles: ['DIRECCION', 'PROFESOR', 'AUXILIAR'],
+        roles: ['DIRECCION', 'PROFESOR'],
       },
       {
         component: 'CNavItem',
@@ -201,7 +201,7 @@ export default [
     name: 'Estudiantes',
     to: '/students',
     icon: 'cil-people',
-    roles: ['DIRECCION'],
+    roles: ['DIRECCION', 'SECRETARIA'],
   },
   {
     component: 'CNavItem',
