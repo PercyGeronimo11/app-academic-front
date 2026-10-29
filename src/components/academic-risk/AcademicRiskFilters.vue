@@ -30,18 +30,17 @@
               </div>
             </div>
             <div
-              v-if="store.currentBimester"
+              v-if="store.currentBimester || store.predictableBimesters.length"
               class="academic-risk-ops-chip"
-              title="Solo se predicen bimestres ya cerrados"
+              title="Se intentan B1–B3; alumnos sin datos se omiten"
             >
               <i class="fas fa-layer-group" aria-hidden="true"></i>
               <div>
                 <span class="academic-risk-ops-chip__label">Bimestre vigente</span>
-                <strong>B{{ store.currentBimester }}</strong>
+                <strong>{{ store.currentBimester ? `B${store.currentBimester}` : '—' }}</strong>
                 <small v-if="store.predictableBimesters.length">
                   predice {{ store.predictableBimesters.map((n) => `B${n}`).join(', ') }}
                 </small>
-                <small v-else>sin cerrados</small>
               </div>
             </div>
           </div>
@@ -103,15 +102,19 @@
           </p>
         </div>
 
-        <div v-if="store.canUpdate" class="academic-risk-filters__actions">
+        <div
+          v-if="store.scope.canUpdatePredictions && !store.scope.isStudentView"
+          class="academic-risk-filters__actions"
+        >
           <CButton
             color="primary"
             class="academic-risk-ops-card__update-btn"
             :disabled="!store.canUpdate"
+            :title="updateButtonTitle"
             @click="$emit('update-predictions')"
           >
             <i class="fas fa-sync-alt me-2"></i>
-            Generar predicciones
+            Actualizar predicciones
           </CButton>
         </div>
       </div>
@@ -120,11 +123,26 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { useAcademicRiskStore } from '@/stores/academicRisk'
 
 defineEmits(['update-predictions', 'go-dashboard'])
 
 const store = useAcademicRiskStore()
+
+const updateButtonTitle = computed(() => {
+  if (!store.filters.gradeSectionId) {
+    return 'Seleccione grado y sección'
+  }
+  if (!store.predictableBimesters.length) {
+    return 'No hay bimestres B1–B3 disponibles'
+  }
+  if (store.updating || store.predictingStudentId) {
+    return 'Hay una predicción en curso'
+  }
+  const pred = store.predictableBimesters.map((n) => `B${n}`).join(', ')
+  return `Actualiza ${pred} del aula. Alumnos sin datos se omiten.`
+})
 
 const handleGradeChange = (event) => {
   store.onGradeChange(event.target.value)

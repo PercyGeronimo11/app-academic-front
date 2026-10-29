@@ -35,8 +35,8 @@
         <p class="text-white-50 mb-3">
           {{
             store.predictingStudentId
-              ? 'Procesando bimestres cerrados del alumno seleccionado.'
-              : 'Procesando bimestres cerrados del aula (puede tardar varios minutos).'
+              ? 'Procesando B1–B3 del alumno seleccionado (omite bimestres sin datos).'
+              : 'Procesando B1–B3 del aula (omite alumnos incompletos; puede tardar varios minutos).'
           }}
         </p>
         <CProgress animated :value="100" color="light" class="academic-risk-overlay__progress" />
@@ -185,10 +185,11 @@ const showBatchResult = (payload = {}) => {
 }
 
 const confirmUpdate = async () => {
-  const pred = store.predictableBimesters.map((n) => `B${n}`).join(', ') || 'ninguno'
+  const pred = store.predictableBimesters.map((n) => `B${n}`).join(', ') || 'B1–B3'
+  const vigente = store.currentBimester ? `B${store.currentBimester}` : '—'
   const result = await Swal.fire({
     title: '¿Desea actualizar las predicciones?',
-    html: `Se ejecutará el modelo para el aula seleccionada en los bimestres cerrados (<strong>${pred}</strong>; vigente B${store.currentBimester}).<br><br>Los alumnos sin datos completos se omiten y quedan en Observación.`,
+    html: `Se ejecutará el modelo para el aula seleccionada en <strong>${pred}</strong> (vigente ${vigente}).<br><br>Los alumnos sin notas u otros datos incompletos se omiten y se continúa con el resto.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Actualizar',
@@ -208,13 +209,13 @@ const confirmUpdate = async () => {
 }
 
 const confirmPredictStudent = async (row) => {
-  const pred = store.predictableBimesters.map((n) => `B${n}`).join(', ') || 'ninguno'
+  const pred = store.predictableBimesters.map((n) => `B${n}`).join(', ') || 'B1–B3'
   const result = await Swal.fire({
-    title: '¿Calcular predicción individual?',
-    html: `Se ejecutará el modelo para <strong>${row.fullName}</strong> en ${pred}.<br><br>Si falta información, se detallará por bimestre.`,
+    title: '¿Actualizar predicción individual?',
+    html: `Se ejecutará el modelo para <strong>${row.fullName}</strong> en ${pred}.<br><br>Si falta información en algún bimestre, ese bimestre se omite y se detalla en Observación.`,
     icon: 'question',
     showCancelButton: true,
-    confirmButtonText: 'Calcular',
+    confirmButtonText: 'Actualizar',
     cancelButtonText: 'Cancelar',
     confirmButtonColor: BRAND_COLOR,
     cancelButtonColor: '#9da5b1',

@@ -102,7 +102,7 @@
                         size="sm"
                         class="academic-risk-predict-btn"
                         :disabled="predictDisabled || predictingStudentId === row.studentId"
-                        title="Calcular predicción individual (bimestres cerrados)"
+                        title="Actualizar predicción del alumno (B1–B3; omite bimestres sin datos)"
                         @click="$emit('predict-student', row)"
                       >
                         <CSpinner
