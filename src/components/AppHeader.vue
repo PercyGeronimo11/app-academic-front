@@ -40,7 +40,7 @@ onBeforeUnmount(() => document.removeEventListener('scroll', onScroll))
       </CHeaderToggler>
 
       <div class="app-header-title">
-        <span class="app-header-title__eyebrow">I.E. Ricardo Palma 80010</span>
+        <span class="app-header-title__eyebrow">I.E. Ricardo Palma 80010 - Desarrollo</span>
         <span class="app-header-title__current">{{ currentTitle }}</span>
       </div>
 
