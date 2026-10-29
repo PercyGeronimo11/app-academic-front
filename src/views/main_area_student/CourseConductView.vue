@@ -95,7 +95,7 @@
 </template>
 
 <script setup>
-import { inject, ref, watch, watch } from 'vue'
+import { inject, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ConductIncidentService from '@/services/ConductIncidentService'
 import EmptyState from '@/components/academic/EmptyState.vue'
